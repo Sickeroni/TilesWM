@@ -13,6 +13,10 @@ public:
         VERTICAL
     };
 
+    enum MaxDimension {
+        MAX_DIMENSION = 8
+    };
+
     static void startup(int screen_width, int screen_height);
     static void shutdown();
     static Container *root() {
@@ -28,8 +32,19 @@ public:
     int y() { return _y; }
     int width() { return _w; }
     int height() { return _h; }
+    bool isHorizontal() {
+        return _orientation == HORIZONTAL;
+    }
 
 protected:
+    Container *getPrev(Container *child);
+
+    Container *getChildWestOf(Container *child);
+
+
+//     Container *getEast(Container *child);
+//     Container *getNorth(Container *child);
+//     Container *getSouth(Container *child);
     void local_to_global(int &x, int &y);
 
 //     void moveClientRight();
@@ -38,7 +53,7 @@ protected:
 
     static Container *_root;
 
-    Container *_parent;
+    ContainerContainer *_parent;
     Orientation _orientation;
     int _x, _y, _w, _h;
 };

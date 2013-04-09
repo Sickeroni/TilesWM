@@ -93,3 +93,42 @@ void ClientContainer::layout()
         i++;
    }
 }
+
+ClientContainer *ClientContainer::west()
+{
+    if (!_parent) { // oops we're the root container
+        //ASSERT(this == _root );
+        return 0;
+    } else {
+        return _parent->clientContainerWestOf(this);
+    }
+}
+
+ClientContainer *ClientContainer::createWest()
+{
+}
+
+
+ClientContainer *ClientContainer::getWest()
+{
+    if (west())
+        return west();
+    else {
+        if (!_parent) { // oops we're the root container
+            //ASSERT(this == _root );
+
+            ContainerContainer *new_root =
+                new ContainerContainer(0 ,0, 0, _root->width(), _root->height());
+            ClientContainer *new_west =
+                new ClientContainer(new_root, 0, 0, _root->width(), _root->height());
+            new_root->addContainer(new_west);
+            new_root->addContainer(_root);
+            _root = new_root;
+            return new_west;
+
+
+        } else {
+            return _parent->getClientContainerWestOf(this);
+        }
+    }
+}

@@ -11,6 +11,7 @@ class Client
 {
     Client(Window w, Display *dpy, bool is_mapped);
 
+    //TODO use a hash here
     static std::map<Window, Client*> _client_from_window;
 
     Window _window;

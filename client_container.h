@@ -12,6 +12,8 @@ public:
     virtual void layout();
 
     void removeClient(Client *c);
+    ClientContainer *west()
+    ClientContainer *getWest();
 
 private:
     std::list<Client*> _clients;
