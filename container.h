@@ -45,11 +45,9 @@ public:
         return _root;
     }
 
-    Container(ContainerContainer *parent, int x, int y, int w, int h);
-
+    virtual ClientContainer *currentClientContainer() = 0;
     virtual void addClient(Client *c) = 0;
     virtual void layout() = 0;
-    virtual ClientContainer *currentClientContainer() = 0;
 
     int x() { return _x; }
     int y() { return _y; }
@@ -61,9 +59,19 @@ public:
     Orientation orientation();
 //     bool isClientContainer();
 
+    ContainerContainer *parent() { return _parent; }
+    void setParent(ContainerContainer *p) {
+        _parent = p;
+    }
+    bool isUnlinked() {
+        return !_prev && !_next;
+    }
+    Container *next() { return _next; }
+    Container *prev() { return _prev; }
+    void append (Container *container);
 
 protected:
-//     Container *getPrev(Container *child);
+    Container(ContainerContainer *parent, int x, int y, int w, int h);
 
     void local_to_global(int &x, int &y);
 
@@ -73,6 +81,10 @@ protected:
 
     ContainerContainer *_parent;
     int _x, _y, _w, _h;
+
+private:
+
+    Container *_prev, *_next;
 };
 
 #endif // __CONTAINER_H__

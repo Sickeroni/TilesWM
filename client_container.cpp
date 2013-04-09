@@ -33,6 +33,7 @@ void ClientContainer::removeClient(Client *c)
             break;
         }
     }
+    //TODO - if empty destroy ourselves
 }
 
 void ClientContainer::layout()

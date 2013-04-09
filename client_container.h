@@ -12,11 +12,13 @@ public:
 
     virtual void addClient(Client *c);
     virtual void layout();
+
+    void removeClient(Client *c);
+
+protected:
     virtual ClientContainer *currentClientContainer() {
         return this;
     }
-
-    void removeClient(Client *c);
 
     ClientContainer *findSilbling(Direction dir) {
         return _parent ? 0 : _parent->findSilblingOf(this, dir);

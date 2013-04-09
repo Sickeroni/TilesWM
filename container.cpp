@@ -3,9 +3,12 @@
 #include "client_container.h"
 #include "container_container.h"
 
+#include <stdlib.h>
+
 
 Container *Container::_root = 0;
 Container::Orientation Container::_root_orientation = HORIZONTAL;
+
 
 void Container::startup(int screen_width, int screen_height)
 {
@@ -20,7 +23,8 @@ void Container::shutdown()
 
 Container::Container(ContainerContainer *parent, int x, int y, int w, int h) :
     _parent(parent),
-    _x(x),  _y(y), _w(w), _h(h)
+    _x(x),  _y(y), _w(w), _h(h),
+    _prev(0), _next(0)
 {
 }
 
@@ -39,4 +43,10 @@ Container::Orientation Container::orientation()
         return _root_orientation;
     else
         return _parent->isHorizontal() ? VERTICAL : HORIZONTAL;
+}
+
+void Container::append (Container *container)
+{
+    //FIXME
+    abort();
 }
