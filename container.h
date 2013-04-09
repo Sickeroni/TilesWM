@@ -6,6 +6,7 @@
 
 class Client;
 class ContainerContainer;
+class ClientContainer;
 
 
 class Container
@@ -34,9 +35,9 @@ public:
             return VERTICAL;
     }
 
-    static Orientation defaultOrientation() {
-        return HORIZONTAL;
-    }
+//     static Orientation defaultOrientation() {
+//         return HORIZONTAL;
+//     }
 
     static void startup(int screen_width, int screen_height);
     static void shutdown();
@@ -48,14 +49,18 @@ public:
 
     virtual void addClient(Client *c) = 0;
     virtual void layout() = 0;
+    virtual ClientContainer *currentClientContainer() = 0;
 
     int x() { return _x; }
     int y() { return _y; }
     int width() { return _w; }
     int height() { return _h; }
     bool isHorizontal() {
-        return _orientation == HORIZONTAL;
+        return orientation() == HORIZONTAL;
     }
+    Orientation orientation();
+//     bool isClientContainer();
+
 
 protected:
 //     Container *getPrev(Container *child);
@@ -64,9 +69,9 @@ protected:
 
 
     static Container *_root;
+    static Orientation _root_orientation;
 
     ContainerContainer *_parent;
-    Orientation _orientation;
     int _x, _y, _w, _h;
 };
 

@@ -12,6 +12,9 @@ public:
 
     virtual void addClient(Client *c);
     virtual void layout();
+    virtual ClientContainer *currentClientContainer() {
+        return this;
+    }
 
     void removeClient(Client *c);
 

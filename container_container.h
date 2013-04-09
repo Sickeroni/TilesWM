@@ -3,19 +3,31 @@
 
 #include "container.h"
 
+#include <list>
+
 class ClientContainer;
+
+typedef std::list<Container*> ContainerList;
 
 class ContainerContainer : public Container
 {
 public:
-    ContainerContainer(Container *parent, int x, int y, int width, int height);
+    ContainerContainer(ContainerContainer *parent, int x, int y, int width, int height);
 
     virtual void addClient(Client *c);
     virtual void layout();
+    virtual ClientContainer *currentClientContainer();
 
     void addContainer(Container *container);
-    ClientContainer *findSilblingOf(ClientContainer *which, Direction dir);
-    ClientContainer *getOrCreateSilblingOf(ClientContainer *which, Direction dir);
+    Container *prev(Container *from);
+    Container *next(Container *from);
+    ClientContainer *findSilblingOf(Container *which, Direction dir);
+    ClientContainer *getOrCreateSilblingOf(Container *which, Direction dir);
+
+private:
+    ContainerList::iterator find(Container *container);
+
+    ContainerList _children;
 };
 
 #endif // __CONTAINER_CONTAINER_H__

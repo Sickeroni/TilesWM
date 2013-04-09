@@ -59,7 +59,7 @@ void ClientContainer::layout()
 
     int cell_width = 0, cell_height = 0;
 
-    if (_orientation == HORIZONTAL) {
+    if (isHorizontal()) {
         cell_width = width() / mapped_clients;
         cell_height = height();
     } else {
@@ -78,7 +78,7 @@ void ClientContainer::layout()
             continue;
 
         int x = 0, y = 0;
-        if (_orientation == HORIZONTAL) {
+        if (isHorizontal()) {
             x = i * cell_width;
             y = 0;
         } else {
@@ -104,10 +104,10 @@ ClientContainer *ClientContainer::getOrCreateSilbling(Direction dir)
         } else {
             //ASSERT(this == root);
 
-            bool push_front = dir == WEST || dir == NORTH;
+            bool push_front = (dir == NORTH || dir == WEST);
 
 
-            if (defaultOrientation() == orientationOfDirection(dir)) {
+            if (_root_orientation == orientationOfDirection(dir)) {
                 // direct
 
                 ContainerContainer *new_root =

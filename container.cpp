@@ -5,6 +5,7 @@
 
 
 Container *Container::_root = 0;
+Container::Orientation Container::_root_orientation = HORIZONTAL;
 
 void Container::startup(int screen_width, int screen_height)
 {
@@ -18,7 +19,7 @@ void Container::shutdown()
 }
 
 Container::Container(ContainerContainer *parent, int x, int y, int w, int h) :
-    _parent(parent), _orientation(HORIZONTAL),
+    _parent(parent),
     _x(x),  _y(y), _w(w), _h(h)
 {
 }
@@ -30,4 +31,12 @@ void Container::local_to_global(int &x, int &y)
 
     if (_parent)
         _parent->local_to_global(x, y);
+}
+
+Container::Orientation Container::orientation()
+{
+    if (!_parent)
+        return _root_orientation;
+    else
+        return _parent->isHorizontal() ? VERTICAL : HORIZONTAL;
 }
