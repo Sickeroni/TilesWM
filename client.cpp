@@ -1,6 +1,6 @@
 #include "client.h"
 
-#include "container.h"
+#include "client_container.h"
 
 #include <stdio.h>
 #include <iostream>
@@ -25,7 +25,7 @@ void Client::createClient(Window window, Display *dpy)
     } else {
         XWindowAttributes attr;
         if (XGetWindowAttributes(dpy, window, &attr)) {
-            if (attr.override_redirect) // dont't manage popups etc
+            if (attr.override_redirect) // dont't manage popups etc. //FIXME - else warning on client destroy
                 return;
 
             bool is_mapped = (attr.map_state == IsViewable);
@@ -80,19 +80,22 @@ void Client::unmapNotify(Window window)
 }
 
 
+/////////////////////////////////////////////////
+
+
 Client::Client(Window w, Display *dpy, bool is_mapped) :
     _window(w), _container(0), _dpy(dpy), _is_mapped(is_mapped)
 {
 }
 
-void Client::setContainer(Container *c)
+void Client::setContainer(ClientContainer *c)
 {
     _container = c;
 }
 
 void Client::setRect(int x, int y, int w, int h)
 {
-    std::cout<<"FIXME - Client::setRect()\n";
+    std::cout<<"Client::setRect(): ";
     std::cout<<x<<","<<y<<","<<w<<","<<h<<"\n";
 
     XMoveResizeWindow(_dpy, _window, x, y, w, h);

@@ -5,15 +5,16 @@
 
 #include <map>
 
-class Container;
+class ClientContainer;
 
 class Client
 {
     Client(Window w, Display *dpy, bool is_mapped);
 
     static std::map<Window, Client*> _client_from_window;
+
     Window _window;
-    Container *_container;
+    ClientContainer *_container;
     Display *_dpy;
     bool _is_mapped;
 
@@ -25,10 +26,10 @@ public:
     static void mapNotify(Window window);
     static void unmapNotify(Window window);
 
-    Container *container() {
+    ClientContainer *container() {
         return _container;
     }
-    void setContainer(Container *c);
+    void setContainer(ClientContainer *c);
     void setRect(int x, int y, int w, int h);
     bool isMapped() { return _is_mapped; }
 };

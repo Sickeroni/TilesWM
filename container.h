@@ -19,26 +19,26 @@ public:
         return _root;
     }
 
-    void addClient(Client *c);
-    void removeClient(Client *c);
-    void layout();
+    Container(Container *parent, int x, int y, int w, int h);
+
+    virtual void addClient(Client *c) = 0;
+    virtual void layout() = 0;
 
     int x() { return _x; }
     int y() { return _y; }
     int width() { return _w; }
     int height() { return _h; }
 
-private:
-    Container(Container *parent, int x, int y, int w, int h);
+protected:
     void local_to_global(int &x, int &y);
-    void moveClientRight();
-    Container *east();
-    Container *south();
+
+//     void moveClientRight();
+//     Container *east();
+//     Container *south();
 
     static Container *_root;
 
     Container *_parent;
-    std::list<Client*> _clients;
     Orientation _orientation;
     int _x, _y, _w, _h;
 };
