@@ -3,17 +3,22 @@
 
 #include "container.h"
 
+#include "container_container.h"
+
 class ClientContainer : public Container
 {
 public:
-    ClientContainer(Container *parent, int x, int y, int w, int h);
+    ClientContainer(ContainerContainer *parent, int x, int y, int w, int h);
 
     virtual void addClient(Client *c);
     virtual void layout();
 
     void removeClient(Client *c);
-    ClientContainer *west()
-    ClientContainer *getWest();
+
+    ClientContainer *findSilbling(Direction dir) {
+        return _parent ? 0 : _parent->findSilblingOf(this, dir);
+    }
+    ClientContainer *getOrCreateSilbling(Direction dir);
 
 private:
     std::list<Client*> _clients;

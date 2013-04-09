@@ -3,19 +3,40 @@
 
 #include <list>
 
+
 class Client;
+class ContainerContainer;
+
 
 class Container
 {
 public:
     enum Orientation {
-        HORIZONTAL,
-        VERTICAL
+        HORIZONTAL = 0,
+        VERTICAL = 1
+    };
+
+    enum Direction {
+        WEST,
+        EAST,
+        NORTH,
+        SOUTH
     };
 
     enum MaxDimension {
         MAX_DIMENSION = 8
     };
+
+    static Orientation orientationOfDirection(Direction dir) {
+        if (dir == WEST || dir == EAST)
+            return HORIZONTAL;
+        else
+            return VERTICAL;
+    }
+
+    static Orientation defaultOrientation() {
+        return HORIZONTAL;
+    }
 
     static void startup(int screen_width, int screen_height);
     static void shutdown();
@@ -23,7 +44,7 @@ public:
         return _root;
     }
 
-    Container(Container *parent, int x, int y, int w, int h);
+    Container(ContainerContainer *parent, int x, int y, int w, int h);
 
     virtual void addClient(Client *c) = 0;
     virtual void layout() = 0;
@@ -37,19 +58,10 @@ public:
     }
 
 protected:
-    Container *getPrev(Container *child);
+//     Container *getPrev(Container *child);
 
-    Container *getChildWestOf(Container *child);
-
-
-//     Container *getEast(Container *child);
-//     Container *getNorth(Container *child);
-//     Container *getSouth(Container *child);
     void local_to_global(int &x, int &y);
 
-//     void moveClientRight();
-//     Container *east();
-//     Container *south();
 
     static Container *_root;
 

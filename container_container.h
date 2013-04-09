@@ -3,6 +3,8 @@
 
 #include "container.h"
 
+class ClientContainer;
+
 class ContainerContainer : public Container
 {
 public:
@@ -12,6 +14,8 @@ public:
     virtual void layout();
 
     void addContainer(Container *container);
+    ClientContainer *findSilblingOf(ClientContainer *which, Direction dir);
+    ClientContainer *getOrCreateSilblingOf(ClientContainer *which, Direction dir);
 };
 
 #endif // __CONTAINER_CONTAINER_H__

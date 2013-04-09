@@ -5,7 +5,7 @@
 #include <iostream>
 
 
-ClientContainer::ClientContainer(Container *parent, int x, int y, int w, int h) :
+ClientContainer::ClientContainer(ContainerContainer *parent, int x, int y, int w, int h) :
     Container(parent, x, y, w, h)
 {
 }
@@ -94,41 +94,64 @@ void ClientContainer::layout()
    }
 }
 
-ClientContainer *ClientContainer::west()
+ClientContainer *ClientContainer::getOrCreateSilbling(Direction dir)
 {
-    if (!_parent) { // oops we're the root container
-        //ASSERT(this == _root );
-        return 0;
-    } else {
-        return _parent->clientContainerWestOf(this);
-    }
-}
-
-ClientContainer *ClientContainer::createWest()
-{
-}
-
-
-ClientContainer *ClientContainer::getWest()
-{
-    if (west())
-        return west();
+    if (ClientContainer *s = findSilbling(dir))
+        return s;
     else {
-        if (!_parent) { // oops we're the root container
-            //ASSERT(this == _root );
-
-            ContainerContainer *new_root =
-                new ContainerContainer(0 ,0, 0, _root->width(), _root->height());
-            ClientContainer *new_west =
-                new ClientContainer(new_root, 0, 0, _root->width(), _root->height());
-            new_root->addContainer(new_west);
-            new_root->addContainer(_root);
-            _root = new_root;
-            return new_west;
-
-
+        if (_parent) {
+            return _parent->getOrCreateSilblingOf(this, dir);
         } else {
-            return _parent->getClientContainerWestOf(this);
+            //ASSERT(this == root);
+
+            bool push_front = dir == WEST || dir == NORTH;
+
+
+            if (defaultOrientation() == orientationOfDirection(dir)) {
+                // direct
+
+                ContainerContainer *new_root =
+                    new ContainerContainer(0 ,0, 0, _root->width(), _root->height());
+                ClientContainer *new_silbling =
+                    new ClientContainer(new_root, 0, 0, _root->width(), _root->height());
+
+                if (push_front) {
+                    new_root->addContainer(new_silbling);
+                    new_root->addContainer(this);
+                } else {
+                    new_root->addContainer(this);
+                    new_root->addContainer(new_silbling);
+                }
+
+                _root = new_root;
+                return new_silbling;
+
+            } else {
+                // indirect
+
+                ContainerContainer *new_root =
+                    new ContainerContainer(0 ,0, 0, _root->width(), _root->height());
+
+                ClientContainer *new_silbling =
+                    new ClientContainer(new_root, 0, 0, _root->width(), _root->height());
+
+                ContainerContainer *subcontainer_this = new ContainerContainer(0 ,0, 0, _root->width(), _root->height());
+                subcontainer_this->addContainer(this);
+
+                ContainerContainer *subcontainer_silbling = new ContainerContainer(0 ,0, 0, _root->width(), _root->height());
+                subcontainer_silbling->addContainer(new_silbling);
+
+                if (push_front) {
+                    new_root->addContainer(subcontainer_silbling);
+                    new_root->addContainer(subcontainer_this);
+                } else {
+                    new_root->addContainer(subcontainer_this);
+                    new_root->addContainer(subcontainer_silbling);
+                }
+
+                _root = new_root;
+                return new_silbling;
+            }
         }
     }
 }
