@@ -8,6 +8,39 @@ class Client;
 class ContainerContainer;
 class ClientContainer;
 
+#if 0
+class ContainerElement
+{
+    friend class ContainerElementList;
+
+public:
+    enum Type { CONTAINER, CLIENT }
+
+    ContainerElement *prev();
+    ContainerElement *next();
+
+    Type type() { return type; }
+
+private:
+    Type _type;
+    ContainerElement *_prev, *_next;
+};
+
+
+
+class ContainerElementList
+{
+public:
+    void prepend(ContainerElement *element);
+    void append(ContainerElement *element);
+    void insert(ContainerElement *element, ContainerElement *after);
+
+private:
+    ContainerElement *_first;
+    ContainerElement *_last;
+};
+#endif
+
 
 class Container
 {
@@ -35,9 +68,9 @@ public:
             return VERTICAL;
     }
 
-//     static Orientation defaultOrientation() {
-//         return HORIZONTAL;
-//     }
+    static bool isForwardDirection(Direction dir) {
+        return (dir == EAST || dir == SOUTH);
+    }
 
     static void startup(int screen_width, int screen_height);
     static void shutdown();
@@ -45,9 +78,10 @@ public:
         return _root;
     }
 
-    virtual ClientContainer *currentClientContainer() = 0;
+    virtual ClientContainer *activeClientContainer() = 0;
     virtual void addClient(Client *c) = 0;
     virtual void layout() = 0;
+//     virtual void layoutClients();
 
     int x() { return _x; }
     int y() { return _y; }
@@ -57,27 +91,29 @@ public:
         return orientation() == HORIZONTAL;
     }
     Orientation orientation();
-//     bool isClientContainer();
+
+    bool isContainerContainer();
+    bool isClientContainer();
 
     ContainerContainer *parent() { return _parent; }
+
+    Container *next() { return _next; }
+    Container *prev() { return _prev; }
+
+
+    bool hasChildren();
+
+protected:
+    static Container *_root;
+    static Orientation _root_orientation;
+
+    Container();
+
+    void local_to_global(int &x, int &y);
     void setParent(ContainerContainer *p) {
         _parent = p;
     }
-    bool isUnlinked() {
-        return !_prev && !_next;
-    }
-    Container *next() { return _next; }
-    Container *prev() { return _prev; }
-    void append (Container *container);
 
-protected:
-    Container(ContainerContainer *parent, int x, int y, int w, int h);
-
-    void local_to_global(int &x, int &y);
-
-
-    static Container *_root;
-    static Orientation _root_orientation;
 
     ContainerContainer *_parent;
     int _x, _y, _w, _h;

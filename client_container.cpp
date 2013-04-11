@@ -1,15 +1,18 @@
 #include "client_container.h"
 
+#if 1
+
 #include "client.h"
 
 #include <iostream>
+#include <stdlib.h>
 
-
-ClientContainer::ClientContainer(ContainerContainer *parent, int x, int y, int w, int h) :
-    Container(parent, x, y, w, h)
+ClientContainer::ClientContainer() :
+    Container()
 {
 }
 
+#if 0
 void ClientContainer::addClient(Client *c)
 {
     if (c->container())
@@ -33,7 +36,9 @@ void ClientContainer::removeClient(Client *c)
             break;
         }
     }
-    //TODO - if empty destroy ourselves
+
+    if (isEmpty() && _parent)
+        _parent->setDirty(true);
 }
 
 void ClientContainer::layout()
@@ -95,64 +100,123 @@ void ClientContainer::layout()
    }
 }
 
-ClientContainer *ClientContainer::getOrCreateSilbling(Direction dir)
+#endif
+
+
+////////////////////////////
+
+
+ClientContainer *ClientContainer::splitContainer(Container *container, bool prepend_new_silbling)
 {
-    if (ClientContainer *s = findSilbling(dir))
-        return s;
-    else {
-        if (_parent) {
-            return _parent->getOrCreateSilblingOf(this, dir);
-        } else {
-            //ASSERT(this == root);
+    // create new parent
+    ContainerContainer *new_parent = new ContainerContainer();
 
-            bool push_front = (dir == NORTH || dir == WEST);
+    if (container->parent()) {
+        // replace this with new parent
+        container->parent()->replaceChild(container, new_parent); // this de-parents/unlinks container
+    } else
+        _root = new_parent;
+
+    ClientContainer *new_silbling = new ClientContainer();
+
+    // add this + new child container to new parent
+    if (prepend_new_silbling) {
+        new_parent->appendChild(new_silbling);
+        new_parent->appendChild(container);
+    } else {
+        new_parent->appendChild(container);
+        new_parent->appendChild(new_silbling);
+    }
+
+    return new_silbling;
+}
 
 
-            if (_root_orientation == orientationOfDirection(dir)) {
-                // direct
+ClientContainer *ClientContainer::createSilblingFor(Container *container, bool prepend_new_silbling)
+{
+    ClientContainer *new_silbling = 0;
 
-                ContainerContainer *new_root =
-                    new ContainerContainer(0 ,0, 0, _root->width(), _root->height());
-                ClientContainer *new_silbling =
-                    new ClientContainer(new_root, 0, 0, _root->width(), _root->height());
+    if (container->parent()) {
+        new_silbling = new ClientContainer();
+        if (prepend_new_silbling)
+            container->parent()->prependChild(new_silbling);
+        else
+            container->parent()->appendChild(new_silbling);
+    } else
+        new_silbling = splitContainer(container, prepend_new_silbling);
 
-                if (push_front) {
-                    new_root->addContainer(new_silbling);
-                    new_root->addContainer(this);
-                } else {
-                    new_root->addContainer(this);
-                    new_root->addContainer(new_silbling);
-                }
+    return new_silbling;
+}
 
-                _root = new_root;
-                return new_silbling;
+ClientContainer *ClientContainer::getOrCreateSilblingFor(Container *container, bool get_prev)
+{
+    if (!get_prev && container->next())
+        return container->next()->activeClientContainer();
+    else if (get_prev && container->prev())
+        return container->prev()->activeClientContainer();
+    else
+        return createSilblingFor(container, get_prev);
+}
 
+void ClientContainer::moveClientToOther(Client *client, Direction dir)
+{
+    if (client->container() != this)
+        abort();
+
+    if (!client->isMapped()) //FIXME is this ok ?
+        return;
+
+    bool backward = !isForwardDirection(dir);
+
+    ClientContainer *target = 0;
+
+    if (_parent) {
+        if (orientationOfDirection(dir) == _parent->orientation()) // easy case
+            target = getOrCreateSilblingFor(this, backward);
+
+        else { // difficult case:
+                 // if client container becomes empty -> use use silbling of parent container;
+                 // else: 1. replace this with new parent container; 2. add this and new client container to parent created in step 1
+
+            if (numMappedClients() <= 1) // cant't split - use use silbling of parent container
+                target = getOrCreateSilblingFor(_parent, backward);
+            else // split this
+                target = splitContainer(this, backward);
+        }
+    } else {
+        if (orientationOfDirection(dir) == _root_orientation)
+            target = splitContainer(this, backward);
+        else {
+            target = new ClientContainer();
+
+            ContainerContainer *subcontainer_this = new ContainerContainer();
+            subcontainer_this->appendChild(this);
+
+            ContainerContainer *subcontainer_silbling = new ContainerContainer();
+            subcontainer_silbling->appendChild(target);
+
+            ContainerContainer *new_root = new ContainerContainer();
+
+            if (backward) {
+                new_root->appendChild(subcontainer_silbling);
+                new_root->appendChild(subcontainer_this);
             } else {
-                // indirect
-
-                ContainerContainer *new_root =
-                    new ContainerContainer(0 ,0, 0, _root->width(), _root->height());
-
-                ClientContainer *new_silbling =
-                    new ClientContainer(new_root, 0, 0, _root->width(), _root->height());
-
-                ContainerContainer *subcontainer_this = new ContainerContainer(0 ,0, 0, _root->width(), _root->height());
-                subcontainer_this->addContainer(this);
-
-                ContainerContainer *subcontainer_silbling = new ContainerContainer(0 ,0, 0, _root->width(), _root->height());
-                subcontainer_silbling->addContainer(new_silbling);
-
-                if (push_front) {
-                    new_root->addContainer(subcontainer_silbling);
-                    new_root->addContainer(subcontainer_this);
-                } else {
-                    new_root->addContainer(subcontainer_this);
-                    new_root->addContainer(subcontainer_silbling);
-                }
-
-                _root = new_root;
-                return new_silbling;
+                new_root->appendChild(subcontainer_this);
+                new_root->appendChild(subcontainer_silbling);
             }
+
+            _root = new_root;
         }
     }
+
+    //FIXME move client
+    abort();
 }
+
+int ClientContainer::numMappedClients()
+{
+    //FIXME
+    abort();
+}
+
+#endif

@@ -20,7 +20,17 @@
  */
 
 
-#include "container.h"
+#if 0
+
+int main()
+{
+    return 0;
+}
+
+
+#else
+
+#include "container_container.h"
 #include "client.h"
 
 #include <X11/Xlib.h>
@@ -86,6 +96,10 @@ void eventLoop(Display *dpy)
 
     for(;;)
     {
+        //FIXME UGLY
+        if (Container::root()->isContainerContainer())
+            static_cast<ContainerContainer*>(Container::root())->deleteEmptyChildren();
+
         /* this is the most basic way of looping through X events; you can be
          * more flexible by using XPending(), or ConnectionNumber() along with
          * select() (or poll() or whatever floats your boat).
@@ -309,3 +323,5 @@ int main()
 
     return 0;
 }
+#endif
+

@@ -8,25 +8,28 @@
 class ClientContainer : public Container
 {
 public:
-    ClientContainer(ContainerContainer *parent, int x, int y, int w, int h);
+    ClientContainer();
 
+    virtual ClientContainer *activeClientContainer() {
+        return this;
+    }
     virtual void addClient(Client *c);
     virtual void layout();
+//     virtual void layoutClients;
+
 
     void removeClient(Client *c);
 
 protected:
-    virtual ClientContainer *currentClientContainer() {
-        return this;
-    }
+    ClientContainer *splitContainer(Container *container, bool prepend_new_silbling);
+    ClientContainer *createSilblingFor(Container *container, bool prepend_new_silbling);
+    ClientContainer *getOrCreateSilblingFor(Container *container, bool get_prev);
+    void moveClientToOther(Client *client, Direction dir);
 
-    ClientContainer *findSilbling(Direction dir) {
-        return _parent ? 0 : _parent->findSilblingOf(this, dir);
-    }
-    ClientContainer *getOrCreateSilbling(Direction dir);
 
 private:
-    std::list<Client*> _clients;
+//     std::list<Client*> _clients; //FIXME: only put mapped clients here ?
+    int numMappedClients();
 };
 
 #endif // __CLIENT_CONTAINER_H__

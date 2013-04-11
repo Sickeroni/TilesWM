@@ -1,5 +1,7 @@
 #include "client.h"
 
+#if 1
+
 #include "client_container.h"
 
 #include <stdio.h>
@@ -100,3 +102,5 @@ void Client::setRect(int x, int y, int w, int h)
 
     XMoveResizeWindow(_dpy, _window, x, y, w, h);
 }
+
+#endif

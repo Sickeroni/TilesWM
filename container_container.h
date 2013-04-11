@@ -12,30 +12,24 @@ class ClientContainer;
 class ContainerContainer : public Container
 {
 public:
-    ContainerContainer(ContainerContainer *parent, int x, int y, int width, int height);
+    ContainerContainer();
 
-    ClientContainer *findSilblingOf(Container *which, Direction dir);
-    ClientContainer *getOrCreateSilblingOf(Container *which, Direction dir);
-
-    void addContainer(Container *container);
-
-protected:
+    virtual ClientContainer *activeClientContainer();
     virtual void addClient(Client *c);
     virtual void layout();
-    virtual ClientContainer *currentClientContainer();
+//     virtual void layoutClients;
 
-//     Container *prev(Container *from);
-//     Container *next(Container *from);
+    void prependChild(Container *container);
+    void appendChild(Container *container);
+    void replaceChild(Container *old_container, Container *new_container);
 
-//     Container *firstChild() {
-//         return _first_child;
-//     }
+    void deleteEmptyChildren();
 
 private:
-//     ContainerList::iterator find(Container *container);
+    void setDirty(bool set);
+    void updateDirtyStatus();
 
-//     ContainerList _children;
-    Container *_first_child;
+    bool _dirty; // is this container unused or are there unused child containers ?;
 };
 
 #endif // __CONTAINER_CONTAINER_H__
