@@ -31,13 +31,13 @@ Container::Container() :
 {
 }
 
-void Container::local_to_global(int &x, int &y)
+void Container::localToGlobal(int &x, int &y)
 {
     x += this->x();
     y += this->y();
 
     if (_parent)
-        _parent->local_to_global(x, y);
+        _parent->localToGlobal(x, y);
 }
 
 Container::Orientation Container::orientation()

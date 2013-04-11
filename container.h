@@ -109,7 +109,7 @@ protected:
 
     Container();
 
-    void local_to_global(int &x, int &y);
+    void localToGlobal(int &x, int &y);
     void setParent(ContainerContainer *p) {
         _parent = p;
     }
