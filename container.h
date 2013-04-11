@@ -1,48 +1,16 @@
 #ifndef __CONTAINER_H__
 #define __CONTAINER_H__
 
-#include <list>
+
+#include "container_element.h"
 
 
 class Client;
 class ContainerContainer;
 class ClientContainer;
 
-#if 0
-class ContainerElement
-{
-    friend class ContainerElementList;
 
-public:
-    enum Type { CONTAINER, CLIENT }
-
-    ContainerElement *prev();
-    ContainerElement *next();
-
-    Type type() { return type; }
-
-private:
-    Type _type;
-    ContainerElement *_prev, *_next;
-};
-
-
-
-class ContainerElementList
-{
-public:
-    void prepend(ContainerElement *element);
-    void append(ContainerElement *element);
-    void insert(ContainerElement *element, ContainerElement *after);
-
-private:
-    ContainerElement *_first;
-    ContainerElement *_last;
-};
-#endif
-
-
-class Container
+class Container : public ContainerElement
 {
 public:
     enum Orientation {
@@ -97,9 +65,11 @@ public:
 
     ContainerContainer *parent() { return _parent; }
 
-    Container *next() { return _next; }
-    Container *prev() { return _prev; }
-
+    //FIXME UGLY
+    Container *next() { return ContainerElement::next()->type() == CONTAINER ?
+                                static_cast<Container*>(ContainerElement::next()) : 0; }
+    Container *prev() { return ContainerElement::prev()->type() == CONTAINER ?
+                                static_cast<Container*>(ContainerElement::prev()) : 0; }
 
     bool hasChildren();
 

@@ -85,7 +85,7 @@ void Client::unmapNotify(Window window)
 /////////////////////////////////////////////////
 
 
-Client::Client(Window w, Display *dpy, bool is_mapped) :
+Client::Client(Window w, Display *dpy, bool is_mapped) : ContainerElement(CLIENT),
     _window(w), _container(0), _dpy(dpy), _is_mapped(is_mapped)
 {
 }

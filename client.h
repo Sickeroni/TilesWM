@@ -1,13 +1,16 @@
 #ifndef __CLIENT_H__
 #define __CLIENT_H__
 
+#include "container_element.h"
+
+
 #include <X11/Xlib.h>
 
 #include <map>
 
 class ClientContainer;
 
-class Client
+class Client : public ContainerElement
 {
     Client(Window w, Display *dpy, bool is_mapped);
 
