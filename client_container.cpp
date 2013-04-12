@@ -12,7 +12,6 @@ ClientContainer::ClientContainer() : Container(CLIENT)
 {
 }
 
-
 void ClientContainer::addClient(Client *c)
 {
     if (c->container())
@@ -41,45 +40,15 @@ void ClientContainer::removeClient(Client *c)
 
 void ClientContainer::layout()
 {
-    //FIXME
-    abort();
-}
-
-#if 0
-
-void ClientContainer::removeClient(Client *c)
-{
-    c->setContainer(0);
-
-    for(std::list<Client*>::iterator it = _clients.begin(); it != _clients.end(); it++) {
-        if (*it == c) {
-            _clients.erase(it);
-            break;
-        }
-    }
-
-    if (isEmpty() && _parent)
-        _parent->setDirty(true);
-}
-
-void ClientContainer::layout()
-{
     std::cout<<"===================\nContainer::layout()";
-
-    int mapped_clients = 0;
-    for(std::list<Client*>::iterator it = _clients.begin(); it != _clients.end(); it++) {
-        Client *c = *it;
-        if (c->isMapped())
-            mapped_clients++;
-    }
-
-    std::cout<<"mapped_clients: "<<mapped_clients<<"\n";
-
 
     if (!width() || !height())
         return;
 
 
+    int mapped_clients = numMappedClients();
+
+    std::cout<<"mapped_clients: "<<mapped_clients<<"\n";
 
     if (!mapped_clients)
         return;
@@ -99,8 +68,7 @@ void ClientContainer::layout()
     std::cout<<"=================================\n";
 
     int i = 0;
-    for(std::list<Client*>::iterator it = _clients.begin(); it != _clients.end(); it++) {
-        Client *c = *it;
+    for(Client *c = _clients.first(); c; c = c->next()) {
         if (!c->isMapped())
             continue;
 
@@ -113,19 +81,13 @@ void ClientContainer::layout()
             y = i * cell_width;
         }
 
-        local_to_global(x, y);
+        localToGlobal(x, y);
 
         c->setRect(x, y, cell_width, cell_height);
 
         i++;
    }
 }
-
-#endif
-
-
-////////////////////////////
-
 
 ClientContainer *ClientContainer::splitContainer(Container *container, bool prepend_new_silbling)
 {
@@ -230,14 +192,17 @@ void ClientContainer::moveClientToOther(Client *client, Direction dir)
         }
     }
 
-    //FIXME move client
-    abort();
+    target->addClient(client);
 }
 
 int ClientContainer::numMappedClients()
 {
-    //FIXME
-    abort();
+    int mapped_clients = 0;
+    for(Client *c = _clients.first(); c; c = c->next()) {
+        if (c->isMapped())
+            mapped_clients++;
+    }
+    return mapped_clients;
 }
 
 #endif

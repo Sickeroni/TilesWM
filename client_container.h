@@ -25,7 +25,6 @@ protected:
     ClientContainer *getOrCreateSilblingFor(Container *container, bool get_prev);
     void moveClientToOther(Client *client, Direction dir);
 
-
 private:
     List<Client> _clients;
 

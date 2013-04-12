@@ -29,6 +29,8 @@ protected:
     public:
         Private() : _first(0), _last(0) {}
 
+        Item *first() { return _first; }
+
         void append(Item *item);
         void prepend(Item *item);
         void remove(Item *item);
@@ -65,6 +67,10 @@ public:
             return static_cast<T*>(ListBase::Item::next());
         }
     };
+
+    T *first() {
+        return static_cast<T*>(d.first());
+    }
 
     bool isEmpty() {
         return d.isEmpty();
