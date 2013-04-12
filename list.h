@@ -4,63 +4,83 @@
 #include <stdlib.h>
 
 
-template <class T>
-class List
+class ListBase
 {
-public:
+protected:
+    class Private;
+
     class Item {
-        friend class List<T>;
+        friend struct ListBase::Private;
 
     public:
         Item() : _prev(0), _next(0) {}
 
-        T *prev() { return _prev; }
-        T *next() { return _next; }
+        Item *prev() { return _prev; }
+        Item *next() { return _next; }
+
         bool isUnlinked() { return !_prev && !_next; }
 
     private:
-        T* _prev, *_next;
+        Item *_prev, *_next;
     };
 
-    bool isEmpty()
+    class Private
     {
-        //ASSERT(isSane());
-        return !_first;
-    }
+    public:
+        Private() : _first(0), _last(0) {}
 
-    void prepend(T *item);
-    void append(T *item)
+        void append(Item *item);
+        void prepend(Item *item);
+        void remove(Item *item);
+        void replace(Item *old_item, Item *new_item);
+
+        bool isSane() {
+            return ((_first && _last) || (!_first && !_last));
+        }
+
+        bool isEmpty()
+        {
+            //ASSERT(isSane());
+            return !_first;
+        }
+
+    private:
+        Item *_first;
+        Item *_last;
+    } d;
+};
+
+
+template <class T>
+class List : public ListBase
+{
+public:
+    class Item : public ListBase::Item
     {
-        //ASSERT(isSane());
-        abort();
+    public:
+        T *prev() {
+            return static_cast<T*>(ListBase::Item::prev());
+        }
+        T *next() {
+            return static_cast<T*>(ListBase::Item::next());
+        }
+    };
+
+    bool isEmpty() {
+        return d.isEmpty();
     }
-
-    void replace(T *old_item, T *new_item);
-
-    void remove(T *item)
-    {
-        //ASSERT(isSane());
-        if (item->_prev)
-            item->_prev->_next = item->_next;
-        if (item->_next)
-            item->_next->_prev = item->_prev;
-
-        if (_first == item)
-            _first = item->_next;
-        if (_last == item)
-            _last = item->_prev;
-
-        item->_prev = 0;
-        item->_next = 0;
-   }
-
-private:
-    bool isSane() {
-        return ((_first && _last) || (!_first && !_last));
+    void prepend(T *item) {
+        d.prepend(item);
     }
-
-    T *_first;
-    T *_last;
+    void append(T *item) {
+        d.append(item);
+    }
+    void remove(T *item) {
+        d.remove(item);
+    }
+    void replace(T *old_item, T *new_item) {
+        d.replace(old_item, new_item);
+    }
 };
 
 
