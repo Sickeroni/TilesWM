@@ -1,8 +1,7 @@
 #ifndef __CONTAINER_H__
 #define __CONTAINER_H__
 
-
-#include "container_element.h"
+#include "list.h"
 
 
 class Client;
@@ -10,9 +9,14 @@ class ContainerContainer;
 class ClientContainer;
 
 
-class Container : public ContainerElement
+class Container : public List<Container>::Item
 {
 public:
+    enum Type {
+        CONTAINER,
+        CLIENT
+    };
+
     enum Orientation {
         HORIZONTAL = 0,
         VERTICAL = 1
@@ -50,6 +54,7 @@ public:
     virtual void addClient(Client *c) = 0;
     virtual void layout() = 0;
 //     virtual void layoutClients();
+    virtual bool isEmpty() = 0;
 
     int x() { return _x; }
     int y() { return _y; }
@@ -60,37 +65,30 @@ public:
     }
     Orientation orientation();
 
-    bool isContainerContainer();
-    bool isClientContainer();
+    Type type() { return _type; }
+    bool isContainerContainer() { return _type == CONTAINER; }
+    bool isClientContainer() { return _type == CLIENT; }
 
     ContainerContainer *parent() { return _parent; }
+    void setParent(ContainerContainer *p) {
+        _parent = p;
+    }
 
-    //FIXME UGLY
-    Container *next() { return ContainerElement::next()->type() == CONTAINER ?
-                                static_cast<Container*>(ContainerElement::next()) : 0; }
-    Container *prev() { return ContainerElement::prev()->type() == CONTAINER ?
-                                static_cast<Container*>(ContainerElement::prev()) : 0; }
-
-    bool hasChildren();
 
 protected:
     static Container *_root;
     static Orientation _root_orientation;
 
-    Container();
+    Container(Type type);
 
     void localToGlobal(int &x, int &y);
-    void setParent(ContainerContainer *p) {
-        _parent = p;
-    }
 
 
     ContainerContainer *_parent;
     int _x, _y, _w, _h;
 
 private:
-
-    Container *_prev, *_next;
+    const Type _type;
 };
 
 #endif // __CONTAINER_H__

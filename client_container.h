@@ -3,7 +3,6 @@
 
 #include "container.h"
 
-#include "container_container.h"
 
 class ClientContainer : public Container
 {
@@ -16,7 +15,7 @@ public:
     virtual void addClient(Client *c);
     virtual void layout();
 //     virtual void layoutClients;
-
+    virtual bool isEmpty() { return _clients.isEmpty(); }
 
     void removeClient(Client *c);
 
@@ -28,7 +27,8 @@ protected:
 
 
 private:
-//     std::list<Client*> _clients; //FIXME: only put mapped clients here ?
+    List<Client> _clients;
+
     int numMappedClients();
 };
 

@@ -5,8 +5,7 @@
 #include <stdlib.h>
 
 
-ContainerContainer::ContainerContainer() :
-    Container(),
+ContainerContainer::ContainerContainer() : Container(CONTAINER),
     _dirty(true)
 {
 }
@@ -19,31 +18,10 @@ ClientContainer *ContainerContainer::activeClientContainer()
 }
 
 
-#if 0
-
 void ContainerContainer::addClient(Client *c)
 {
     //FIXME
     abort();
-}
-
-void ContainerContainer::addContainer(Container *container)
-{
-    //TODO remove from previous container
-    if (container->parent())
-        abort();
-    if (!container->isUnlinked())
-        abort();
-
-
-    if (_first_child)
-        _first_child->append(container);
-    else
-        _first_child = container;
-
-    container->setParent(this);
-
-    layout();
 }
 
 void ContainerContainer::layout()
@@ -51,7 +29,6 @@ void ContainerContainer::layout()
     //FIXME
     abort();
 }
-#endif
 
 
 void ContainerContainer::prependChild(Container *container)
@@ -63,10 +40,17 @@ void ContainerContainer::prependChild(Container *container)
 
 void ContainerContainer::appendChild(Container *container)
 {
-    //FIXME
-    abort();
-}
+    if (container->parent())
+        abort();
+    if (!container->isUnlinked())
+        abort();
 
+    _children.append(container);
+
+    container->setParent(this);
+
+    layout();
+}
 
 void ContainerContainer::replaceChild(Container *old_container, Container *new_container)
 {
@@ -74,9 +58,12 @@ void ContainerContainer::replaceChild(Container *old_container, Container *new_c
     abort();
 }
 
-#if 0
+
 void ContainerContainer::setDirty(bool set)
 {
+    //FIXME
+    abort();
+#if 0
     _dirty = set;
 
     if (_parent) {
@@ -85,12 +72,15 @@ void ContainerContainer::setDirty(bool set)
         else
             _parent->updateDirtyStatus();
     }
-}
 #endif
+}
 
-#if 0
+
+
 void ContainerContainer::deleteEmptyChildren()
 {
+    //FIXME
+#if 0
     if (!_dirty)
         return;
 
@@ -112,9 +102,10 @@ void ContainerContainer::deleteEmptyChildren()
     if (_dirty && !_parent) { // TODO - replace this with empty ClientContainer ?
 
     }
+#else
+    abort();
+#endif
 }
 
-
-#endif
 
 #endif

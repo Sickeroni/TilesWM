@@ -24,10 +24,10 @@ void Container::shutdown()
     _root = 0;
 }
 
-Container::Container() : ContainerElement(CONTAINER),
+Container::Container(Type type) :
     _parent(0),
     _x(0),  _y(0), _w(0), _h(0),
-    _prev(0), _next(0)
+    _type(type)
 {
 }
 

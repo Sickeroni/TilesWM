@@ -3,11 +3,9 @@
 
 #include "container.h"
 
-#include <list>
 
 class ClientContainer;
 
-// typedef std::list<Container*> ContainerList;
 
 class ContainerContainer : public Container
 {
@@ -17,7 +15,8 @@ public:
     virtual ClientContainer *activeClientContainer();
     virtual void addClient(Client *c);
     virtual void layout();
-//     virtual void layoutClients;
+//     virtual void layoutClients();
+    virtual bool isEmpty() { return _children.isEmpty(); }
 
     void prependChild(Container *container);
     void appendChild(Container *container);
@@ -25,11 +24,14 @@ public:
 
     void deleteEmptyChildren();
 
-private:
     void setDirty(bool set);
+
+private:
     void updateDirtyStatus();
 
+    List<Container> _children;
     bool _dirty; // is this container unused or are there unused child containers ?;
 };
+
 
 #endif // __CONTAINER_CONTAINER_H__

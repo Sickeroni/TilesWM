@@ -1,8 +1,8 @@
 #ifndef __CLIENT_H__
 #define __CLIENT_H__
 
-#include "container_element.h"
 
+#include "list.h"
 
 #include <X11/Xlib.h>
 
@@ -10,7 +10,7 @@
 
 class ClientContainer;
 
-class Client : public ContainerElement
+class Client : public List<Client>::Item
 {
     Client(Window w, Display *dpy, bool is_mapped);
 

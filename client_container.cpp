@@ -3,28 +3,49 @@
 #if 1
 
 #include "client.h"
+#include "container_container.h"
 
 #include <iostream>
 #include <stdlib.h>
 
-ClientContainer::ClientContainer() :
-    Container()
+ClientContainer::ClientContainer() : Container(CLIENT)
 {
 }
 
-#if 0
+
 void ClientContainer::addClient(Client *c)
 {
     if (c->container())
         c->container()->removeClient(c);
 
-    _clients.push_back(c);
+    _clients.append(c);
 
     c->setContainer(this);
 
     if (c->isMapped())
         layout();
 }
+
+void ClientContainer::removeClient(Client *c)
+{
+    c->setContainer(0);
+
+    //TODO
+    // if (c == _active_client)
+
+    _clients.remove(c);
+
+    if (isEmpty() && _parent)
+        _parent->setDirty(true);
+}
+
+void ClientContainer::layout()
+{
+    //FIXME
+    abort();
+}
+
+#if 0
 
 void ClientContainer::removeClient(Client *c)
 {
