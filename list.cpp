@@ -5,19 +5,29 @@ void ListBase::Private::prepend(Item *item)
     //FIXME
     abort();
 
+    //ASSERT(isSane());
+
     _count++;
 }
 
 void ListBase::Private::append(Item *item)
 {
-    //FIXME
-    abort();
+    //ASSERT(isSane());
+    //ASSERT(item->isUnlinked());
+
+    if (_last) {
+        item->_prev = _last;
+        _last->_next = item;
+    } else
+        _first = _last = item;
 
     _count++;
 }
 
 void ListBase::Private::remove(Item *item)
 {
+    //ASSERT(isSane());
+
     if (item->_prev)
         item->_prev->_next = item->_next;
     if (item->_next)
