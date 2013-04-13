@@ -15,7 +15,8 @@ Container::Orientation Container::_root_orientation = HORIZONTAL;
 void Container::startup(int screen_width, int screen_height)
 {
     _root = new ClientContainer();
-    //FIXME set size
+
+    _root->setRect(0, 0, screen_width, screen_height);
 }
 
 void Container::shutdown()
@@ -48,6 +49,14 @@ Container::Orientation Container::orientation()
         return _parent->isHorizontal() ? VERTICAL : HORIZONTAL;
 }
 
+void Container::setRect(int x, int y, int width, int height)
+{
+    _x = x;
+    _y = y;
+    _w = width;
+    _h = height;
 
+    layout();
+}
 
 #endif

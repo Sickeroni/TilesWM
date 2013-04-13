@@ -60,6 +60,8 @@ public:
     int y() { return _y; }
     int width() { return _w; }
     int height() { return _h; }
+    void setRect(int x, int y, int width, int height);
+
     bool isHorizontal() {
         return orientation() == HORIZONTAL;
     }

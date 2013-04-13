@@ -4,12 +4,16 @@ void ListBase::Private::prepend(Item *item)
 {
     //FIXME
     abort();
+
+    _count++;
 }
 
 void ListBase::Private::append(Item *item)
 {
     //FIXME
     abort();
+
+    _count++;
 }
 
 void ListBase::Private::remove(Item *item)
@@ -26,6 +30,8 @@ void ListBase::Private::remove(Item *item)
 
     item->_prev = 0;
     item->_next = 0;
+
+    _count--;
 }
 
 void ListBase::Private::replace(Item *old_item, Item *new_item)

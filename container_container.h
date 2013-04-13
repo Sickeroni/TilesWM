@@ -28,6 +28,7 @@ public:
 
 private:
     void updateDirtyStatus();
+    void deleteChild(Container *child);
 
     List<Container> _children;
     bool _dirty; // is this container unused or are there unused child containers ?;

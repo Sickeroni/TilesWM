@@ -27,9 +27,11 @@ protected:
     class Private
     {
     public:
-        Private() : _first(0), _last(0) {}
+        Private() : _count(0), _first(0), _last(0) {}
 
         Item *first() { return _first; }
+
+        int count() { return _count; }
 
         void append(Item *item);
         void prepend(Item *item);
@@ -47,6 +49,7 @@ protected:
         }
 
     private:
+        int _count;
         Item *_first;
         Item *_last;
     } d;
@@ -67,6 +70,10 @@ public:
             return static_cast<T*>(ListBase::Item::next());
         }
     };
+
+    int count() {
+        return d.count();
+    }
 
     T *first() {
         return static_cast<T*>(d.first());
