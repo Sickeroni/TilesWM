@@ -50,6 +50,8 @@ public:
         return _root;
     }
 
+    virtual ~Container() {}
+
     virtual ClientContainer *activeClientContainer() = 0;
     virtual void addClient(Client *c) = 0;
     virtual void layout() = 0;

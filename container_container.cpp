@@ -13,6 +13,14 @@ ContainerContainer::ContainerContainer() : Container(CONTAINER),
 {
 }
 
+ContainerContainer::~ContainerContainer()
+{
+    for (Container *c = _children.first(); c; ) {
+        Container *delete_this= c;
+        c = c->next();
+        deleteChild(delete_this);
+    }
+}
 
 ClientContainer *ContainerContainer::activeClientContainer()
 {

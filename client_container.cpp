@@ -12,6 +12,15 @@ ClientContainer::ClientContainer() : Container(CLIENT)
 {
 }
 
+ClientContainer::~ClientContainer()
+{
+    for (Client *c = _clients.first(); c; ) {
+        Client *remove_this = c;
+        c = c->next();
+        removeClient(remove_this);
+    }
+}
+
 void ClientContainer::addClient(Client *c)
 {
     if (c->container())

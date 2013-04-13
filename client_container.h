@@ -8,6 +8,7 @@ class ClientContainer : public Container
 {
 public:
     ClientContainer();
+    virtual ~ClientContainer();
 
     virtual ClientContainer *activeClientContainer() {
         return this;

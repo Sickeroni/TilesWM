@@ -11,6 +11,7 @@ class ContainerContainer : public Container
 {
 public:
     ContainerContainer();
+    virtual ~ContainerContainer();
 
     virtual ClientContainer *activeClientContainer();
     virtual void addClient(Client *c);
