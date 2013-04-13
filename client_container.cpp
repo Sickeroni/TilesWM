@@ -8,6 +8,10 @@
 #include <iostream>
 #include <stdlib.h>
 
+int ClientContainer::_titlebar_height = 50;
+int ClientContainer::_frame_width = 10;
+
+
 ClientContainer::ClientContainer() : Container(CLIENT)
 {
 }
@@ -51,9 +55,14 @@ void ClientContainer::layout()
 {
     std::cout<<"===================\nContainer::layout()";
 
-    if (!width() || !height())
-        return;
+//     if (!width() || !height())
+//         return;
 
+    int client_w = width() - (2 * _frame_width);
+    int client_h = height() - ((2 * _frame_width) + _titlebar_height);
+
+    if (!client_w || !client_h)
+        return;
 
     int mapped_clients = numMappedClients();
 
@@ -65,11 +74,11 @@ void ClientContainer::layout()
     int cell_width = 0, cell_height = 0;
 
     if (isHorizontal()) {
-        cell_width = width() / mapped_clients;
-        cell_height = height();
+        cell_width = client_w / mapped_clients;
+        cell_height = client_h;
     } else {
-        cell_width = width();
-        cell_height = height() / mapped_clients;
+        cell_width = client_w;
+        cell_height = client_h / mapped_clients;
     }
 
     std::cout<<"cell_width: "<<cell_width<<"\n";
@@ -83,11 +92,11 @@ void ClientContainer::layout()
 
         int x = 0, y = 0;
         if (isHorizontal()) {
-            x = i * cell_width;
-            y = 0;
+            x = i * cell_width + _frame_width;
+            y = _frame_width + _titlebar_height;
         } else {
-            x = 0;
-            y = i * cell_width;
+            x = _frame_width;
+            y = i * cell_width + _frame_width + _titlebar_height;
         }
 
         localToGlobal(x, y);

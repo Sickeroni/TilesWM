@@ -27,6 +27,9 @@ protected:
     void moveClientToOther(Client *client, Direction dir);
 
 private:
+    static int _frame_width;
+    static int _titlebar_height;
+
     List<Client> _clients;
 
     int numMappedClients();
