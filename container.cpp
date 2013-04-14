@@ -16,7 +16,8 @@ void Container::startup(int screen_width, int screen_height)
 {
     _root = new ClientContainer();
 
-    _root->setRect(0, 0, screen_width, screen_height);
+    int height = screen_height - 50; //HACK - for status bar
+    _root->setRect(0, 0, screen_width, height);
 }
 
 void Container::shutdown()
