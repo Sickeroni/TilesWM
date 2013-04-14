@@ -314,6 +314,25 @@ int main()
     XFree(children);
 
 
+    GC gc = XCreateGC(dpy, root, 0, 0);
+    if(!gc)
+        abort();
+
+    XSetForeground(dpy, gc, 0xFFFFFF);
+
+    char hello_world[] = "Hello World !";
+
+    //     XTextItem text;
+//     text.chars = hello_world;
+//     text.nchars = strlen(hello_world);
+//     text.delta = 0;
+//     text.font = None;
+
+//     XDrawImageString(dpy, root, gc, 100, 100, hello_world, strlen(hello_world));
+
+//     XDrawRectangle(dpy, root, gc, 100, 100, 300, 600);
+
+
     eventLoop(dpy);
 
     Client::shutdown();
