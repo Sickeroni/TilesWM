@@ -1,8 +1,8 @@
 #include "x11_widget.h"
 
-#include "x11_container_container.h"
+// #include "x11_container_container.h"
 #include "x11_client_widget.h"
-#include "x11_client.h"
+// #include "x11_client.h"
 #include "x11_application.h"
 
 #include <iostream>
@@ -50,22 +50,12 @@ X11Widget *X11Widget::find(Window wid)
 void X11Widget::createNotify(const XCreateWindowEvent &ev)
 {
     Window wid = ev.window;
-    std::cout << "X11Widget::CreateNotify(): " << wid << "parent: " << ev.parent << '\n';
+    std::cout << "X11Widget::CreateNotify(): " << wid << " parent: " << ev.parent << '\n';
     if (find(wid)) {
         // it's a server widget
         std::cout << "it's a server widget.\n";
     } else {
-        XWindowAttributes attr;
-        if (XGetWindowAttributes(X11Application::display(), wid, &attr)) {
-            if (attr.override_redirect) // dont't manage popups etc. //FIXME - else warning on client destroy
-                return;
-
-            X11ClientWidget *cw = new X11ClientWidget(wid);
-
-            X11Application::activeRootContainer()->addClient(cw->client());
-        } else {
-            std::cerr << "XGetWindowAttributes() for client window " << wid << "failed\n";
-        }
+        X11ClientWidget::newClientWidget(wid);
     }
 }
 

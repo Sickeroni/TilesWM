@@ -1,5 +1,6 @@
 #include "list.h"
 
+#include <assert.h>
 
 ListBase::~ListBase()
 {
@@ -12,22 +13,28 @@ ListBase::~ListBase()
 
 void ListBase::Private::prepend(Item *item)
 {
-    //FIXME
-    abort();
+    assert(isSane());
+    assert(item->isUnlinked());
 
-    //ASSERT(isSane());
+    if (_first) {
+        item->_next = _first;
+        _first->_prev = item;
+        _first = item;
+    } else
+        _first = _last = item;
 
     _count++;
 }
 
 void ListBase::Private::append(Item *item)
 {
-    //ASSERT(isSane());
-    //ASSERT(item->isUnlinked());
+    assert(isSane());
+    assert(item->isUnlinked());
 
     if (_last) {
         item->_prev = _last;
         _last->_next = item;
+        _last = item;
     } else
         _first = _last = item;
 
@@ -36,7 +43,7 @@ void ListBase::Private::append(Item *item)
 
 void ListBase::Private::remove(Item *item)
 {
-    //ASSERT(isSane());
+    assert(isSane());
 
     if (item->_prev)
         item->_prev->_next = item->_next;
@@ -54,8 +61,8 @@ void ListBase::Private::remove(Item *item)
     _count--;
 }
 
-void ListBase::Private::replace(Item *old_item, Item *new_item)
-{
-    //FIXME
-    abort();
-}
+// void ListBase::Private::replace(Item *old_item, Item *new_item)
+// {
+//     //FIXME
+//     abort();
+// }
