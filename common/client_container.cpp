@@ -107,18 +107,45 @@ void ClientContainer::layout()
    }
 }
 
-ClientContainer *ClientContainer::splitContainer(Container *container, bool prepend_new_silbling)
+ClientContainer *ContainerContainer::splitChild(Container *child, bool prepend_new_silbling)
 {
     // create new parent
-    ContainerContainer *new_parent = new ContainerContainer();
+    ContainerContainer *new_parent = createContainerContainer();
+
+    replaceChild(child, new_parent); // unlinks container
+
+    child->reparent(new_parent);
+    new_parent->appendChild(new_silbling);
+
+    ClientContainer *new_silbling = new_parent->createClientContainer();
+
+    // add this + new child container to new parent
+    if (prepend_new_silbling)
+        new_parent->preendChild(new_silbling);
+    else
+        new_parent->appendChild(new_silbling);
+
+    return new_silbling;
+}
+
+
+ClientContainer *ClientContainer::splitContainer(Container *container, bool prepend_new_silbling)
+{
+    if (!container->parent())
+        abort();
+
+    return container->parent()->splitChild(container);
+#if 0
+    // create new parent
+    ContainerContainer *new_parent = new ContainerContainer(container->parent());
 
     if (container->parent()) {
         // replace this with new parent
-        container->parent()->replaceChild(container, new_parent); // this de-parents/unlinks container
+        container->parent()->replaceChild(container, new_parent); // unlinks container
     } else
         _root = new_parent;
 
-    ClientContainer *new_silbling = new ClientContainer();
+    ClientContainer *new_silbling = new ClientContainer(new_parent);
 
     // add this + new child container to new parent
     if (prepend_new_silbling) {
@@ -130,6 +157,7 @@ ClientContainer *ClientContainer::splitContainer(Container *container, bool prep
     }
 
     return new_silbling;
+#endif
 }
 
 
@@ -138,13 +166,14 @@ ClientContainer *ClientContainer::createSilblingFor(Container *container, bool p
     ClientContainer *new_silbling = 0;
 
     if (container->parent()) {
-        new_silbling = new ClientContainer();
+        new_silbling = container->parent()->createClientContainer();
         if (prepend_new_silbling)
             container->parent()->prependChild(new_silbling);
         else
             container->parent()->appendChild(new_silbling);
     } else
-        new_silbling = splitContainer(container, prepend_new_silbling);
+        abort();
+//         new_silbling = splitContainer(container, prepend_new_silbling);
 
     return new_silbling;
 }
@@ -185,6 +214,8 @@ void ClientContainer::moveClientToOther(Client *client, Direction dir)
                 target = splitContainer(this, backward);
         }
     } else {
+        abort();
+#if 0
         if (orientationOfDirection(dir) == _root_orientation)
             target = splitContainer(this, backward);
         else {
@@ -208,6 +239,7 @@ void ClientContainer::moveClientToOther(Client *client, Direction dir)
 
             _root = new_root;
         }
+#endif
     }
 
     target->addClient(client);

@@ -2,7 +2,7 @@
 #define __CONTAINER_H__
 
 #include "list.h"
-
+#include "rect.h"
 
 class Client;
 class ContainerContainer;
@@ -63,6 +63,7 @@ public:
     int width() { return _w; }
     int height() { return _h; }
     void setRect(int x, int y, int width, int height);
+    void setRect(const Rect &rect);
 
     bool isHorizontal() {
         return orientation() == HORIZONTAL;
