@@ -6,6 +6,9 @@
 
 class ListBase
 {
+public:
+    ~ListBase();
+
 protected:
     class Private;
 

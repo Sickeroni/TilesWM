@@ -1,5 +1,15 @@
 #include "list.h"
 
+
+ListBase::~ListBase()
+{
+    for (Item *item = d.first(); item; ) {
+        Item *remove_this = item;
+        item = item->next();
+        d.remove(remove_this);
+    }
+}
+
 void ListBase::Private::prepend(Item *item)
 {
     //FIXME
