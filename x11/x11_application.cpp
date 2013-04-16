@@ -2,7 +2,6 @@
 
 #include "x11_container_container.h"
 #include "x11_widget.h"
-#include "x11_client.h"
 
 #include <iostream>
 #include <string.h>
@@ -19,6 +18,7 @@ X11Application::X11Application() :
 {
     if (_self)
         abort();
+    _self = this;
 }
 
 bool X11Application::init()
@@ -34,23 +34,7 @@ bool X11Application::init()
     if(!(_display = XOpenDisplay(0)))
         return false;
 
-
-    /* you'll usually be referencing the root window a lot.  this is a somewhat
-     * naive approach that will only work on the default screen.  most people
-     * only have one screen, but not everyone.  if you run multi-head without
-     * xinerama then you quite possibly have multiple screens. (i'm not sure
-     * about vendor-specific implementations, like nvidia's)
-     *
-     * many, probably most window managers only handle one screen, so in
-     * reality this isn't really *that* naive.
-     *
-     * if you wanted to get the root window of a specific screen you'd use
-     * RootWindow(), but the user can also control which screen is our default:
-     * if they set $DISPLAY to ":0.foo", then our default screen number is
-     * whatever they specify "foo" as.
-     */
     _root = DefaultRootWindow(_display);
-
 
     if (!XGetWindowAttributes(_display, _root, &root_attr)) {
         std::cout << "XGetWindowAttributes() failed !\n";
@@ -72,6 +56,8 @@ bool X11Application::init()
 
     _activeRootContainer = new X11ContainerContainer();
     _activeRootContainer->setRect(root_container_rect);
+
+    X11Widget::initClientWidgets();
 
     return true;
 }

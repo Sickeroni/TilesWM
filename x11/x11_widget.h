@@ -13,7 +13,7 @@ class X11Widget
 public:
     enum Type { SERVER, CLIENT };
 
-    static X11Widget *find(Window wid);
+    static void initClientWidgets();
     static void createNotify(const XCreateWindowEvent &ev);
     static void destroyNotify(const XDestroyWindowEvent &ev);
     static void mapNotify(const XMapEvent &ev);
@@ -27,12 +27,14 @@ public:
     bool isMapped() { return _is_mapped; }
 
 protected:
+    static X11Widget *find(Window wid);
+
     X11Widget(Window wid, Type type);
 
     virtual void onMapStateChanged() {}
 
 private:
-    static std::map<Window, X11Widget*> _from_wid;
+    static std::map<Window, X11Widget*> _wid_index;
 
     Window _wid;
     Type _type;
@@ -42,18 +44,5 @@ private:
 
 #endif
 
-
-#if 0
-class X11Widget
-{
-public:
-    static void startup();
-    static void shutdown();
-    static void create(Window window, Display *dpy);
-    static void windowDestroyed(Window window);
-    static void mapNotify(Window window);
-    static void unmapNotify(Window window);
-};
-#endif
 
 #endif // __X11_WIDGET_H__

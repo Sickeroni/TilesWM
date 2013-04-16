@@ -14,6 +14,7 @@ public:
     virtual ~X11ClientWidget();
 
     static void newClientWidget(Window wid);
+
 //     static void destroy(Window window);
     X11Client *client() { return _client; }
 
