@@ -8,7 +8,7 @@
 #include <stdlib.h>
 
 
-ContainerContainer::ContainerContainer() : Container(CONTAINER),
+ContainerContainer::ContainerContainer(ContainerContainer *parent) : Container(CONTAINER, parent),
     _dirty(true)
 {
 }
@@ -22,15 +22,16 @@ ContainerContainer::~ContainerContainer()
     }
 }
 
+Container *ContainerContainer::activeChild()
+{
+    //FIXME HACK
+    return _children.first();
+}
+
 ClientContainer *ContainerContainer::activeClientContainer()
 {
-    Container *active = _children.first(); //FIXME
-
-    if (active) {
-        if (active->isContainerContainer())
-            return static_cast<ContainerContainer*>(active)->activeClientContainer();
-        else
-            return static_cast<ClientContainer*>(active);
+    if (Container *active = activeChild()) {
+        return active->activeClientContainer();
     } else
         return 0;
 }
@@ -38,9 +39,13 @@ ClientContainer *ContainerContainer::activeClientContainer()
 
 void ContainerContainer::addClient(Client *c)
 {
-    if (!activeClientContainer())
-        abort();
-    activeClientContainer()->addClient(c);
+    if(activeChild())
+        activeChild()->addClient(c);
+    else {
+        ClientContainer *client_container = createClientContainer();
+        appendChild(client_container);
+        client_container->addClient(c);
+    }
 }
 
 void ContainerContainer::layout()
@@ -97,20 +102,20 @@ void ContainerContainer::prependChild(Container *container)
 
     layout();
 }
-
+#endif
 
 void ContainerContainer::appendChild(Container *container)
 {
-    if (container->parent())
-        abort();
     if (!container->isUnlinked())
         abort();
 
     _children.append(container);
-    container->setParent(this);
 
     layout();
 }
+
+
+#if 0
 
 void ContainerContainer::replaceChild(Container *old_container, Container *new_container)
 {

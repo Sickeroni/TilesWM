@@ -7,7 +7,6 @@
 class ClientContainer : public Container
 {
 public:
-    ClientContainer();
     virtual ~ClientContainer();
 
     virtual ClientContainer *activeClientContainer() {
@@ -21,6 +20,8 @@ public:
     void removeClient(Client *c);
 
 protected:
+    ClientContainer(ContainerContainer *parent);
+
 //     ClientContainer *splitContainer(Container *container, bool prepend_new_silbling);
 //     ClientContainer *createSilblingFor(Container *container, bool prepend_new_silbling);
 //     ClientContainer *getOrCreateSilblingFor(Container *container, bool get_prev);

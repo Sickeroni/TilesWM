@@ -52,6 +52,10 @@ public:
 //     virtual void layoutClients();
     virtual bool isEmpty() = 0;
 
+    virtual void reparent(ContainerContainer *p) {
+        _parent = p;
+    }
+
     int x() { return _rect.x; }
     int y() { return _rect.y; }
     int width() { return _rect.w; }
@@ -69,16 +73,13 @@ public:
     bool isClientContainer() { return _type == CLIENT; }
 
     ContainerContainer *parent() { return _parent; }
-    void setParent(ContainerContainer *p) {
-        _parent = p;
-    }
 
 
 protected:
     static Container *_root;
     static Orientation _root_orientation;
 
-    Container(Type type);
+    Container(Type type, ContainerContainer *parent);
 
     void localToGlobal(int &x, int &y);
 

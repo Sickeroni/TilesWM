@@ -12,7 +12,7 @@ int ClientContainer::_titlebar_height = 50;
 int ClientContainer::_frame_width = 10;
 
 
-ClientContainer::ClientContainer() : Container(CLIENT)
+ClientContainer::ClientContainer(ContainerContainer *parent) : Container(CLIENT, parent)
 {
 }
 

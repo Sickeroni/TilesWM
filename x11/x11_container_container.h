@@ -16,9 +16,12 @@ class X11ContainerContainer : public ContainerContainer
 #endif
 
 public:
-    X11ContainerContainer();
+    X11ContainerContainer(X11ContainerContainer *parent);
 
     void setRect(const Rect &rect);
+
+protected:
+    virtual ClientContainer *createClientContainer();
 };
 
 #endif // __X11_CONTAINER_CONTAINER_H__

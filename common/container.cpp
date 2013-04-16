@@ -12,8 +12,8 @@ Container::Orientation Container::_root_orientation = HORIZONTAL;
 
 
 
-Container::Container(Type type) :
-    _parent(0),
+Container::Container(Type type, ContainerContainer *parent) :
+    _parent(parent),
     _type(type)
 {
 }

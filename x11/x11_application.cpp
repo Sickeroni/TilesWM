@@ -54,7 +54,7 @@ bool X11Application::init()
     Rect root_container_rect;
     root_container_rect.set(0, 0, root_attr.width, root_attr.height);
 
-    _activeRootContainer = new X11ContainerContainer();
+    _activeRootContainer = new X11ContainerContainer(0);
     _activeRootContainer->setRect(root_container_rect);
 
     X11Widget::initClientWidgets();
