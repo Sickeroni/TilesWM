@@ -3,6 +3,8 @@
 
 #include "client.h"
 
+#include "rect.h"
+
 #include <X11/Xlib.h>
 
 
@@ -17,6 +19,10 @@ class X11Client : public Client
 public:
     X11Client(X11Widget *widget);
     virtual ~X11Client();
+
+    virtual bool isMapped();
+    virtual void setRect(const Rect &rect);
+
 //     static void init();
 //     static void shutdown();
 //     static void newClient(Window wid);

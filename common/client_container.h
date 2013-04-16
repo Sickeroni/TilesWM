@@ -21,9 +21,9 @@ public:
     void removeClient(Client *c);
 
 protected:
-    ClientContainer *splitContainer(Container *container, bool prepend_new_silbling);
-    ClientContainer *createSilblingFor(Container *container, bool prepend_new_silbling);
-    ClientContainer *getOrCreateSilblingFor(Container *container, bool get_prev);
+//     ClientContainer *splitContainer(Container *container, bool prepend_new_silbling);
+//     ClientContainer *createSilblingFor(Container *container, bool prepend_new_silbling);
+//     ClientContainer *getOrCreateSilblingFor(Container *container, bool get_prev);
     void moveClientToOther(Client *client, Direction dir);
 
 private:

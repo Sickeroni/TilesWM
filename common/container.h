@@ -29,9 +29,9 @@ public:
         SOUTH
     };
 
-    enum MaxDimension {
-        MAX_DIMENSION = 8
-    };
+//     enum MaxDimension {
+//         MAX_DIMENSION = 8
+//     };
 
     static Orientation orientationOfDirection(Direction dir) {
         if (dir == WEST || dir == EAST)
@@ -44,12 +44,6 @@ public:
         return (dir == EAST || dir == SOUTH);
     }
 
-    static void startup(int screen_width, int screen_height);
-    static void shutdown();
-    static Container *root() {
-        return _root;
-    }
-
     virtual ~Container() {}
 
     virtual ClientContainer *activeClientContainer() = 0;
@@ -58,12 +52,12 @@ public:
 //     virtual void layoutClients();
     virtual bool isEmpty() = 0;
 
-    int x() { return _x; }
-    int y() { return _y; }
-    int width() { return _w; }
-    int height() { return _h; }
-    void setRect(int x, int y, int width, int height);
-    void setRect(const Rect &rect);
+    int x() { return _rect.x; }
+    int y() { return _rect.y; }
+    int width() { return _rect.w; }
+    int height() { return _rect.h; }
+//     virtual void setRect(int x, int y, int w, int h);
+    virtual void setRect(const Rect &rect);
 
     bool isHorizontal() {
         return orientation() == HORIZONTAL;
@@ -90,7 +84,7 @@ protected:
 
 
     ContainerContainer *_parent;
-    int _x, _y, _w, _h;
+    Rect _rect;
 
 private:
     const Type _type;

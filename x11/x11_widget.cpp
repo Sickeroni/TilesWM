@@ -18,7 +18,7 @@ X11Widget::X11Widget(Window wid, Type type) :
     if (!XGetWindowAttributes(X11Application::display(), _wid, &attr))
         abort();
 
-    _rect.set(attr.x, attr.y, attr.width, attr.height);
+//     _rect.set(attr.x, attr.y, attr.width, attr.height);
     _is_mapped = (attr.map_state == IsViewable);
 
     //FIXME add ro _from_wid
@@ -32,6 +32,10 @@ X11Widget::~X11Widget()
     //FIXME remove from _from_wid
 }
 
+void X11Widget::setRect(const Rect &rect)
+{
+    XMoveResizeWindow(X11Application::display(), _wid, rect.x, rect.y, rect.w, rect.h);
+}
 
 X11Widget *X11Widget::find(Window wid)
 {
@@ -42,8 +46,6 @@ X11Widget *X11Widget::find(Window wid)
 // 	
 //       }
 }
-
-
 
 void X11Widget::createNotify(const XCreateWindowEvent &ev)
 {

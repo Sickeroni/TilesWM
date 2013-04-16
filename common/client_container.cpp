@@ -22,26 +22,27 @@ ClientContainer::~ClientContainer()
         Client *remove_this = c;
         c = c->next();
         removeClient(remove_this);
+        remove_this->setContainer(0);
     }
 }
+
 
 void ClientContainer::addClient(Client *c)
 {
     if (c->container())
         c->container()->removeClient(c);
 
-    _clients.append(c);
-
     c->setContainer(this);
+
+    _clients.append(c);
 
     if (c->isMapped())
         layout();
 }
 
+
 void ClientContainer::removeClient(Client *c)
 {
-    c->setContainer(0);
-
     //TODO
     // if (c == _active_client)
 
@@ -50,6 +51,7 @@ void ClientContainer::removeClient(Client *c)
     if (isEmpty() && _parent)
         _parent->setDirty(true);
 }
+
 
 void ClientContainer::layout()
 {
@@ -85,49 +87,31 @@ void ClientContainer::layout()
     std::cout<<"cell_height: "<<cell_height<<"\n";
     std::cout<<"=================================\n";
 
+    Rect rect;
+    rect.setSize(cell_width, cell_height);
+
     int i = 0;
     for(Client *c = _clients.first(); c; c = c->next()) {
         if (!c->isMapped())
             continue;
 
-        int x = 0, y = 0;
         if (isHorizontal()) {
-            x = i * cell_width + _frame_width;
-            y = _frame_width + _titlebar_height;
+            rect.x = i * cell_width + _frame_width;
+            rect.y = _frame_width + _titlebar_height;
         } else {
-            x = _frame_width;
-            y = i * cell_width + _frame_width + _titlebar_height;
+            rect.x = _frame_width;
+            rect.y = i * cell_width + _frame_width + _titlebar_height;
         }
 
-        localToGlobal(x, y);
+//         localToGlobal(x, y);
 
-        c->setRect(x, y, cell_width, cell_height);
+        c->setRect(rect);
 
         i++;
    }
 }
 
-ClientContainer *ContainerContainer::splitChild(Container *child, bool prepend_new_silbling)
-{
-    // create new parent
-    ContainerContainer *new_parent = createContainerContainer();
-
-    replaceChild(child, new_parent); // unlinks container
-
-    child->reparent(new_parent);
-    new_parent->appendChild(new_silbling);
-
-    ClientContainer *new_silbling = new_parent->createClientContainer();
-
-    // add this + new child container to new parent
-    if (prepend_new_silbling)
-        new_parent->preendChild(new_silbling);
-    else
-        new_parent->appendChild(new_silbling);
-
-    return new_silbling;
-}
-
+#if 0
 
 ClientContainer *ClientContainer::splitContainer(Container *container, bool prepend_new_silbling)
 {
@@ -159,8 +143,8 @@ ClientContainer *ClientContainer::splitContainer(Container *container, bool prep
     return new_silbling;
 #endif
 }
-
-
+#endif
+#if 0
 ClientContainer *ClientContainer::createSilblingFor(Container *container, bool prepend_new_silbling)
 {
     ClientContainer *new_silbling = 0;
@@ -187,7 +171,9 @@ ClientContainer *ClientContainer::getOrCreateSilblingFor(Container *container, b
     else
         return createSilblingFor(container, get_prev);
 }
+#endif
 
+#if 0
 void ClientContainer::moveClientToOther(Client *client, Direction dir)
 {
     if (client->container() != this)
@@ -244,6 +230,7 @@ void ClientContainer::moveClientToOther(Client *client, Direction dir)
 
     target->addClient(client);
 }
+#endif
 
 int ClientContainer::numMappedClients()
 {

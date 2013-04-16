@@ -22,7 +22,7 @@ public:
     virtual ~X11Widget();
 
     Type type() { return _type; }
-    const Rect &rect() { return _rect; }
+//     const Rect &rect() { return _rect; }
     void setRect(const Rect &rect);
     bool isMapped() { return _is_mapped; }
 
@@ -36,7 +36,7 @@ private:
 
     Window _wid;
     Type _type;
-    Rect _rect;
+//     Rect _rect;
     bool _is_mapped;
 };
 

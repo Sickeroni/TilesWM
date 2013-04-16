@@ -26,15 +26,20 @@ ClientContainer *ContainerContainer::activeClientContainer()
 {
     Container *active = _children.first(); //FIXME
 
-    if (active && active->isContainerContainer())
-        return static_cast<ContainerContainer*>(active)->activeClientContainer();
-    else
+    if (active) {
+        if (active->isContainerContainer())
+            return static_cast<ContainerContainer*>(active)->activeClientContainer();
+        else
+            return static_cast<ClientContainer*>(active);
+    } else
         return 0;
 }
 
 
 void ContainerContainer::addClient(Client *c)
 {
+    if (!activeClientContainer())
+        abort();
     activeClientContainer()->addClient(c);
 }
 
@@ -42,7 +47,6 @@ void ContainerContainer::layout()
 {
     if (!width() || !height())
         return;
-
 
     int cell_width = 0, cell_height = 0;
 
@@ -58,27 +62,29 @@ void ContainerContainer::layout()
     std::cout<<"cell_height: "<<cell_height<<"\n";
     std::cout<<"=================================\n";
 
+    Rect new_rect;
+    new_rect.setSize(cell_width, cell_height);
+
     int i = 0;
     for(Container *c = _children.first(); c; c = c->next()) {
-
-        int x = 0, y = 0;
         if (isHorizontal()) {
-            x = i * cell_width;
-            y = 0;
+            new_rect.x = i * cell_width;
+            new_rect.y = 0;
         } else {
-            x = 0;
-            y = i * cell_width;
+            new_rect.x = 0;
+            new_rect.y = i * cell_width;
         }
 
-        localToGlobal(x, y);
+//         localToGlobal(x, y);
 
-        c->setRect(x, y, cell_width, cell_height);
+        c->setRect(new_rect);
+        c->layout();
 
         i++;
    }
 }
 
-
+#if 0
 void ContainerContainer::prependChild(Container *container)
 {
     if (container->parent())
@@ -122,6 +128,8 @@ void ContainerContainer::replaceChild(Container *old_container, Container *new_c
 
     layout();
 }
+
+#endif
 
 
 void ContainerContainer::setDirty(bool set)
@@ -195,5 +203,29 @@ void ContainerContainer::deleteChild(Container *child)
 
     delete child;
 }
+
+#if 0
+ClientContainer *ContainerContainer::splitChild(Container *child, bool prepend_new_silbling)
+{
+    // create new parent
+    ContainerContainer *new_parent = createContainerContainer();
+
+    replaceChild(child, new_parent); // unlinks container
+
+    child->reparent(new_parent);
+    new_parent->appendChild(new_silbling);
+
+    ClientContainer *new_silbling = new_parent->createClientContainer();
+
+    // add this + new child container to new parent
+    if (prepend_new_silbling)
+        new_parent->preendChild(new_silbling);
+    else
+        new_parent->appendChild(new_silbling);
+
+    return new_silbling;
+}
+#endif
+
 
 #endif

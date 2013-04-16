@@ -58,3 +58,13 @@ X11Client::X11Client(X11Widget *widget) :
 X11Client::~X11Client()
 {
 }
+
+bool X11Client::isMapped()
+{
+    return _widget->isMapped();
+}
+
+void X11Client::setRect(const Rect &rect)
+{
+    _widget->setRect(rect);
+}

@@ -19,9 +19,9 @@ public:
 //     virtual void layoutClients();
     virtual bool isEmpty() { return _children.isEmpty(); }
 
-    void prependChild(Container *container);
-    void appendChild(Container *container);
-    void replaceChild(Container *old_container, Container *new_container);
+//     void prependChild(Container *container);
+//     void appendChild(Container *container);
+//     void replaceChild(Container *old_container, Container *new_container);
 
     void deleteEmptyChildren();
 

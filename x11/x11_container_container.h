@@ -17,6 +17,8 @@ class X11ContainerContainer : public ContainerContainer
 
 public:
     X11ContainerContainer();
+
+    void setRect(const Rect &rect);
 };
 
 #endif // __X11_CONTAINER_CONTAINER_H__
