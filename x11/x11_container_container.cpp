@@ -1,14 +1,27 @@
 #include "x11_container_container.h"
 
 #include "x11_client_container.h"
+#include "x11_server_widget.h"
 
-X11ContainerContainer::X11ContainerContainer(X11ContainerContainer *parent) : ContainerContainer(parent)
+#include <stdlib.h>
+
+X11ContainerContainer::X11ContainerContainer(X11ContainerContainer *parent) :
+    ContainerContainer(parent),
+    _widget(X11ServerWidget::create(parent ? parent->widget() : 0))
 {
+}
+
+X11ContainerContainer::~X11ContainerContainer()
+{
+    clear();
+    delete _widget;
+    _widget = 0;
 }
 
 void X11ContainerContainer::setRect(const Rect &rect)
 {
-
+    ContainerContainer::setRect(rect);
+    _widget->setRect(rect);
 }
 
 ClientContainer *X11ContainerContainer::createClientContainer()

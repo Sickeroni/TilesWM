@@ -15,6 +15,12 @@ ContainerContainer::ContainerContainer(ContainerContainer *parent) : Container(C
 
 ContainerContainer::~ContainerContainer()
 {
+    clear();
+}
+
+
+void ContainerContainer::clear()
+{
     for (Container *c = _children.first(); c; ) {
         Container *delete_this= c;
         c = c->next();
@@ -50,7 +56,7 @@ void ContainerContainer::addClient(Client *c)
 
 void ContainerContainer::layout()
 {
-    if (!width() || !height())
+    if (!width() || !height() || !_children.count())
         return;
 
     int cell_width = 0, cell_height = 0;

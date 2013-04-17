@@ -1,8 +1,11 @@
 #include "x11_client.h"
 
-#include "x11_container_container.h"
+#include "x11_client_container.h"
 #include "x11_client_widget.h"
 #include "x11_application.h"
+// #include "container_container.h"
+
+#include <iostream>
 
 #if 0
 
@@ -67,4 +70,18 @@ bool X11Client::isMapped()
 void X11Client::setRect(const Rect &rect)
 {
     _widget->setRect(rect);
+}
+
+void X11Client::setContainer(ClientContainer *container)
+{
+    std::cout << "void X11Client::setContainer(ClientContainer *container)\n";
+
+    Client::setContainer(container);
+
+    X11ServerWidget *new_parent_widget = 0;
+    if (container)
+        new_parent_widget = static_cast<X11ClientContainer*>(container)->widget();
+
+    std::cout << "new_parent_widget: " << new_parent_widget << '\n';
+    _widget->reparent(new_parent_widget);
 }

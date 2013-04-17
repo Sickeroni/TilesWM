@@ -6,6 +6,8 @@
 #include <map>
 #include <X11/Xlib.h>
 
+class X11ServerWidget;
+
 #if 1
 
 class X11Widget
@@ -25,6 +27,8 @@ public:
 //     const Rect &rect() { return _rect; }
     void setRect(const Rect &rect);
     bool isMapped() { return _is_mapped; }
+    Window wid() { return _wid; }
+    void reparent(X11ServerWidget *new_parent);
 
 protected:
     static X11Widget *find(Window wid);

@@ -8,6 +8,7 @@
 #include <X11/Xlib.h>
 
 
+class ClientContainer;
 class X11Widget;
 
 
@@ -22,6 +23,7 @@ public:
 
     virtual bool isMapped();
     virtual void setRect(const Rect &rect);
+    virtual void setContainer(ClientContainer *container);
 
 //     static void init();
 //     static void shutdown();

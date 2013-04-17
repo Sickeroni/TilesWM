@@ -92,7 +92,7 @@ int main()
     X11Application app;
 
     if (!app.init())
-        return false;
+        return 1;
 
 //     Container::startup(root_attr.width, root_attr.height);
 //     X11Client::startup();

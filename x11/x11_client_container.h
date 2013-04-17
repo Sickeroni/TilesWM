@@ -12,6 +12,11 @@ class X11ClientContainer : public ClientContainer
 {
 public:
     X11ClientContainer(X11ContainerContainer *parent);
+    virtual ~X11ClientContainer();
+
+    virtual void setRect(const Rect &rect);
+
+    X11ServerWidget *widget() { return _widget; }
 
 private:
     X11ServerWidget *_widget;

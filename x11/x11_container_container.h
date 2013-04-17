@@ -3,6 +3,10 @@
 
 #include "container_container.h"
 
+
+class X11ServerWidget;
+
+
 class X11ContainerContainer : public ContainerContainer
 {
 #if 0
@@ -12,16 +16,21 @@ class X11ContainerContainer : public ContainerContainer
         X11ServerWidget *w = new X11ServerWidget(_widget);
     };
 
-    X11ServerWidget *_widget;
 #endif
 
 public:
     X11ContainerContainer(X11ContainerContainer *parent);
+    virtual ~X11ContainerContainer();
 
-    void setRect(const Rect &rect);
+    virtual void setRect(const Rect &rect);
+
+    X11ServerWidget *widget() { return _widget; }
 
 protected:
     virtual ClientContainer *createClientContainer();
+
+private:
+    X11ServerWidget *_widget;
 };
 
 #endif // __X11_CONTAINER_CONTAINER_H__

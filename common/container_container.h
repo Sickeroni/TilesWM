@@ -35,7 +35,7 @@ protected:
     void appendChild(Container *container);
 //     void prependChild(Container *container);
 //     void replaceChild(Container *old_container, Container *new_container);
-
+    void clear();
 
 private:
     void updateDirtyStatus();

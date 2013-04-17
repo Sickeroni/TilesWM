@@ -55,13 +55,13 @@ public:
     virtual void reparent(ContainerContainer *p) {
         _parent = p;
     }
+    virtual void setRect(const Rect &rect);
 
     int x() { return _rect.x; }
     int y() { return _rect.y; }
     int width() { return _rect.w; }
     int height() { return _rect.h; }
 //     virtual void setRect(int x, int y, int w, int h);
-    virtual void setRect(const Rect &rect);
 
     bool isHorizontal() {
         return orientation() == HORIZONTAL;

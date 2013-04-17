@@ -18,6 +18,11 @@ ClientContainer::ClientContainer(ContainerContainer *parent) : Container(CLIENT,
 
 ClientContainer::~ClientContainer()
 {
+    clear();
+}
+
+void ClientContainer::clear()
+{
     for (Client *c = _clients.first(); c; ) {
         Client *remove_this = c;
         c = c->next();
@@ -25,7 +30,6 @@ ClientContainer::~ClientContainer()
         remove_this->setContainer(0);
     }
 }
-
 
 void ClientContainer::addClient(Client *c)
 {
@@ -35,6 +39,50 @@ void ClientContainer::addClient(Client *c)
     c->setContainer(this);
 
     _clients.append(c);
+
+    //FIXME UGLY - layout client in advance
+    {
+        int client_w = width() - (2 * _frame_width);
+        int client_h = height() - ((2 * _frame_width) + _titlebar_height);
+
+        if (!client_w || !client_h)
+            return;
+
+        int mapped_clients = numMappedClients() + 1;
+
+//         std::cout<<"mapped_clients: "<<mapped_clients<<"\n";
+
+//         if (!mapped_clients)
+//             return;
+
+        int cell_width = 0, cell_height = 0;
+
+        if (isHorizontal()) {
+            cell_width = client_w / mapped_clients;
+            cell_height = client_h;
+        } else {
+            cell_width = client_w;
+            cell_height = client_h / mapped_clients;
+        }
+
+        std::cout<<"cell_width: "<<cell_width<<"\n";
+        std::cout<<"cell_height: "<<cell_height<<"\n";
+        std::cout<<"=================================\n";
+
+        Rect rect;
+        rect.setSize(cell_width, cell_height);
+
+        if (isHorizontal()) {
+            rect.x = (mapped_clients-1) * cell_width + _frame_width;
+            rect.y = _frame_width + _titlebar_height;
+        } else {
+            rect.x = _frame_width;
+            rect.y = ((mapped_clients-1) * cell_height) + _frame_width + _titlebar_height;
+        }
+
+        c->setRect(rect);
+
+    }
 
     if (c->isMapped())
         layout();
@@ -55,7 +103,8 @@ void ClientContainer::removeClient(Client *c)
 
 void ClientContainer::layout()
 {
-    std::cout<<"===================\nContainer::layout()";
+    std::cout<<"===================\nClientContainer::layout()";
+    std::cout<<"is horizontal: "<<isHorizontal()<<'\n';
 
 //     if (!width() || !height())
 //         return;
@@ -100,10 +149,11 @@ void ClientContainer::layout()
             rect.y = _frame_width + _titlebar_height;
         } else {
             rect.x = _frame_width;
-            rect.y = i * cell_width + _frame_width + _titlebar_height;
+            rect.y = (i * cell_height) + _frame_width + _titlebar_height;
         }
 
 //         localToGlobal(x, y);
+        std::cout<<"x: "<<rect.x<<" y: "<<rect.y<<'\n';
 
         c->setRect(rect);
 

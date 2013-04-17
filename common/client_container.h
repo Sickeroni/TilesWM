@@ -26,6 +26,7 @@ protected:
 //     ClientContainer *createSilblingFor(Container *container, bool prepend_new_silbling);
 //     ClientContainer *getOrCreateSilblingFor(Container *container, bool get_prev);
     void moveClientToOther(Client *client, Direction dir);
+    void clear();
 
 private:
     static int _frame_width;

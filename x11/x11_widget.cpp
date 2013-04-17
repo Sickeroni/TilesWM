@@ -2,6 +2,7 @@
 
 // #include "x11_container_container.h"
 #include "x11_client_widget.h"
+#include "x11_server_widget.h"
 // #include "x11_client.h"
 #include "x11_application.h"
 
@@ -36,6 +37,17 @@ X11Widget::~X11Widget()
     _wid_index.erase(_wid);
 }
 
+void X11Widget::reparent(X11ServerWidget *new_parent)
+{
+    Window new_parent_wid = new_parent ? new_parent->wid() : X11Application::root();
+    XReparentWindow(X11Application::display(), _wid, new_parent_wid, 0, 0);
+}
+
+void X11Widget::setRect(const Rect &rect)
+{
+    XMoveResizeWindow(X11Application::display(), _wid, rect.x, rect.y, rect.w, rect.h);
+}
+
 void X11Widget::initClientWidgets()
 {
     Window unused = 0;
@@ -54,11 +66,6 @@ void X11Widget::initClientWidgets()
     XFree(children);
 }
 
-void X11Widget::setRect(const Rect &rect)
-{
-    XMoveResizeWindow(X11Application::display(), _wid, rect.x, rect.y, rect.w, rect.h);
-}
-
 X11Widget *X11Widget::find(Window wid)
 {
     std::map<Window, X11Widget*>::iterator it = _wid_index.find(wid);
@@ -70,6 +77,7 @@ X11Widget *X11Widget::find(Window wid)
 
 void X11Widget::createNotify(const XCreateWindowEvent &ev)
 {
+#if 1
     Window wid = ev.window;
     std::cout << "X11Widget::CreateNotify(): " << wid << " parent: " << ev.parent << '\n';
     if (find(wid)) {
@@ -78,6 +86,7 @@ void X11Widget::createNotify(const XCreateWindowEvent &ev)
     } else {
         X11ClientWidget::newClientWidget(wid);
     }
+#endif
 }
 
 void X11Widget::destroyNotify(const XDestroyWindowEvent &ev)
@@ -117,5 +126,5 @@ void X11Widget::unmapNotify(const XUnmapEvent &ev)
         widget->_is_mapped = false;
         widget->onMapStateChanged();
     } else
-        std::cout << "no widget for wid " << ev.window;
+        std::cout << "no widget for wid " << ev.window << '\n';
 }

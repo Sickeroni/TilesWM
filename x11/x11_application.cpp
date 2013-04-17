@@ -27,12 +27,11 @@ bool X11Application::init()
     XSetWindowAttributes new_root_attr;
 
 
-//     layout_key = XStringToKeysym("l");
-
-
     /* return failure status if we can't connect */
-    if(!(_display = XOpenDisplay(0)))
+    if(!(_display = XOpenDisplay(0))) {
+        std::cerr << "ERROR: can't open display.\n";
         return false;
+    }
 
     _root = DefaultRootWindow(_display);
 
@@ -78,6 +77,12 @@ void X11Application::eventLoop()
      */
 //     XButtonEvent start;
 
+    KeySym layout_key = XStringToKeysym("l");
+
+    XGrabKey(display(), XKeysymToKeycode(display(), layout_key), Mod1Mask, root(),
+            True, GrabModeAsync, GrabModeAsync);
+
+
     XEvent ev;
 
     for(;;)
@@ -117,12 +122,13 @@ void X11Application::eventLoop()
          * None, that means that the window the event happened in was the same
          * window that was grabbed on -- in this case, the root window.
          */
-#if 0
+#if 1
         else if (ev.type == KeyPress) {
             if (XLookupKeysym(&ev.xkey, 0) == layout_key) {
 //             if (ev.xkey.keycode == layout_key) {
-                printf("layout key pressed !\n");
+                std::cout << "layout key pressed !\n";
 //                 Container::root()->layout();
+                activeRootContainer()->layout();
             }
         }
 #endif
