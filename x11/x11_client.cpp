@@ -62,6 +62,11 @@ X11Client::~X11Client()
 {
 }
 
+bool X11Client::validate()
+{
+    return _widget->validate();
+}
+
 bool X11Client::isMapped()
 {
     return _widget->isMapped();
@@ -69,7 +74,8 @@ bool X11Client::isMapped()
 
 void X11Client::setRect(const Rect &rect)
 {
-    _widget->setRect(rect);
+    if (validate())
+        _widget->setRect(rect);
 }
 
 void X11Client::setContainer(ClientContainer *container)
@@ -78,10 +84,12 @@ void X11Client::setContainer(ClientContainer *container)
 
     Client::setContainer(container);
 
-    X11ServerWidget *new_parent_widget = 0;
-    if (container)
-        new_parent_widget = static_cast<X11ClientContainer*>(container)->widget();
+    if (validate()) {
+        X11ServerWidget *new_parent_widget = 0;
+        if (container)
+            new_parent_widget = static_cast<X11ClientContainer*>(container)->widget();
 
-    std::cout << "new_parent_widget: " << new_parent_widget << '\n';
-    _widget->reparent(new_parent_widget);
+        std::cout << "new_parent_widget: " << new_parent_widget << '\n';
+        _widget->reparent(new_parent_widget);
+    }
 }

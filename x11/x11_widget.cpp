@@ -1,6 +1,6 @@
 #include "x11_widget.h"
 
-// #include "x11_container_container.h"
+#include "x11_container_container.h"
 #include "x11_client_widget.h"
 #include "x11_server_widget.h"
 // #include "x11_client.h"
@@ -35,6 +35,21 @@ X11Widget::X11Widget(Window wid, Type type) :
 X11Widget::~X11Widget()
 {
     _wid_index.erase(_wid);
+}
+
+bool X11Widget::validate()
+{
+    XEvent ev;
+
+    if (_is_destroyed)
+        return false;
+    else if (XCheckTypedWindowEvent(X11Application::display(), _wid, DestroyNotify, &ev)) {
+        if (ev.xdestroywindow.window == _wid)
+            _is_destroyed = true;
+        XPutBackEvent(X11Application::display(), &ev);
+        return _is_destroyed;
+    } else
+        return true;
 }
 
 void X11Widget::reparent(X11ServerWidget *new_parent)
@@ -83,6 +98,16 @@ void X11Widget::createNotify(const XCreateWindowEvent &ev)
     if (find(wid)) {
         // it's a server widget
         std::cout << "it's a server widget.\n";
+
+        //FIXME debug-message
+        X11Widget *w = X11Application::activeRootContainer()->widget();
+        std::cout<<"widget: "<<find(wid)<<'\t';
+        std::cout<<"active root container widget: "<< w <<'\n';
+        if (X11Application::activeRootContainer()->activeChild()) {
+            std::cout<<"has child.\n";
+//             X11Application::activeRootContainer()->activeChild()
+        }
+
     } else {
         X11ClientWidget::newClientWidget(wid);
     }
@@ -95,6 +120,7 @@ void X11Widget::destroyNotify(const XDestroyWindowEvent &ev)
     std::cout << "X11Widget::DestroyNotify(): " << wid << '\n';
     if (X11Widget *widget = find(wid)) {
         if (widget->type() == X11Widget::CLIENT) {
+            widget->_is_destroyed = true;
             delete widget;
             widget = 0;
         }

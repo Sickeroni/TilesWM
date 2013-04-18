@@ -29,6 +29,7 @@ public:
     bool isMapped() { return _is_mapped; }
     Window wid() { return _wid; }
     void reparent(X11ServerWidget *new_parent);
+    bool validate();
 
 protected:
     static X11Widget *find(Window wid);
@@ -44,6 +45,7 @@ private:
     Type _type;
 //     Rect _rect;
     bool _is_mapped;
+    bool _is_destroyed;
 };
 
 #endif

@@ -33,6 +33,7 @@ public:
 //     static void unmapNotify(Window window);
 
 private:
+    bool validate();
 
     X11Widget *_widget;
 };
