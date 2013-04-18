@@ -30,6 +30,8 @@ void X11ClientWidget::newClientWidget(Window wid)
         if (attr.override_redirect) // dont't manage popups etc. //FIXME - else warning on client destroy
             return;
 
+        XAddToSaveSet(X11Application::display(), wid);
+
         X11ClientWidget *widget = new X11ClientWidget(wid);
 
         X11Application::activeRootContainer()->addClient(widget->client());
