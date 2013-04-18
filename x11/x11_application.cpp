@@ -3,9 +3,13 @@
 #include "x11_container_container.h"
 #include "x11_widget.h"
 
+#include <sys/select.h>
+
 #include <iostream>
 #include <string.h>
 #include <stdlib.h>
+#include <stdio.h>
+#include <signal.h>
 
 
 X11Application *X11Application::_self = 0;
@@ -14,15 +18,24 @@ X11Application *X11Application::_self = 0;
 X11Application::X11Application() :
     _display(0),
     _root(0),
-    _activeRootContainer(0)
+    _activeRootContainer(0),
+    _quit_requested(false)
 {
     if (_self)
         abort();
     _self = this;
 }
 
+void X11Application::quit(int signum)
+{
+    printf("   Quitting ...\n");
+    self()->_quit_requested = true;
+}
+
 bool X11Application::init()
 {
+    signal(SIGINT, &quit);
+
     XWindowAttributes root_attr;
     XSetWindowAttributes new_root_attr;
 
@@ -32,6 +45,8 @@ bool X11Application::init()
         std::cerr << "ERROR: can't open display.\n";
         return false;
     }
+
+    XGrabServer(_display);
 
     _root = DefaultRootWindow(_display);
 
@@ -58,6 +73,13 @@ bool X11Application::init()
 
     X11Widget::initClientWidgets();
 
+//     XFlush(display());
+    XSync(display(), false);
+
+    XUngrabServer(_display);
+
+    std::cout<<"initialisation finished.\n";
+
     return true;
 }
 
@@ -70,32 +92,87 @@ void X11Application::shutdown()
 #if 1
 void X11Application::eventLoop()
 {
+    std::cout<<"------------------------------\n";
+    std::cout<<"event loop started.\n";
+    std::cout<<"------------------------------\n";
+
+    
 //     XWindowAttributes attr;
 
     /* we use this to save the pointer's state at the beginning of the
      * move/resize.
      */
 //     XButtonEvent start;
-
     KeySym layout_key = XStringToKeysym("l");
 
     XGrabKey(display(), XKeysymToKeycode(display(), layout_key), Mod1Mask, root(),
             True, GrabModeAsync, GrabModeAsync);
 
+    int x11_fd = ConnectionNumber(display());
 
+    timeval timeout_spec;
+    fd_set x11_fd_set;
     XEvent ev;
 
-    for(;;)
+    for( ; ; )
     {
+//         XFlush(display());
+
+        if (_quit_requested)
+            return;
+
+//         std::cout << "X11Application::eventLoop(): waiting for event or timeout ...\n";
+
+#if 1
+        while (!XPending(display())) {
+            // Wait for X Event or a timeout
+            FD_ZERO(&x11_fd_set);
+            FD_SET(x11_fd, &x11_fd_set);
+
+            timeout_spec.tv_usec = 0;
+            timeout_spec.tv_sec = 2;
+
+            int select_ret = select(x11_fd+1, &x11_fd_set, 0, 0, &timeout_spec);
+
+            if (_quit_requested)
+                return;
+#if 0
+            if (select_ret) {
+                std::cout << "X11Application::eventLoop(): Event Received!\n";
+//                 continue;
+            } else if (select_ret == 0) {
+                std::cout << "X11Application::eventLoop(): Timeout!\n";
+//                 continue;
+            } else {
+                std::cerr << "X11Application::eventLoop(): ERROR: select() returned " << select_ret << '\n';
+//                 continue;
+            }
+#endif
+        }
+#endif
+
+        //peek for destroy events first
+//         while(XCheckTypedEvent(display(), DestroyNotify, &ev) {
+//             X11Widget::destroyNotify(ev.xdestroywindow);
+//         }
+
+
+
         //FIXME UGLY
 //         if (Container::root()->isContainerContainer())
 //             static_cast<ContainerContainer*>(Container::root())->deleteEmptyChildren();
+
+
 
         /* this is the most basic way of looping through X events; you can be
          * more flexible by using XPending(), or ConnectionNumber() along with
          * select() (or poll() or whatever floats your boat).
          */
         XNextEvent(_display, &ev);
+
+//         FIXME do this more efficiently
+//         XGrabServer(display());
+
 
 #if 1
         if(ev.type == CreateNotify)
@@ -212,6 +289,10 @@ void X11Application::eventLoop()
 //             fflush(stdout);
         }
 #endif
+
+        XSync(display(), false);
+
+//         XUngrabServer(display());
     }
 }
 #endif

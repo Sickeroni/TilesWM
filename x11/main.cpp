@@ -38,7 +38,8 @@ int main()
 #include <X11/Xlib.h>
 #include <X11/keysym.h>
 
-#include <stdio.h>
+#include <iostream>
+// #include <stdio.h>
 #include <string.h>
 
 #define MAX(a, b) ((a) > (b) ? (a) : (b))
@@ -88,7 +89,6 @@ int main()
 
 int main()
 {
-
     X11Application app;
 
     if (!app.init())
@@ -161,6 +161,7 @@ int main()
 #endif
     app.eventLoop();
 
+    std::cout << "returnd from main loop - shutting down ...\n";
 //     X11Client::shutdown();
 //     Container::shutdown();
 

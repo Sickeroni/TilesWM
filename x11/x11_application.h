@@ -24,11 +24,14 @@ public:
     void eventLoop();
 
 private:
+    static void quit(int signum);
+
     static X11Application *_self;
 
     Display *_display;
     Window _root;
     X11ContainerContainer *_activeRootContainer;
+    volatile bool _quit_requested;
 };
 
 #endif
