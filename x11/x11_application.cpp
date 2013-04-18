@@ -3,6 +3,8 @@
 #include "x11_container_container.h"
 #include "x11_widget.h"
 
+#include "client_container.h"
+
 #include <sys/select.h>
 
 #include <iostream>
@@ -36,10 +38,6 @@ bool X11Application::init()
 {
     signal(SIGINT, &quit);
 
-    XWindowAttributes root_attr;
-    XSetWindowAttributes new_root_attr;
-
-
     /* return failure status if we can't connect */
     if(!(_display = XOpenDisplay(0))) {
         std::cerr << "ERROR: can't open display.\n";
@@ -50,12 +48,14 @@ bool X11Application::init()
 
     _root = DefaultRootWindow(_display);
 
+    XWindowAttributes root_attr;
     if (!XGetWindowAttributes(_display, _root, &root_attr)) {
         std::cout << "XGetWindowAttributes() failed !\n";
         XCloseDisplay(_display);
         return false;
     }
 
+    XSetWindowAttributes new_root_attr;
     memset(&new_root_attr, 0, sizeof(XSetWindowAttributes));
 
     new_root_attr.event_mask = root_attr.your_event_mask | SubstructureNotifyMask;
@@ -104,9 +104,13 @@ void X11Application::eventLoop()
      */
 //     XButtonEvent start;
     KeySym layout_key = XStringToKeysym("l");
+    KeySym redraw_key = XStringToKeysym("r");
 
     XGrabKey(display(), XKeysymToKeycode(display(), layout_key), Mod1Mask, root(),
-            True, GrabModeAsync, GrabModeAsync);
+            true, GrabModeAsync, GrabModeAsync);
+    XGrabKey(display(), XKeysymToKeycode(display(), redraw_key), Mod1Mask, root(),
+            true, GrabModeAsync, GrabModeAsync);
+
 
     int x11_fd = ConnectionNumber(display());
 
@@ -207,6 +211,12 @@ void X11Application::eventLoop()
                 std::cout << "layout key pressed !\n";
 //                 Container::root()->layout();
                 activeRootContainer()->layout();
+            } else if (XLookupKeysym(&ev.xkey, 0) == redraw_key) {
+//             if (ev.xkey.keycode == layout_key) {
+                std::cout << "redrawing.\n";
+//                 Container::root()->layout();
+                if (activeRootContainer()->activeClientContainer())
+                    activeRootContainer()->activeClientContainer()->redraw();
             }
         }
 #endif

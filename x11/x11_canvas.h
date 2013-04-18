@@ -13,6 +13,7 @@ public:
     X11Canvas(Window wid);
     ~X11Canvas();
 
+    void erase(const Rect &rect);
     virtual void drawText(const char *text, const Rect &rect);
 
 private:

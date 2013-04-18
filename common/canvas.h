@@ -7,6 +7,7 @@
 class Canvas
 {
 public:
+    virtual void erase(const Rect &rect) = 0;
     virtual void drawText(const char *text, const Rect &rect) = 0;
 };
 

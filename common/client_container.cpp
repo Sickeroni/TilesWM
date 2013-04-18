@@ -7,6 +7,7 @@
 #include "canvas.h"
 
 #include <iostream>
+#include <string>
 #include <stdlib.h>
 
 int ClientContainer::_titlebar_height = 50;
@@ -93,10 +94,14 @@ void ClientContainer::addClient(Client *c)
 
 void ClientContainer::removeClient(Client *c)
 {
+    std::cout<<"ClientContainer::removeClient()\n";
+
     //TODO
     // if (c == _active_client)
 
     _clients.remove(c);
+
+    layout();
 
     if (isEmpty() && _parent)
         _parent->setDirty(true);
@@ -104,9 +109,47 @@ void ClientContainer::removeClient(Client *c)
 
 void ClientContainer::draw(Canvas *canvas)
 {
+    std::cout<<"ClientContainer::draw()\n";
+
     Rect r;
-    r.set(10, 50, 50, 20);
-    canvas->drawText("Hallo Welt !", r);
+//     r.set(10, 50, 50, 20);
+//     canvas->drawText("Hallo Welt !", r);
+
+    int tabbar_border = 5;
+
+//     int tab_border = 2;
+
+    int num_tabs = _clients.count(); //numMappedClients();
+
+    int tabbar_x = _frame_width + tabbar_border;
+    int tabbar_y = _frame_width + tabbar_border;
+    int tabbar_w = (width() - (2 * tabbar_border)) - (2 * _frame_width);
+    int tabbar_h = _titlebar_height - (2 * tabbar_border);
+
+    Rect tabbar_rect;
+    tabbar_rect.set(tabbar_x, tabbar_y, tabbar_w, tabbar_h);
+
+    canvas->erase(r);
+
+    if (!num_tabs)
+        return;
+
+//     int baseline = (_frame_width + _titlebar_height) - tab_border:
+
+    int tab_width = tabbar_w / num_tabs;
+    int tab_height = tabbar_h;
+
+    int i = 0;
+    for(Client *c = _clients.first(); c; c = c->next()) {
+//         std::string text;
+        Rect r;
+        r.set(tabbar_x + (i * tab_width), tabbar_y, tab_width, tab_height);
+
+        canvas->drawText("Tab", r);
+
+        i++;
+    }
+
 }
 
 
@@ -121,8 +164,8 @@ void ClientContainer::layoutTabbed()
     int client_w = width() - (2 * _frame_width);
     int client_h = height() - ((2 * _frame_width) + _titlebar_height);
 
-    tab_width = client_w / mapped_clients;
-    tab_height = (_titlebar_height - 2) - _frame_width;
+    int tab_width = client_w / mapped_clients;
+    int tab_height = (_titlebar_height - 2) - _frame_width;
 #endif
 
     layoutStacked();

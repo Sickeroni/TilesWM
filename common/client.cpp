@@ -43,6 +43,7 @@ Client::Client() :
 
 Client::~Client()
 {
+    std::cout<<"Client::~Client()\n";
     if (_container)
         _container->removeClient(this);
 }

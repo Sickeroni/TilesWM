@@ -130,7 +130,7 @@ void X11Widget::destroyNotify(const XDestroyWindowEvent &ev)
             abort();
         }
     } else
-        std::cout << "no widget for wid " << wid;
+        std::cout << "no widget for wid " << wid <<'\n';
 }
 
 void X11Widget::mapNotify(const XMapEvent &ev)

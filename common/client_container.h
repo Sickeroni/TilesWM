@@ -12,6 +12,8 @@ class ClientContainer : public Container
 public:
     virtual ~ClientContainer();
 
+    virtual void redraw() = 0;
+
     virtual ClientContainer *activeClientContainer() {
         return this;
     }
@@ -24,8 +26,6 @@ public:
 
 protected:
     ClientContainer(ContainerContainer *parent);
-
-    virtual void redraw() = 0;
 
     void draw(Canvas *canvas);
 //     ClientContainer *splitContainer(Container *container, bool prepend_new_silbling);
