@@ -1,6 +1,7 @@
 #ifndef __LIST_H__
 #define __LIST_H__
 
+#include <assert.h>
 #include <stdlib.h>
 
 
@@ -17,6 +18,7 @@ protected:
 
     public:
         Item() : _prev(0), _next(0) {}
+        ~Item() { assert(isUnlinked()); }
 
         Item *prev() { return _prev; }
         Item *next() { return _next; }
@@ -47,7 +49,7 @@ protected:
 
         bool isEmpty()
         {
-            //ASSERT(isSane());
+            assert(isSane());
             return !_first;
         }
 
