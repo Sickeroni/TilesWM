@@ -7,6 +7,7 @@
 #include "rect.h"
 
 #include <map>
+#include <string>
 
 // class Widget;
 class ClientContainer;
@@ -32,11 +33,15 @@ public:
         return _container;
     }
 
+    const std::string &name() { return _name; }
+
     void onMapStateChanged();
 
 
 protected:
     Client();
+
+    std::string _name;
 
 private:
 

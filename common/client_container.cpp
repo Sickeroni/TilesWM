@@ -145,7 +145,7 @@ void ClientContainer::draw(Canvas *canvas)
         Rect r;
         r.set(tabbar_x + (i * tab_width), tabbar_y, tab_width, tab_height);
 
-        canvas->drawText("Tab", r);
+        canvas->drawText(c->name().c_str(), r);
 
         i++;
     }

@@ -37,7 +37,7 @@ void Client::unmapNotify(Window window)
 
 
 Client::Client() :
-    _container(0)
+    _name("<no name>"), _container(0)
 {
 }
 
