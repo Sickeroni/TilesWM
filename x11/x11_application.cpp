@@ -132,7 +132,8 @@ void X11Application::eventLoop()
             timeout_spec.tv_usec = 0;
             timeout_spec.tv_sec = 2;
 
-            int select_ret = select(x11_fd+1, &x11_fd_set, 0, 0, &timeout_spec);
+//             int select_ret =
+                select(x11_fd+1, &x11_fd_set, 0, 0, &timeout_spec);
 
             if (_quit_requested)
                 return;

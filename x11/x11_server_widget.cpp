@@ -1,18 +1,22 @@
 #include "x11_server_widget.h"
 
 #include "x11_application.h"
+#include "x11_canvas.h"
 
 #include <iostream>
 #include <stdlib.h>
 #include <string.h>
 
 
-X11ServerWidget::X11ServerWidget(Window wid) : X11Widget(wid, SERVER)
+X11ServerWidget::X11ServerWidget(Window wid) : X11Widget(wid, SERVER),
+    _canvas(new X11Canvas(wid))
 {
 }
 
 X11ServerWidget::~X11ServerWidget()
 {
+    delete _canvas;
+    _canvas = 0;
     XDestroyWindow(X11Application::display(), wid());
 }
 

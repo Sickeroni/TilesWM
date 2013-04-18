@@ -15,6 +15,7 @@ public:
     virtual ~X11ClientContainer();
 
     virtual void setRect(const Rect &rect);
+    virtual void redraw();
 
     X11ServerWidget *widget() { return _widget; }
 

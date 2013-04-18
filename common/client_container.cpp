@@ -4,6 +4,7 @@
 
 #include "client.h"
 #include "container_container.h"
+#include "canvas.h"
 
 #include <iostream>
 #include <stdlib.h>
@@ -12,7 +13,8 @@ int ClientContainer::_titlebar_height = 50;
 int ClientContainer::_frame_width = 10;
 
 
-ClientContainer::ClientContainer(ContainerContainer *parent) : Container(CLIENT, parent)
+ClientContainer::ClientContainer(ContainerContainer *parent) : Container(CLIENT, parent),
+    _mode(TABBED)
 {
 }
 
@@ -100,8 +102,36 @@ void ClientContainer::removeClient(Client *c)
         _parent->setDirty(true);
 }
 
+void ClientContainer::draw(Canvas *canvas)
+{
+    Rect r;
+    r.set(10, 50, 50, 20);
+    canvas->drawText("Hallo Welt !", r);
+}
+
 
 void ClientContainer::layout()
+{
+    layoutTabbed();
+}
+
+void ClientContainer::layoutTabbed()
+{
+#if 0
+    int client_w = width() - (2 * _frame_width);
+    int client_h = height() - ((2 * _frame_width) + _titlebar_height);
+
+    tab_width = client_w / mapped_clients;
+    tab_height = (_titlebar_height - 2) - _frame_width;
+#endif
+
+    layoutStacked();
+
+    redraw();
+}
+
+
+void ClientContainer::layoutStacked()
 {
     std::cout<<"===================\nClientContainer::layout()";
     std::cout<<"is horizontal: "<<isHorizontal()<<'\n';

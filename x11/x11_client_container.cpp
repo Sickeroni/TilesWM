@@ -2,6 +2,7 @@
 
 #include "x11_container_container.h"
 #include "x11_server_widget.h"
+#include "x11_canvas.h"
 
 
 X11ClientContainer::X11ClientContainer(X11ContainerContainer *parent) :
@@ -21,4 +22,9 @@ void X11ClientContainer::setRect(const Rect &rect)
 {
     ClientContainer::setRect(rect);
     _widget->setRect(rect);
+}
+
+void X11ClientContainer::redraw()
+{
+    draw(_widget->canvas());
 }

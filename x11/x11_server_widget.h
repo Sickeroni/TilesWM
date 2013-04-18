@@ -6,6 +6,8 @@
 #include <X11/Xlib.h>
 
 
+class X11Canvas;
+
 // class X11EventHandler
 // {
 //     virtual void HandleEvent(const XEvent &event) = 0;
@@ -19,8 +21,12 @@ public:
 
     virtual ~X11ServerWidget();
 
+    X11Canvas *canvas() { return _canvas; }
+
 private:
     X11ServerWidget(Window wid);
+
+    X11Canvas *_canvas;
 //     GC _gc;
 //     X11EventHandler *_eventHandler;
 };
