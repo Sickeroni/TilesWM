@@ -34,15 +34,24 @@ void X11Application::quit(int signum)
     self()->_quit_requested = true;
 }
 
+// int xErrorHandler(Display *display, XErrorEvent *ev)
+// {
+//     abort();
+// }
+
 bool X11Application::init()
 {
     signal(SIGINT, &quit);
+
+//     XSetErrorHandler(&xErrorHandler);
 
     /* return failure status if we can't connect */
     if(!(_display = XOpenDisplay(0))) {
         std::cerr << "ERROR: can't open display.\n";
         return false;
     }
+
+    XSynchronize(_display, true);
 
     XGrabServer(_display);
 

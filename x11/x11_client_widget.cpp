@@ -93,30 +93,57 @@ void X11ClientWidget::onMapStateChanged()
     _client->onMapStateChanged();
 }
 
+
+
+int newClientWidgetErrorHandler(Display *display, XErrorEvent *ev)
+{
+    if (ev->error_code != BadWindow) {
+        std::cerr<<"X11ClientWidget::newClientWidget() caused X error - code: " <<
+            static_cast<unsigned int>(ev->error_code)<<'\n';
+        abort();
+    } else
+        return 0;
+}
+
+
 void X11ClientWidget::newClientWidget(Window wid)
 {
+    XGrabServer(X11Application::display());
+
+    XSync(X11Application::display(), false);
+
+    int (*error_handler)(Display *, XErrorEvent *) =
+                            XSetErrorHandler(&newClientWidgetErrorHandler);
+
     XWindowAttributes attr;
     if (XGetWindowAttributes(X11Application::display(), wid, &attr)) {
-        if (attr.override_redirect) // dont't manage popups etc. //FIXME - else warning on client destroy
-            return;
+        if (!attr.override_redirect) { // dont't manage popups etc. //FIXME - else warning on client destroy
 
 
-//         XSetWindowAttributes new__attr;
-//         memset(&new_attr, 0, sizeof(XSetWindowAttributes));
-// 
-//         new_attr.event_mask = attr.your_event_mask | StructureNotifyMask;
-// 
-//     //FIXME reset all attributes ?
-// 
-//     XChangeWindowAttributes(_display, _root, CWEventMask, &new_root_attr);
+
+    //         XSetWindowAttributes new__attr;
+    //         memset(&new_attr, 0, sizeof(XSetWindowAttributes));
+    //
+    //         new_attr.event_mask = attr.your_event_mask | StructureNotifyMask;
+    //
+    //     //FIXME reset all attributes ?
+    //
+    //     XChangeWindowAttributes(_display, _root, CWEventMask, &new_root_attr);
 
 
-        XAddToSaveSet(X11Application::display(), wid);
+            XAddToSaveSet(X11Application::display(), wid);
 
-        X11ClientWidget *widget = new X11ClientWidget(wid);
+            X11ClientWidget *widget = new X11ClientWidget(wid);
 
-        X11Application::activeRootContainer()->addClient(widget->client());
+            X11Application::activeRootContainer()->addClient(widget->client());
+        }
     } else {
         std::cerr << "XGetWindowAttributes() for client window " << wid << "failed\n";
     }
+
+    XSync(X11Application::display(), false);
+
+    XSetErrorHandler(error_handler);
+
+    XUngrabServer(X11Application::display());
 }
