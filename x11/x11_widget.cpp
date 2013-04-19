@@ -15,6 +15,7 @@ std::map<Window, X11Widget*> X11Widget::_wid_index;
 
 
 X11Widget::X11Widget(Window wid, Type type) :
+    _is_destroyed(false),
     _wid(wid),
     _type(type),
     _is_mapped(false)
@@ -37,20 +38,40 @@ X11Widget::~X11Widget()
     _wid_index.erase(_wid);
 }
 
+#if 0
 bool X11Widget::validate()
 {
+    std::cout<<"X11Widget::validate()\n";
+
     XEvent ev;
 
     if (_is_destroyed)
         return false;
-    else if (XCheckTypedWindowEvent(X11Application::display(), _wid, DestroyNotify, &ev)) {
+#if 0
+    if (XCheckTypedWindowEvent(X11Application::display(), _wid, DestroyNotify, &ev)) {
+        std::cout<<"got destroy notify.\n";
+        std::cout<<"ev.xdestroywindow.window: "<<ev.xdestroywindow.window<<'\n';
+        std::cout<<"_wid: "<<_wid<<'\n';
         if (ev.xdestroywindow.window == _wid)
             _is_destroyed = true;
         XPutBackEvent(X11Application::display(), &ev);
-        return _is_destroyed;
-    } else
-        return true;
+        return !_is_destroyed;
+    }
+#else
+    if (XCheckTypedEvent(X11Application::display(), DestroyNotify, &ev)) {
+        std::cout<<"got destroy notify.\n";
+        std::cout<<"ev.xdestroywindow.window: "<<ev.xdestroywindow.window<<'\n';
+        std::cout<<"_wid: "<<_wid<<'\n';
+        if (ev.xdestroywindow.window == _wid)
+            _is_destroyed = true;
+        XPutBackEvent(X11Application::display(), &ev);
+        return !_is_destroyed;
+    }
+#endif
+
+    return true;
 }
+#endif
 
 void X11Widget::reparent(X11ServerWidget *new_parent)
 {
@@ -60,6 +81,7 @@ void X11Widget::reparent(X11ServerWidget *new_parent)
 
 void X11Widget::setRect(const Rect &rect)
 {
+    std::cout<<"X11Widget::setRect() - _wid: "<<_wid<<'\n';
     XMoveResizeWindow(X11Application::display(), _wid, rect.x, rect.y, rect.w, rect.h);
 }
 
@@ -72,8 +94,7 @@ void X11Widget::initClientWidgets()
     XQueryTree(X11Application::display(), X11Application::root(),
                &unused, &unused, &children, &num_children);
 
-    for (unsigned int i = 0; i < num_children; i++) { //FIXME - what if a window gets destroyed inbetween ?
-                                                      //maybe query for destroy events at each step ?
+    for (unsigned int i = 0; i < num_children; i++) {
         if (!find(children[i]))
             X11ClientWidget::newClientWidget(children[i]);
     }
@@ -117,6 +138,9 @@ void X11Widget::createNotify(const XCreateWindowEvent &ev)
 void X11Widget::destroyNotify(const XDestroyWindowEvent &ev)
 {
     Window wid = ev.window;
+
+    std::cout<<"X11Widget::destroyNotify() - wid: "<<wid<<'\n';
+
     std::cout << "X11Widget::DestroyNotify(): " << wid << '\n';
     if (X11Widget *widget = find(wid)) {
         if (widget->type() == X11Widget::CLIENT) {

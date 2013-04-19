@@ -92,7 +92,9 @@ X11Client::~X11Client()
 
 bool X11Client::validate()
 {
-    return _widget->validate();
+    bool ret = _widget->validate();
+    std::cout<<"X11Client::validate(): "<<ret<<'\n';
+    return ret;
 }
 
 bool X11Client::isMapped()
@@ -102,7 +104,7 @@ bool X11Client::isMapped()
 
 void X11Client::setRect(const Rect &rect)
 {
-    if (validate())
+//     if (validate())
         _widget->setRect(rect);
 }
 

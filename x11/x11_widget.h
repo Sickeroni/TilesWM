@@ -23,13 +23,14 @@ public:
 
     virtual ~X11Widget();
 
+    virtual bool validate() { return !_is_destroyed; }
+
     Type type() { return _type; }
 //     const Rect &rect() { return _rect; }
-    void setRect(const Rect &rect);
+    virtual void setRect(const Rect &rect);
     bool isMapped() { return _is_mapped; }
     Window wid() { return _wid; }
     void reparent(X11ServerWidget *new_parent);
-    bool validate();
 
 protected:
     static X11Widget *find(Window wid);
@@ -38,6 +39,8 @@ protected:
 
     virtual void onMapStateChanged() {}
 
+    bool _is_destroyed;
+
 private:
     static std::map<Window, X11Widget*> _wid_index;
 
@@ -45,7 +48,6 @@ private:
     Type _type;
 //     Rect _rect;
     bool _is_mapped;
-    bool _is_destroyed;
 };
 
 #endif

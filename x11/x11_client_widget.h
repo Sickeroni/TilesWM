@@ -15,6 +15,9 @@ public:
 
     static void newClientWidget(Window wid);
 
+//     virtual bool validate();
+    virtual void setRect(const Rect &rect);
+
 //     static void destroy(Window window);
     X11Client *client() { return _client; }
 
@@ -22,6 +25,7 @@ protected:
     virtual void onMapStateChanged();
 
 private:
+    static int setRectErrorHandler(Display *display, XErrorEvent *ev);
 
     X11Client *_client;
 };
