@@ -7,6 +7,7 @@
 #include "canvas.h"
 
 #include <iostream>
+#include <sstream>
 #include <string>
 #include <stdlib.h>
 
@@ -27,7 +28,11 @@ ClientContainer::~ClientContainer()
 Client *ClientContainer::activeClient()
 {
     //FIXME HACK
-    return _clients.first();
+    for (Client *c = _clients.first(); c; c = c->next()) {
+        if (c->isMapped())
+            return c;
+    }
+    return 0;
 }
 
 void ClientContainer::clear()
@@ -122,13 +127,36 @@ void ClientContainer::drawStacked(Canvas *canvas)
 {
     canvas->erase(_rect);
 
+    const int tabbar_border = 5;
+
+    int tabbar_x = _frame_width + tabbar_border;
+    int tabbar_y = _frame_width + tabbar_border;
+    int tabbar_w = (width() - (2 * tabbar_border)) - (2 * _frame_width);
+    int tabbar_h = _titlebar_height - (2 * tabbar_border);
+
+    Rect tabbar_rect;
+    tabbar_rect.set(tabbar_x, tabbar_y, tabbar_w, tabbar_h - 5);
+
+
+    std::stringstream title;
+
+    if (activeClient())
+        title << "Active client: " << activeClient()->name();
+    else
+        title << "No active client";
+
+
+    int mapped_clients = numMappedClients();
+
+    title<<"  |  Clients: "<<_clients.count()<<"  |  Mapped: "<<mapped_clients;
+
+    canvas->drawText(title.str().c_str(), tabbar_rect, 0xFFFFFF, 0x0);
+
     int client_w = width() - (2 * _frame_width);
     int client_h = height() - ((2 * _frame_width) + _titlebar_height);
 
     if (!client_w || !client_h)
         return;
-
-    int mapped_clients = numMappedClients();
 
     std::cout<<"mapped_clients: "<<mapped_clients<<"\n";
 
@@ -195,7 +223,7 @@ void ClientContainer::drawTabbed(Canvas *canvas)
 //     r.set(10, 50, 50, 20);
 //     canvas->drawText("Hallo Welt !", r);
 
-    int tabbar_border = 5;
+    const int tabbar_border = 5;
 
 //     int tab_border = 2;
 
@@ -270,7 +298,7 @@ void ClientContainer::layoutStacked()
     std::cout<<"is horizontal: "<<isHorizontal()<<'\n';
 
 
-    const int cell_border = 10;
+    const int cell_border = 12;
 
 //     if (!width() || !height())
 //         return;
