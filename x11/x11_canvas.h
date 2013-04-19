@@ -14,7 +14,8 @@ public:
     ~X11Canvas();
 
     void erase(const Rect &rect);
-    virtual void drawText(const char *text, const Rect &rect);
+    virtual void drawText(const char *text, const Rect &rect,
+                          unsigned long foreground, unsigned long background);
 
 private:
     Window _wid;

@@ -22,6 +22,8 @@ public:
 //     virtual void layoutClients;
     virtual bool isEmpty() { return _clients.isEmpty(); }
 
+    Client *activeClient();
+
     void removeClient(Client *c);
 
 protected:

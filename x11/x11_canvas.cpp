@@ -21,8 +21,12 @@ void X11Canvas::erase(const Rect &rect)
     XClearArea(X11Application::display(), _wid, rect.x, rect.y, rect.w, rect.h, false);
 }
 
-void X11Canvas::drawText(const char *text, const Rect &rect)
+void X11Canvas::drawText(const char *text, const Rect &rect,
+                         unsigned long foreground, unsigned long background)
 {
+    XSetForeground(X11Application::display(), _gc, foreground);
+    XSetBackground(X11Application::display(), _gc, background);
+
     XDrawImageString(X11Application::display(),
                      _wid, _gc, rect.x, rect.y + rect.h, text, strlen(text));
 }

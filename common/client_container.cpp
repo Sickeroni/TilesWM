@@ -24,6 +24,12 @@ ClientContainer::~ClientContainer()
     clear();
 }
 
+Client *ClientContainer::activeClient()
+{
+    //FIXME HACK
+    return _clients.first();
+}
+
 void ClientContainer::clear()
 {
     for (Client *c = _clients.first(); c; ) {
@@ -145,7 +151,16 @@ void ClientContainer::draw(Canvas *canvas)
         Rect r;
         r.set(tabbar_x + (i * tab_width), tabbar_y, tab_width, tab_height);
 
-        canvas->drawText(c->name().c_str(), r);
+        unsigned long fg, bg;
+
+        bg = 0x0;
+
+        if (activeClient() == c)
+            fg = 0x00FF00;
+        else
+            fg = 0xAAAAAA;
+
+        canvas->drawText(c->name().c_str(), r, fg, bg);
 
         i++;
     }
