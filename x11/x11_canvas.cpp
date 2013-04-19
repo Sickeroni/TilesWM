@@ -21,12 +21,20 @@ void X11Canvas::erase(const Rect &rect)
     XClearArea(X11Application::display(), _wid, rect.x, rect.y, rect.w, rect.h, false);
 }
 
-void X11Canvas::drawText(const char *text, const Rect &rect,
-                         unsigned long foreground, unsigned long background)
+void X11Canvas::drawFrame(const Rect &rect, unsigned long color)
 {
-    XSetForeground(X11Application::display(), _gc, foreground);
-    XSetBackground(X11Application::display(), _gc, background);
+    XSetForeground(X11Application::display(), _gc, color);
 
-    XDrawImageString(X11Application::display(),
-                     _wid, _gc, rect.x, rect.y + rect.h, text, strlen(text));
+    XDrawRectangle(X11Application::display(), _wid, _gc,
+                   rect.x, rect.y, rect.w, rect.h);
+}
+
+void X11Canvas::drawText(const char *text, const Rect &rect,
+                         unsigned long fg, unsigned long bg)
+{
+    XSetForeground(X11Application::display(), _gc, fg);
+    XSetBackground(X11Application::display(), _gc, bg);
+
+    XDrawImageString(X11Application::display(), _wid, _gc,
+                     rect.x, rect.y + rect.h, text, strlen(text));
 }

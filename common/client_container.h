@@ -39,6 +39,9 @@ protected:
 private:
     enum Mode { TABBED, STACKED };
 
+    void drawTabbed(Canvas *canvas);
+    void drawStacked(Canvas *canvas);
+
     static int _frame_width;
     static int _titlebar_height;
 

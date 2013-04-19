@@ -8,8 +8,9 @@ class Canvas
 {
 public:
     virtual void erase(const Rect &rect) = 0;
+    virtual void drawFrame(const Rect &rect, unsigned long color) = 0;
     virtual void drawText(const char *text, const Rect &rect,
-                          unsigned long foreground, unsigned long background) = 0;
+                          unsigned long fg, unsigned long bg) = 0;
 };
 
 #endif // __CANVAS_H__

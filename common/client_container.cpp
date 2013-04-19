@@ -48,7 +48,7 @@ void ClientContainer::addClient(Client *c)
     c->setContainer(this);
 
     _clients.append(c);
-
+#if 0
     //FIXME UGLY - layout client in advance
     {
         int client_w = width() - (2 * _frame_width);
@@ -92,7 +92,7 @@ void ClientContainer::addClient(Client *c)
         c->setRect(rect);
 
     }
-
+#endif
     if (c->isMapped())
         layout();
 }
@@ -114,6 +114,80 @@ void ClientContainer::removeClient(Client *c)
 }
 
 void ClientContainer::draw(Canvas *canvas)
+{
+    drawStacked(canvas);
+}
+
+void ClientContainer::drawStacked(Canvas *canvas)
+{
+    canvas->erase(_rect);
+
+    int client_w = width() - (2 * _frame_width);
+    int client_h = height() - ((2 * _frame_width) + _titlebar_height);
+
+    if (!client_w || !client_h)
+        return;
+
+    int mapped_clients = numMappedClients();
+
+    std::cout<<"mapped_clients: "<<mapped_clients<<"\n";
+
+    if (!mapped_clients)
+        return;
+
+    int cell_width = 0, cell_height = 0;
+
+    if (isHorizontal()) {
+        cell_width = client_w / mapped_clients;
+        cell_height = client_h;
+    } else {
+        cell_width = client_w;
+        cell_height = client_h / mapped_clients;
+    }
+
+    std::cout<<"cell_width: "<<cell_width<<"\n";
+    std::cout<<"cell_height: "<<cell_height<<"\n";
+    std::cout<<"=================================\n";
+
+    Rect rect;
+    rect.setSize(cell_width, cell_height);
+
+    const int gap = 5;
+
+    rect.w -= 2 * gap;
+    rect.h -= 2 * gap;
+
+    int i = 0;
+    for(Client *c = _clients.first(); c; c = c->next()) {
+        if (!c->isMapped())
+            continue;
+
+        if (isHorizontal()) {
+            rect.x = i * cell_width + _frame_width;
+            rect.y = _frame_width + _titlebar_height;
+        } else {
+            rect.x = _frame_width;
+            rect.y = (i * cell_height) + _frame_width + _titlebar_height;
+        }
+
+        rect.x += gap;
+        rect.y += gap;
+
+
+//         localToGlobal(x, y);
+        std::cout<<"x: "<<rect.x<<" y: "<<rect.y<<'\n';
+
+        if (activeClient() == c) {
+            canvas->drawFrame(rect, 0x0);
+        } else {
+//             canvas->drawFrame(rect, 0x0);
+        }
+
+        i++;
+   }
+}
+
+void ClientContainer::drawTabbed(Canvas *canvas)
 {
     std::cout<<"ClientContainer::draw()\n";
 
@@ -170,7 +244,8 @@ void ClientContainer::draw(Canvas *canvas)
 
 void ClientContainer::layout()
 {
-    layoutTabbed();
+    layoutStacked();
+    redraw();
 }
 
 void ClientContainer::layoutTabbed()
@@ -193,6 +268,9 @@ void ClientContainer::layoutStacked()
 {
     std::cout<<"===================\nClientContainer::layout()";
     std::cout<<"is horizontal: "<<isHorizontal()<<'\n';
+
+
+    const int cell_border = 10;
 
 //     if (!width() || !height())
 //         return;
@@ -227,6 +305,9 @@ void ClientContainer::layoutStacked()
     Rect rect;
     rect.setSize(cell_width, cell_height);
 
+    rect.w -= 2 * cell_border;
+    rect.h -= 2 * cell_border;
+
     int i = 0;
     for(Client *c = _clients.first(); c; c = c->next()) {
         if (!c->isMapped())
@@ -239,6 +320,9 @@ void ClientContainer::layoutStacked()
             rect.x = _frame_width;
             rect.y = (i * cell_height) + _frame_width + _titlebar_height;
         }
+
+        rect.x += cell_border;
+        rect.y += cell_border;
 
 //         localToGlobal(x, y);
         std::cout<<"x: "<<rect.x<<" y: "<<rect.y<<'\n';

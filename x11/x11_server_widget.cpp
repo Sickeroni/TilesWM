@@ -27,13 +27,18 @@ X11ServerWidget *X11ServerWidget::create(X11ServerWidget *parent)
 
     std::cout << "parent_wid: " << parent_wid << '\n';
 
+
+    const unsigned long fg = 0xFFFFFF;
+//     connst unsigned long bg = 0xFF4444;
+    const unsigned long bg = 0x999999;
+
     Window wid = XCreateSimpleWindow(X11Application::display(),
                                      parent_wid,
                                      0, 0,
                                      100, 100,
                                      0,
-                                     0xFFFFFF,
-                                     0xFF4444);
+                                     fg,
+                                     bg);
     if (!wid)
         abort();
 
