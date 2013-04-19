@@ -10,6 +10,9 @@ X11Canvas::X11Canvas(Window wid) :
 {
     _gc = XCreateGC(X11Application::display(), wid, 0, 0);
     XSetForeground(X11Application::display(), _gc, 0xFFFFFF); //HACK
+
+    XSetLineAttributes(X11Application::display(), _gc, 2, LineSolid,
+                       CapNotLast, JoinMiter);
 }
 
 X11Canvas::~X11Canvas()
