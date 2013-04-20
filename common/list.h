@@ -14,7 +14,7 @@ protected:
     class Private;
 
     class Item {
-        friend struct ListBase::Private;
+        friend class ListBase::Private;
 
     public:
         Item() : _prev(0), _next(0) {}
