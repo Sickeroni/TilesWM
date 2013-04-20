@@ -44,6 +44,7 @@ private:
 
     X11Widget *_widget;
     X11ServerWidget *_frame;
+    int _max_width, _max_height;
 };
 
 #endif // __X11_CLIENT_H__

@@ -56,8 +56,22 @@ void X11Client::newClient(Window window)
 
 #endif
 
+
+int newClientWidgetErrorHandler(Display *display, XErrorEvent *ev)
+{
+    if (ev->error_code != BadWindow) {
+        std::cerr<<"X11ClientWidget::newClientWidget() caused X error - code: " <<
+            static_cast<unsigned int>(ev->error_code)<<'\n';
+        abort();
+    } else
+        return 0;
+}
+
+
+
 X11Client::X11Client() :
-    _widget(0), _frame(0)
+    _widget(0), _frame(0),
+    _max_width(0), _max_height(0)
 {
 }
 
@@ -89,11 +103,55 @@ void X11Client::setRect(const Rect &rect)
     const int frame_width = 5;
 
     if (_widget) {
-        Rect r;
-        r.x = r.y = frame_width;
-        r.w = rect.w - (2 * frame_width);
-        r.h = rect.h - (2 * frame_width);
-        _widget->setRect(r);
+        X11Application::self()->grabServer();
+
+        XSync(X11Application::display(), false);
+
+        int (*error_handler)(Display *, XErrorEvent *) =
+                                XSetErrorHandler(&newClientWidgetErrorHandler);
+
+        int width_inc = 0, height_inc = 0;
+
+        // get size hints
+        XSizeHints size_hints;
+        long supplied_fields;
+        if (XGetWMNormalHints(X11Application::display(), _widget->wid(), &size_hints, &supplied_fields)) {
+            std::cout<<"has base size: "<<((supplied_fields & PBaseSize) != 0)<<'\n';
+            std::cout<<"size_hints.base_width: "<<size_hints.base_width<<'\n';
+            std::cout<<"size_hints.base_height: "<<size_hints.base_height<<'\n';
+            std::cout<<"has resize inc: "<<((supplied_fields & PResizeInc) != 0)<<'\n';
+            std::cout<<"size_hints.width_inc: "<<size_hints.width_inc<<'\n';
+            std::cout<<"size_hints.height_inc: "<<size_hints.height_inc<<'\n';
+
+            if (supplied_fields & PMaxSize) {
+                _max_width = size_hints.max_width;
+                _max_height = size_hints.max_height;
+            }
+
+            if (supplied_fields & PResizeInc) {
+                width_inc = size_hints.width_inc;
+                height_inc = size_hints.height_inc;
+            }
+        }
+
+        if (width_inc || height_inc) {
+            Rect r;
+            r.x = r.y = frame_width;
+            r.w = rect.w - (2 * frame_width);
+            r.h = rect.h - (2 * frame_width);
+            if (_max_width && r.w > _max_width)
+                r.w = _max_width;
+            if (_max_height && r.h > _max_height)
+                r.h = _max_height;
+            _widget->setRect(r);
+        }
+
+
+        XSync(X11Application::display(), false);
+
+        XSetErrorHandler(error_handler);
+
+        X11Application::self()->ungrabServer();
     }
 }
 
@@ -126,15 +184,6 @@ void X11Client::onMapStateChanged()
 //         XMapWindow(X11Application::display(), _frame->wid());
 }
 
-int newClientWidgetErrorHandler(Display *display, XErrorEvent *ev)
-{
-    if (ev->error_code != BadWindow) {
-        std::cerr<<"X11ClientWidget::newClientWidget() caused X error - code: " <<
-            static_cast<unsigned int>(ev->error_code)<<'\n';
-        abort();
-    } else
-        return 0;
-}
 
 void X11Client::newClient(Window wid)
 {
@@ -190,6 +239,26 @@ void X11Client::newClient(Window wid)
                 XFree(class_hint.res_name);
                 XFree(class_hint.res_class);
                 class_hint.res_name = class_hint.res_class = 0;
+            }
+
+            std::cout<<"-------------------------------------------------------------------\n";
+            std::cout<<"new client :"<<(client->_name)<<'\n';
+            std::cout<<"-------------------------------------------------------------------\n";
+
+            // get size hints
+            XSizeHints size_hints;
+            long supplied_fields;
+            if (XGetWMNormalHints(X11Application::display(), wid, &size_hints, &supplied_fields)) {
+                if (supplied_fields & PMaxSize) {
+                    client->_max_width = size_hints.max_width;
+                    client->_max_height = size_hints.max_height;
+                }
+                std::cout<<"has base size: "<<((supplied_fields & PBaseSize) != 0)<<'\n';
+                std::cout<<"size_hints.base_width: "<<size_hints.base_width<<'\n';
+                std::cout<<"size_hints.base_height: "<<size_hints.base_height<<'\n';
+                std::cout<<"has resize inc: "<<((supplied_fields & PResizeInc) != 0)<<'\n';
+                std::cout<<"size_hints.width_inc: "<<size_hints.width_inc<<'\n';
+                std::cout<<"size_hints.height_inc: "<<size_hints.height_inc<<'\n';
             }
 
             client->_frame = X11ServerWidget::create(0);
