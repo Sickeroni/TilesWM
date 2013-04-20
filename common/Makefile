@@ -1,4 +1,4 @@
-CXXFLAGS?=-pedantic -Wall -g #-Werror
+include ../make_conf
 
 SOURCES=container.cpp container_container.cpp client_container.cpp client.cpp list.cpp
 

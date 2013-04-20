@@ -1,4 +1,4 @@
-CXXFLAGS?=-pedantic -Wall -g #-Werror
+include ../make_conf
 
 SOURCES=x11_canvas.cpp x11_container_container.cpp x11_client_container.cpp x11_widget.cpp x11_server_widget.cpp x11_client_widget.cpp x11_client.cpp x11_application.cpp main.cpp
 
