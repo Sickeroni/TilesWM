@@ -22,6 +22,8 @@ public:
     bool init();
     void shutdown();
     void eventLoop();
+    void grabServer();
+    void ungrabServer();
 
 private:
     static void quit(int signum);
@@ -31,6 +33,7 @@ private:
     Display *_display;
     Window _root;
     X11ContainerContainer *_activeRootContainer;
+    int _num_server_grabs;
     volatile bool _quit_requested;
 };
 

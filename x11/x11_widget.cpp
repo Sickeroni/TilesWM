@@ -1,9 +1,9 @@
 #include "x11_widget.h"
 
 #include "x11_container_container.h"
-#include "x11_client_widget.h"
+#include "x11_client.h"
 #include "x11_server_widget.h"
-// #include "x11_client.h"
+#include "x11_client_widget.h"
 #include "x11_application.h"
 
 #include <iostream>
@@ -79,14 +79,21 @@ void X11Widget::reparent(X11ServerWidget *new_parent)
     XReparentWindow(X11Application::display(), _wid, new_parent_wid, 0, 0);
 }
 
+void X11Widget::move(int x, int y)
+{
+    XMoveWindow(X11Application::display(), _wid, x, y);
+}
+
 void X11Widget::setRect(const Rect &rect)
 {
     std::cout<<"X11Widget::setRect() - _wid: "<<_wid<<'\n';
     XMoveResizeWindow(X11Application::display(), _wid, rect.x, rect.y, rect.w, rect.h);
 }
 
-void X11Widget::initClientWidgets()
+void X11Widget::initClients()
 {
+    X11Application::self()->grabServer();
+
     Window unused = 0;
     Window *children = 0;
     unsigned int num_children = 0;
@@ -96,10 +103,12 @@ void X11Widget::initClientWidgets()
 
     for (unsigned int i = 0; i < num_children; i++) {
         if (!find(children[i]))
-            X11ClientWidget::newClientWidget(children[i]);
+            X11Client::newClient(children[i]);
     }
 
     XFree(children);
+
+    X11Application::self()->ungrabServer();
 }
 
 X11Widget *X11Widget::find(Window wid)
@@ -130,7 +139,7 @@ void X11Widget::createNotify(const XCreateWindowEvent &ev)
         }
 
     } else {
-        X11ClientWidget::newClientWidget(wid);
+        X11Client::newClient(wid);
     }
 #endif
 }
@@ -139,14 +148,20 @@ void X11Widget::destroyNotify(const XDestroyWindowEvent &ev)
 {
     Window wid = ev.window;
 
-    std::cout<<"X11Widget::destroyNotify() - wid: "<<wid<<'\n';
+    std::cout << "X11Widget::destroyNotify() - wid: "<<wid<<'\n';
 
-    std::cout << "X11Widget::DestroyNotify(): " << wid << '\n';
     if (X11Widget *widget = find(wid)) {
         if (widget->type() == X11Widget::CLIENT) {
+            //FIXME UGLY
             widget->_is_destroyed = true;
+            X11ClientWidget *cw = static_cast<X11ClientWidget*>(widget);
+            X11Client *client = cw->client();
+            assert(client);
+            client->onWidgetDestroyed();
             delete widget;
             widget = 0;
+            delete client;
+            client = 0;
         }
         else {
             // error: server widget was destroyed (by another process ?) before deleting the associated X11Widget

@@ -10,7 +10,7 @@ class X11Client;
 class X11ClientWidget : public X11Widget
 {
 public:
-    X11ClientWidget(Window wid);
+    X11ClientWidget(Window wid, X11Client *client);
     virtual ~X11ClientWidget();
 
     static void newClientWidget(Window wid);

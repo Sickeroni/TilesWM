@@ -15,7 +15,7 @@ class X11Widget
 public:
     enum Type { SERVER, CLIENT };
 
-    static void initClientWidgets();
+    static void initClients();
     static void createNotify(const XCreateWindowEvent &ev);
     static void destroyNotify(const XDestroyWindowEvent &ev);
     static void mapNotify(const XMapEvent &ev);
@@ -28,6 +28,7 @@ public:
     Type type() { return _type; }
 //     const Rect &rect() { return _rect; }
     virtual void setRect(const Rect &rect);
+    void move(int x, int y);
     bool isMapped() { return _is_mapped; }
     Window wid() { return _wid; }
     void reparent(X11ServerWidget *new_parent);

@@ -9,15 +9,14 @@
 #include <iostream>
 
 
-X11ClientWidget::X11ClientWidget(Window wid) : X11Widget(wid, CLIENT),
-    _client(new X11Client(this))
+X11ClientWidget::X11ClientWidget(Window wid, X11Client *client) :
+    X11Widget(wid, CLIENT),
+    _client(client)
 {
 }
 
 X11ClientWidget::~X11ClientWidget()
 {
-    delete _client;
-    _client = 0;
 }
 
 #if 0
@@ -70,7 +69,7 @@ void X11ClientWidget::setRect(const Rect &rect)
 {
     std::cout<<"---------------\nX11ClientWidget::setRect\n----------------\n";
 
-    XGrabServer(X11Application::display());
+    X11Application::self()->grabServer();
 
     XSync(X11Application::display(), false);
 
@@ -85,7 +84,7 @@ void X11ClientWidget::setRect(const Rect &rect)
 
     XSetErrorHandler(error_handler);
 
-    XUngrabServer(X11Application::display());
+    X11Application::self()->ungrabServer();
 }
 
 void X11ClientWidget::onMapStateChanged()
@@ -94,6 +93,8 @@ void X11ClientWidget::onMapStateChanged()
 }
 
 
+
+#if 0
 
 int newClientWidgetErrorHandler(Display *display, XErrorEvent *ev)
 {
@@ -108,7 +109,7 @@ int newClientWidgetErrorHandler(Display *display, XErrorEvent *ev)
 
 void X11ClientWidget::newClientWidget(Window wid)
 {
-    XGrabServer(X11Application::display());
+    X11Application::self()->grabServer();
 
     XSync(X11Application::display(), false);
 
@@ -133,7 +134,10 @@ void X11ClientWidget::newClientWidget(Window wid)
 
             XAddToSaveSet(X11Application::display(), wid);
 
-            X11ClientWidget *widget = new X11ClientWidget(wid);
+
+            X11ServerWidget *frame = X11ServerWidget::create();
+
+            X11ClientWidget *widget = new X11ClientWidget(wid, frame);
 
             X11Application::activeRootContainer()->addClient(widget->client());
         }
@@ -145,5 +149,6 @@ void X11ClientWidget::newClientWidget(Window wid)
 
     XSetErrorHandler(error_handler);
 
-    XUngrabServer(X11Application::display());
+    X11Application::self()->ungrabServer();
 }
+#endif

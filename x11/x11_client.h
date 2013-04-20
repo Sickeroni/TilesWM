@@ -10,6 +10,7 @@
 
 class ClientContainer;
 class X11Widget;
+class X11ServerWidget;
 
 
 class X11Client : public Client
@@ -18,7 +19,6 @@ class X11Client : public Client
 //     static std::map<Window, X11Client*> _client_from_window;
 
 public:
-    X11Client(X11Widget *widget);
     virtual ~X11Client();
 
     virtual bool isMapped();
@@ -32,10 +32,18 @@ public:
 //     static void mapNotify(Window window);
 //     static void unmapNotify(Window window);
 
+    void onMapStateChanged();
+    void onWidgetDestroyed();
+
+
+    static void newClient(Window wid);
+
 private:
+    X11Client();
     bool validate();
 
     X11Widget *_widget;
+    X11ServerWidget *_frame;
 };
 
 #endif // __X11_CLIENT_H__

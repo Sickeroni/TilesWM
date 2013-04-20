@@ -21,6 +21,7 @@ X11Application::X11Application() :
     _display(0),
     _root(0),
     _activeRootContainer(0),
+    _num_server_grabs(0),
     _quit_requested(false)
 {
     if (_self)
@@ -53,7 +54,7 @@ bool X11Application::init()
 
     XSynchronize(_display, true);
 
-    XGrabServer(_display);
+    grabServer();
 
     _root = DefaultRootWindow(_display);
 
@@ -80,12 +81,12 @@ bool X11Application::init()
     _activeRootContainer = new X11ContainerContainer(0);
     _activeRootContainer->setRect(root_container_rect);
 
-    X11Widget::initClientWidgets();
+    X11Widget::initClients();
 
 //     XFlush(display());
-    XSync(display(), false);
+    XSync(_display, false);
 
-    XUngrabServer(_display);
+    ungrabServer();
 
     std::cout<<"initialisation finished.\n";
 
@@ -316,3 +317,23 @@ void X11Application::eventLoop()
     }
 }
 #endif
+
+void X11Application::grabServer()
+{
+    assert(_num_server_grabs >= 0);
+
+    if (!_num_server_grabs)
+        XGrabServer(_display);
+
+    _num_server_grabs++;
+}
+
+void X11Application::ungrabServer()
+{
+    _num_server_grabs--;
+
+    assert(_num_server_grabs >= 0);
+
+    if (!_num_server_grabs)
+        XUngrabServer(_display);
+}
