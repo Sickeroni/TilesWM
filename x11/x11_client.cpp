@@ -169,13 +169,15 @@ void X11Client::setContainer(ClientContainer *container)
     _frame->reparent(new_parent_widget);
 }
 
-void X11Client::onWidgetDestroyed()
-{
-    //FIXME delete here ?
-    // delete _widget
-    _widget = 0;
-}
 
+// void X11Client::onWidgetDestroyed()
+// {
+//     //FIXME delete here ?
+//     // delete _widget
+//     _widget = 0;
+// }
+
+#if 0
 void X11Client::onMapStateChanged()
 {
 //     if (_widget->isMapped())
@@ -183,9 +185,35 @@ void X11Client::onMapStateChanged()
 //     else
 //         XMapWindow(X11Application::display(), _frame->wid());
 }
+#endif
 
+void X11Client::init()
+{
+    X11Application::self()->grabServer();
 
-void X11Client::newClient(Window wid)
+    Window unused = 0;
+    Window *children = 0;
+    unsigned int num_children = 0;
+
+    XQueryTree(X11Application::display(), X11Application::root(),
+               &unused, &unused, &children, &num_children);
+
+    for (unsigned int i = 0; i < num_children; i++) {
+        if (!X11Widget::find(children[i]))
+            handleCreate(children[i]);
+    }
+
+    XFree(children);
+
+    X11Application::self()->ungrabServer();
+}
+
+void X11Client::handleDestroy(X11Widget *widget)
+{
+    delete static_cast<X11ClientWidget*>(widget)->client();
+}
+
+void X11Client::handleCreate(Window wid)
 {
     X11Application::self()->grabServer();
 

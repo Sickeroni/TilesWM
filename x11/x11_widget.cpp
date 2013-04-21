@@ -90,27 +90,6 @@ void X11Widget::setRect(const Rect &rect)
     XMoveResizeWindow(X11Application::display(), _wid, rect.x, rect.y, rect.w, rect.h);
 }
 
-void X11Widget::initClients()
-{
-    X11Application::self()->grabServer();
-
-    Window unused = 0;
-    Window *children = 0;
-    unsigned int num_children = 0;
-
-    XQueryTree(X11Application::display(), X11Application::root(),
-               &unused, &unused, &children, &num_children);
-
-    for (unsigned int i = 0; i < num_children; i++) {
-        if (!find(children[i]))
-            X11Client::newClient(children[i]);
-    }
-
-    XFree(children);
-
-    X11Application::self()->ungrabServer();
-}
-
 X11Widget *X11Widget::find(Window wid)
 {
     std::map<Window, X11Widget*>::iterator it = _wid_index.find(wid);
@@ -128,7 +107,7 @@ void X11Widget::createNotify(const XCreateWindowEvent &ev)
     if (find(wid)) {
         // it's a server widget
         std::cout << "it's a server widget.\n";
-
+#if 0
         //FIXME debug-message
         X11Widget *w = X11Application::activeRootContainer()->widget();
         std::cout<<"widget: "<<find(wid)<<'\t';
@@ -137,9 +116,9 @@ void X11Widget::createNotify(const XCreateWindowEvent &ev)
             std::cout<<"has child.\n";
 //             X11Application::activeRootContainer()->activeChild()
         }
-
+#endif
     } else {
-        X11Client::newClient(wid);
+        X11Client::handleCreate(wid);
     }
 #endif
 }
@@ -151,18 +130,10 @@ void X11Widget::destroyNotify(const XDestroyWindowEvent &ev)
     std::cout << "X11Widget::destroyNotify() - wid: "<<wid<<'\n';
 
     if (X11Widget *widget = find(wid)) {
-        if (widget->type() == X11Widget::CLIENT) {
-            //FIXME UGLY
-            widget->_is_destroyed = true;
-            X11ClientWidget *cw = static_cast<X11ClientWidget*>(widget);
-            X11Client *client = cw->client();
-            assert(client);
-            client->onWidgetDestroyed();
-            delete widget;
-            widget = 0;
-            delete client;
-            client = 0;
-        }
+        widget->_is_destroyed = true;
+
+        if (widget->type() == X11Widget::CLIENT)
+            X11Client::handleDestroy(widget);
         else {
             // error: server widget was destroyed (by another process ?) before deleting the associated X11Widget
             std::cerr << "error: server widget was destroyed (by another process ?) before deleting the associated X11Widget\n";

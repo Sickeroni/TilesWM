@@ -1,6 +1,7 @@
 #include "x11_application.h"
 
 #include "x11_container_container.h"
+#include "x11_client.h"
 #include "x11_widget.h"
 
 #include "client_container.h"
@@ -81,7 +82,7 @@ bool X11Application::init()
     _activeRootContainer = new X11ContainerContainer(0);
     _activeRootContainer->setRect(root_container_rect);
 
-    X11Widget::initClients();
+    X11Client::init();
 
 //     XFlush(display());
     XSync(_display, false);

@@ -25,18 +25,16 @@ public:
     virtual void setRect(const Rect &rect);
     virtual void setContainer(ClientContainer *container);
 
-//     static void init();
+    static void init();
+    static void handleCreate(Window wid);
+    static void handleDestroy(X11Widget *widget);
 //     static void shutdown();
-//     static void newClient(Window wid);
-//     static void widgetDestroyed(X11Widget *widget);
 //     static void mapNotify(Window window);
 //     static void unmapNotify(Window window);
 
-    void onMapStateChanged();
-    void onWidgetDestroyed();
+//     void onMapStateChanged();
+//     void onWidgetDestroyed();
 
-
-    static void newClient(Window wid);
 
 private:
     X11Client();
