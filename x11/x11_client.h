@@ -32,7 +32,7 @@ public:
 //     static void mapNotify(Window window);
 //     static void unmapNotify(Window window);
 
-//     void onMapStateChanged();
+    void onMapStateChanged();
 //     void onWidgetDestroyed();
 
 

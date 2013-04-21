@@ -25,7 +25,7 @@ X11Widget::X11Widget(Window wid, Type type) :
         abort();
 
 //     _rect.set(attr.x, attr.y, attr.width, attr.height);
-    _is_mapped = (attr.map_state == IsViewable);
+    _is_mapped = (attr.map_state != IsUnmapped);
 
     assert(find(wid) == 0);
 
@@ -72,6 +72,18 @@ bool X11Widget::validate()
     return true;
 }
 #endif
+
+void X11Widget::map()
+{
+    XMapWindow(X11Application::display(), _wid);
+    _is_mapped = true;
+}
+
+void X11Widget::unmap()
+{
+    XUnmapWindow(X11Application::display(), _wid);
+    _is_mapped = false;
+}
 
 void X11Widget::reparent(X11ServerWidget *new_parent)
 {

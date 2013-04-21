@@ -42,9 +42,6 @@ X11ServerWidget *X11ServerWidget::create(X11ServerWidget *parent)
     if (!wid)
         abort();
 
-    XMapWindow(X11Application::display(), wid);
-
-
     //FIXME UGLY - use XCreateWindow()
     {
         XWindowAttributes attr;

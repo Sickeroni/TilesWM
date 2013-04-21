@@ -9,6 +9,7 @@ X11ContainerContainer::X11ContainerContainer(X11ContainerContainer *parent) :
     ContainerContainer(parent),
     _widget(X11ServerWidget::create(parent ? parent->widget() : 0))
 {
+    _widget->map();
 }
 
 X11ContainerContainer::~X11ContainerContainer()

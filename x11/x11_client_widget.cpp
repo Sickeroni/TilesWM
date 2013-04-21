@@ -93,7 +93,6 @@ void X11ClientWidget::onMapStateChanged()
 }
 
 
-
 #if 0
 
 int newClientWidgetErrorHandler(Display *display, XErrorEvent *ev)

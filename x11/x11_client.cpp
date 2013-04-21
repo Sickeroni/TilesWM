@@ -177,13 +177,17 @@ void X11Client::setContainer(ClientContainer *container)
 //     _widget = 0;
 // }
 
-#if 0
+#if 1
 void X11Client::onMapStateChanged()
 {
-//     if (_widget->isMapped())
+    if (_widget->isMapped())
+        _frame->map();
 //         XUnmapWindow(X11Application::display(), _frame->wid());
-//     else
+    else
+        _frame->unmap();
 //         XMapWindow(X11Application::display(), _frame->wid());
+
+    Client::onMapStateChanged();
 }
 #endif
 
