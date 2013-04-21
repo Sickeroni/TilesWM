@@ -110,12 +110,16 @@ void X11Client::setRect(const Rect &rect)
         int (*error_handler)(Display *, XErrorEvent *) =
                                 XSetErrorHandler(&newClientWidgetErrorHandler);
 
-        int width_inc = 0, height_inc = 0;
+//         int width_inc = 0, height_inc = 0;
 
         // get size hints
         XSizeHints size_hints;
         long supplied_fields;
         if (XGetWMNormalHints(X11Application::display(), _widget->wid(), &size_hints, &supplied_fields)) {
+            std::cout<<"size_hints.min_width: "<<size_hints.min_width<<'\n';
+            std::cout<<"size_hints.min_height: "<<size_hints.min_height<<'\n';
+            std::cout<<"size_hints.max_width: "<<size_hints.max_width<<'\n';
+            std::cout<<"size_hints.max_height: "<<size_hints.max_height<<'\n';
             std::cout<<"has base size: "<<((supplied_fields & PBaseSize) != 0)<<'\n';
             std::cout<<"size_hints.base_width: "<<size_hints.base_width<<'\n';
             std::cout<<"size_hints.base_height: "<<size_hints.base_height<<'\n';
@@ -128,23 +132,21 @@ void X11Client::setRect(const Rect &rect)
                 _max_height = size_hints.max_height;
             }
 
-            if (supplied_fields & PResizeInc) {
-                width_inc = size_hints.width_inc;
-                height_inc = size_hints.height_inc;
-            }
+//             if (supplied_fields & PResizeInc) {
+//                 width_inc = size_hints.width_inc;
+//                 height_inc = size_hints.height_inc;
+//             }
         }
 
-        if (width_inc || height_inc) {
-            Rect r;
-            r.x = r.y = frame_width;
-            r.w = rect.w - (2 * frame_width);
-            r.h = rect.h - (2 * frame_width);
-            if (_max_width && r.w > _max_width)
-                r.w = _max_width;
-            if (_max_height && r.h > _max_height)
-                r.h = _max_height;
-            _widget->setRect(r);
-        }
+        Rect r;
+        r.x = r.y = frame_width;
+        r.w = rect.w - (2 * frame_width);
+        r.h = rect.h - (2 * frame_width);
+        if (_max_width && r.w > _max_width)
+            r.w = _max_width;
+        if (_max_height && r.h > _max_height)
+            r.h = _max_height;
+        _widget->setRect(r);
 
 
         XSync(X11Application::display(), false);
