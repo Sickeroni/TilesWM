@@ -163,7 +163,7 @@ void X11Widget::mapNotify(const XMapEvent &ev)
         widget->_is_mapped = true;
         widget->onMapStateChanged();
     } else
-        std::cout << "no widget for wid " << ev.window;
+        std::cout << "no widget for wid " << ev.window << '\n';
 }
 
 void X11Widget::unmapNotify(const XUnmapEvent &ev)
