@@ -54,6 +54,19 @@ bool X11ClientWidget::validate()
 #endif
 
 
+bool X11ClientWidget::refreshMapState()
+{
+    XWindowAttributes attr;
+    if (XGetWindowAttributes(X11Application::display(), wid(), &attr)) {
+        _is_mapped = (attr.map_state != IsUnmapped);
+        return true;
+    } else {
+        std::cerr<<"XGetWindowAttributes() failed.\n";
+        return false;
+    }
+
+}
+
 int X11ClientWidget::setRectErrorHandler(Display *display, XErrorEvent *ev)
 {
     if (ev->error_code != BadWindow) {
@@ -86,12 +99,6 @@ void X11ClientWidget::setRect(const Rect &rect)
 
     X11Application::self()->ungrabServer();
 }
-
-void X11ClientWidget::onMapStateChanged()
-{
-    _client->onMapStateChanged();
-}
-
 
 #if 0
 

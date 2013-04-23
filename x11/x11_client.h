@@ -28,14 +28,9 @@ public:
     static void init();
     static void handleCreate(Window wid);
     static void handleDestroy(X11Widget *widget);
+    static void handleUnmap(X11Widget *widget);
     static void handleMapRequest(X11Widget *widget);
     static void handleConfigureRequest(X11Widget *widget, const XConfigureRequestEvent &ev);
-//     static void shutdown();
-//     static void mapNotify(Window window);
-//     static void unmapNotify(Window window);
-
-//     void onMapStateChanged();
-//     void onWidgetDestroyed();
 
 private:
     X11Client();

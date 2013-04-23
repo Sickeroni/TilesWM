@@ -173,30 +173,6 @@ void X11Client::setContainer(ClientContainer *container)
 }
 
 
-// void X11Client::onWidgetDestroyed()
-// {
-//     //FIXME delete here ?
-//     // delete _widget
-//     _widget = 0;
-// }
-
-
-
-#if 0
-//FIXME  - change to onUnmap() - map is already intercepted
-void X11Client::onMapStateChanged()
-{
-    if (_widget->isMapped())
-        _frame->map();
-//         XUnmapWindow(X11Application::display(), _frame->wid());
-    else
-        _frame->unmap();
-//         XMapWindow(X11Application::display(), _frame->wid());
-
-    Client::onMapStateChanged();
-}
-#endif
-
 void X11Client::init()
 {
     X11Application::self()->grabServer();
@@ -221,9 +197,10 @@ void X11Client::init()
 void X11Client::handleDestroy(X11Widget *widget)
 {
     std::cout<<"X11Client::handleDestroy\n";
-    assert(client);
 
     X11Client *client = static_cast<X11ClientWidget*>(widget)->client();
+    assert(client);
+
     if (client->container())
         client->container()->removeClient(client);
 
@@ -330,8 +307,87 @@ void X11Client::handleCreate(Window wid)
     X11Application::self()->ungrabServer();
 }
 
+
+
+
+/*
+
+map state - consists of X-server state and cached state
+---------------------------------
+
+possible states:
+
+    cached      |   X-server state
+------------------------------
+1.  unmapped    |   unmapped
+2.  mapped      |   mapped
+3.  mapped      |   unmapped
+4.  unmapped    |   mapped
+
+initial state: 1 or 2
+
+theoretically possible transitions:
+
+1 -> 2: (mapped by us) allowed (sync needed)
+1 -> 3: (mapped by us) illegal
+1 -> 4: illegal (client call is interceped)
+
+2 -> 1: (unmapped by us) allowed (sync needed)
+2 -> 3: (unmapped by client) allowed
+2 -> 4: (unmapped by us) illegal
+
+3 -> 1: allowed (cached state needs immediate update)
+3 -> 2: illegal (cached state needs immediate update)
+3 -> 4: illegal (client call is interceped)
+
+4 = illegal state (unreachable)
+
+-> allowed transitions:
+1 -> 2: (mapped by us) allowed (sync needed)
+2 -> 1: (unmapped by us) allowed (sync needed)
+2 -> 3: (unmapped by client) allowed
+3 -> 1: allowed (cached state needs immediate update)
+
+*/
+
+//FIXME TODO abort on forbidden transition
+
+void X11Client::handleUnmap(X11Widget *widget, Window parent_wid)
+{
+    std::cout<<"X11Client::handleUnmap()\n";
+
+    X11ClientWidget *client_widget = static_cast<X11ClientWidget*>(widget);
+    X11Client *client = client_widget->client();
+    assert(client);
+
+    X11Application::self()->grabServer();
+    XSync(X11Application::display(), false);
+    int (*error_handler)(Display *, XErrorEvent *) =
+                            XSetErrorHandler(&newClientWidgetErrorHandler);
+
+    bool is_mapped_cached = client_widget->isMapped();
+
+    if (client_widget->refreshMapState()) {
+        if (!client_widget->isMapped()) { // event reflects current server state
+            if (is_mapped_cached) // unmap called by client
+                client->unmap();
+        } else { // event should be discarded
+            // verify current state is sane
+            assert(is_mapped_cached);
+        }
+    } else
+        std::cerr<<"failed to get current map state of client - ignoring unmap event.\n";
+
+    XSync(X11Application::display(), false);
+    XSetErrorHandler(error_handler);
+    X11Application::self()->ungrabServer();
+}
+
 void X11Client::map()
 {
+    std::cout<<"X11Client::map()\n";
+    assert(!_frame->isMapped());
+
     X11Application::self()->grabServer();
     XSync(X11Application::display(), false);
     int (*error_handler)(Display *, XErrorEvent *) =
@@ -347,7 +403,7 @@ void X11Client::map()
     XSetErrorHandler(error_handler);
     X11Application::self()->ungrabServer();
 
-    //FIXME - layout container before mapping - use _is_mapped member and set to true berfore layout
+    //FIXME - layout container before mapping - use _is_mapped member and set to true before layout
 
     _frame->map();
 
@@ -357,6 +413,9 @@ void X11Client::map()
 
 void X11Client::unmap()
 {
+    std::cout<<"X11Client::unmap()\n";
+    assert(_frame->isMapped());
+
     _frame->unmap();
 
     X11Application::self()->grabServer();
@@ -364,10 +423,16 @@ void X11Client::unmap()
     int (*error_handler)(Display *, XErrorEvent *) =
                             XSetErrorHandler(&newClientWidgetErrorHandler);
 
-    _widget->unmap();
+    // if this was called because the client unmapped itself,
+    // _widget is already unmapped
+    if (_widget->isMapped())
+        _widget->unmap();
     _widget->reparent(0);
 
     XRemoveFromSaveSet(X11Application::display(), _widget->wid());
+
+    if (container())
+        container()->layout();
 
     XSync(X11Application::display(), false);
     XSetErrorHandler(error_handler);
@@ -384,27 +449,14 @@ void X11Client::handleMapRequest(X11Widget *widget)
     assert(client);
 
     client->map();
-#if 0
-    X11Application::self()->grabServer();
-    XSync(X11Application::display(), false);
-    int (*error_handler)(Display *, XErrorEvent *) =
-                            XSetErrorHandler(&newClientWidgetErrorHandler);
-
-    XAddToSaveSet(X11Application::display(), widget->wid());
-    widget->reparent(client->_frame);
-    widget->move(5, 5); //FIXME
-    widget->map();
-
-    XSync(X11Application::display(), false);
-    XSetErrorHandler(error_handler);
-    X11Application::self()->ungrabServer();
-#endif
 }
+
+//FIXME TODO set SubstructureRedirectMask for frame
 
 void X11Client::handleConfigureRequest(X11Widget *widget, const XConfigureRequestEvent &ev)
 {
     //FIXME - take window decoration into account
-    //FIXME  - both frame and client widget need to be configured
+    //FIXME - both frame and client widget need to be configured
 
     std::cout<<"X11Client::handleConfigureRequest()\n";
 
@@ -428,7 +480,7 @@ void X11Client::handleConfigureRequest(X11Widget *widget, const XConfigureReques
                             XSetErrorHandler(&newClientWidgetErrorHandler);
 
     if (client->container()) {
-            //FIXME - check for allowed size by container
+        //FIXME - check for allowed size by container
         XConfigureWindow(X11Application::display(), widget->wid(), ev.value_mask, &changes);
     } else {
         XConfigureWindow(X11Application::display(), widget->wid(), ev.value_mask, &changes);

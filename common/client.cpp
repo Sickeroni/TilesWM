@@ -50,9 +50,3 @@ void Client::setContainer(ClientContainer *c)
 {
     _container = c;
 }
-
-void Client::onMapStateChanged()
-{
-    if (_container)
-        _container->layout();
-}

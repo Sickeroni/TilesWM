@@ -21,8 +21,7 @@ public:
 //     static void destroy(Window window);
     X11Client *client() { return _client; }
 
-protected:
-    virtual void onMapStateChanged();
+    bool refreshMapState();
 
 private:
     static int setRectErrorHandler(Display *display, XErrorEvent *ev);

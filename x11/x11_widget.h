@@ -17,7 +17,6 @@ public:
 
     static void createNotify(const XCreateWindowEvent &ev);
     static void destroyNotify(const XDestroyWindowEvent &ev);
-    static void mapNotify(const XMapEvent &ev);
     static void unmapNotify(const XUnmapEvent &ev);
     static void mapRequest(const XMapRequestEvent &ev);
     static void configureRequest(const XConfigureRequestEvent &ev);
@@ -42,9 +41,8 @@ public:
 protected:
     X11Widget(Window wid, Type type);
 
-    virtual void onMapStateChanged() {}
-
     bool _is_destroyed;
+    bool _is_mapped;
 
 private:
     static std::map<Window, X11Widget*> _wid_index;
@@ -52,8 +50,6 @@ private:
     Window _wid;
     Type _type;
 //     Rect _rect;
-    bool _is_mapped;
-    void *_user_data;
 };
 
 #endif

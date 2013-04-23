@@ -16,10 +16,11 @@ std::map<Window, X11Widget*> X11Widget::_wid_index;
 
 X11Widget::X11Widget(Window wid, Type type) :
     _is_destroyed(false),
+    _is_mapped(false),
     _wid(wid),
-    _type(type),
-    _is_mapped(false)
+    _type(type)
 {
+    //FIXME - pass is_mapped to constructor
     XWindowAttributes attr;
     if (!XGetWindowAttributes(X11Application::display(), _wid, &attr))
         abort();
@@ -75,12 +76,16 @@ bool X11Widget::validate()
 
 void X11Widget::map()
 {
+    assert(!_is_mapped);
+
     XMapWindow(X11Application::display(), _wid);
     _is_mapped = true;
 }
 
 void X11Widget::unmap()
 {
+    assert(_is_mapped);
+
     XUnmapWindow(X11Application::display(), _wid);
     _is_mapped = false;
 }
@@ -155,24 +160,14 @@ void X11Widget::destroyNotify(const XDestroyWindowEvent &ev)
         std::cout << "no widget for wid " << wid <<'\n';
 }
 
-void X11Widget::mapNotify(const XMapEvent &ev)
-{
-    std::cout << "void X11Widget::mapNotify(const XMapEvent &ev)\n";
-
-    if (X11Widget *widget = find(ev.window)) {
-        widget->_is_mapped = true;
-        widget->onMapStateChanged();
-    } else
-        std::cout << "no widget for wid " << ev.window << '\n';
-}
-
 void X11Widget::unmapNotify(const XUnmapEvent &ev)
 {
     std::cout << "void X11Widget::unmapNotify(const XUnmapEvent &ev)\n";
 
     if (X11Widget *widget = find(ev.window)) {
-        widget->_is_mapped = false;
-        widget->onMapStateChanged();
+        std::cout<<"is client: "<<(widget->type() == CLIENT)<<'\n';
+        if (widget->type() == CLIENT)
+            X11Client::handleUnmap(widget);
     } else
         std::cout << "no widget for wid " << ev.window << '\n';
 }

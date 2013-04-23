@@ -195,11 +195,10 @@ void X11Application::eventLoop()
             X11Widget::createNotify(ev.xcreatewindow);
         else if(ev.type == DestroyNotify)
             X11Widget::destroyNotify(ev.xdestroywindow);
-        else if(ev.type == MapNotify) {
-            X11Widget::mapNotify(ev.xmap);
-        } else if(ev.type == UnmapNotify) {
+        else if(ev.type == UnmapNotify) {
             X11Widget::unmapNotify(ev.xunmap);
-        } else if (ev.type == MapRequest)
+        }
+        else if (ev.type == MapRequest)
             X11Widget::mapRequest(ev.xmaprequest);
         else if (ev.type == ConfigureRequest)
             X11Widget::configureRequest(ev.xconfigurerequest);

@@ -35,9 +35,6 @@ public:
 
     const std::string &name() { return _name; }
 
-    void onMapStateChanged();
-
-
 protected:
     Client();
 
