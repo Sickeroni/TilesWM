@@ -18,7 +18,6 @@ public:
 //     virtual bool validate();
     virtual void setRect(const Rect &rect);
 
-//     static void destroy(Window window);
     X11Client *client() { return _client; }
 
     bool refreshMapState();

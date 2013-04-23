@@ -20,70 +20,15 @@
  */
 
 
-#if 0
-
-int main()
-{
-    return 0;
-}
-
-
-#else
 
 #include "x11_application.h"
 
-// #include "../container_container.h"
-// #include "x11_client.h"
 
 #include <X11/Xlib.h>
 #include <X11/keysym.h>
 
 #include <iostream>
-// #include <stdio.h>
 #include <string.h>
-
-#define MAX(a, b) ((a) > (b) ? (a) : (b))
-
-#if 0
-#define KeyPress        2
-#define KeyRelease      3
-#define ButtonPress     4
-#define ButtonRelease       5
-#define MotionNotify        6
-#define EnterNotify     7
-#define LeaveNotify     8
-#define FocusIn         9
-#define FocusOut        10
-#define KeymapNotify        11
-#define Expose          12
-#define GraphicsExpose      13
-#define NoExpose        14
-#define VisibilityNotify    15
-#define CreateNotify        16
-#define DestroyNotify       17
-#define UnmapNotify     18
-#define MapNotify       19
-#define MapRequest      20
-#define ReparentNotify      21
-#define ConfigureNotify     22
-#define ConfigureRequest    23
-#define GravityNotify       24
-#define ResizeRequest       25
-#define CirculateNotify     26
-#define CirculateRequest    27
-#define PropertyNotify      28
-#define SelectionClear      29
-#define SelectionRequest    30
-#define SelectionNotify     31
-#define ColormapNotify      32
-#define ClientMessage       33
-#define MappingNotify       34
-#define GenericEvent        35
-#define LASTEvent       36  /* must be bigger than any event # */
-#endif
-
-
-// KeySym layout_key = NoSymbol;
 
 
 
@@ -93,9 +38,6 @@ int main()
 
     if (!app.init())
         return 1;
-
-//     Container::startup(root_attr.width, root_attr.height);
-//     X11Client::startup();
 
 #if 0
 
@@ -162,14 +104,9 @@ int main()
     app.eventLoop();
 
     std::cout << "returnd from main loop - shutting down ...\n";
-//     X11Client::shutdown();
-//     Container::shutdown();
 
     app.shutdown();
-
-
 
     return 0;
 }
 #endif
-
