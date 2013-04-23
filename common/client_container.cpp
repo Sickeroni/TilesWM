@@ -47,12 +47,19 @@ void ClientContainer::clear()
 
 void ClientContainer::addClient(Client *c)
 {
-    if (c->container())
-        c->container()->removeClient(c);
+    std::cout<<"ClientContainer::addClient()\n";
+
+    if (ClientContainer *old_container = c->container()) {
+        //FIXME  - TODO: unmap before and remap client after move
+        std::cout<<"removing from old container ...\n";
+        old_container->removeClientInt(c, true);
+    }
 
     c->setContainer(this);
 
     _clients.append(c);
+
+    std::cout<<"num clients: "<<_clients.count()<<'\n';
 #if 0
     //FIXME UGLY - layout client in advance
     {
@@ -100,10 +107,12 @@ void ClientContainer::addClient(Client *c)
 #endif
     if (c->isMapped())
         layout();
+    else
+        redraw();
 }
 
 
-void ClientContainer::removeClient(Client *c)
+void ClientContainer::removeClientInt(Client *c, bool moving_to_new_container)
 {
     std::cout<<"ClientContainer::removeClient()\n";
 
@@ -112,7 +121,15 @@ void ClientContainer::removeClient(Client *c)
 
     _clients.remove(c);
 
-    layout();
+    std::cout<<"num clients: "<<_clients.count()<<'\n';
+
+    if (!moving_to_new_container)
+        c->setContainer(0);
+
+    if (c->isMapped())
+        layout();
+    else
+        redraw();
 
     if (isEmpty() && _parent)
         _parent->setDirty(true);
@@ -294,7 +311,7 @@ void ClientContainer::layoutTabbed()
 
 void ClientContainer::layoutStacked()
 {
-    std::cout<<"===================\nClientContainer::layout()";
+    std::cout<<"======================\nClientContainer::layout()\n";
     std::cout<<"is horizontal: "<<isHorizontal()<<'\n';
 
 

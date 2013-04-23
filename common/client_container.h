@@ -24,7 +24,9 @@ public:
 
     Client *activeClient();
 
-    void removeClient(Client *c);
+    void removeClient(Client *c) {
+        removeClientInt(c, false);
+    }
 
 protected:
     ClientContainer(ContainerContainer *parent);
@@ -39,15 +41,15 @@ protected:
 private:
     enum Mode { TABBED, STACKED };
 
-    void drawTabbed(Canvas *canvas);
-    void drawStacked(Canvas *canvas);
-
     static int _frame_width;
     static int _titlebar_height;
 
     int numMappedClients();
     void layoutTabbed();
     void layoutStacked();
+    void drawTabbed(Canvas *canvas);
+    void drawStacked(Canvas *canvas);
+    void removeClientInt(Client *c, bool moving_to_new_container);
 
     List<Client> _clients;
     Mode _mode;

@@ -19,6 +19,8 @@ public:
     static void destroyNotify(const XDestroyWindowEvent &ev);
     static void mapNotify(const XMapEvent &ev);
     static void unmapNotify(const XUnmapEvent &ev);
+    static void mapRequest(const XMapRequestEvent &ev);
+    static void configureRequest(const XConfigureRequestEvent &ev);
     static X11Widget *find(Window wid);
 
     virtual ~X11Widget();

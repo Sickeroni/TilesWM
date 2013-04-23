@@ -176,3 +176,34 @@ void X11Widget::unmapNotify(const XUnmapEvent &ev)
     } else
         std::cout << "no widget for wid " << ev.window << '\n';
 }
+
+void X11Widget::mapRequest(const XMapRequestEvent &ev)
+{
+    std::cout<<"X11Widget::mapRequest()\n";
+
+    if (X11Widget *widget = find(ev.window)) {
+        assert(widget->type() == CLIENT);
+        assert(!widget->_is_mapped);
+
+        if (widget->type() == CLIENT)
+            X11Client::handleMapRequest(widget);
+        else
+            abort();
+    } else
+        std::cout << "no widget for wid " << ev.window << '\n';
+}
+
+void X11Widget::configureRequest(const XConfigureRequestEvent &ev)
+{
+    std::cout<<"X11Widget::configureRequest()\n";
+    std::cout<<"wid: "<<ev.window<<'\n';
+
+    if (X11Widget *widget = find(ev.window)) {
+        assert(widget->type() == CLIENT);
+        if (widget->type() == CLIENT)
+            X11Client::handleConfigureRequest(widget, ev);
+        else
+            abort();
+    } else
+        std::cout << "no widget for wid " << ev.window << '\n';
+}

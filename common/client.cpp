@@ -44,8 +44,7 @@ Client::Client() :
 Client::~Client()
 {
     std::cout<<"Client::~Client()\n";
-    if (_container)
-        _container->removeClient(this);
+    assert(!_container);
 }
 void Client::setContainer(ClientContainer *c)
 {

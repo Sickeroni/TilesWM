@@ -69,7 +69,7 @@ bool X11Application::init()
     XSetWindowAttributes new_root_attr;
     memset(&new_root_attr, 0, sizeof(XSetWindowAttributes));
 
-    new_root_attr.event_mask = root_attr.your_event_mask | SubstructureNotifyMask;
+    new_root_attr.event_mask = root_attr.your_event_mask | SubstructureNotifyMask | SubstructureRedirectMask;
 
     //FIXME reset all attributes ?
 
@@ -199,7 +199,10 @@ void X11Application::eventLoop()
             X11Widget::mapNotify(ev.xmap);
         } else if(ev.type == UnmapNotify) {
             X11Widget::unmapNotify(ev.xunmap);
-        }
+        } else if (ev.type == MapRequest)
+            X11Widget::mapRequest(ev.xmaprequest);
+        else if (ev.type == ConfigureRequest)
+            X11Widget::configureRequest(ev.xconfigurerequest);
 #endif
 
 

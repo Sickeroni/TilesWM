@@ -9,6 +9,7 @@
 #include <X11/Xutil.h>
 
 #include <iostream>
+#include <string.h>
 
 #if 0
 
@@ -179,7 +180,10 @@ void X11Client::setContainer(ClientContainer *container)
 //     _widget = 0;
 // }
 
-#if 1
+
+
+#if 0
+//FIXME  - change to onUnmap() - map is already intercepted
 void X11Client::onMapStateChanged()
 {
     if (_widget->isMapped())
@@ -216,15 +220,20 @@ void X11Client::init()
 
 void X11Client::handleDestroy(X11Widget *widget)
 {
-    delete static_cast<X11ClientWidget*>(widget)->client();
+    std::cout<<"X11Client::handleDestroy\n";
+    assert(client);
+
+    X11Client *client = static_cast<X11ClientWidget*>(widget)->client();
+    if (client->container())
+        client->container()->removeClient(client);
+
+    delete client;
 }
 
 void X11Client::handleCreate(Window wid)
 {
     X11Application::self()->grabServer();
-
     XSync(X11Application::display(), false);
-
     int (*error_handler)(Display *, XErrorEvent *) =
                             XSetErrorHandler(&newClientWidgetErrorHandler);
 
@@ -243,8 +252,6 @@ void X11Client::handleCreate(Window wid)
     //
     //     XChangeWindowAttributes(_display, _root, CWEventMask, &new_root_attr);
 
-
-            XAddToSaveSet(X11Application::display(), wid);
 
             X11Client *client = new X11Client();
 
@@ -295,22 +302,140 @@ void X11Client::handleCreate(Window wid)
                 std::cout<<"size_hints.height_inc: "<<size_hints.height_inc<<'\n';
             }
 
+            client->_widget = new X11ClientWidget(wid, client);
+
+            //FIXME - handle case: client is mapped
+            //1. unmap
+            //2. add to container
+            //3. map
+
+            bool is_mapped = client->_widget->isMapped();
+
+            if (is_mapped)
+                client->_widget->unmap();
+
             client->_frame = X11ServerWidget::create(0);
 
-            X11ClientWidget *widget = new X11ClientWidget(wid, client);
-            widget->reparent(client->_frame);
-            widget->move(5, 5); //FIXME
-            client->_widget = widget;
-
             X11Application::activeRootContainer()->addClient(client);
+
+            if (is_mapped)
+                client->map();
         }
     } else {
         std::cerr << "XGetWindowAttributes() for client window " << wid << "failed\n";
     }
 
     XSync(X11Application::display(), false);
-
     XSetErrorHandler(error_handler);
+    X11Application::self()->ungrabServer();
+}
 
+void X11Client::map()
+{
+    X11Application::self()->grabServer();
+    XSync(X11Application::display(), false);
+    int (*error_handler)(Display *, XErrorEvent *) =
+                            XSetErrorHandler(&newClientWidgetErrorHandler);
+
+    XAddToSaveSet(X11Application::display(), _widget->wid());
+
+    _widget->reparent(_frame);
+    _widget->move(5, 5); //FIXME
+    _widget->map();
+
+    XSync(X11Application::display(), false);
+    XSetErrorHandler(error_handler);
+    X11Application::self()->ungrabServer();
+
+    //FIXME - layout container before mapping - use _is_mapped member and set to true berfore layout
+
+    _frame->map();
+
+    if (container())
+        container()->layout();
+}
+
+void X11Client::unmap()
+{
+    _frame->unmap();
+
+    X11Application::self()->grabServer();
+    XSync(X11Application::display(), false);
+    int (*error_handler)(Display *, XErrorEvent *) =
+                            XSetErrorHandler(&newClientWidgetErrorHandler);
+
+    _widget->unmap();
+    _widget->reparent(0);
+
+    XRemoveFromSaveSet(X11Application::display(), _widget->wid());
+
+    XSync(X11Application::display(), false);
+    XSetErrorHandler(error_handler);
+    X11Application::self()->ungrabServer();
+}
+
+
+void X11Client::handleMapRequest(X11Widget *widget)
+{
+    std::cout<<"X11Client::handleMapRequest()\n";
+
+    X11Client *client = static_cast<X11ClientWidget*>(widget)->client();
+
+    assert(client);
+
+    client->map();
+#if 0
+    X11Application::self()->grabServer();
+    XSync(X11Application::display(), false);
+    int (*error_handler)(Display *, XErrorEvent *) =
+                            XSetErrorHandler(&newClientWidgetErrorHandler);
+
+    XAddToSaveSet(X11Application::display(), widget->wid());
+    widget->reparent(client->_frame);
+    widget->move(5, 5); //FIXME
+    widget->map();
+
+    XSync(X11Application::display(), false);
+    XSetErrorHandler(error_handler);
+    X11Application::self()->ungrabServer();
+#endif
+}
+
+void X11Client::handleConfigureRequest(X11Widget *widget, const XConfigureRequestEvent &ev)
+{
+    //FIXME - take window decoration into account
+    //FIXME  - both frame and client widget need to be configured
+
+    std::cout<<"X11Client::handleConfigureRequest()\n";
+
+    X11Client *client = static_cast<X11ClientWidget*>(widget)->client();
+
+    assert(client);
+
+    XWindowChanges changes;
+    memset(&changes, 0, sizeof(changes));
+    changes.x = ev.x;
+    changes.y = ev.y;
+    changes.width = ev.width;
+    changes.height = ev.height;
+    changes.border_width = ev.border_width;
+    changes.sibling = ev.above;
+    changes.stack_mode = ev.detail;
+
+    X11Application::self()->grabServer();
+    XSync(X11Application::display(), false);
+    int (*error_handler)(Display *, XErrorEvent *) =
+                            XSetErrorHandler(&newClientWidgetErrorHandler);
+
+    if (client->container()) {
+            //FIXME - check for allowed size by container
+        XConfigureWindow(X11Application::display(), widget->wid(), ev.value_mask, &changes);
+    } else {
+        XConfigureWindow(X11Application::display(), widget->wid(), ev.value_mask, &changes);
+        //FIXME - frame
+    }
+
+    XSync(X11Application::display(), false);
+    XSetErrorHandler(error_handler);
     X11Application::self()->ungrabServer();
 }

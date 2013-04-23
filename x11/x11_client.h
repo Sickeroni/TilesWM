@@ -28,17 +28,20 @@ public:
     static void init();
     static void handleCreate(Window wid);
     static void handleDestroy(X11Widget *widget);
+    static void handleMapRequest(X11Widget *widget);
+    static void handleConfigureRequest(X11Widget *widget, const XConfigureRequestEvent &ev);
 //     static void shutdown();
 //     static void mapNotify(Window window);
 //     static void unmapNotify(Window window);
 
-    void onMapStateChanged();
+//     void onMapStateChanged();
 //     void onWidgetDestroyed();
-
 
 private:
     X11Client();
     bool validate();
+    void map();
+    void unmap();
 
     X11Widget *_widget;
     X11ServerWidget *_frame;
