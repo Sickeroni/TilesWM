@@ -16,6 +16,7 @@ public:
     static X11ContainerContainer *activeRootContainer() {
         return self()->_activeRootContainer;
     }
+    static const char *x11EventToString(size_t id);
 
     X11Application();
 

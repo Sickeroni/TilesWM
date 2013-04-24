@@ -58,6 +58,54 @@ X11 events
 #endif
 
 
+const char *X11Application::x11EventToString(size_t id)
+{
+    static const char *table[] = {
+        "invalid event id",
+        "invalid event id",
+        "KeyPress",
+        "KeyRelease",
+        "ButtonPress",
+        "ButtonRelease",
+        "MotionNotify",
+        "EnterNotify",
+        "LeaveNotify",
+        "FocusIn",
+        "FocusOut",
+        "KeymapNotify",
+        "Expose",
+        "GraphicsExpose",
+        "NoExpose",
+        "VisibilityNotify",
+        "CreateNotify",
+        "DestroyNotify",
+        "UnmapNotify",
+        "MapNotify",
+        "MapRequest",
+        "ReparentNotify",
+        "ConfigureNotify",
+        "ConfigureRequest",
+        "GravityNotify",
+        "ResizeRequest",
+        "CirculateNotify",
+        "CirculateRequest",
+        "PropertyNotify",
+        "SelectionClear",
+        "SelectionRequest",
+        "SelectionNotify",
+        "ColormapNotify",
+        "ClientMessage",
+        "MappingNotify",
+        "GenericEvent"
+    };
+
+    if (id >= (sizeof(table) / sizeof(table[0])))
+        return "invalid event id";
+    else
+        return table[id];
+}
+
+
 X11Application *X11Application::_self = 0;
 
 
@@ -210,8 +258,13 @@ void X11Application::eventLoop()
 //         XGrabServer(display());
 
 
-#if 1
-        if(ev.type == CreateNotify)
+        if (ev.xany.window && X11Widget::handleEvent(ev)) {
+            // NO-OP
+        }
+
+
+#if 0
+        if (ev.type == CreateNotify)
             X11Widget::createNotify(ev.xcreatewindow);
         else if(ev.type == DestroyNotify)
             X11Widget::destroyNotify(ev.xdestroywindow);
@@ -327,10 +380,9 @@ void X11Application::eventLoop()
         else if(ev.type == ButtonRelease)
             XUngrabPointer(_display, CurrentTime);
 #endif
-#if 0
+#if 1
         else {
-//             printf("event type: %d\n",ev.type);
-//             fflush(stdout);
+            std::cout<<"unhandled event: "<<x11EventToString(ev.type)<<'\n';
         }
 #endif
 

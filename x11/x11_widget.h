@@ -20,6 +20,7 @@ public:
     static void unmapNotify(const XUnmapEvent &ev);
     static void mapRequest(const XMapRequestEvent &ev);
     static void configureRequest(const XConfigureRequestEvent &ev);
+    static bool handleEvent(const XEvent &ev);
     static X11Widget *find(Window wid);
 
     virtual ~X11Widget();
