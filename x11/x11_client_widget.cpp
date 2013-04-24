@@ -66,36 +66,3 @@ bool X11ClientWidget::refreshMapState()
     }
 
 }
-
-int X11ClientWidget::setRectErrorHandler(Display *display, XErrorEvent *ev)
-{
-    if (ev->error_code != BadWindow) {
-        std::cerr<<"X11ClientWidget::setRect() caused X error - code: " <<
-            static_cast<unsigned int>(ev->error_code)<<'\n';
-        abort();
-    } else
-        return 0;
-}
-
-
-void X11ClientWidget::setRect(const Rect &rect)
-{
-    std::cout<<"---------------\nX11ClientWidget::setRect\n----------------\n";
-
-    X11Application::self()->grabServer();
-
-    XSync(X11Application::display(), false);
-
-    int (*error_handler)(Display *, XErrorEvent *) =
-                            XSetErrorHandler(&setRectErrorHandler);
-
-
-//     if (validate())
-    X11Widget::setRect(rect);
-
-    XSync(X11Application::display(), false);
-
-    XSetErrorHandler(error_handler);
-
-    X11Application::self()->ungrabServer();
-}

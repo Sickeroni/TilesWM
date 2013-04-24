@@ -14,15 +14,12 @@ public:
     virtual ~X11ClientWidget();
 
 //     virtual bool validate();
-    virtual void setRect(const Rect &rect);
 
     X11Client *client() { return _client; }
 
     bool refreshMapState();
 
 private:
-    static int setRectErrorHandler(Display *display, XErrorEvent *ev);
-
     X11Client *_client;
 };
 
