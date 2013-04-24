@@ -312,31 +312,46 @@ theoretically possible transitions:
 
 //FIXME TODO abort on forbidden transition
 
-void X11Client::handleUnmap(X11Client *client)
+bool X11Client::refreshMapState()
 {
     std::cout<<"X11Client::handleUnmap()\n";
 
-    X11ClientWidget *client_widget = static_cast<X11ClientWidget*>(client->_widget);
-
     CriticalSection sec;
 
-    bool is_mapped_cached = client_widget->isMapped();
+    bool is_mapped_cached = _widget->isMapped();
 
-    if (client_widget->refreshMapState()) {
-        if (!client_widget->isMapped()) { // event reflects current server state
-            if (is_mapped_cached) // unmap called by client
-                client->unmap();
-        } else { // event should be discarded
-            // verify current state is sane
-            assert(is_mapped_cached);
-        }
-    } else
-        std::cerr<<"failed to get current map state of client - ignoring unmap event.\n";
+    if (_widget->refreshMapState()) {
+
+        if (is_mapped_cached == _widget->isMapped()) // state 1 or 2
+            return true;
+        else if (is_mapped_cached && !_widget->isMapped()) { // state 3
+            //FIXME client has unmapped itself - handle
+            unmapInt();
+            return true;
+        } else if (!is_mapped_cached && _widget->isMapped()) // state 4
+            abort();
+        else
+            abort();
+        return true;
+    } else {
+        std::cerr<<"WARNING: failed to get current map state of client \""<<_name<<"\"\n";
+        return false;
+    }
 }
 
 void X11Client::map()
 {
     std::cout<<"X11Client::map()\n";
+
+    if (!refreshMapState())
+        return;
+
+    if (!_frame->isMapped())
+        mapInt();
+}
+
+void X11Client::mapInt()
+{
     assert(!_frame->isMapped());
 
     {
@@ -360,6 +375,15 @@ void X11Client::map()
 void X11Client::unmap()
 {
     std::cout<<"X11Client::unmap()\n";
+
+    refreshMapState();
+
+    if(_frame->isMapped())
+        unmapInt();
+}
+
+void X11Client::unmapInt()
+{
     assert(_frame->isMapped());
 
     _frame->unmap();
@@ -450,7 +474,7 @@ bool X11Client::handleEvent(const XEvent &ev)
                 client = 0;
                 break;
             case UnmapNotify:
-                handleUnmap(client);
+                client->refreshMapState();
                 break;
             case MapRequest:
                 client->map();
