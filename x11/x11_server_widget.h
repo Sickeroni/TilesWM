@@ -5,6 +5,8 @@
 
 #include <X11/Xlib.h>
 
+#include <map>
+
 
 class X11Canvas;
 
@@ -18,6 +20,8 @@ class X11ServerWidget : public X11Widget
 {
 public:
     static X11ServerWidget *create(X11ServerWidget *parent);
+    static X11ServerWidget *find(Window wid);
+    static bool handleEvent(const XEvent &ev);
 
     virtual ~X11ServerWidget();
 
@@ -29,6 +33,7 @@ private:
     X11Canvas *_canvas;
 //     GC _gc;
 //     X11EventHandler *_eventHandler;
+    static std::map<Window, X11ServerWidget*> _wid_index;
 };
 
 #endif // __X11__SERVER_WIDGET_H__

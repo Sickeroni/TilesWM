@@ -11,9 +11,6 @@
 #include <assert.h>
 
 
-std::map<Window, X11Widget*> X11Widget::_wid_index;
-
-
 X11Widget::X11Widget(Window wid, Type type) :
     _is_destroyed(false),
     _is_mapped(false),
@@ -27,16 +24,11 @@ X11Widget::X11Widget(Window wid, Type type) :
 
 //     _rect.set(attr.x, attr.y, attr.width, attr.height);
     _is_mapped = (attr.map_state != IsUnmapped);
-
-    assert(find(wid) == 0);
-
-    _wid_index.insert(std::pair<Window, X11Widget*>(_wid, this));
 }
 
 
 X11Widget::~X11Widget()
 {
-    _wid_index.erase(_wid);
 }
 
 #if 0
@@ -107,98 +99,16 @@ void X11Widget::setRect(const Rect &rect)
     XMoveResizeWindow(X11Application::display(), _wid, rect.x, rect.y, rect.w, rect.h);
 }
 
-X11Widget *X11Widget::find(Window wid)
+bool X11Widget::handleEvent(const XEvent &ev)
 {
-    std::map<Window, X11Widget*>::iterator it = _wid_index.find(wid);
-    if (it != _wid_index.end()) {
-        return it->second;
-    } else
-        return 0;
-}
+    std::cout<<"X11Widget::handleEvent(): "<<X11Application::x11EventToString(ev.type)<<'\n';
 
-void X11Widget::createNotify(const XCreateWindowEvent &ev)
-{
-#if 1
-    Window wid = ev.window;
-    std::cout << "X11Widget::CreateNotify(): " << wid << " parent: " << ev.parent << '\n';
-    if (find(wid)) {
-        // it's a server widget
-        std::cout << "it's a server widget.\n";
-#if 0
-        //FIXME debug-message
-        X11Widget *w = X11Application::activeRootContainer()->widget();
-        std::cout<<"widget: "<<find(wid)<<'\t';
-        std::cout<<"active root container widget: "<< w <<'\n';
-        if (X11Application::activeRootContainer()->activeChild()) {
-            std::cout<<"has child.\n";
-//             X11Application::activeRootContainer()->activeChild()
-        }
-#endif
-    } else {
-        X11Client::handleCreate(wid);
-    }
-#endif
-}
+    bool handled = false;
 
-void X11Widget::destroyNotify(const XDestroyWindowEvent &ev)
-{
-    Window wid = ev.window;
+    handled = X11ServerWidget::handleEvent(ev);
 
-    std::cout << "X11Widget::destroyNotify() - wid: "<<wid<<'\n';
+    if (!handled)
+        handled = X11Client::handleEvent(ev);
 
-    if (X11Widget *widget = find(wid)) {
-        widget->_is_destroyed = true;
-
-        if (widget->type() == X11Widget::CLIENT)
-            X11Client::handleDestroy(widget);
-        else {
-            // error: server widget was destroyed (by another process ?) before deleting the associated X11Widget
-            std::cerr << "error: server widget was destroyed (by another process ?) before deleting the associated X11Widget\n";
-            abort();
-        }
-    } else
-        std::cout << "no widget for wid " << wid <<'\n';
-}
-
-void X11Widget::unmapNotify(const XUnmapEvent &ev)
-{
-    std::cout << "void X11Widget::unmapNotify(const XUnmapEvent &ev)\n";
-
-    if (X11Widget *widget = find(ev.window)) {
-        std::cout<<"is client: "<<(widget->type() == CLIENT)<<'\n';
-        if (widget->type() == CLIENT)
-            X11Client::handleUnmap(widget);
-    } else
-        std::cout << "no widget for wid " << ev.window << '\n';
-}
-
-void X11Widget::mapRequest(const XMapRequestEvent &ev)
-{
-    std::cout<<"X11Widget::mapRequest()\n";
-
-    if (X11Widget *widget = find(ev.window)) {
-        assert(widget->type() == CLIENT);
-        assert(!widget->_is_mapped);
-
-        if (widget->type() == CLIENT)
-            X11Client::handleMapRequest(widget);
-        else
-            abort();
-    } else
-        std::cout << "no widget for wid " << ev.window << '\n';
-}
-
-void X11Widget::configureRequest(const XConfigureRequestEvent &ev)
-{
-    std::cout<<"X11Widget::configureRequest()\n";
-    std::cout<<"wid: "<<ev.window<<'\n';
-
-    if (X11Widget *widget = find(ev.window)) {
-        assert(widget->type() == CLIENT);
-        if (widget->type() == CLIENT)
-            X11Client::handleConfigureRequest(widget, ev);
-        else
-            abort();
-    } else
-        std::cout << "no widget for wid " << ev.window << '\n';
+    return handled;
 }

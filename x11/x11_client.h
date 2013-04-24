@@ -7,6 +7,8 @@
 
 #include <X11/Xlib.h>
 
+#include <map>
+
 
 class ClientContainer;
 class X11Widget;
@@ -15,9 +17,6 @@ class X11ServerWidget;
 
 class X11Client : public Client
 {
-    //TODO use a hash here
-//     static std::map<Window, X11Client*> _client_from_window;
-
 public:
     virtual ~X11Client();
 
@@ -26,17 +25,20 @@ public:
     virtual void setContainer(ClientContainer *container);
 
     static void init();
-    static void handleCreate(Window wid);
-    static void handleDestroy(X11Widget *widget);
-    static void handleUnmap(X11Widget *widget);
-    static void handleMapRequest(X11Widget *widget);
-    static void handleConfigureRequest(X11Widget *widget, const XConfigureRequestEvent &ev);
+    static bool handleEvent(const XEvent &ev);
 
 private:
     X11Client();
-    bool validate();
+//     bool validate();
     void map();
     void unmap();
+
+    static X11Client *find(Window wid);
+    static void handleCreate(Window wid);
+    static void handleUnmap(X11Client *client);
+    static void handleConfigureRequest(X11Client *client, const XConfigureRequestEvent &ev);
+
+    static std::map<Window, X11Client*> _wid_index;
 
     X11Widget *_widget;
     X11ServerWidget *_frame;

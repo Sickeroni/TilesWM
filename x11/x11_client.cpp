@@ -12,6 +12,9 @@
 #include <string.h>
 
 
+std::map<Window, X11Client*> X11Client::_wid_index;
+
+
 int newClientWidgetErrorHandler(Display *display, XErrorEvent *ev)
 {
     if (ev->error_code != BadWindow) {
@@ -21,7 +24,6 @@ int newClientWidgetErrorHandler(Display *display, XErrorEvent *ev)
     } else
         return 0;
 }
-
 
 X11Client::X11Client() :
     _widget(0), _frame(0),
@@ -38,12 +40,12 @@ X11Client::~X11Client()
     _frame = 0;
 }
 
-bool X11Client::validate()
-{
-    bool ret = _widget->validate();
-    std::cout<<"X11Client::validate(): "<<ret<<'\n';
-    return ret;
-}
+// bool X11Client::validate()
+// {
+//     bool ret = _widget->validate();
+//     std::cout<<"X11Client::validate(): "<<ret<<'\n';
+//     return ret;
+// }
 
 bool X11Client::isMapped()
 {
@@ -138,7 +140,7 @@ void X11Client::init()
                &unused, &unused, &children, &num_children);
 
     for (unsigned int i = 0; i < num_children; i++) {
-        if (!X11Widget::find(children[i]))
+        if (!X11ServerWidget::find(children[i]))
             handleCreate(children[i]);
     }
 
@@ -147,25 +149,14 @@ void X11Client::init()
     X11Application::self()->ungrabServer();
 }
 
-void X11Client::handleDestroy(X11Widget *widget)
-{
-    std::cout<<"X11Client::handleDestroy\n";
-
-    X11Client *client = static_cast<X11ClientWidget*>(widget)->client();
-    assert(client);
-
-    if (client->container())
-        client->container()->removeClient(client);
-
-    delete client;
-}
-
 void X11Client::handleCreate(Window wid)
 {
     X11Application::self()->grabServer();
     XSync(X11Application::display(), false);
     int (*error_handler)(Display *, XErrorEvent *) =
                             XSetErrorHandler(&newClientWidgetErrorHandler);
+
+    assert(find(wid) == 0);
 
     XWindowAttributes attr;
     if (XGetWindowAttributes(X11Application::display(), wid, &attr)) {
@@ -250,6 +241,9 @@ void X11Client::handleCreate(Window wid)
 
             if (is_mapped)
                 client->map();
+
+            _wid_index.insert(std::pair<Window, X11Client*>(wid, client));
+
         }
     } else {
         std::cerr << "XGetWindowAttributes() for client window " << wid << "failed\n";
@@ -259,8 +253,6 @@ void X11Client::handleCreate(Window wid)
     XSetErrorHandler(error_handler);
     X11Application::self()->ungrabServer();
 }
-
-
 
 
 /*
@@ -305,13 +297,11 @@ theoretically possible transitions:
 
 //FIXME TODO abort on forbidden transition
 
-void X11Client::handleUnmap(X11Widget *widget)
+void X11Client::handleUnmap(X11Client *client)
 {
     std::cout<<"X11Client::handleUnmap()\n";
 
-    X11ClientWidget *client_widget = static_cast<X11ClientWidget*>(widget);
-    X11Client *client = client_widget->client();
-    assert(client);
+    X11ClientWidget *client_widget = static_cast<X11ClientWidget*>(client->_widget);
 
     X11Application::self()->grabServer();
     XSync(X11Application::display(), false);
@@ -393,29 +383,14 @@ void X11Client::unmap()
 }
 
 
-void X11Client::handleMapRequest(X11Widget *widget)
-{
-    std::cout<<"X11Client::handleMapRequest()\n";
-
-    X11Client *client = static_cast<X11ClientWidget*>(widget)->client();
-
-    assert(client);
-
-    client->map();
-}
-
 //FIXME TODO set SubstructureRedirectMask for frame
 
-void X11Client::handleConfigureRequest(X11Widget *widget, const XConfigureRequestEvent &ev)
+void X11Client::handleConfigureRequest(X11Client *client, const XConfigureRequestEvent &ev)
 {
     //FIXME - take window decoration into account
     //FIXME - both frame and client widget need to be configured
 
     std::cout<<"X11Client::handleConfigureRequest()\n";
-
-    X11Client *client = static_cast<X11ClientWidget*>(widget)->client();
-
-    assert(client);
 
     XWindowChanges changes;
     memset(&changes, 0, sizeof(changes));
@@ -434,13 +409,86 @@ void X11Client::handleConfigureRequest(X11Widget *widget, const XConfigureReques
 
     if (client->container()) {
         //FIXME - check for allowed size by container
-        XConfigureWindow(X11Application::display(), widget->wid(), ev.value_mask, &changes);
+        XConfigureWindow(X11Application::display(), client->_widget->wid(), ev.value_mask, &changes);
     } else {
-        XConfigureWindow(X11Application::display(), widget->wid(), ev.value_mask, &changes);
+        XConfigureWindow(X11Application::display(), client->_widget->wid(), ev.value_mask, &changes);
         //FIXME - frame
     }
 
     XSync(X11Application::display(), false);
     XSetErrorHandler(error_handler);
     X11Application::self()->ungrabServer();
+}
+
+bool X11Client::handleEvent(const XEvent &ev)
+{
+    bool handled = false;
+
+    Window wid = 0;
+
+    switch (ev.type) {
+    case CreateNotify:
+        wid = ev.xcreatewindow.window;
+        break;
+    case DestroyNotify:
+        wid = ev.xdestroywindow.window;
+        break;
+    case UnmapNotify:
+        wid = ev.xunmap.window;
+        break;
+    case MapRequest:
+        wid = ev.xmaprequest.window;
+        break;
+    case ConfigureRequest:
+        wid = ev.xconfigurerequest.window;
+        break;
+    }
+
+    if (wid) {
+        X11Client *client = find(wid);
+
+        if (client) {
+            assert(client->_widget->wid() == wid);
+
+            switch(ev.type) {
+            case CreateNotify:
+                abort(); // BAD - CreateNotify for already existing client
+            case DestroyNotify:
+                _wid_index.erase(wid);
+                if (client->container())
+                    client->container()->removeClient(client);
+                delete client;
+                client = 0;
+                break;
+            case UnmapNotify:
+                handleUnmap(client);
+                break;
+            case MapRequest:
+                client->map();
+                break;
+            case ConfigureRequest:
+                handleConfigureRequest(client, ev.xconfigurerequest);
+                break;
+            }
+
+            handled = true;
+        } else if (ev.type == CreateNotify) {
+            handleCreate(ev.xcreatewindow.window);
+            handled = true;
+        } else {
+//             std::cout<<"no client with wid "<<wid<<'\n';
+        }
+    }
+
+    return handled;
+}
+
+X11Client *X11Client::find(Window wid)
+{
+    std::map<Window, X11Client*>::iterator it = _wid_index.find(wid);
+    if (it != _wid_index.end()) {
+        return it->second;
+    } else
+        return 0;
+
 }

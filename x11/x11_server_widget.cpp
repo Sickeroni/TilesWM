@@ -6,6 +6,10 @@
 #include <iostream>
 #include <stdlib.h>
 #include <string.h>
+#include <assert.h>
+
+
+std::map<Window, X11ServerWidget*> X11ServerWidget::_wid_index;
 
 
 X11ServerWidget::X11ServerWidget(Window wid) : X11Widget(wid, SERVER),
@@ -15,9 +19,20 @@ X11ServerWidget::X11ServerWidget(Window wid) : X11Widget(wid, SERVER),
 
 X11ServerWidget::~X11ServerWidget()
 {
+    _wid_index.erase(wid());
+
     delete _canvas;
     _canvas = 0;
     XDestroyWindow(X11Application::display(), wid());
+}
+
+X11ServerWidget *X11ServerWidget ::find(Window wid)
+{
+    std::map<Window, X11ServerWidget *>::iterator it = _wid_index.find(wid);
+    if (it != _wid_index.end()) {
+        return it->second;
+    } else
+        return 0;
 }
 
 X11ServerWidget *X11ServerWidget::create(X11ServerWidget *parent)
@@ -42,6 +57,9 @@ X11ServerWidget *X11ServerWidget::create(X11ServerWidget *parent)
     if (!wid)
         abort();
 
+    assert(find(wid) == 0);
+
+
     //FIXME UGLY - use XCreateWindow()
     {
         XWindowAttributes attr;
@@ -59,5 +77,17 @@ X11ServerWidget *X11ServerWidget::create(X11ServerWidget *parent)
         XChangeWindowAttributes(X11Application::display(), wid, CWEventMask, &new_attr);
     }
 
-    return new X11ServerWidget(wid);
+    X11ServerWidget *widget = new X11ServerWidget(wid);
+
+    _wid_index.insert(std::pair<Window, X11ServerWidget*>(wid, widget));
+
+    return widget;
+}
+
+bool X11ServerWidget::handleEvent(const XEvent &ev)
+{
+    if (ev.type == CreateNotify && find(ev.xcreatewindow.window)) // eat create event
+        return true;
+    else
+        return false;
 }
