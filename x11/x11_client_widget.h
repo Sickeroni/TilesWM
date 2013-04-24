@@ -13,8 +13,6 @@ public:
     X11ClientWidget(Window wid, X11Client *client);
     virtual ~X11ClientWidget();
 
-    static void newClientWidget(Window wid);
-
 //     virtual bool validate();
     virtual void setRect(const Rect &rect);
 

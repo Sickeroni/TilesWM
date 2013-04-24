@@ -20,8 +20,11 @@ class X11ServerWidget : public X11Widget
 {
 public:
     static X11ServerWidget *create(X11ServerWidget *parent);
-    static X11ServerWidget *find(Window wid);
     static bool handleEvent(const XEvent &ev);
+
+    static bool isServerWidget(Window wid) {
+        return find(wid);
+    }
 
     virtual ~X11ServerWidget();
 
@@ -29,6 +32,8 @@ public:
 
 private:
     X11ServerWidget(Window wid);
+
+    static X11ServerWidget *find(Window wid);
 
     X11Canvas *_canvas;
 //     GC _gc;

@@ -140,7 +140,7 @@ void X11Client::init()
                &unused, &unused, &children, &num_children);
 
     for (unsigned int i = 0; i < num_children; i++) {
-        if (!X11ServerWidget::find(children[i]))
+        if (!X11ServerWidget::isServerWidget(children[i]))
             handleCreate(children[i]);
     }
 
