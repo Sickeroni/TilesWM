@@ -12,18 +12,54 @@
 #include <string.h>
 
 
+class X11Client::CriticalSection
+{
+    static int errorHandler(Display *display, XErrorEvent *ev);
+
+    static int in_critical_section;
+    int (*saved_error_handler)(Display*, XErrorEvent*);
+
+public:
+    CriticalSection();
+    ~CriticalSection();
+};
+
+
+int X11Client::CriticalSection::in_critical_section = 0;
+
 std::map<Window, X11Client*> X11Client::_wid_index;
 
 
-int newClientWidgetErrorHandler(Display *display, XErrorEvent *ev)
+X11Client::CriticalSection::CriticalSection() :
+    saved_error_handler(0)
+{
+    if (!in_critical_section) {
+        X11Application::self()->grabServer();
+        XSync(X11Application::display(), false);
+        saved_error_handler = XSetErrorHandler(&errorHandler);
+    }
+    in_critical_section++;
+}
+
+X11Client::CriticalSection::~CriticalSection()
+{
+    in_critical_section--;
+    if(!in_critical_section) {
+        XSetErrorHandler(saved_error_handler);
+        X11Application::self()->ungrabServer();
+    }
+}
+
+int X11Client::CriticalSection::errorHandler(Display *display, XErrorEvent *ev)
 {
     if (ev->error_code != BadWindow) {
-        std::cerr<<"X11ClientWidget::newClientWidget() caused X error - code: " <<
+        std::cerr<<"X11Client::CriticalSection::errorHandler() - code: " <<
             static_cast<unsigned int>(ev->error_code)<<'\n';
         abort();
     } else
         return 0;
 }
+
 
 X11Client::X11Client() :
     _widget(0), _frame(0),
@@ -59,12 +95,7 @@ void X11Client::setRect(const Rect &rect)
     const int frame_width = 5;
 
     if (_widget) {
-        X11Application::self()->grabServer();
-
-        XSync(X11Application::display(), false);
-
-        int (*error_handler)(Display *, XErrorEvent *) =
-                                XSetErrorHandler(&newClientWidgetErrorHandler);
+        CriticalSection sec;
 
 //         int width_inc = 0, height_inc = 0;
 
@@ -103,13 +134,6 @@ void X11Client::setRect(const Rect &rect)
         if (_max_height && r.h > _max_height)
             r.h = _max_height;
         _widget->setRect(r);
-
-
-        XSync(X11Application::display(), false);
-
-        XSetErrorHandler(error_handler);
-
-        X11Application::self()->ungrabServer();
     }
 }
 
@@ -130,7 +154,7 @@ void X11Client::setContainer(ClientContainer *container)
 
 void X11Client::init()
 {
-    X11Application::self()->grabServer();
+    CriticalSection sec;
 
     Window unused = 0;
     Window *children = 0;
@@ -145,16 +169,11 @@ void X11Client::init()
     }
 
     XFree(children);
-
-    X11Application::self()->ungrabServer();
 }
 
 void X11Client::handleCreate(Window wid)
 {
-    X11Application::self()->grabServer();
-    XSync(X11Application::display(), false);
-    int (*error_handler)(Display *, XErrorEvent *) =
-                            XSetErrorHandler(&newClientWidgetErrorHandler);
+    CriticalSection sec;
 
     assert(find(wid) == 0);
 
@@ -248,10 +267,6 @@ void X11Client::handleCreate(Window wid)
     } else {
         std::cerr << "XGetWindowAttributes() for client window " << wid << "failed\n";
     }
-
-    XSync(X11Application::display(), false);
-    XSetErrorHandler(error_handler);
-    X11Application::self()->ungrabServer();
 }
 
 
@@ -303,10 +318,7 @@ void X11Client::handleUnmap(X11Client *client)
 
     X11ClientWidget *client_widget = static_cast<X11ClientWidget*>(client->_widget);
 
-    X11Application::self()->grabServer();
-    XSync(X11Application::display(), false);
-    int (*error_handler)(Display *, XErrorEvent *) =
-                            XSetErrorHandler(&newClientWidgetErrorHandler);
+    CriticalSection sec;
 
     bool is_mapped_cached = client_widget->isMapped();
 
@@ -320,10 +332,6 @@ void X11Client::handleUnmap(X11Client *client)
         }
     } else
         std::cerr<<"failed to get current map state of client - ignoring unmap event.\n";
-
-    XSync(X11Application::display(), false);
-    XSetErrorHandler(error_handler);
-    X11Application::self()->ungrabServer();
 }
 
 void X11Client::map()
@@ -331,27 +339,22 @@ void X11Client::map()
     std::cout<<"X11Client::map()\n";
     assert(!_frame->isMapped());
 
-    X11Application::self()->grabServer();
-    XSync(X11Application::display(), false);
-    int (*error_handler)(Display *, XErrorEvent *) =
-                            XSetErrorHandler(&newClientWidgetErrorHandler);
+    {
+        CriticalSection sec;
 
-    XAddToSaveSet(X11Application::display(), _widget->wid());
+        XAddToSaveSet(X11Application::display(), _widget->wid());
 
-    _widget->reparent(_frame);
-    _widget->move(5, 5); //FIXME
-    _widget->map();
+        _widget->reparent(_frame);
+        _widget->move(5, 5); //FIXME
+        _widget->map();
 
-    XSync(X11Application::display(), false);
-    XSetErrorHandler(error_handler);
-    X11Application::self()->ungrabServer();
+        //FIXME - layout container before mapping - use _is_mapped member and set to true before layout
 
-    //FIXME - layout container before mapping - use _is_mapped member and set to true before layout
+        _frame->map();
 
-    _frame->map();
-
-    if (container())
-        container()->layout();
+        if (container())
+            container()->layout();
+    }
 }
 
 void X11Client::unmap()
@@ -361,10 +364,7 @@ void X11Client::unmap()
 
     _frame->unmap();
 
-    X11Application::self()->grabServer();
-    XSync(X11Application::display(), false);
-    int (*error_handler)(Display *, XErrorEvent *) =
-                            XSetErrorHandler(&newClientWidgetErrorHandler);
+    CriticalSection sec;
 
     // if this was called because the client unmapped itself,
     // _widget is already unmapped
@@ -376,10 +376,6 @@ void X11Client::unmap()
 
     if (container())
         container()->layout();
-
-    XSync(X11Application::display(), false);
-    XSetErrorHandler(error_handler);
-    X11Application::self()->ungrabServer();
 }
 
 
@@ -402,10 +398,7 @@ void X11Client::handleConfigureRequest(X11Client *client, const XConfigureReques
     changes.sibling = ev.above;
     changes.stack_mode = ev.detail;
 
-    X11Application::self()->grabServer();
-    XSync(X11Application::display(), false);
-    int (*error_handler)(Display *, XErrorEvent *) =
-                            XSetErrorHandler(&newClientWidgetErrorHandler);
+    CriticalSection sec;
 
     if (client->container()) {
         //FIXME - check for allowed size by container
@@ -414,10 +407,6 @@ void X11Client::handleConfigureRequest(X11Client *client, const XConfigureReques
         XConfigureWindow(X11Application::display(), client->_widget->wid(), ev.value_mask, &changes);
         //FIXME - frame
     }
-
-    XSync(X11Application::display(), false);
-    XSetErrorHandler(error_handler);
-    X11Application::self()->ungrabServer();
 }
 
 bool X11Client::handleEvent(const XEvent &ev)

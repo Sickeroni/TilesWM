@@ -28,6 +28,8 @@ public:
     static bool handleEvent(const XEvent &ev);
 
 private:
+    class CriticalSection;
+
     X11Client();
 //     bool validate();
     void map();
