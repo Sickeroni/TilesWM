@@ -285,9 +285,9 @@ void X11Client::mapInt()
 
     _is_mapped = true;
 
-    // layout before mapping frame to avoid visual glitches
+    // notify container before mapping frame to avoid visual glitches
     if (container())
-        container()->layout();
+        container()->handleClientMap(this);
 
     _frame->map();
 
@@ -324,7 +324,7 @@ void X11Client::unmapInt()
     _is_mapped = false;
 
     if (container())
-        container()->layout();
+        container()->handleClientUnmap(this);
 }
 
 void X11Client::handleConfigureRequest(const XConfigureRequestEvent &ev)

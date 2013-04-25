@@ -30,6 +30,12 @@ public:
 
     void getClientSize(int &w, int &h);
 
+    void focusPrevClient();
+    void focusNextClient();
+
+    void handleClientMap(Client *client);
+    void handleClientUnmap(Client *client);
+
 protected:
     ClientContainer(ContainerContainer *parent);
 
@@ -53,9 +59,11 @@ private:
     void drawTabbed(Canvas *canvas);
     void drawStacked(Canvas *canvas);
     void removeClientInt(Client *c, bool moving_to_new_container);
+    void unfocusActiveClient();
 
     List<Client> _clients;
     Mode _mode;
+    Client *_active_client;
 };
 
 #endif // __CLIENT_CONTAINER_H__

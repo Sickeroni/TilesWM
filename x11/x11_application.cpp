@@ -206,12 +206,18 @@ void X11Application::eventLoop()
     KeySym layout_key = XStringToKeysym("l");
     KeySym redraw_key = XStringToKeysym("d");
     KeySym rotate_key = XStringToKeysym("r");
+    KeySym prev_key = XStringToKeysym("p");
+    KeySym next_key = XStringToKeysym("n");
 
     XGrabKey(display(), XKeysymToKeycode(display(), layout_key), Mod1Mask, root(),
             true, GrabModeAsync, GrabModeAsync);
     XGrabKey(display(), XKeysymToKeycode(display(), redraw_key), Mod1Mask, root(),
             true, GrabModeAsync, GrabModeAsync);
     XGrabKey(display(), XKeysymToKeycode(display(), rotate_key), Mod1Mask, root(),
+            true, GrabModeAsync, GrabModeAsync);
+    XGrabKey(display(), XKeysymToKeycode(display(), prev_key), Mod1Mask, root(),
+            true, GrabModeAsync, GrabModeAsync);
+    XGrabKey(display(), XKeysymToKeycode(display(), next_key), Mod1Mask, root(),
             true, GrabModeAsync, GrabModeAsync);
 
 
@@ -289,6 +295,14 @@ void X11Application::eventLoop()
                 std::cout<<"rotate key pressed.\n";
                 Container::rotateOrientation();
                 activeRootContainer()->layout();
+            } else if (XLookupKeysym(&ev.xkey, 0) == prev_key) {
+                std::cout<<"prev key pressed.\n";
+                if (activeRootContainer()->activeClientContainer())
+                    activeRootContainer()->activeClientContainer()->focusPrevClient();
+            } else if (XLookupKeysym(&ev.xkey, 0) == next_key) {
+                std::cout<<"next key pressed.\n";
+                if (activeRootContainer()->activeClientContainer())
+                    activeRootContainer()->activeClientContainer()->focusNextClient();
             }
         }
 #endif

@@ -10,29 +10,22 @@
 #include <sstream>
 #include <string>
 #include <stdlib.h>
+#include <assert.h>
+
 
 int ClientContainer::_titlebar_height = 50;
 int ClientContainer::_frame_width = 10;
 
 
 ClientContainer::ClientContainer(ContainerContainer *parent) : Container(CLIENT, parent),
-    _mode(TABBED)
+    _mode(TABBED),
+    _active_client(0)
 {
 }
 
 ClientContainer::~ClientContainer()
 {
     clear();
-}
-
-Client *ClientContainer::activeClient()
-{
-    //FIXME HACK
-    for (Client *c = _clients.first(); c; c = c->next()) {
-        if (c->isMapped())
-            return c;
-    }
-    return 0;
 }
 
 void ClientContainer::clear()
@@ -43,6 +36,82 @@ void ClientContainer::clear()
         removeClient(remove_this);
         remove_this->setContainer(0);
     }
+}
+
+Client *ClientContainer::activeClient()
+{
+    if (_active_client) {
+        std::cout<<"active client: \""<<_active_client->name()<<"\"\n";
+        assert(_active_client->isMapped());
+        return _active_client;
+    } else
+        return 0;
+}
+
+void ClientContainer::handleClientMap(Client *client)
+{
+    if (!_active_client)
+        _active_client = client;
+    layout();
+}
+
+void ClientContainer::handleClientUnmap(Client *client)
+{
+    if (client == _active_client)
+        unfocusActiveClient();
+    layout();
+}
+
+void ClientContainer::focusPrevClient()
+{
+    if (_active_client) {
+        for(Client *c = _active_client->prev(); c; c = c->prev()) {
+            if (c->isMapped()) {
+                _active_client = c;
+                break;
+            }
+        }
+    }
+    redraw();
+}
+
+void ClientContainer::focusNextClient()
+{
+    if (_active_client) {
+        for(Client *c = _active_client->next(); c; c = c->next()) {
+            if (c->isMapped()) {
+                _active_client = c;
+                break;
+            }
+        }
+    }
+    redraw();
+}
+
+void ClientContainer::unfocusActiveClient()
+{
+    assert(_active_client);
+
+    Client *old_active = _active_client;
+    _active_client = 0;
+
+    for(Client *c = old_active->prev(); c; c = c->prev()) {
+        if (c->isMapped()) {
+            _active_client = c;
+            break;
+        }
+    }
+
+    if (!_active_client) {
+        for(Client *c = old_active->next(); c; c = c->next()) {
+            if (c->isMapped()) {
+                _active_client = c;
+                break;
+            }
+        }
+    }
+
+    redraw();
 }
 
 void ClientContainer::addClient(Client *c)
@@ -60,6 +129,11 @@ void ClientContainer::addClient(Client *c)
     _clients.append(c);
 
     std::cout<<"num clients: "<<_clients.count()<<'\n';
+
+
+    if (c->isMapped() && !_active_client)
+        _active_client = c;
+
 #if 0
     //FIXME UGLY - layout client in advance
     {
@@ -116,8 +190,8 @@ void ClientContainer::removeClientInt(Client *c, bool moving_to_new_container)
 {
     std::cout<<"ClientContainer::removeClient()\n";
 
-    //TODO
-    // if (c == _active_client)
+    if (c == _active_client)
+        unfocusActiveClient();
 
     _clients.remove(c);
 
