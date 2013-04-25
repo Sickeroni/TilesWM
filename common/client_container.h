@@ -47,6 +47,7 @@ private:
     static int _titlebar_height;
 
     int numMappedClients();
+    void getStackCellSize(int &w, int &h);
     void layoutTabbed();
     void layoutStacked();
     void drawTabbed(Canvas *canvas);

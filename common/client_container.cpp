@@ -308,14 +308,21 @@ void ClientContainer::layoutTabbed()
     redraw();
 }
 
-
 void ClientContainer::getClientSize(int &w, int &h)
 {
     //FIXME - this works only to stacked layout
 
-    const int cell_border = 12;
+    const int cell_border = 12; //FIXME
 
+    getStackCellSize(w, h);
 
+    w -= 2 * cell_border;
+    h -= 2 * cell_border;
+
+}
+
+void ClientContainer::getStackCellSize(int &w, int &h)
+{
     int client_w = width() - (2 * _frame_width);
     int client_h = height() - ((2 * _frame_width) + _titlebar_height);
 
@@ -339,11 +346,6 @@ void ClientContainer::getClientSize(int &w, int &h)
         cell_height = client_h / cell_num;
     }
 
-
-    cell_width -= 2 * cell_border;
-    cell_height -= 2 * cell_border;
-
-
     w = cell_width;
     h = cell_height;
 
@@ -354,38 +356,10 @@ void ClientContainer::layoutStacked()
     std::cout<<"======================\nClientContainer::layout()\n";
     std::cout<<"is horizontal: "<<isHorizontal()<<'\n';
 
+    const int cell_border = 12; //FIXME
 
-    const int cell_border = 12;
-
-//     if (!width() || !height())
-//         return;
-
-    int client_w = width() - (2 * _frame_width);
-    int client_h = height() - ((2 * _frame_width) + _titlebar_height);
-
-    if (!client_w || !client_h)
-        return;
-
-    int mapped_clients = numMappedClients();
-
-    std::cout<<"mapped_clients: "<<mapped_clients<<"\n";
-
-    if (!mapped_clients)
-        return;
-
-    int cell_width = 0, cell_height = 0;
-
-    if (isHorizontal()) {
-        cell_width = client_w / mapped_clients;
-        cell_height = client_h;
-    } else {
-        cell_width = client_w;
-        cell_height = client_h / mapped_clients;
-    }
-
-    std::cout<<"cell_width: "<<cell_width<<"\n";
-    std::cout<<"cell_height: "<<cell_height<<"\n";
-    std::cout<<"=================================\n";
+    int cell_width, cell_height;
+    getStackCellSize(cell_width, cell_height);
 
     Rect rect;
     rect.setSize(cell_width, cell_height);
@@ -399,7 +373,7 @@ void ClientContainer::layoutStacked()
             continue;
 
         if (isHorizontal()) {
-            rect.x = i * cell_width + _frame_width;
+            rect.x = (i * cell_width) + _frame_width;
             rect.y = _frame_width + _titlebar_height;
         } else {
             rect.x = _frame_width;
@@ -409,8 +383,7 @@ void ClientContainer::layoutStacked()
         rect.x += cell_border;
         rect.y += cell_border;
 
-//         localToGlobal(x, y);
-        std::cout<<"x: "<<rect.x<<" y: "<<rect.y<<'\n';
+//         std::cout<<"x: "<<rect.x<<" y: "<<rect.y<<'\n';
 
         c->setRect(rect);
 
