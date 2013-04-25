@@ -38,16 +38,22 @@ private:
     void unmap();
     void unmapInt();
     bool refreshMapState();
+    void refreshSizeHints();
+    void refreshName();
+    void refreshClass();
+    void handleConfigureRequest(const XConfigureRequestEvent &ev);
 
     static X11Client *find(Window wid);
     static void handleCreate(Window wid);
-    static void handleConfigureRequest(X11Client *client, const XConfigureRequestEvent &ev);
 
+    // FIXME - use hash
     static std::map<Window, X11Client*> _wid_index;
 
     X11ClientWidget *_widget;
     X11ServerWidget *_frame;
     int _max_width, _max_height;
+    std::string _x11_name;
+    std::string _x11_class;
 };
 
 #endif // __X11_CLIENT_H__

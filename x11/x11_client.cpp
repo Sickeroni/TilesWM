@@ -7,6 +7,7 @@
 #include "x11_container_container.h"
 
 #include <X11/Xutil.h>
+#include <X11/Xatom.h>
 
 #include <iostream>
 #include <string.h>
@@ -26,8 +27,6 @@ public:
 
 
 int X11Client::CriticalSection::in_critical_section = 0;
-
-std::map<Window, X11Client*> X11Client::_wid_index;
 
 
 X11Client::CriticalSection::CriticalSection() :
@@ -59,6 +58,8 @@ int X11Client::CriticalSection::errorHandler(Display *display, XErrorEvent *ev)
     } else
         return 0;
 }
+
+std::map<Window, X11Client*> X11Client::_wid_index;
 
 
 X11Client::X11Client() :
@@ -97,33 +98,6 @@ void X11Client::setRect(const Rect &rect)
     if (_widget) {
         CriticalSection sec;
 
-//         int width_inc = 0, height_inc = 0;
-
-        // get size hints
-        XSizeHints size_hints;
-        long supplied_fields;
-        if (XGetWMNormalHints(X11Application::display(), _widget->wid(), &size_hints, &supplied_fields)) {
-            std::cout<<"size_hints.min_width: "<<size_hints.min_width<<'\n';
-            std::cout<<"size_hints.min_height: "<<size_hints.min_height<<'\n';
-            std::cout<<"size_hints.max_width: "<<size_hints.max_width<<'\n';
-            std::cout<<"size_hints.max_height: "<<size_hints.max_height<<'\n';
-            std::cout<<"has base size: "<<((supplied_fields & PBaseSize) != 0)<<'\n';
-            std::cout<<"size_hints.base_width: "<<size_hints.base_width<<'\n';
-            std::cout<<"size_hints.base_height: "<<size_hints.base_height<<'\n';
-            std::cout<<"has resize inc: "<<((supplied_fields & PResizeInc) != 0)<<'\n';
-            std::cout<<"size_hints.width_inc: "<<size_hints.width_inc<<'\n';
-            std::cout<<"size_hints.height_inc: "<<size_hints.height_inc<<'\n';
-
-            if (supplied_fields & PMaxSize) {
-                _max_width = size_hints.max_width;
-                _max_height = size_hints.max_height;
-            }
-
-//             if (supplied_fields & PResizeInc) {
-//                 width_inc = size_hints.width_inc;
-//                 height_inc = size_hints.height_inc;
-//             }
-        }
 
         Rect r;
         r.x = r.y = frame_width;
@@ -181,73 +155,27 @@ void X11Client::handleCreate(Window wid)
     if (XGetWindowAttributes(X11Application::display(), wid, &attr)) {
         if (!attr.override_redirect) { // dont't manage popups etc. //FIXME - else warning on client destroy
 
+            XSetWindowAttributes new_attr;
+            memset(&new_attr, 0, sizeof(new_attr));
 
+            new_attr.event_mask = attr.your_event_mask | PropertyChangeMask;
 
-    //         XSetWindowAttributes new__attr;
-    //         memset(&new_attr, 0, sizeof(XSetWindowAttributes));
-    //
-    //         new_attr.event_mask = attr.your_event_mask | StructureNotifyMask;
-    //
-    //     //FIXME reset all attributes ?
-    //
-    //     XChangeWindowAttributes(_display, _root, CWEventMask, &new_root_attr);
+            XChangeWindowAttributes(X11Application::display(), wid, CWEventMask, &new_attr);
 
 
             X11Client *client = new X11Client();
 
-            XTextProperty prop;
-            if (XGetWMName(X11Application::display(), wid, &prop)) {
-                char **list = 0;
-                int count = 0;
+            client->_widget = new X11ClientWidget(wid, client);
 
-                XmbTextPropertyToTextList(X11Application::display(), &prop,
-                                          &list, &count);
-                if (count) {
-                    client->_name = list[0];
-                    XFreeStringList(list);
-                }
-            }
-
-            XClassHint class_hint;
-            class_hint.res_name = 0;
-            class_hint.res_class = 0;
-
-            if (XGetClassHint(X11Application::display(), wid, &class_hint)) {
-                client->_name += " - ";
-                client->_name += class_hint.res_name;
-//                 client->_name += class_hint.res_class;
-
-                XFree(class_hint.res_name);
-                XFree(class_hint.res_class);
-                class_hint.res_name = class_hint.res_class = 0;
-            }
+            client->refreshName();
+            client->refreshClass();
 
             std::cout<<"-------------------------------------------------------------------\n";
             std::cout<<"new client :"<<(client->_name)<<'\n';
             std::cout<<"-------------------------------------------------------------------\n";
 
-            // get size hints
-            XSizeHints size_hints;
-            long supplied_fields;
-            if (XGetWMNormalHints(X11Application::display(), wid, &size_hints, &supplied_fields)) {
-                if (supplied_fields & PMaxSize) {
-                    client->_max_width = size_hints.max_width;
-                    client->_max_height = size_hints.max_height;
-                }
-                std::cout<<"has base size: "<<((supplied_fields & PBaseSize) != 0)<<'\n';
-                std::cout<<"size_hints.base_width: "<<size_hints.base_width<<'\n';
-                std::cout<<"size_hints.base_height: "<<size_hints.base_height<<'\n';
-                std::cout<<"has resize inc: "<<((supplied_fields & PResizeInc) != 0)<<'\n';
-                std::cout<<"size_hints.width_inc: "<<size_hints.width_inc<<'\n';
-                std::cout<<"size_hints.height_inc: "<<size_hints.height_inc<<'\n';
-            }
 
-            client->_widget = new X11ClientWidget(wid, client);
-
-            //FIXME - handle case: client is mapped
-            //1. unmap
-            //2. add to container
-            //3. map
+            client->refreshSizeHints();
 
             bool is_mapped = client->_widget->isMapped();
 
@@ -405,7 +333,7 @@ void X11Client::unmapInt()
 
 //FIXME TODO set SubstructureRedirectMask for frame
 
-void X11Client::handleConfigureRequest(X11Client *client, const XConfigureRequestEvent &ev)
+void X11Client::handleConfigureRequest(const XConfigureRequestEvent &ev)
 {
     //FIXME - take window decoration into account
     //FIXME - both frame and client widget need to be configured
@@ -424,13 +352,80 @@ void X11Client::handleConfigureRequest(X11Client *client, const XConfigureReques
 
     CriticalSection sec;
 
-    if (client->container()) {
+    if (container()) {
         //FIXME - check for allowed size by container
-        XConfigureWindow(X11Application::display(), client->_widget->wid(), ev.value_mask, &changes);
+        XConfigureWindow(X11Application::display(), _widget->wid(), ev.value_mask, &changes);
     } else {
-        XConfigureWindow(X11Application::display(), client->_widget->wid(), ev.value_mask, &changes);
+        XConfigureWindow(X11Application::display(), _widget->wid(), ev.value_mask, &changes);
         //FIXME - frame
     }
+}
+
+void X11Client::refreshSizeHints()
+{
+    std::cout<<"X11Client::refreshSizeHints()\n";
+
+    CriticalSection sec;
+
+    XSizeHints size_hints;
+    long supplied_fields;
+    if (XGetWMNormalHints(X11Application::display(), _widget->wid(), &size_hints, &supplied_fields)) {
+            std::cout<<"size_hints.min_width: "<<size_hints.min_width<<'\n';
+            std::cout<<"size_hints.min_height: "<<size_hints.min_height<<'\n';
+            std::cout<<"size_hints.max_width: "<<size_hints.max_width<<'\n';
+            std::cout<<"size_hints.max_height: "<<size_hints.max_height<<'\n';
+            std::cout<<"has base size: "<<((supplied_fields & PBaseSize) != 0)<<'\n';
+            std::cout<<"size_hints.base_width: "<<size_hints.base_width<<'\n';
+            std::cout<<"size_hints.base_height: "<<size_hints.base_height<<'\n';
+            std::cout<<"has resize inc: "<<((supplied_fields & PResizeInc) != 0)<<'\n';
+            std::cout<<"size_hints.width_inc: "<<size_hints.width_inc<<'\n';
+            std::cout<<"size_hints.height_inc: "<<size_hints.height_inc<<'\n';
+
+        if (supplied_fields & PMaxSize) {
+            _max_width = size_hints.max_width;
+            _max_height = size_hints.max_height;
+        }
+    } else
+        std::cerr<<"failed to get size hints for client \""<<_name<<"\"\n";
+}
+
+void X11Client::refreshName()
+{
+    CriticalSection sec;
+
+    XTextProperty prop;
+    if (XGetWMName(X11Application::display(), _widget->wid(), &prop)) {
+        char **list = 0;
+        int count = 0;
+
+        XmbTextPropertyToTextList(X11Application::display(), &prop,
+                                  &list, &count);
+        if (count) {
+            _x11_name = list[0];
+            XFreeStringList(list);
+        }
+    }
+
+    _name = _x11_class + " - " + _x11_name;
+}
+
+void X11Client::refreshClass()
+{
+    CriticalSection sec;
+
+    XClassHint class_hint;
+    class_hint.res_name = 0;
+    class_hint.res_class = 0;
+
+    if (XGetClassHint(X11Application::display(), _widget->wid(), &class_hint)) {
+        _x11_class = class_hint.res_name;
+
+        XFree(class_hint.res_name);
+        XFree(class_hint.res_class);
+        class_hint.res_name = class_hint.res_class = 0;
+    }
+
+    _name = _x11_class + " - " + _x11_name;
 }
 
 bool X11Client::handleEvent(const XEvent &ev)
@@ -455,6 +450,8 @@ bool X11Client::handleEvent(const XEvent &ev)
     case ConfigureRequest:
         wid = ev.xconfigurerequest.window;
         break;
+    default:
+        wid = ev.xany.window;
     }
 
     if (wid) {
@@ -480,7 +477,26 @@ bool X11Client::handleEvent(const XEvent &ev)
                 client->map();
                 break;
             case ConfigureRequest:
-                handleConfigureRequest(client, ev.xconfigurerequest);
+                client->handleConfigureRequest(ev.xconfigurerequest);
+                break;
+            case PropertyNotify:
+                switch (ev.xproperty.atom) {
+                case XA_WM_NORMAL_HINTS:
+                    client->refreshSizeHints();
+                    if (client->container())
+                        client->container()->layout();
+                    break;
+                case XA_WM_NAME:
+                    client->refreshName();
+                    if (client->container())
+                        client->container()->redraw();
+                    break;
+                case XA_WM_CLASS:
+                    client->refreshClass();
+                    if (client->container())
+                        client->container()->redraw();
+                    break;
+                }
                 break;
             }
 
