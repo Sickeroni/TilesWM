@@ -40,6 +40,8 @@ public:
             return VERTICAL;
     }
 
+    static void rotateOrientation();
+
     static bool isForwardDirection(Direction dir) {
         return (dir == EAST || dir == SOUTH);
     }

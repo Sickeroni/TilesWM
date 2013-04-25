@@ -204,11 +204,14 @@ void X11Application::eventLoop()
      */
 //     XButtonEvent start;
     KeySym layout_key = XStringToKeysym("l");
-    KeySym redraw_key = XStringToKeysym("r");
+    KeySym redraw_key = XStringToKeysym("d");
+    KeySym rotate_key = XStringToKeysym("r");
 
     XGrabKey(display(), XKeysymToKeycode(display(), layout_key), Mod1Mask, root(),
             true, GrabModeAsync, GrabModeAsync);
     XGrabKey(display(), XKeysymToKeycode(display(), redraw_key), Mod1Mask, root(),
+            true, GrabModeAsync, GrabModeAsync);
+    XGrabKey(display(), XKeysymToKeycode(display(), rotate_key), Mod1Mask, root(),
             true, GrabModeAsync, GrabModeAsync);
 
 
@@ -273,15 +276,19 @@ void X11Application::eventLoop()
         else if (ev.type == KeyPress) {
             if (XLookupKeysym(&ev.xkey, 0) == layout_key) {
 //             if (ev.xkey.keycode == layout_key) {
-                std::cout << "layout key pressed !\n";
+                std::cout << "layout key pressed.\n";
 //                 Container::root()->layout();
                 activeRootContainer()->layout();
             } else if (XLookupKeysym(&ev.xkey, 0) == redraw_key) {
 //             if (ev.xkey.keycode == layout_key) {
-                std::cout << "redrawing.\n";
+                std::cout << "redraw key pressed.\n";
 //                 Container::root()->layout();
                 if (activeRootContainer()->activeClientContainer())
                     activeRootContainer()->activeClientContainer()->redraw();
+            } else if (XLookupKeysym(&ev.xkey, 0) == rotate_key) {
+                std::cout<<"rotate key pressed.\n";
+                Container::rotateOrientation();
+                activeRootContainer()->layout();
             }
         }
 #endif

@@ -8,7 +8,7 @@
 #include <stdlib.h>
 
 
-Container::Orientation Container::_root_orientation = HORIZONTAL;
+Container::Orientation Container::_root_orientation = VERTICAL;
 
 
 
@@ -40,5 +40,12 @@ void Container::setRect(const Rect &rect)
     _rect.set(rect.x, rect.y, rect.w, rect.h);
 }
 
+void Container::rotateOrientation()
+{
+    if (_root_orientation == VERTICAL)
+        _root_orientation = HORIZONTAL;
+    else
+        _root_orientation = VERTICAL;
+}
 
 #endif

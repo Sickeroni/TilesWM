@@ -167,7 +167,7 @@ void X11Client::handleCreate(Window wid)
             client->refreshClass();
 
             std::cout<<"-------------------------------------------------------------------\n";
-            std::cout<<"new client :"<<(client->_name)<<'\n';
+            std::cout<<"new client: "<<(client->_name)<<'\n';
             std::cout<<"-------------------------------------------------------------------\n";
 
             client->refreshSizeHints();
