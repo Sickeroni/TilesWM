@@ -8,6 +8,8 @@ class X11ServerWidget;
 class X11ContainerContainer;
 
 
+//FIXME catch expose events
+
 class X11ClientContainer : public ClientContainer
 {
 public:

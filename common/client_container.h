@@ -28,6 +28,8 @@ public:
         removeClientInt(c, false);
     }
 
+    void getClientSize(int &w, int &h);
+
 protected:
     ClientContainer(ContainerContainer *parent);
 

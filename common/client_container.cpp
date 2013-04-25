@@ -309,6 +309,46 @@ void ClientContainer::layoutTabbed()
 }
 
 
+void ClientContainer::getClientSize(int &w, int &h)
+{
+    //FIXME - this works only to stacked layout
+
+    const int cell_border = 12;
+
+
+    int client_w = width() - (2 * _frame_width);
+    int client_h = height() - ((2 * _frame_width) + _titlebar_height);
+
+    if (!client_w || !client_h)
+        return;
+
+    int cell_num = numMappedClients();
+
+//     std::cout<<"mapped_clients: "<<mapped_clients<<"\n";
+
+    if (!cell_num)
+        cell_num = 1;
+
+    int cell_width = 0, cell_height = 0;
+
+    if (isHorizontal()) {
+        cell_width = client_w / cell_num;
+        cell_height = client_h;
+    } else {
+        cell_width = client_w;
+        cell_height = client_h / cell_num;
+    }
+
+
+    cell_width -= 2 * cell_border;
+    cell_height -= 2 * cell_border;
+
+
+    w = cell_width;
+    h = cell_height;
+
+}
+
 void ClientContainer::layoutStacked()
 {
     std::cout<<"======================\nClientContainer::layout()\n";

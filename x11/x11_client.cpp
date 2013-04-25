@@ -347,7 +347,17 @@ void X11Client::handleConfigureRequest(const XConfigureRequestEvent &ev)
     CriticalSection sec;
 
     if (container()) {
-        //FIXME - check for allowed size by container
+        changes.x = 0;
+        changes.y = 0;
+
+        int w, h;
+        container()->getClientSize(w, h);
+
+        if (changes.width > w)
+            changes.width = w;
+        if (changes.height > h)
+            changes.height = h;
+
         XConfigureWindow(X11Application::display(), _widget->wid(), ev.value_mask, &changes);
     } else {
         XConfigureWindow(X11Application::display(), _widget->wid(), ev.value_mask, &changes);
