@@ -20,7 +20,6 @@ class X11Client : public Client
 public:
     virtual ~X11Client();
 
-    virtual bool isMapped();
     virtual void setRect(const Rect &rect);
     virtual void setContainer(ClientContainer *container);
 
@@ -34,6 +33,7 @@ private:
     class CriticalSection;
 
     X11Client();
+
 //     bool validate();
     void unmap();
     void unmapInt();

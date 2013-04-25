@@ -62,7 +62,7 @@ int X11Client::CriticalSection::errorHandler(Display *display, XErrorEvent *ev)
 std::map<Window, X11Client*> X11Client::_wid_index;
 
 
-X11Client::X11Client() :
+X11Client::X11Client() : Client(false),
     _widget(0), _frame(0),
     _max_width(0), _max_height(0)
 {
@@ -83,11 +83,6 @@ X11Client::~X11Client()
 //     std::cout<<"X11Client::validate(): "<<ret<<'\n';
 //     return ret;
 // }
-
-bool X11Client::isMapped()
-{
-    return _frame->isMapped();
-}
 
 void X11Client::setRect(const Rect &rect)
 {
@@ -153,7 +148,7 @@ void X11Client::handleCreate(Window wid)
 
     XWindowAttributes attr;
     if (XGetWindowAttributes(X11Application::display(), wid, &attr)) {
-        if (!attr.override_redirect) { // dont't manage popups etc. //FIXME - else warning on client destroy
+        if (!attr.override_redirect) {
             bool is_mapped = (attr.map_state != IsUnmapped);
 
             XSetWindowAttributes new_attr;
@@ -236,8 +231,6 @@ theoretically possible transitions:
 
 */
 
-//FIXME TODO abort on forbidden transition
-
 bool X11Client::refreshMapState()
 {
     std::cout<<"X11Client::handleUnmap()\n";
@@ -245,6 +238,9 @@ bool X11Client::refreshMapState()
     CriticalSection sec;
 
     bool is_mapped_cached = _widget->isMapped();
+
+    assert(isMapped() == is_mapped_cached);
+    assert(_frame->isMapped() == is_mapped_cached);
 
     if (_widget->refreshMapState()) {
 
@@ -269,52 +265,53 @@ void X11Client::map()
 {
     std::cout<<"X11Client::map()\n";
 
-    if (!refreshMapState())
-        return;
+    CriticalSection sec;
 
-    if (!_frame->isMapped())
-        mapInt();
+    if (refreshMapState()) {
+        if (!isMapped())
+            mapInt();
+    }
 }
 
 void X11Client::mapInt()
 {
+    assert(!isMapped());
     assert(!_frame->isMapped());
 
-    {
-        CriticalSection sec;
+    XAddToSaveSet(X11Application::display(), _widget->wid());
 
-        XAddToSaveSet(X11Application::display(), _widget->wid());
+    _widget->reparent(_frame);
+    _widget->map();
 
-        _widget->reparent(_frame);
-        _widget->move(5, 5); //FIXME
-        _widget->map();
+    _is_mapped = true;
 
-        //FIXME - layout container before mapping - use _is_mapped member and set to true before layout
+    // layout before mapping frame to avoid visual glitches
+    if (container())
+        container()->layout();
 
-        _frame->map();
+    _frame->map();
 
-        if (container())
-            container()->layout();
-    }
 }
 
 void X11Client::unmap()
 {
     std::cout<<"X11Client::unmap()\n";
 
-    refreshMapState();
+    CriticalSection sec;
 
-    if(_frame->isMapped())
-        unmapInt();
+    if (refreshMapState()) {
+        if(isMapped())
+            unmapInt();
+    }
 }
 
 void X11Client::unmapInt()
 {
+    assert(isMapped());
     assert(_frame->isMapped());
 
     _frame->unmap();
 
-    CriticalSection sec;
 
     // if this was called because the client unmapped itself,
     // _widget is already unmapped
@@ -323,6 +320,8 @@ void X11Client::unmapInt()
     _widget->reparent(0);
 
     XRemoveFromSaveSet(X11Application::display(), _widget->wid());
+
+    _is_mapped = false;
 
     if (container())
         container()->layout();

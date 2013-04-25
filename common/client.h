@@ -24,20 +24,18 @@ public:
 
     virtual ~Client();
 
-    virtual bool isMapped() = 0;
     virtual void setRect(const Rect &rect) = 0;
 
     virtual void setContainer(ClientContainer *c);
 
-    ClientContainer *container() {
-        return _container;
-    }
-
+    ClientContainer *container() { return _container; }
+    bool isMapped() { return _is_mapped; }
     const std::string &name() { return _name; }
 
 protected:
-    Client();
+    Client(bool is_mapped);
 
+    bool _is_mapped;
     std::string _name;
 
 private:
@@ -46,7 +44,6 @@ private:
 //     Widget *_widget;
     ClientContainer *_container;
 //     Display *_dpy;
-//     bool _is_mapped;
 };
 
 #endif // __CLIENT_H__
