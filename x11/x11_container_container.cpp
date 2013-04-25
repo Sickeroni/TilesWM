@@ -7,7 +7,7 @@
 
 X11ContainerContainer::X11ContainerContainer(X11ContainerContainer *parent) :
     ContainerContainer(parent),
-    _widget(X11ServerWidget::create(parent ? parent->widget() : 0))
+    _widget(X11ServerWidget::create(parent ? parent->widget() : 0, 0, ExposureMask))
 {
     _widget->map();
 }

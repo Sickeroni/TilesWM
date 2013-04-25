@@ -19,7 +19,12 @@ class X11Canvas;
 class X11ServerWidget : public X11Widget
 {
 public:
-    static X11ServerWidget *create(X11ServerWidget *parent);
+    struct EventHandler
+    {
+        virtual void handleExpose() = 0;
+    };
+
+    static X11ServerWidget *create(X11ServerWidget *parent, EventHandler *event_handler, long event_mask);
     static bool handleEvent(const XEvent &ev);
 
     static bool isServerWidget(Window wid) {
@@ -31,13 +36,13 @@ public:
     X11Canvas *canvas() { return _canvas; }
 
 private:
-    X11ServerWidget(Window wid);
+    X11ServerWidget(Window wid, EventHandler *event_handler);
 
     static X11ServerWidget *find(Window wid);
 
     X11Canvas *_canvas;
 //     GC _gc;
-//     X11EventHandler *_eventHandler;
+    EventHandler *_event_handler;
     static std::map<Window, X11ServerWidget*> _wid_index;
 };
 

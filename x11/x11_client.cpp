@@ -175,7 +175,7 @@ void X11Client::handleCreate(Window wid)
             if (is_mapped)
                 client->_widget->unmap();
 
-            client->_frame = X11ServerWidget::create(0);
+            client->_frame = X11ServerWidget::create(0, 0, SubstructureNotifyMask | SubstructureRedirectMask);
 
             X11Application::activeRootContainer()->addClient(client);
 

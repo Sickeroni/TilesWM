@@ -3,14 +3,15 @@
 
 #include "client_container.h"
 
+#include "x11_server_widget.h"
 
-class X11ServerWidget;
+
 class X11ContainerContainer;
 
 
 //FIXME catch expose events
 
-class X11ClientContainer : public ClientContainer
+class X11ClientContainer : public ClientContainer, public X11ServerWidget::EventHandler
 {
 public:
     X11ClientContainer(X11ContainerContainer *parent);
@@ -18,6 +19,11 @@ public:
 
     virtual void setRect(const Rect &rect);
     virtual void redraw();
+
+    // X11ServerWidget::EventHandler implementaion
+    virtual void handleExpose() {
+        redraw();
+    }
 
     X11ServerWidget *widget() { return _widget; }
 

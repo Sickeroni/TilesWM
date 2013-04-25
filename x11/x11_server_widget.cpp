@@ -12,8 +12,9 @@
 std::map<Window, X11ServerWidget*> X11ServerWidget::_wid_index;
 
 
-X11ServerWidget::X11ServerWidget(Window wid) : X11Widget(wid, SERVER, false),
-    _canvas(new X11Canvas(wid))
+X11ServerWidget::X11ServerWidget(Window wid, EventHandler *event_handler) : X11Widget(wid, SERVER, false),
+    _canvas(new X11Canvas(wid)),
+    _event_handler(event_handler)
 {
 }
 
@@ -35,7 +36,7 @@ X11ServerWidget *X11ServerWidget ::find(Window wid)
         return 0;
 }
 
-X11ServerWidget *X11ServerWidget::create(X11ServerWidget *parent)
+X11ServerWidget *X11ServerWidget::create(X11ServerWidget *parent, EventHandler *event_handler, long event_mask)
 {
     std::cout << "X11ServerWidget::create()\n";
 
@@ -52,7 +53,7 @@ X11ServerWidget *X11ServerWidget::create(X11ServerWidget *parent)
 
     attr.background_pixel = bg;
     attr.border_pixel = fg;
-    attr.event_mask = SubstructureNotifyMask | SubstructureRedirectMask;
+    attr.event_mask = event_mask;
 
     Window wid = XCreateWindow(X11Application::display(),
                                parent_wid,
@@ -70,7 +71,7 @@ X11ServerWidget *X11ServerWidget::create(X11ServerWidget *parent)
 
     assert(find(wid) == 0);
 
-    X11ServerWidget *widget = new X11ServerWidget(wid);
+    X11ServerWidget *widget = new X11ServerWidget(wid, event_handler);
 
     _wid_index.insert(std::pair<Window, X11ServerWidget*>(wid, widget));
 
@@ -81,6 +82,13 @@ bool X11ServerWidget::handleEvent(const XEvent &ev)
 {
     if (ev.type == CreateNotify && find(ev.xcreatewindow.window)) // eat create event
         return true;
-    else
+    else if (ev.type == Expose) {
+        if (X11ServerWidget *widget = find(ev.xexpose.window)) {
+            if (!ev.xexpose.count && widget->_event_handler)
+                widget->_event_handler->handleExpose();
+            return true;
+        } else
+            return false;
+    } else
         return false;
 }
