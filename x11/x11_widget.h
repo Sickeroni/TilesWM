@@ -33,7 +33,7 @@ public:
 
 
 protected:
-    X11Widget(Window wid, Type type);
+    X11Widget(Window wid, Type type, bool is_mapped);
 
     bool _is_destroyed;
     bool _is_mapped;

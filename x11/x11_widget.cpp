@@ -11,19 +11,12 @@
 #include <assert.h>
 
 
-X11Widget::X11Widget(Window wid, Type type) :
+X11Widget::X11Widget(Window wid, Type type, bool is_mapped) :
     _is_destroyed(false),
-    _is_mapped(false),
+    _is_mapped(is_mapped),
     _wid(wid),
     _type(type)
 {
-    //FIXME - pass is_mapped to constructor
-    XWindowAttributes attr;
-    if (!XGetWindowAttributes(X11Application::display(), _wid, &attr))
-        abort();
-
-//     _rect.set(attr.x, attr.y, attr.width, attr.height);
-    _is_mapped = (attr.map_state != IsUnmapped);
 }
 
 

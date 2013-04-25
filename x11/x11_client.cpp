@@ -154,6 +154,7 @@ void X11Client::handleCreate(Window wid)
     XWindowAttributes attr;
     if (XGetWindowAttributes(X11Application::display(), wid, &attr)) {
         if (!attr.override_redirect) { // dont't manage popups etc. //FIXME - else warning on client destroy
+            bool is_mapped = (attr.map_state != IsUnmapped);
 
             XSetWindowAttributes new_attr;
             memset(&new_attr, 0, sizeof(new_attr));
@@ -165,7 +166,7 @@ void X11Client::handleCreate(Window wid)
 
             X11Client *client = new X11Client();
 
-            client->_widget = new X11ClientWidget(wid, client);
+            client->_widget = new X11ClientWidget(wid, client, is_mapped);
 
             client->refreshName();
             client->refreshClass();
@@ -174,10 +175,7 @@ void X11Client::handleCreate(Window wid)
             std::cout<<"new client :"<<(client->_name)<<'\n';
             std::cout<<"-------------------------------------------------------------------\n";
 
-
             client->refreshSizeHints();
-
-            bool is_mapped = client->_widget->isMapped();
 
             if (is_mapped)
                 client->_widget->unmap();
@@ -253,7 +251,7 @@ bool X11Client::refreshMapState()
         if (is_mapped_cached == _widget->isMapped()) // state 1 or 2
             return true;
         else if (is_mapped_cached && !_widget->isMapped()) { // state 3
-            //FIXME client has unmapped itself - handle
+            // client has unmapped itself - handle
             unmapInt();
             return true;
         } else if (!is_mapped_cached && _widget->isMapped()) // state 4

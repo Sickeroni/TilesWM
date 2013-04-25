@@ -12,7 +12,7 @@
 std::map<Window, X11ServerWidget*> X11ServerWidget::_wid_index;
 
 
-X11ServerWidget::X11ServerWidget(Window wid) : X11Widget(wid, SERVER),
+X11ServerWidget::X11ServerWidget(Window wid) : X11Widget(wid, SERVER, false),
     _canvas(new X11Canvas(wid))
 {
 }

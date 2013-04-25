@@ -9,8 +9,8 @@
 #include <iostream>
 
 
-X11ClientWidget::X11ClientWidget(Window wid, X11Client *client) :
-    X11Widget(wid, CLIENT),
+X11ClientWidget::X11ClientWidget(Window wid, X11Client *client, bool is_mapped) :
+    X11Widget(wid, CLIENT, is_mapped),
     _client(client)
 {
 }
