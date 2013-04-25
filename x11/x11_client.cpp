@@ -328,9 +328,6 @@ void X11Client::unmapInt()
         container()->layout();
 }
 
-
-//FIXME TODO set SubstructureRedirectMask for frame
-
 void X11Client::handleConfigureRequest(const XConfigureRequestEvent &ev)
 {
     //FIXME - take window decoration into account

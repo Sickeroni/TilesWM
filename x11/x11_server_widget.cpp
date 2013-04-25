@@ -37,45 +37,38 @@ X11ServerWidget *X11ServerWidget ::find(Window wid)
 
 X11ServerWidget *X11ServerWidget::create(X11ServerWidget *parent)
 {
-    std::cout << "X11ServerWidget *X11ServerWidget::create(X11ServerWidget *parent)\n";
+    std::cout << "X11ServerWidget::create()\n";
+
     Window parent_wid = parent ? parent->wid() : X11Application::root();
 
     std::cout << "parent_wid: " << parent_wid << '\n';
 
-
+    const unsigned int width = 100, height = 100;
     const unsigned long fg = 0xFFFFFF;
-//     connst unsigned long bg = 0xFF4444;
     const unsigned long bg = 0x999999;
 
-    Window wid = XCreateSimpleWindow(X11Application::display(),
-                                     parent_wid,
-                                     0, 0,
-                                     100, 100,
-                                     0,
-                                     fg,
-                                     bg);
+    XSetWindowAttributes attr;
+    memset(&attr, 0, sizeof(attr));
+
+    attr.background_pixel = bg;
+    attr.border_pixel = fg;
+    attr.event_mask = SubstructureNotifyMask | SubstructureRedirectMask;
+
+    Window wid = XCreateWindow(X11Application::display(),
+                               parent_wid,
+                               0, 0,
+                               width, height,
+                               0,
+                               CopyFromParent,
+                               InputOutput,
+                               CopyFromParent,
+                               CWBackPixel | CWBorderPixel | CWEventMask,
+                               &attr);
+
     if (!wid)
         abort();
 
     assert(find(wid) == 0);
-
-
-    //FIXME UGLY - use XCreateWindow()
-    {
-        XWindowAttributes attr;
-        XSetWindowAttributes new_attr;
-
-        if (!XGetWindowAttributes(X11Application::display(), wid, &attr))
-            abort();
-
-        memset(&new_attr, 0, sizeof(XSetWindowAttributes));
-
-        new_attr.event_mask = attr.your_event_mask | SubstructureNotifyMask;
-
-        //FIXME reset all attributes ?
-
-        XChangeWindowAttributes(X11Application::display(), wid, CWEventMask, &new_attr);
-    }
 
     X11ServerWidget *widget = new X11ServerWidget(wid);
 
