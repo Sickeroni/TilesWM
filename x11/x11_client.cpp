@@ -44,6 +44,7 @@ X11Client::CriticalSection::~CriticalSection()
 {
     in_critical_section--;
     if(!in_critical_section) {
+        XSync(X11Application::display(), false);
         XSetErrorHandler(saved_error_handler);
         X11Application::self()->ungrabServer();
     }
