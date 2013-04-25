@@ -89,22 +89,20 @@ void X11Client::setRect(const Rect &rect)
 {
     _frame->setRect(rect);
 
-    const int frame_width = 5;
+    const int frame_width = 5; //FIXME
 
-    if (_widget) {
-        CriticalSection sec;
+    CriticalSection sec;
 
+    Rect r;
+    r.x = r.y = frame_width;
+    r.w = rect.w - (2 * frame_width);
+    r.h = rect.h - (2 * frame_width);
+    if (_max_width && r.w > _max_width)
+        r.w = _max_width;
+    if (_max_height && r.h > _max_height)
+        r.h = _max_height;
+    _widget->setRect(r);
 
-        Rect r;
-        r.x = r.y = frame_width;
-        r.w = rect.w - (2 * frame_width);
-        r.h = rect.h - (2 * frame_width);
-        if (_max_width && r.w > _max_width)
-            r.w = _max_width;
-        if (_max_height && r.h > _max_height)
-            r.h = _max_height;
-        _widget->setRect(r);
-    }
 }
 
 void X11Client::setContainer(ClientContainer *container)
@@ -291,7 +289,6 @@ void X11Client::mapInt()
         container()->handleClientMap(this);
 
     _frame->map();
-
 }
 
 void X11Client::unmap()
