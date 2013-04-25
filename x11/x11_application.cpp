@@ -160,9 +160,7 @@ bool X11Application::init()
     XSetWindowAttributes new_root_attr;
     memset(&new_root_attr, 0, sizeof(XSetWindowAttributes));
 
-    new_root_attr.event_mask = root_attr.your_event_mask | SubstructureNotifyMask | SubstructureRedirectMask;
-
-    //FIXME reset all attributes ?
+    new_root_attr.event_mask = SubstructureNotifyMask | SubstructureRedirectMask;
 
     XChangeWindowAttributes(_display, _root, CWEventMask, &new_root_attr);
 
@@ -254,28 +252,9 @@ void X11Application::eventLoop()
          */
         XNextEvent(_display, &ev);
 
-//         FIXME do this more efficiently
-//         XGrabServer(display());
-
-
         if (ev.xany.window && X11Widget::handleEvent(ev)) {
             // NO-OP
         }
-
-
-#if 0
-        if (ev.type == CreateNotify)
-            X11Widget::createNotify(ev.xcreatewindow);
-        else if(ev.type == DestroyNotify)
-            X11Widget::destroyNotify(ev.xdestroywindow);
-        else if(ev.type == UnmapNotify) {
-            X11Widget::unmapNotify(ev.xunmap);
-        }
-        else if (ev.type == MapRequest)
-            X11Widget::mapRequest(ev.xmaprequest);
-        else if (ev.type == ConfigureRequest)
-            X11Widget::configureRequest(ev.xconfigurerequest);
-#endif
 
 
         /* this is our keybinding for raising windows.  as i saw someone
