@@ -14,6 +14,8 @@ class ClientContainer;
 
 class Client : public List<Client>::Item
 {
+//FIXME
+//TODO cache size, pos
 public:
 //     static void startup();
 //     static void shutdown();
@@ -25,17 +27,20 @@ public:
     virtual ~Client();
 
     virtual void setRect(const Rect &rect) = 0;
+    virtual void setFocus() = 0;
 
     virtual void setContainer(ClientContainer *c);
 
     ClientContainer *container() { return _container; }
     bool isMapped() { return _is_mapped; }
+    bool hasFocus() { return _has_focus; }
     const std::string &name() { return _name; }
 
 protected:
     Client(bool is_mapped);
 
     bool _is_mapped;
+    bool _has_focus;
     std::string _name;
 
 private:

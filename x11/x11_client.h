@@ -20,6 +20,7 @@ class X11Client : public Client
 public:
     virtual ~X11Client();
 
+    virtual void setFocus();
     virtual void setRect(const Rect &rect);
     virtual void setContainer(ClientContainer *container);
 
@@ -41,6 +42,7 @@ private:
     void refreshSizeHints();
     void refreshName();
     void refreshClass();
+    void refreshFocusState();
     void handleConfigureRequest(const XConfigureRequestEvent &ev);
 
     static X11Client *find(Window wid);

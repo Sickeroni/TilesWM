@@ -85,6 +85,18 @@ X11Client::~X11Client()
 //     return ret;
 // }
 
+void X11Client::setFocus()
+{
+    CriticalSection sec;
+
+    refreshMapState();
+
+    assert(isMapped());
+
+    XSetInputFocus(X11Application::display(), _widget->wid(),
+                   RevertToParent, CurrentTime);
+}
+
 void X11Client::setRect(const Rect &rect)
 {
     _frame->setRect(rect);
@@ -153,7 +165,7 @@ void X11Client::handleCreate(Window wid)
             XSetWindowAttributes new_attr;
             memset(&new_attr, 0, sizeof(new_attr));
 
-            new_attr.event_mask = attr.your_event_mask | PropertyChangeMask;
+            new_attr.event_mask = attr.your_event_mask | PropertyChangeMask | FocusChangeMask;
 
             XChangeWindowAttributes(X11Application::display(), wid, CWEventMask, &new_attr);
 
@@ -277,18 +289,22 @@ void X11Client::mapInt()
     assert(!isMapped());
     assert(!_frame->isMapped());
 
+
     XAddToSaveSet(X11Application::display(), _widget->wid());
 
     _widget->reparent(_frame);
+
+    // notify container before mapping, to avoid visual glitches
+    if (container())
+        container()->handleClientAboutToBeMapped(this);
+
     _widget->map();
+    _frame->map();
 
     _is_mapped = true;
 
-    // notify container before mapping frame to avoid visual glitches
     if (container())
         container()->handleClientMap(this);
-
-    _frame->map();
 }
 
 void X11Client::unmap()
@@ -430,6 +446,34 @@ void X11Client::refreshClass()
     _name = _x11_class + " - " + _x11_name;
 }
 
+void X11Client::refreshFocusState()
+{
+    CriticalSection sec;
+
+    Window focus_return;
+    int revert_to_return;
+    XGetInputFocus(X11Application::display(), &focus_return, &revert_to_return);
+
+    bool focus_changed = false;
+
+    if (_has_focus) {
+        if (_widget->wid() != focus_return) {
+            // we lost focus
+            focus_changed = true;
+            _has_focus = false;
+        } // else: no change
+    } else {
+        if (_widget->wid() == focus_return) {
+            // we got focus
+            focus_changed = true;
+            _has_focus = true;
+        } // else: no change
+    }
+
+    if (focus_changed && container())
+        container()->handleClientFocusChange(this);
+}
+
 bool X11Client::handleEvent(const XEvent &ev)
 {
     bool handled = false;
@@ -480,6 +524,10 @@ bool X11Client::handleEvent(const XEvent &ev)
                 break;
             case ConfigureRequest:
                 client->handleConfigureRequest(ev.xconfigurerequest);
+                break;
+            case FocusIn:
+            case FocusOut:
+                client->refreshFocusState();
                 break;
             case PropertyNotify:
                 switch (ev.xproperty.atom) {

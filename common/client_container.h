@@ -22,7 +22,13 @@ public:
 //     virtual void layoutClients;
     virtual bool isEmpty() { return _clients.isEmpty(); }
 
+    bool hasFocus() {
+        //FIXME HACK
+        return true;
+    }
+
     Client *activeClient();
+    void setActiveClient(Client *client);
 
     void removeClient(Client *c) {
         removeClientInt(c, false);
@@ -35,6 +41,8 @@ public:
 
     void handleClientMap(Client *client);
     void handleClientUnmap(Client *client);
+    void handleClientAboutToBeMapped(Client *client);
+    void handleClientFocusChange(Client *client);
 
 protected:
     ClientContainer(ContainerContainer *parent);
@@ -53,9 +61,9 @@ private:
     static int _titlebar_height;
 
     int numMappedClients();
-    void getStackCellSize(int &w, int &h);
+    void getStackCellSize(int num_cells, int &w, int &h);
     void layoutTabbed();
-    void layoutStacked();
+    void layoutStacked(Client *about_to_be_mapped);
     void drawTabbed(Canvas *canvas);
     void drawStacked(Canvas *canvas);
     void removeClientInt(Client *c, bool moving_to_new_container);

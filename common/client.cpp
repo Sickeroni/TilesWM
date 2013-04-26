@@ -37,7 +37,7 @@ void Client::unmapNotify(Window window)
 
 
 Client::Client(bool is_mapped) :
-    _is_mapped(is_mapped), _name("<no name>"), _container(0)
+    _is_mapped(is_mapped), _has_focus(false), _name("<no name>"), _container(0)
 {
 }
 

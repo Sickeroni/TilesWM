@@ -48,10 +48,25 @@ Client *ClientContainer::activeClient()
         return 0;
 }
 
+void ClientContainer::setActiveClient(Client *client)
+{
+    if (client)
+        std::cout<<"ClientContainer::setActiveClient(): \""<<client->name()<<"\"\n";
+    else
+        std::cout<<"ClientContainer::setActiveClient(): 0\n";
+
+    assert(!client || client->isMapped());
+
+    _active_client = client;
+
+    if (_active_client && !_active_client->hasFocus() && hasFocus())
+        _active_client->setFocus();
+}
+
 void ClientContainer::handleClientMap(Client *client)
 {
     if (!_active_client)
-        _active_client = client;
+        setActiveClient(client);
     layout();
 }
 
@@ -62,12 +77,25 @@ void ClientContainer::handleClientUnmap(Client *client)
     layout();
 }
 
+void ClientContainer::handleClientAboutToBeMapped(Client *client)
+{
+    //FIXME layout mode
+    layoutStacked(client);
+}
+
+void ClientContainer::handleClientFocusChange(Client *client)
+{
+    if (client->hasFocus())
+        setActiveClient(client);
+    redraw();
+}
+
 void ClientContainer::focusPrevClient()
 {
     if (_active_client) {
         for(Client *c = _active_client->prev(); c; c = c->prev()) {
             if (c->isMapped()) {
-                _active_client = c;
+                setActiveClient(c);
                 break;
             }
         }
@@ -80,7 +108,7 @@ void ClientContainer::focusNextClient()
     if (_active_client) {
         for(Client *c = _active_client->next(); c; c = c->next()) {
             if (c->isMapped()) {
-                _active_client = c;
+                setActiveClient(c);
                 break;
             }
         }
@@ -93,11 +121,11 @@ void ClientContainer::unfocusActiveClient()
     assert(_active_client);
 
     Client *old_active = _active_client;
-    _active_client = 0;
+    setActiveClient(0);
 
     for(Client *c = old_active->prev(); c; c = c->prev()) {
         if (c->isMapped()) {
-            _active_client = c;
+            setActiveClient(c);
             break;
         }
     }
@@ -105,7 +133,7 @@ void ClientContainer::unfocusActiveClient()
     if (!_active_client) {
         for(Client *c = old_active->next(); c; c = c->next()) {
             if (c->isMapped()) {
-                _active_client = c;
+                setActiveClient(c);
                 break;
             }
         }
@@ -132,7 +160,7 @@ void ClientContainer::addClient(Client *c)
 
 
     if (c->isMapped() && !_active_client)
-        _active_client = c;
+        setActiveClient(c);
 
 #if 0
     //FIXME UGLY - layout client in advance
@@ -292,9 +320,14 @@ void ClientContainer::drawStacked(Canvas *canvas)
         rect.x += gap;
         rect.y += gap;
 
+        if (c->hasFocus()) {
+            Rect focus_rect;
+            focus_rect.set(rect.x+2, rect.y+2, rect.w-4, rect.h-4);
+            canvas->drawFrame(focus_rect, 0xFF8080);
+        }
 
 //         localToGlobal(x, y);
-        std::cout<<"x: "<<rect.x<<" y: "<<rect.y<<'\n';
+//         std::cout<<"x: "<<rect.x<<" y: "<<rect.y<<'\n';
 
         if (activeClient() == c) {
             canvas->drawFrame(rect, 0x0);
@@ -363,7 +396,7 @@ void ClientContainer::drawTabbed(Canvas *canvas)
 
 void ClientContainer::layout()
 {
-    layoutStacked();
+    layoutStacked(0);
     redraw();
 }
 
@@ -377,25 +410,25 @@ void ClientContainer::layoutTabbed()
     int tab_height = (_titlebar_height - 2) - _frame_width;
 #endif
 
-    layoutStacked();
+    layoutStacked(0);
 
     redraw();
 }
 
 void ClientContainer::getClientSize(int &w, int &h)
 {
-    //FIXME - this works only to stacked layout
+    //FIXME - this works only for stacked layout
 
     const int cell_border = 12; //FIXME
 
-    getStackCellSize(w, h);
+    getStackCellSize(numMappedClients(), w, h);
 
     w -= 2 * cell_border;
     h -= 2 * cell_border;
 
 }
 
-void ClientContainer::getStackCellSize(int &w, int &h)
+void ClientContainer::getStackCellSize(int num_cells, int &w, int &h)
 {
     int client_w = width() - (2 * _frame_width);
     int client_h = height() - ((2 * _frame_width) + _titlebar_height);
@@ -403,21 +436,20 @@ void ClientContainer::getStackCellSize(int &w, int &h)
     if (!client_w || !client_h)
         return;
 
-    int cell_num = numMappedClients();
 
 //     std::cout<<"mapped_clients: "<<mapped_clients<<"\n";
 
-    if (!cell_num)
-        cell_num = 1;
+    if (!num_cells)
+        num_cells = 1;
 
     int cell_width = 0, cell_height = 0;
 
     if (isHorizontal()) {
-        cell_width = client_w / cell_num;
+        cell_width = client_w / num_cells;
         cell_height = client_h;
     } else {
         cell_width = client_w;
-        cell_height = client_h / cell_num;
+        cell_height = client_h / num_cells;
     }
 
     w = cell_width;
@@ -425,15 +457,19 @@ void ClientContainer::getStackCellSize(int &w, int &h)
 
 }
 
-void ClientContainer::layoutStacked()
+void ClientContainer::layoutStacked(Client *about_to_be_mapped)
 {
     std::cout<<"======================\nClientContainer::layout()\n";
     std::cout<<"is horizontal: "<<isHorizontal()<<'\n';
 
     const int cell_border = 12; //FIXME
 
+    int num_cells = numMappedClients();
+    if (about_to_be_mapped)
+        num_cells++;
+
     int cell_width, cell_height;
-    getStackCellSize(cell_width, cell_height);
+    getStackCellSize(num_cells, cell_width, cell_height);
 
     Rect rect;
     rect.setSize(cell_width, cell_height);
@@ -443,7 +479,7 @@ void ClientContainer::layoutStacked()
 
     int i = 0;
     for(Client *c = _clients.first(); c; c = c->next()) {
-        if (!c->isMapped())
+        if (!c->isMapped() && c != about_to_be_mapped)
             continue;
 
         if (isHorizontal()) {

@@ -220,6 +220,9 @@ void X11Application::eventLoop()
     XGrabKey(display(), XKeysymToKeycode(display(), next_key), Mod1Mask, root(),
             true, GrabModeAsync, GrabModeAsync);
 
+//     XGrabKey(display(), AnyKey, AnyModifier, root(),
+//             false, GrabModeAsync, GrabModeAsync);
+
 
     int x11_fd = ConnectionNumber(display());
 
