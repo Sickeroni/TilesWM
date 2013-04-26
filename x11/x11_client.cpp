@@ -94,7 +94,7 @@ void X11Client::setFocus()
     assert(isMapped());
 
     XSetInputFocus(X11Application::display(), _widget->wid(),
-                   RevertToParent, CurrentTime);
+                   RevertToNone, CurrentTime);
 }
 
 void X11Client::setRect(const Rect &rect)
@@ -469,6 +469,10 @@ void X11Client::refreshFocusState()
             _has_focus = true;
         } // else: no change
     }
+
+    if (!focus_return)
+        XSetInputFocus(X11Application::display(), X11Application::root(),
+                       RevertToNone, CurrentTime);
 
     if (focus_changed && container())
         container()->handleClientFocusChange(this);
