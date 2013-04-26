@@ -7,6 +7,9 @@
 #include "client_container.h"
 
 #include <sys/select.h>
+#include <sys/types.h>
+#include <sys/wait.h>
+#include <unistd.h>
 
 #include <iostream>
 #include <string.h>
@@ -208,6 +211,7 @@ void X11Application::eventLoop()
     KeySym rotate_key = XStringToKeysym("r");
     KeySym prev_key = XStringToKeysym("p");
     KeySym next_key = XStringToKeysym("n");
+    KeySym term_key = XStringToKeysym("t");
 
     XGrabKey(display(), XKeysymToKeycode(display(), layout_key), Mod1Mask, root(),
             true, GrabModeAsync, GrabModeAsync);
@@ -219,6 +223,8 @@ void X11Application::eventLoop()
             true, GrabModeAsync, GrabModeAsync);
     XGrabKey(display(), XKeysymToKeycode(display(), next_key), Mod1Mask, root(),
             true, GrabModeAsync, GrabModeAsync);
+    XGrabKey(display(), XKeysymToKeycode(display(), term_key), Mod1Mask, root(),
+            false, GrabModeAsync, GrabModeAsync);
 
 //     XGrabKey(display(), AnyKey, AnyModifier, root(),
 //             false, GrabModeAsync, GrabModeAsync);
@@ -306,6 +312,9 @@ void X11Application::eventLoop()
                 std::cout<<"next key pressed.\n";
                 if (activeRootContainer()->activeClientContainer())
                     activeRootContainer()->activeClientContainer()->focusNextClient();
+            } else if (XLookupKeysym(&ev.xkey, 0) == term_key) {
+                std::cout<<"terminal key pressed.\n";
+                runProgram("/usr/bin/xterm");
             }
         }
 #endif
@@ -414,4 +423,23 @@ void X11Application::ungrabServer()
 
     if (!_num_server_grabs)
         XUngrabServer(_display);
+}
+
+void X11Application::runProgram(const char *path)
+{
+    char *const args[] = {
+        const_cast<char*>(path),
+        0
+    };
+
+    pid_t pid = fork();
+
+    if (pid > 0) {
+        waitpid(pid, 0, WNOHANG);
+    } else if (pid == 0) {
+        execv(path, args);
+        perror ("error: ");
+        exit(1);
+    } else
+        std::cout<<"error executing "<<path<<'\n';
 }

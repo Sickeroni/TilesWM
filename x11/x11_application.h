@@ -17,6 +17,7 @@ public:
         return self()->_activeRootContainer;
     }
     static const char *x11EventToString(size_t id);
+    static void runProgram(const char *path);
 
     X11Application();
 
