@@ -3,6 +3,7 @@
 
 #include "client.h"
 
+#include "x11_server_widget.h"
 #include "rect.h"
 
 #include <X11/Xlib.h>
@@ -12,11 +13,11 @@
 
 class ClientContainer;
 class X11ClientWidget;
-class X11ServerWidget;
+
 
 //FIXME TODO - frame: draw focus
 
-class X11Client : public Client
+class X11Client : public Client, public X11ServerWidget::EventHandler
 {
 public:
     virtual ~X11Client();
@@ -24,6 +25,9 @@ public:
     virtual void setFocus();
     virtual void setRect(const Rect &rect);
     virtual void setContainer(ClientContainer *container);
+
+    // X11ServerWidget::EventHandler implementation
+    virtual void handleExpose();
 
     void map();
 
@@ -46,6 +50,7 @@ private:
     void refreshFocusState();
     void refreshWindowType();
     void handleConfigureRequest(const XConfigureRequestEvent &ev);
+    void drawFrame();
 
     static X11Client *find(Window wid);
     static void handleCreate(Window wid);

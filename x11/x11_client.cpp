@@ -5,6 +5,7 @@
 #include "x11_server_widget.h"
 #include "x11_application.h"
 #include "x11_container_container.h"
+#include "x11_canvas.h"
 
 #include <X11/Xutil.h>
 #include <X11/Xatom.h>
@@ -233,7 +234,7 @@ void X11Client::handleCreate(Window wid)
             if (is_mapped)
                 client->_widget->unmap();
 
-            client->_frame = X11ServerWidget::create(0, 0, SubstructureNotifyMask | SubstructureRedirectMask);
+            client->_frame = X11ServerWidget::create(0, client, SubstructureNotifyMask | SubstructureRedirectMask);
 
             Rect frame_rect;
             frame_rect.set(attr.x, attr.y, attr.width + 10, attr.height + 10);
@@ -565,6 +566,8 @@ void X11Client::refreshFocusState()
 
     if (focus_changed && container())
         container()->handleClientFocusChange(this);
+    else if (focus_changed)
+        drawFrame();
 }
 
 void X11Client::refreshWindowType()
@@ -609,6 +612,28 @@ void X11Client::refreshWindowType()
         XFree(prop_return);
     } else
         std::cout<<"failed to get _net_wm_window_type property.\n";
+}
+
+void X11Client::handleExpose()
+{
+    if (!container())
+        drawFrame();
+}
+
+void X11Client::drawFrame()
+{
+    Canvas *canvas = _frame->canvas();
+
+    //FIXME
+    Rect frame_rect;
+    frame_rect.setSize(300, 300);
+
+    //FIXME
+    canvas->erase(frame_rect);
+
+    frame_rect.set(frame_rect.x+2, frame_rect.y+2, frame_rect.w-4, frame_rect.h-4);
+    if (_has_focus)
+        canvas->drawFrame(frame_rect, 0xFF8888);
 }
 
 bool X11Client::handleEvent(const XEvent &ev)
