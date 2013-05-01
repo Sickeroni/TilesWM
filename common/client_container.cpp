@@ -41,7 +41,7 @@ void ClientContainer::clear()
 Client *ClientContainer::activeClient()
 {
     if (_active_client) {
-        std::cout<<"active client: \""<<_active_client->name()<<"\"\n";
+//         std::cout<<"active client: \""<<_active_client->name()<<"\"\n";
         assert(_active_client->isMapped());
         return _active_client;
     } else
@@ -50,10 +50,10 @@ Client *ClientContainer::activeClient()
 
 void ClientContainer::setActiveClient(Client *client)
 {
-    if (client)
-        std::cout<<"ClientContainer::setActiveClient(): \""<<client->name()<<"\"\n";
-    else
-        std::cout<<"ClientContainer::setActiveClient(): 0\n";
+//     if (client)
+//         std::cout<<"ClientContainer::setActiveClient(): \""<<client->name()<<"\"\n";
+//     else
+//         std::cout<<"ClientContainer::setActiveClient(): 0\n";
 
     assert(!client || client->isMapped());
 
@@ -277,7 +277,7 @@ void ClientContainer::drawStacked(Canvas *canvas)
     if (!client_w || !client_h)
         return;
 
-    std::cout<<"mapped_clients: "<<mapped_clients<<"\n";
+//     std::cout<<"mapped_clients: "<<mapped_clients<<"\n";
 
     if (!mapped_clients)
         return;
@@ -292,9 +292,9 @@ void ClientContainer::drawStacked(Canvas *canvas)
         cell_height = client_h / mapped_clients;
     }
 
-    std::cout<<"cell_width: "<<cell_width<<"\n";
-    std::cout<<"cell_height: "<<cell_height<<"\n";
-    std::cout<<"=================================\n";
+//     std::cout<<"cell_width: "<<cell_width<<"\n";
+//     std::cout<<"cell_height: "<<cell_height<<"\n";
+//     std::cout<<"=================================\n";
 
     Rect rect;
     rect.setSize(cell_width, cell_height);

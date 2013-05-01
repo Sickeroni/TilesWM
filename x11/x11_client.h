@@ -14,6 +14,7 @@ class ClientContainer;
 class X11ClientWidget;
 class X11ServerWidget;
 
+//FIXME TODO - frame: draw focus
 
 class X11Client : public Client
 {
@@ -25,7 +26,6 @@ public:
     virtual void setContainer(ClientContainer *container);
 
     void map();
-    void mapInt();
 
     static void init();
     static bool handleEvent(const XEvent &ev);
@@ -36,6 +36,7 @@ private:
     X11Client();
 
 //     bool validate();
+    void mapInt();
     void unmap();
     void unmapInt();
     bool refreshMapState();
@@ -43,19 +44,24 @@ private:
     void refreshName();
     void refreshClass();
     void refreshFocusState();
+    void refreshWindowType();
     void handleConfigureRequest(const XConfigureRequestEvent &ev);
 
     static X11Client *find(Window wid);
     static void handleCreate(Window wid);
 
-    // FIXME - use hash
+    // TODO - use hash
     static std::map<Window, X11Client*> _wid_index;
+    static Atom _net_wm_window_type;
+    static Atom _net_wm_window_type_dialog;
 
     X11ClientWidget *_widget;
     X11ServerWidget *_frame;
     int _max_width, _max_height;
     std::string _x11_name;
     std::string _x11_class;
+    bool _is_dialog;
+    bool _is_modal;
 };
 
 #endif // __X11_CLIENT_H__

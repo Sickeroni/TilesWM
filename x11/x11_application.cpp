@@ -394,7 +394,7 @@ void X11Application::eventLoop()
 #endif
 #if 1
         else {
-            std::cout<<"unhandled event: "<<x11EventToString(ev.type)<<'\n';
+//             std::cout<<"unhandled event: "<<x11EventToString(ev.type)<<'\n';
         }
 #endif
 

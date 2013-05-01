@@ -60,12 +60,16 @@ int X11Client::CriticalSection::errorHandler(Display *display, XErrorEvent *ev)
         return 0;
 }
 
+
 std::map<Window, X11Client*> X11Client::_wid_index;
+Atom X11Client::_net_wm_window_type = None;
+Atom X11Client::_net_wm_window_type_dialog = None;
 
 
 X11Client::X11Client() : Client(false),
     _widget(0), _frame(0),
-    _max_width(0), _max_height(0)
+    _max_width(0), _max_height(0),
+    _is_dialog(false), _is_modal(false)
 {
 }
 
@@ -136,6 +140,9 @@ void X11Client::init()
 {
     CriticalSection sec;
 
+    _net_wm_window_type = XInternAtom(X11Application::display(), "_NET_WM_WINDOW_TYPE", false);
+    _net_wm_window_type_dialog = XInternAtom(X11Application::display(), "_NET_WM_WINDOW_TYPE_DIALOG", false);
+
     Window unused = 0;
     Window *children = 0;
     unsigned int num_children = 0;
@@ -157,6 +164,41 @@ void X11Client::handleCreate(Window wid)
 
     assert(find(wid) == 0);
 
+    bool is_modal = false;
+
+//     X11Client *transient_for = 0;
+
+    Window transient_for_wid = 0;
+    if (XGetTransientForHint(X11Application::display(), wid, &transient_for_wid)) {
+        if (transient_for_wid) {
+            is_modal = true;
+//             transient_for = find(transient_for_wid);
+        }
+    }
+
+#if 0
+    {
+        int num_props = 0;
+        Atom *props = XListProperties(X11Application::display(), wid, &num_props);
+
+        {
+            std::cout<<"properties:\n===========================================\n";
+            for(int i = 0; i < num_props; i++) {
+                char *atom_name = XGetAtomName(X11Application::display(), props[i]);
+                if (atom_name) {
+                    std::cout<<atom_name<<'\n';
+                    XFree(atom_name);
+                }
+            }
+            std::cout<<"----------------- end properties -------------------\n";
+        }
+
+        if(props)
+            XFree(props);
+        props = 0;
+    }
+#endif
+
     XWindowAttributes attr;
     if (XGetWindowAttributes(X11Application::display(), wid, &attr)) {
         if (!attr.override_redirect) {
@@ -169,17 +211,22 @@ void X11Client::handleCreate(Window wid)
 
             XChangeWindowAttributes(X11Application::display(), wid, CWEventMask, &new_attr);
 
-
             X11Client *client = new X11Client();
+
+            if (is_modal)
+                client->_is_modal = true;
 
             client->_widget = new X11ClientWidget(wid, client, is_mapped);
 
             client->refreshName();
             client->refreshClass();
+            client->refreshWindowType();
 
             std::cout<<"-------------------------------------------------------------------\n";
             std::cout<<"new client: "<<(client->_name)<<'\n';
             std::cout<<"-------------------------------------------------------------------\n";
+
+            std::cout<<"is_dialog: "<<client->_is_dialog<<'\n';
 
             client->refreshSizeHints();
 
@@ -188,13 +235,32 @@ void X11Client::handleCreate(Window wid)
 
             client->_frame = X11ServerWidget::create(0, 0, SubstructureNotifyMask | SubstructureRedirectMask);
 
-            X11Application::activeRootContainer()->addClient(client);
+            Rect frame_rect;
+            frame_rect.set(attr.x, attr.y, attr.width + 10, attr.height + 10);
 
-            if (is_mapped)
-                client->map();
+#if 0
+            if (!attr.x && !attr.y && transient_for_wid) {
+                // place client above transient_for
+                XWindowAttributes transient_for_attr;
+                if (XGetWindowAttributes(X11Application::display(), transient_for_wid, &transient_for_attr)) {
+                    //FIXME
+                    frame_rect.setPos(transient_for_attr.x + 100, transient_for_attr.y + 100);
+                }
+            }
+#endif
+            if (/*!attr.x && !attr.y && */(client->_is_dialog || is_modal)) {
+                frame_rect.setPos(200, 200);
+            }
+
+            client->_frame->setRect(frame_rect);
+
+            if (!client->_is_dialog && !is_modal)
+                X11Application::activeRootContainer()->addClient(client);
 
             _wid_index.insert(std::pair<Window, X11Client*>(wid, client));
 
+            if (is_mapped)
+                client->map();
         }
     } else {
         std::cerr << "XGetWindowAttributes() for client window " << wid << "failed\n";
@@ -292,7 +358,7 @@ void X11Client::mapInt()
 
     XAddToSaveSet(X11Application::display(), _widget->wid());
 
-    _widget->reparent(_frame);
+    _widget->reparent(_frame, 5, 5); // HACK: 5 = frame width
 
     // notify container before mapping, to avoid visual glitches
     if (container())
@@ -374,8 +440,31 @@ void X11Client::handleConfigureRequest(const XConfigureRequestEvent &ev)
 
         XConfigureWindow(X11Application::display(), _widget->wid(), ev.value_mask, &changes);
     } else {
+        // HACK HACK HACK
+
+        Rect frame_rect;
+        //HACK
+//         frame_rect.set(ev.x, ev.y, ev.width + 10, ev.height + 10);
+
+        //HACK
+        frame_rect.setSize(ev.width + 10, ev.height + 10);
+
+        //HACK
+        XWindowAttributes frame_attr;
+        if (XGetWindowAttributes(X11Application::display(), _frame->wid(), &frame_attr)) {
+            if (frame_attr.x || frame_attr.y)
+                frame_rect.setPos(frame_attr.x, frame_attr.y);
+        }
+
+        //HACK
+        changes.x = 5;
+        changes.y = 5;
+
+
+        //FIXME - translate coordinates
         XConfigureWindow(X11Application::display(), _widget->wid(), ev.value_mask, &changes);
-        //FIXME - frame
+
+        _frame->setRect(frame_rect);
     }
 }
 
@@ -478,8 +567,54 @@ void X11Client::refreshFocusState()
         container()->handleClientFocusChange(this);
 }
 
+void X11Client::refreshWindowType()
+{
+    std::cout<<"X11Client::refreshWindowType()\n";
+
+    CriticalSection sec;
+
+    _is_dialog = false;
+
+    Atom actual_type_return;
+    int actual_format_return;
+    unsigned long nitems_return;
+    unsigned long bytes_after_return;
+    Atom *prop_return;
+
+    long max_length = 1024; //FIXME this is bullshit
+
+    if (XGetWindowProperty(X11Application::display(), _widget->wid(), _net_wm_window_type,
+                            0, max_length,
+                            false,
+                            XA_ATOM,
+                            &actual_type_return,
+                            &actual_format_return,
+                            &nitems_return,
+                            &bytes_after_return,
+                            (unsigned char**)&prop_return) == Success)
+    {
+        if (actual_type_return == XA_ATOM) {
+            Atom value = *prop_return;
+
+//                     char *atom_name = XGetAtomName(X11Application::display(), value);
+//                     if (atom_name) {
+//                         std::cout<<"_net_wm_window_type: "<<atom_name<<'\n';
+//                         XFree(atom_name);
+//                     }
+
+            if (value == _net_wm_window_type_dialog)
+                _is_dialog = true;
+        }
+
+        XFree(prop_return);
+    } else
+        std::cout<<"failed to get _net_wm_window_type property.\n";
+}
+
 bool X11Client::handleEvent(const XEvent &ev)
 {
+    //FIXME handle transient_for change
+
     bool handled = false;
 
     Window wid = 0;
@@ -550,6 +685,30 @@ bool X11Client::handleEvent(const XEvent &ev)
                     if (client->container())
                         client->container()->redraw();
                     break;
+                case XA_WM_TRANSIENT_FOR:
+                    abort(); //FIXME
+                    break;
+                default:
+                    if (ev.xproperty.atom ==  _net_wm_window_type) {
+                        bool was_dialog = client->_is_dialog;
+                        std::cout<<"was_dialog: "<<was_dialog<<'\n';
+                        client->refreshWindowType();
+                        std::cout<<"is_dialog: "<<(client->_is_dialog)<<'\n';
+                        if (was_dialog != client->_is_dialog) {
+                            if (client->isMapped())
+                                abort(); //FIXME
+                            if (client->_is_dialog) {
+                                if (client->container()) {
+                                    client->container()->removeClient(client);
+                                    //FIXME TODO place frame
+                                }
+                            } else {
+                                //FIXME insert into active conteiner or something
+                                abort();
+                            }
+
+                        }
+                    }
                 }
                 break;
             }
@@ -558,6 +717,28 @@ bool X11Client::handleEvent(const XEvent &ev)
         } else if (ev.type == CreateNotify) {
             handleCreate(ev.xcreatewindow.window);
             handled = true;
+        } else if (ev.type == MapRequest) {
+            abort();
+//             XMapWindow(X11Application::display(), wid);
+        } else if (ev.type == ConfigureRequest) {
+            abort();
+            #if 0
+            const XConfigureRequestEvent &crev = ev.xconfigurerequest;
+
+            XWindowChanges changes;
+            memset(&changes, 0, sizeof(changes));
+            changes.x = crev.x;
+            changes.y = crev.y;
+            changes.width = crev.width;
+            changes.height = crev.height;
+            changes.border_width = crev.border_width;
+            changes.sibling = crev.above;
+            changes.stack_mode = crev.detail;
+
+            CriticalSection sec;
+
+            XConfigureWindow(X11Application::display(), wid, crev.value_mask, &changes);
+            #endif
         } else {
 //             std::cout<<"no client with wid "<<wid<<'\n';
         }

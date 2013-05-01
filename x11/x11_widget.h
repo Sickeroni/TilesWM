@@ -27,7 +27,7 @@ public:
     void move(int x, int y);
     bool isMapped() { return _is_mapped; }
     Window wid() { return _wid; }
-    void reparent(X11ServerWidget *new_parent);
+    void reparent(X11ServerWidget *new_parent, int x = 0, int y = 0);
     void map();
     void unmap();
 

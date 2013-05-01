@@ -10,9 +10,9 @@ struct Rect
     void set(int x, int y, int w, int h) {
         this->x = x; this->y = y; this->w = w; this->h = h;
     }
-//     void setPos(int x, int y) {
-//         this->x = x; this->h = h;
-//     }
+    void setPos(int x, int y) {
+        this->x = x; this->y = y;
+    }
     void setSize(int w, int h) {
         this->w = w; this->h = h;
     }

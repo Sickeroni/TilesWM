@@ -75,10 +75,10 @@ void X11Widget::unmap()
     _is_mapped = false;
 }
 
-void X11Widget::reparent(X11ServerWidget *new_parent)
+void X11Widget::reparent(X11ServerWidget *new_parent, int x, int y)
 {
     Window new_parent_wid = new_parent ? new_parent->wid() : X11Application::root();
-    XReparentWindow(X11Application::display(), _wid, new_parent_wid, 0, 0);
+    XReparentWindow(X11Application::display(), _wid, new_parent_wid, x, y);
 }
 
 void X11Widget::move(int x, int y)
@@ -94,7 +94,7 @@ void X11Widget::setRect(const Rect &rect)
 
 bool X11Widget::handleEvent(const XEvent &ev)
 {
-    std::cout<<"X11Widget::handleEvent(): "<<X11Application::x11EventToString(ev.type)<<'\n';
+//     std::cout<<"X11Widget::handleEvent(): "<<X11Application::x11EventToString(ev.type)<<'\n';
 
     bool handled = false;
 
