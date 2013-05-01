@@ -174,6 +174,9 @@ bool X11Application::init()
     _activeRootContainer = new X11ContainerContainer(0);
     _activeRootContainer->setRect(root_container_rect);
 
+    _activeRootContainer->appendNewClientContainer(); //FIXME HACK
+    _activeRootContainer->appendNewClientContainer(); //FIXME HACK
+
     X11Client::init();
 
 //     XFlush(display());

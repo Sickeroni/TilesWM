@@ -66,6 +66,45 @@ void ContainerContainer::draw(Canvas *canvas)
     canvas->erase(_rect);
     Rect r(_rect.x+5, _rect.y+5, _rect.w-10, _rect.h-10);
     canvas->drawFrame(r, 0);
+
+
+    Rect client_rect;
+    getClientRect(client_rect);
+
+    if (!client_rect.w || !client_rect.h)
+        return;
+
+    int cell_width = 0, cell_height = 0;
+
+    if (isHorizontal()) {
+        cell_width = client_rect.w / _children.count();
+        cell_height = client_rect.h;
+    } else {
+        cell_width = client_rect.w;
+        cell_height = client_rect.h / _children.count();
+    }
+
+    Rect frame_rect;
+    frame_rect.setSize(cell_width, cell_height);
+
+    frame_rect.w -= 10;
+    frame_rect.h -= 10;
+
+    for(int i = 0; i < _children.count(); i++) {
+        if (isHorizontal()) {
+            frame_rect.x = client_rect.x + (i * cell_width);
+            frame_rect.y = client_rect.y;
+        } else {
+            frame_rect.x = client_rect.x;
+            frame_rect.y = client_rect.y + (i * cell_height);
+        }
+
+        frame_rect.x += 5;
+        frame_rect.y += 5;
+
+        canvas->drawFrame(frame_rect, 0);
+   }
+
 }
 
 void ContainerContainer::layout()
@@ -78,6 +117,9 @@ void ContainerContainer::layout()
 
     if (!client_rect.w || !client_rect.h)
         return;
+
+    std::cout<<"ContainerContainer::layout()\n";
+    std::cout<<"children: "<<_children.count()<<'\n';
 
     int cell_width = 0, cell_height = 0;
 
@@ -96,6 +138,9 @@ void ContainerContainer::layout()
     Rect new_rect;
     new_rect.setSize(cell_width, cell_height);
 
+    new_rect.w -= 2*child_frame_width;
+    new_rect.h -= 2*child_frame_width;
+
     int i = 0;
     for(Container *c = _children.first(); c; c = c->next()) {
         if (isHorizontal()) {
@@ -103,8 +148,11 @@ void ContainerContainer::layout()
             new_rect.y = client_rect.y;
         } else {
             new_rect.x = client_rect.x;
-            new_rect.y = client_rect.y + (i * cell_width);
+            new_rect.y = client_rect.y + (i * cell_height);
         }
+
+        new_rect.x += child_frame_width;
+        new_rect.y += child_frame_width;
 
 //         localToGlobal(x, y);
 
@@ -113,6 +161,17 @@ void ContainerContainer::layout()
 
         i++;
    }
+
+   redraw();
+}
+
+
+void ContainerContainer::appendNewClientContainer()
+{
+    std::cout<<"ContainerContainer::appendNewClientContainer()\n";
+    ClientContainer *client_container = createClientContainer();
+    appendChild(client_container);
+    layout();
 }
 
 #if 0
@@ -132,10 +191,15 @@ void ContainerContainer::prependChild(Container *container)
 
 void ContainerContainer::appendChild(Container *container)
 {
+    std::cout<<"ContainerContainer::appendChild()\n";
+    std::cout<<"children: "<<_children.count()<<'\n';
+
     if (!container->isUnlinked())
         abort();
 
     _children.append(container);
+
+    std::cout<<"children: "<<_children.count()<<'\n';
 
     layout();
 }

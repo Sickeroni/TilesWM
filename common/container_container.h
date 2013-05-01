@@ -29,6 +29,8 @@ public:
     void setDirty(bool set);
     void draw(Canvas *canvas);
 
+    void appendNewClientContainer();
+
 protected:
     virtual ClientContainer *createClientContainer() = 0;
 
@@ -49,6 +51,7 @@ private:
 
     static const int frame_width = 10;
     static const int title_height = 10;
+    static const int child_frame_width = 10;
 };
 
 

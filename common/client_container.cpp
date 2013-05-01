@@ -81,6 +81,7 @@ void ClientContainer::handleClientAboutToBeMapped(Client *client)
 {
     //FIXME layout mode
     layoutStacked(client);
+    redraw();
 }
 
 void ClientContainer::handleClientFocusChange(Client *client)
