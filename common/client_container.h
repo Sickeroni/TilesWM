@@ -45,6 +45,8 @@ public:
     void handleClientAboutToBeMapped(Client *client);
     void handleClientFocusChange(Client *client);
 
+    void createSilbling(Direction where);
+
 protected:
     ClientContainer(ContainerContainer *parent);
 

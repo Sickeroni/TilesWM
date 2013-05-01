@@ -508,6 +508,19 @@ void ClientContainer::layoutStacked(Client *about_to_be_mapped)
    }
 }
 
+
+void ClientContainer::createSilbling(Direction where)
+{
+    std::cout<<"ClientContainer::createSilbling()\n";
+    bool prepend = !isForwardDirection(where);
+    if (orientationOfDirection(where) == _parent->orientation()) {
+//         std::cout<<"good orientation\n";
+        _parent->addNewClientContainer(prepend);
+    } else
+        _parent->splitChild(this, prepend);
+}
+
+
 #if 0
 
 ClientContainer *ClientContainer::splitContainer(Container *container, bool prepend_new_silbling)

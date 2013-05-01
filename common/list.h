@@ -96,9 +96,9 @@ public:
     void remove(T *item) {
         d.remove(item);
     }
-//     void replace(T *old_item, T *new_item) {
-//         d.replace(old_item, new_item);
-//     }
+    void replace(T *old_item, T *new_item) {
+        d.replace(old_item, new_item);
+    }
 };
 
 

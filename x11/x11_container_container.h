@@ -29,9 +29,12 @@ public:
     virtual void redraw();
     virtual void setRect(const Rect &rect);
 
+    virtual void reparent(ContainerContainer *p);
+
     X11ServerWidget *widget() { return _widget; }
 
 protected:
+    virtual ContainerContainer *createContainerContainer();
     virtual ClientContainer *createClientContainer();
 
 private:

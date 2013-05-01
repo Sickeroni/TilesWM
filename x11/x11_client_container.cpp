@@ -29,3 +29,9 @@ void X11ClientContainer::redraw()
 {
     draw(_widget->canvas());
 }
+
+void X11ClientContainer::reparent(ContainerContainer *p)
+{
+    ClientContainer::reparent(p);
+    _widget->reparent(static_cast<X11ContainerContainer*>(p)->widget());
+}

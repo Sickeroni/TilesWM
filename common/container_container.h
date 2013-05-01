@@ -29,17 +29,19 @@ public:
 //     void deleteEmptyChildren();
     void setDirty(bool set);
     void draw(Canvas *canvas);
-    void appendNewClientContainer();
+    void addNewClientContainer(bool prepend);
+    ClientContainer *splitChild(Container *child, bool prepend_new_silbling);
 
 
 protected:
     virtual ClientContainer *createClientContainer() = 0;
+    virtual ContainerContainer *createContainerContainer() = 0;
 
     ContainerContainer(ContainerContainer *parent);
 
     void appendChild(Container *container);
-//     void prependChild(Container *container);
-//     void replaceChild(Container *old_container, Container *new_container);
+    void prependChild(Container *container);
+    void replaceChild(Container *old_container, Container *new_container);
     void clear();
 
 private:

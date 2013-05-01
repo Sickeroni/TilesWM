@@ -175,8 +175,9 @@ bool X11Application::init()
     _activeRootContainer = new X11ContainerContainer(0);
     _activeRootContainer->setRect(root_container_rect);
 
-    _activeRootContainer->appendNewClientContainer(); //FIXME HACK
-    _activeRootContainer->appendNewClientContainer(); //FIXME HACK
+    _activeRootContainer->addNewClientContainer(false); //FIXME HACK
+    _activeRootContainer->addNewClientContainer(false); //FIXME HACK
+
 
     X11Client::init();
 
@@ -218,6 +219,8 @@ void X11Application::eventLoop()
     KeySym term_key = XStringToKeysym("t");
     KeySym prev_container_key = XStringToKeysym("comma");
     KeySym next_container_key = XStringToKeysym("period");
+    KeySym create_west_key = XStringToKeysym("KP_Left");
+    KeySym create_east_key = XStringToKeysym("KP_Right");
 
     XGrabKey(display(), XKeysymToKeycode(display(), layout_key), Mod1Mask, root(),
             true, GrabModeAsync, GrabModeAsync);
@@ -233,8 +236,13 @@ void X11Application::eventLoop()
             false, GrabModeAsync, GrabModeAsync);
     XGrabKey(display(), XKeysymToKeycode(display(), prev_container_key), Mod1Mask, root(),
             false, GrabModeAsync, GrabModeAsync);
-    XGrabKey(display(), XKeysymToKeycode(display(), next_container_key ), Mod1Mask, root(),
+    XGrabKey(display(), XKeysymToKeycode(display(), next_container_key), Mod1Mask, root(),
             false, GrabModeAsync, GrabModeAsync);
+    XGrabKey(display(), XKeysymToKeycode(display(), create_west_key), Mod1Mask, root(),
+            false, GrabModeAsync, GrabModeAsync);
+    XGrabKey(display(), XKeysymToKeycode(display(), create_east_key), Mod1Mask, root(),
+            false, GrabModeAsync, GrabModeAsync);
+
 
 //     XGrabKey(display(), AnyKey, AnyModifier, root(),
 //             false, GrabModeAsync, GrabModeAsync);
@@ -331,6 +339,12 @@ void X11Application::eventLoop()
             } else if (XLookupKeysym(&ev.xkey, 0) == next_container_key) {
                 std::cout<<"next container key\n";
                 _activeRootContainer->focusNextChild();
+            } else if (XLookupKeysym(&ev.xkey, 0) == create_west_key) {
+                std::cout<<"create west key\n";
+                activeRootContainer()->activeClientContainer()->createSilbling(Container::WEST);
+            } else if (XLookupKeysym(&ev.xkey, 0) == create_east_key) {
+                std::cout<<"create east key\n";
+                activeRootContainer()->activeClientContainer()->createSilbling(Container::EAST);
             }
         }
 #endif

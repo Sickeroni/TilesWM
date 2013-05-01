@@ -32,7 +32,19 @@ ClientContainer *X11ContainerContainer::createClientContainer()
     return client_container;
 }
 
+ContainerContainer *X11ContainerContainer::createContainerContainer()
+{
+    X11ContainerContainer *container = new X11ContainerContainer(this);
+    return container;
+}
+
 void X11ContainerContainer::redraw()
 {
     draw(_widget->canvas());
+}
+
+void X11ContainerContainer::reparent(ContainerContainer *p)
+{
+    ContainerContainer::reparent(p);
+    _widget->reparent(static_cast<X11ContainerContainer*>(p)->widget());
 }

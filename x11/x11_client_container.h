@@ -19,6 +19,7 @@ public:
 
     virtual void setRect(const Rect &rect);
     virtual void redraw();
+    virtual void reparent(ContainerContainer *p);
 
     // X11ServerWidget::EventHandler implementaion
     virtual void handleExpose() {

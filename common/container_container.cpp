@@ -52,7 +52,6 @@ void ContainerContainer::focusNextChild()
     redraw();
 }
 
-
 ClientContainer *ContainerContainer::activeClientContainer()
 {
     if (Container *active = activeChild()) {
@@ -196,28 +195,32 @@ void ContainerContainer::layout()
 }
 
 
-void ContainerContainer::appendNewClientContainer()
+void ContainerContainer::addNewClientContainer(bool prepend)
 {
-    std::cout<<"ContainerContainer::appendNewClientContainer()\n";
+    std::cout<<"ContainerContainer::addNewClientContainer()\n";
     ClientContainer *client_container = createClientContainer();
-    appendChild(client_container);
+    if (prepend)
+        prependChild(client_container);
+    else
+        appendChild(client_container);
+
     layout();
 }
 
-#if 0
+
 void ContainerContainer::prependChild(Container *container)
 {
-    if (container->parent())
-        abort();
     if (!container->isUnlinked())
         abort();
 
     _children.prepend(container);
-    container->setParent(this);
+
+    if (!_active_child)
+        _active_child = container;
 
     layout();
 }
-#endif
+
 
 void ContainerContainer::appendChild(Container *container)
 {
@@ -238,26 +241,22 @@ void ContainerContainer::appendChild(Container *container)
 }
 
 
-#if 0
 
 void ContainerContainer::replaceChild(Container *old_container, Container *new_container)
 {
-    if (new_container->parent())
-        abort();
     if (!new_container->isUnlinked())
         abort();
 
     _children.replace(old_container, new_container);
 
-    //TODO if (_active_container == old_container)
-    //          _active_container = new_container;
+    if (_active_child == old_container)
+        _active_child = new_container;
 
-    updateDirtyStatus();
+//     updateDirtyStatus();
 
     layout();
 }
 
-#endif
 
 
 void ContainerContainer::setDirty(bool set)
@@ -336,7 +335,7 @@ void ContainerContainer::deleteChild(Container *child)
     delete child;
 }
 
-#if 0
+#if 1
 ClientContainer *ContainerContainer::splitChild(Container *child, bool prepend_new_silbling)
 {
     // create new parent
@@ -345,15 +344,17 @@ ClientContainer *ContainerContainer::splitChild(Container *child, bool prepend_n
     replaceChild(child, new_parent); // unlinks container
 
     child->reparent(new_parent);
-    new_parent->appendChild(new_silbling);
+    new_parent->appendChild(child);
 
     ClientContainer *new_silbling = new_parent->createClientContainer();
 
     // add this + new child container to new parent
     if (prepend_new_silbling)
-        new_parent->preendChild(new_silbling);
+        new_parent->prependChild(new_silbling);
     else
         new_parent->appendChild(new_silbling);
+
+    layout();
 
     return new_silbling;
 }
