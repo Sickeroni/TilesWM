@@ -632,9 +632,8 @@ void X11Client::drawFrame()
 {
     Canvas *canvas = _frame->canvas();
 
-    //FIXME
-    Rect frame_rect;
-    frame_rect.setSize(300, 300);
+    Rect frame_rect = _frame->rect();
+    frame_rect.setPos(0, 0);
 
     //FIXME
     canvas->erase(frame_rect);
@@ -719,7 +718,7 @@ bool X11Client::handleEvent(const XEvent &ev)
                         client->container()->redraw();
                     break;
                 case XA_WM_TRANSIENT_FOR:
-                    abort(); //FIXME
+                    //FIXME
                     break;
                 default:
                     if (ev.xproperty.atom ==  _net_wm_window_type) {
