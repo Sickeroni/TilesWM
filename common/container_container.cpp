@@ -90,7 +90,8 @@ void ContainerContainer::draw(Canvas *canvas)
     frame_rect.w -= 10;
     frame_rect.h -= 10;
 
-    for(int i = 0; i < _children.count(); i++) {
+    int i = 0;
+    for(Container *c = _children.first(); c; c = c->next()) {
         if (isHorizontal()) {
             frame_rect.x = client_rect.x + (i * cell_width);
             frame_rect.y = client_rect.y;
@@ -103,6 +104,17 @@ void ContainerContainer::draw(Canvas *canvas)
         frame_rect.y += 5;
 
         canvas->drawFrame(frame_rect, 0);
+
+        if (activeChild() == c) {
+            Rect focus_rect = frame_rect;
+            focus_rect.x += 2;
+            focus_rect.y += 2;
+            focus_rect.w -= 4;
+            focus_rect.h -= 4;
+            canvas->drawFrame(focus_rect, 0xFFBB00);
+        }
+
+        i++;
    }
 
 }
