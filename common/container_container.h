@@ -5,6 +5,7 @@
 
 
 class ClientContainer;
+class Canvas;
 
 
 class ContainerContainer : public Container
@@ -17,6 +18,7 @@ public:
 
     Container *activeChild();
 
+    virtual void redraw() = 0;
     virtual void addClient(Client *c);
     virtual void layout();
 //     virtual void layoutClients();
@@ -24,8 +26,8 @@ public:
 
 
     void deleteEmptyChildren();
-
     void setDirty(bool set);
+    void draw(Canvas *canvas);
 
 protected:
     virtual ClientContainer *createClientContainer() = 0;
@@ -40,9 +42,13 @@ protected:
 private:
     void updateDirtyStatus();
     void deleteChild(Container *child);
+    void getClientRect(Rect &rect);
 
     List<Container> _children;
     bool _dirty; // is this container unused or are there unused child containers ?;
+
+    static const int frame_width = 10;
+    static const int title_height = 10;
 };
 
 

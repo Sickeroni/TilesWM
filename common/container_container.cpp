@@ -1,6 +1,7 @@
 #include "container_container.h"
 
 #include "client_container.h"
+#include "canvas.h"
 
 #if 1
 
@@ -54,19 +55,38 @@ void ContainerContainer::addClient(Client *c)
     }
 }
 
+inline void ContainerContainer::getClientRect(Rect &rect)
+{
+    rect.set(frame_width, frame_width + title_height,
+             _rect.w - (frame_width * 2), _rect.h - title_height - (frame_width * 2));
+}
+
+void ContainerContainer::draw(Canvas *canvas)
+{
+    canvas->erase(_rect);
+    Rect r(_rect.x+5, _rect.y+5, _rect.w-10, _rect.h-10);
+    canvas->drawFrame(r, 0);
+}
+
 void ContainerContainer::layout()
 {
     if (!width() || !height() || !_children.count())
         return;
 
+    Rect client_rect;
+    getClientRect(client_rect);
+
+    if (!client_rect.w || !client_rect.h)
+        return;
+
     int cell_width = 0, cell_height = 0;
 
     if (isHorizontal()) {
-        cell_width = width() / _children.count();
-        cell_height = height();
+        cell_width = client_rect.w / _children.count();
+        cell_height = client_rect.h;
     } else {
-        cell_width = width();
-        cell_height = height() / _children.count();
+        cell_width = client_rect.w;
+        cell_height = client_rect.h / _children.count();
     }
 
     std::cout<<"cell_width: "<<cell_width<<"\n";
@@ -79,11 +99,11 @@ void ContainerContainer::layout()
     int i = 0;
     for(Container *c = _children.first(); c; c = c->next()) {
         if (isHorizontal()) {
-            new_rect.x = i * cell_width;
-            new_rect.y = 0;
+            new_rect.x = client_rect.x + (i * cell_width);
+            new_rect.y = client_rect.y;
         } else {
-            new_rect.x = 0;
-            new_rect.y = i * cell_width;
+            new_rect.x = client_rect.x;
+            new_rect.y = client_rect.y + (i * cell_width);
         }
 
 //         localToGlobal(x, y);

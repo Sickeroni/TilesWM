@@ -2,12 +2,13 @@
 
 #include "x11_client_container.h"
 #include "x11_server_widget.h"
+#include "x11_canvas.h"
 
 #include <stdlib.h>
 
 X11ContainerContainer::X11ContainerContainer(X11ContainerContainer *parent) :
     ContainerContainer(parent),
-    _widget(X11ServerWidget::create(parent ? parent->widget() : 0, 0, ExposureMask))
+    _widget(X11ServerWidget::create(parent ? parent->widget() : 0, this, ExposureMask))
 {
     _widget->map();
 }
@@ -29,4 +30,9 @@ ClientContainer *X11ContainerContainer::createClientContainer()
 {
     X11ClientContainer *client_container = new X11ClientContainer(this);
     return client_container;
+}
+
+void X11ContainerContainer::redraw()
+{
+    draw(_widget->canvas());
 }

@@ -3,11 +3,10 @@
 
 #include "container_container.h"
 
+#include "x11_server_widget.h"
 
-class X11ServerWidget;
 
-
-class X11ContainerContainer : public ContainerContainer
+class X11ContainerContainer : public ContainerContainer, public X11ServerWidget::EventHandler
 {
 #if 0
     ContainerContainer *createContainerContainer()
@@ -22,6 +21,12 @@ public:
     X11ContainerContainer(X11ContainerContainer *parent);
     virtual ~X11ContainerContainer();
 
+    // X11ServerWidget::EventHandler implementaion
+    virtual void handleExpose() {
+        redraw();
+    }
+
+    virtual void redraw();
     virtual void setRect(const Rect &rect);
 
     X11ServerWidget *widget() { return _widget; }
