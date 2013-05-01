@@ -83,9 +83,9 @@ bool X11ServerWidget::handleEvent(const XEvent &ev)
 {
     if (ev.type == CreateNotify && find(ev.xcreatewindow.window)) // eat create event
         return true;
-    else if (ev.type == Expose) {
+    else if (ev.type == Expose && !ev.xexpose.count) {
         if (X11ServerWidget *widget = find(ev.xexpose.window)) {
-            if (!ev.xexpose.count && widget->_event_handler)
+            if (widget->_event_handler)
                 widget->_event_handler->handleExpose();
             return true;
         } else
