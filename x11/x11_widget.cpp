@@ -90,6 +90,7 @@ void X11Widget::move(int x, int y)
 void X11Widget::setRect(const Rect &rect)
 {
     std::cout<<"X11Widget::setRect() - _wid: "<<_wid<<'\n';
+    assert(rect.w && rect.h);
     _rect.set(rect);
     XMoveResizeWindow(X11Application::display(), _wid, rect.x, rect.y, rect.w, rect.h);
 }

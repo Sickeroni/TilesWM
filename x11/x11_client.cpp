@@ -104,6 +104,8 @@ void X11Client::setFocus()
 
 void X11Client::setRect(const Rect &rect)
 {
+    assert(rect.w && rect.h);
+
     _frame->setRect(rect);
 
     const int frame_width = 5; //FIXME
