@@ -4,8 +4,17 @@
 struct Rect
 {
     Rect() : x(0), y(0), w(0), h(0) {}
-    Rect(const Rect &other);
+    Rect(const Rect &other) {
+        set(other);
+    }
+    Rect(int x, int y, int w, int h) {
+        set(x, y, w, h);
+    }
     Rect& operator=(const Rect &other);
+
+    void set(const Rect &other) {
+        this->x = other.x; this->y = other.y; this->w = other.w; this->h = other.h;
+    }
 
     void set(int x, int y, int w, int h) {
         this->x = x; this->y = y; this->w = w; this->h = h;

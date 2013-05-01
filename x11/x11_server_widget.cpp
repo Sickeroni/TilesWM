@@ -12,7 +12,7 @@
 std::map<Window, X11ServerWidget*> X11ServerWidget::_wid_index;
 
 
-X11ServerWidget::X11ServerWidget(Window wid, EventHandler *event_handler) : X11Widget(wid, SERVER, false),
+X11ServerWidget::X11ServerWidget(Window wid, EventHandler *event_handler, const Rect &rect) : X11Widget(wid, SERVER, false, rect),
     _canvas(new X11Canvas(wid)),
     _event_handler(event_handler)
 {
@@ -71,7 +71,8 @@ X11ServerWidget *X11ServerWidget::create(X11ServerWidget *parent, EventHandler *
 
     assert(find(wid) == 0);
 
-    X11ServerWidget *widget = new X11ServerWidget(wid, event_handler);
+    Rect rect(0, 0, width, height);
+    X11ServerWidget *widget = new X11ServerWidget(wid, event_handler, rect);
 
     _wid_index.insert(std::pair<Window, X11ServerWidget*>(wid, widget));
 

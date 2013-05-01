@@ -10,17 +10,17 @@ class X11Client;
 class X11ClientWidget : public X11Widget
 {
 public:
-    X11ClientWidget(Window wid, X11Client *client, bool is_mapped);
+    X11ClientWidget(Window wid, X11Client *client, bool is_mapped, const Rect &rect);
     virtual ~X11ClientWidget();
 
 //     virtual bool validate();
 
-    X11Client *client() { return _client; }
+//     X11Client *client() { return _client; }
 
     bool refreshMapState();
 
-private:
-    X11Client *_client;
+// private:
+//     X11Client *_client;
 };
 
 

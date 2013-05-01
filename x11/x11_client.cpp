@@ -217,7 +217,8 @@ void X11Client::handleCreate(Window wid)
             if (is_modal)
                 client->_is_modal = true;
 
-            client->_widget = new X11ClientWidget(wid, client, is_mapped);
+            Rect rect(attr.x, attr.y, attr.width, attr.height);
+            client->_widget = new X11ClientWidget(wid, client, is_mapped, rect);
 
             client->refreshName();
             client->refreshClass();
@@ -439,11 +440,15 @@ void X11Client::handleConfigureRequest(const XConfigureRequestEvent &ev)
         if (changes.height > h)
             changes.height = h;
 
+        //UGLY
+        Rect rect(changes.x, changes.y, changes.width, changes.height);
+        _widget->setRect(rect);
+
         XConfigureWindow(X11Application::display(), _widget->wid(), ev.value_mask, &changes);
     } else {
         // HACK HACK HACK
 
-        Rect frame_rect;
+        Rect frame_rect = _frame->rect();
         //HACK
 //         frame_rect.set(ev.x, ev.y, ev.width + 10, ev.height + 10);
 
@@ -462,6 +467,9 @@ void X11Client::handleConfigureRequest(const XConfigureRequestEvent &ev)
         changes.y = 5;
 
 
+        //UGLY
+        Rect rect(changes.x, changes.y, changes.width, changes.height);
+        _widget->setRect(rect);
         //FIXME - translate coordinates
         XConfigureWindow(X11Application::display(), _widget->wid(), ev.value_mask, &changes);
 

@@ -11,7 +11,8 @@
 #include <assert.h>
 
 
-X11Widget::X11Widget(Window wid, Type type, bool is_mapped) :
+X11Widget::X11Widget(Window wid, Type type, bool is_mapped, const Rect &rect) :
+    _rect(rect),
     _is_destroyed(false),
     _is_mapped(is_mapped),
     _wid(wid),
@@ -89,6 +90,7 @@ void X11Widget::move(int x, int y)
 void X11Widget::setRect(const Rect &rect)
 {
     std::cout<<"X11Widget::setRect() - _wid: "<<_wid<<'\n';
+    _rect.set(rect);
     XMoveResizeWindow(X11Application::display(), _wid, rect.x, rect.y, rect.w, rect.h);
 }
 

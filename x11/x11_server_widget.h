@@ -36,7 +36,7 @@ public:
     X11Canvas *canvas() { return _canvas; }
 
 private:
-    X11ServerWidget(Window wid, EventHandler *event_handler);
+    X11ServerWidget(Window wid, EventHandler *event_handler, const Rect &rect);
 
     static X11ServerWidget *find(Window wid);
 
