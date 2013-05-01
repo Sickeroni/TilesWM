@@ -338,6 +338,9 @@ void ContainerContainer::deleteChild(Container *child)
 #if 1
 ClientContainer *ContainerContainer::splitChild(Container *child, bool prepend_new_silbling)
 {
+    if (hierarchyDepth() >= max_hierarchy_depth)
+        return 0;
+
     // create new parent
     ContainerContainer *new_parent = createContainerContainer();
 
@@ -360,5 +363,13 @@ ClientContainer *ContainerContainer::splitChild(Container *child, bool prepend_n
 }
 #endif
 
+
+int ContainerContainer::hierarchyDepth()
+{
+    if (_parent)
+        return _parent->hierarchyDepth() + 1;
+    else
+        return 0;
+}
 
 #endif

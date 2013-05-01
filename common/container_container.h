@@ -43,6 +43,7 @@ protected:
     void prependChild(Container *container);
     void replaceChild(Container *old_container, Container *new_container);
     void clear();
+    int hierarchyDepth();
 
 private:
     void updateDirtyStatus();
@@ -56,6 +57,8 @@ private:
     static const int frame_width = 10;
     static const int title_height = 10;
     static const int child_frame_width = 10;
+
+    static const int max_hierarchy_depth = 1;
 };
 
 
