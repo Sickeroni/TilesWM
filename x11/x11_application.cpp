@@ -216,6 +216,8 @@ void X11Application::eventLoop()
     KeySym prev_key = XStringToKeysym("p");
     KeySym next_key = XStringToKeysym("n");
     KeySym term_key = XStringToKeysym("t");
+    KeySym prev_container_key = XStringToKeysym("comma");
+    KeySym next_container_key = XStringToKeysym("period");
 
     XGrabKey(display(), XKeysymToKeycode(display(), layout_key), Mod1Mask, root(),
             true, GrabModeAsync, GrabModeAsync);
@@ -228,6 +230,10 @@ void X11Application::eventLoop()
     XGrabKey(display(), XKeysymToKeycode(display(), next_key), Mod1Mask, root(),
             true, GrabModeAsync, GrabModeAsync);
     XGrabKey(display(), XKeysymToKeycode(display(), term_key), Mod1Mask, root(),
+            false, GrabModeAsync, GrabModeAsync);
+    XGrabKey(display(), XKeysymToKeycode(display(), prev_container_key), Mod1Mask, root(),
+            false, GrabModeAsync, GrabModeAsync);
+    XGrabKey(display(), XKeysymToKeycode(display(), next_container_key ), Mod1Mask, root(),
             false, GrabModeAsync, GrabModeAsync);
 
 //     XGrabKey(display(), AnyKey, AnyModifier, root(),
@@ -319,6 +325,12 @@ void X11Application::eventLoop()
             } else if (XLookupKeysym(&ev.xkey, 0) == term_key) {
                 std::cout<<"terminal key pressed.\n";
                 runProgram("/usr/bin/xterm");
+            } else if (XLookupKeysym(&ev.xkey, 0) == prev_container_key) {
+                std::cout<<"prev container key\n";
+                _activeRootContainer->focusPrevChild();
+            } else if (XLookupKeysym(&ev.xkey, 0) == next_container_key) {
+                std::cout<<"next container key\n";
+                _activeRootContainer->focusNextChild();
             }
         }
 #endif

@@ -10,6 +10,7 @@
 
 
 ContainerContainer::ContainerContainer(ContainerContainer *parent) : Container(CONTAINER, parent),
+    _active_child(0),
     _dirty(true)
 {
 }
@@ -29,11 +30,28 @@ void ContainerContainer::clear()
     }
 }
 
-Container *ContainerContainer::activeChild()
+void ContainerContainer::setFocus()
 {
-    //FIXME HACK
-    return _children.first();
+    if (_active_child)
+        _active_child->setFocus();
 }
+
+void ContainerContainer::focusPrevChild()
+{
+    if (_active_child && _active_child->prev())
+        _active_child = _active_child->prev();
+    setFocus(); //FIXME HACK
+    redraw();
+}
+
+void ContainerContainer::focusNextChild()
+{
+    if (_active_child && _active_child->next())
+        _active_child = _active_child->next();
+    setFocus(); //FIXME HACK
+    redraw();
+}
+
 
 ClientContainer *ContainerContainer::activeClientContainer()
 {
@@ -213,6 +231,9 @@ void ContainerContainer::appendChild(Container *container)
 
     std::cout<<"children: "<<_children.count()<<'\n';
 
+    if (!_active_child)
+        _active_child = container;
+
     layout();
 }
 
@@ -270,8 +291,11 @@ void ContainerContainer::updateDirtyStatus()
     setDirty(dirty);
 }
 
+#if 0
 void ContainerContainer::deleteEmptyChildren()
 {
+    //FIXME - _active_child
+
     if (!_dirty)
         return;
 
@@ -300,6 +324,7 @@ void ContainerContainer::deleteEmptyChildren()
 
     }
 }
+#endif
 
 
 void ContainerContainer::deleteChild(Container *child)

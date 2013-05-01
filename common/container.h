@@ -48,6 +48,7 @@ public:
 
     virtual ~Container() {}
 
+    virtual void setFocus() = 0;
     virtual ClientContainer *activeClientContainer() = 0;
     virtual void addClient(Client *c) = 0;
     virtual void layout() = 0;

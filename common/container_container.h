@@ -14,22 +14,23 @@ public:
     virtual ~ContainerContainer();
 
 
-    virtual ClientContainer *activeClientContainer();
-
-    Container *activeChild();
-
     virtual void redraw() = 0;
+    virtual ClientContainer *activeClientContainer();
+    virtual void setFocus();
     virtual void addClient(Client *c);
     virtual void layout();
 //     virtual void layoutClients();
     virtual bool isEmpty() { return _children.isEmpty(); }
 
 
-    void deleteEmptyChildren();
+    Container *activeChild() { return _active_child; }
+    void focusPrevChild();
+    void focusNextChild();
+//     void deleteEmptyChildren();
     void setDirty(bool set);
     void draw(Canvas *canvas);
-
     void appendNewClientContainer();
+
 
 protected:
     virtual ClientContainer *createClientContainer() = 0;
@@ -47,6 +48,7 @@ private:
     void getClientRect(Rect &rect);
 
     List<Container> _children;
+    Container *_active_child;
     bool _dirty; // is this container unused or are there unused child containers ?;
 
     static const int frame_width = 10;
