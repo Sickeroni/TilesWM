@@ -217,10 +217,24 @@ void X11Application::eventLoop()
     KeySym prev_key = XStringToKeysym("p");
     KeySym next_key = XStringToKeysym("n");
     KeySym term_key = XStringToKeysym("t");
+//
+#if 1
     KeySym prev_container_key = XStringToKeysym("comma");
     KeySym next_container_key = XStringToKeysym("period");
-    KeySym create_west_key = XStringToKeysym("KP_Left");
-    KeySym create_east_key = XStringToKeysym("KP_Right");
+#endif
+//     KeySym create_west_key = XStringToKeysym("KP_Left");
+//     KeySym create_east_key = XStringToKeysym("KP_Right");
+
+
+    KeySym create_key = XStringToKeysym("c");
+
+
+    KeySym focus_left_key = XStringToKeysym("KP_Left");
+    KeySym focus_right_key = XStringToKeysym("KP_Right");
+    KeySym focus_up_key = XStringToKeysym("KP_Up");
+    KeySym focus_down_key = XStringToKeysym("KP_Down");
+
+
 
     XGrabKey(display(), XKeysymToKeycode(display(), layout_key), Mod1Mask, root(),
             true, GrabModeAsync, GrabModeAsync);
@@ -234,14 +248,29 @@ void X11Application::eventLoop()
             true, GrabModeAsync, GrabModeAsync);
     XGrabKey(display(), XKeysymToKeycode(display(), term_key), Mod1Mask, root(),
             false, GrabModeAsync, GrabModeAsync);
+#if 1
     XGrabKey(display(), XKeysymToKeycode(display(), prev_container_key), Mod1Mask, root(),
             false, GrabModeAsync, GrabModeAsync);
     XGrabKey(display(), XKeysymToKeycode(display(), next_container_key), Mod1Mask, root(),
             false, GrabModeAsync, GrabModeAsync);
-    XGrabKey(display(), XKeysymToKeycode(display(), create_west_key), Mod1Mask, root(),
+#endif
+
+    XGrabKey(display(), XKeysymToKeycode(display(), create_key), Mod1Mask, root(),
             false, GrabModeAsync, GrabModeAsync);
-    XGrabKey(display(), XKeysymToKeycode(display(), create_east_key), Mod1Mask, root(),
+
+    XGrabKey(display(), XKeysymToKeycode(display(), focus_left_key), Mod1Mask, root(),
             false, GrabModeAsync, GrabModeAsync);
+    XGrabKey(display(), XKeysymToKeycode(display(), focus_right_key), Mod1Mask, root(),
+            false, GrabModeAsync, GrabModeAsync);
+    XGrabKey(display(), XKeysymToKeycode(display(), focus_up_key), Mod1Mask, root(),
+            false, GrabModeAsync, GrabModeAsync);
+    XGrabKey(display(), XKeysymToKeycode(display(), focus_down_key), Mod1Mask, root(),
+            false, GrabModeAsync, GrabModeAsync);
+
+//     XGrabKey(display(), XKeysymToKeycode(display(), create_west_key), Mod1Mask, root(),
+//             false, GrabModeAsync, GrabModeAsync);
+//     XGrabKey(display(), XKeysymToKeycode(display(), create_east_key), Mod1Mask, root(),
+//             false, GrabModeAsync, GrabModeAsync);
 
 
 //     XGrabKey(display(), AnyKey, AnyModifier, root(),
@@ -338,13 +367,24 @@ void X11Application::eventLoop()
             } else if (XLookupKeysym(&ev.xkey, 0) == next_container_key) {
                 std::cout<<"next container key\n";
                 _activeRootContainer->focusNextChild();
-            } else if (XLookupKeysym(&ev.xkey, 0) == create_west_key) {
+            } else if (XLookupKeysym(&ev.xkey, 0) == focus_left_key) {
+                _activeRootContainer->activeClientContainer()->focusSilbling(Container::WEST);
+            } else if (XLookupKeysym(&ev.xkey, 0) == focus_right_key) {
+                _activeRootContainer->activeClientContainer()->focusSilbling(Container::EAST);
+            } else if (XLookupKeysym(&ev.xkey, 0) == focus_up_key) {
+                _activeRootContainer->activeClientContainer()->focusSilbling(Container::NORTH);
+            } else if (XLookupKeysym(&ev.xkey, 0) == focus_down_key) {
+                _activeRootContainer->activeClientContainer()->focusSilbling(Container::SOUTH);
+            } else if (XLookupKeysym(&ev.xkey, 0) == create_key) {
+                activeRootContainer()->activeClientContainer()->createSilbling(Container::EAST);
+            }
+/*            else if (XLookupKeysym(&ev.xkey, 0) == create_west_key) {
                 std::cout<<"create west key\n";
                 activeRootContainer()->activeClientContainer()->createSilbling(Container::WEST);
             } else if (XLookupKeysym(&ev.xkey, 0) == create_east_key) {
                 std::cout<<"create east key\n";
                 activeRootContainer()->activeClientContainer()->createSilbling(Container::EAST);
-            }
+            }*/
         }
 #endif
 //         else if(ev.type == KeyPress && ev.xkey.subwindow != None)

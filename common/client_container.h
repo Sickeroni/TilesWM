@@ -46,6 +46,7 @@ public:
     void handleClientFocusChange(Client *client);
 
     void createSilbling(Direction where);
+    void focusSilbling(Direction where);
 
 protected:
     ClientContainer(ContainerContainer *parent);
