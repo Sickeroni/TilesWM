@@ -3,6 +3,7 @@
 #include "x11_container_container.h"
 #include "x11_client.h"
 #include "x11_widget.h"
+#include "x11_default_key_handler.h"
 
 #include "client_container.h"
 
@@ -10,12 +11,12 @@
 #include <sys/types.h>
 #include <sys/wait.h>
 #include <unistd.h>
+#include <signal.h>
 
 #include <iostream>
 #include <string.h>
 #include <stdlib.h>
 #include <stdio.h>
-#include <signal.h>
 
 
 
@@ -59,6 +60,10 @@ X11 events
 #define GenericEvent        35
 #define LASTEvent       36  /* must be bigger than any event # */
 #endif
+
+
+
+
 
 
 const char *X11Application::x11EventToString(size_t id)
@@ -116,6 +121,7 @@ X11Application::X11Application() :
     _display(0),
     _root(0),
     _activeRootContainer(0),
+    _key_handler(0),
     _num_server_grabs(0),
     _quit_requested(false)
 {
@@ -181,6 +187,9 @@ bool X11Application::init()
 
     X11Client::init();
 
+
+    _key_handler = new X11DefaultKeyHandler();
+
 //     XFlush(display());
     XSync(_display, false);
 
@@ -193,6 +202,9 @@ bool X11Application::init()
 
 void X11Application::shutdown()
 {
+    //FIXME delete root container
+    delete _key_handler;
+    _key_handler = 0;
     XCloseDisplay(_display);
     _display = 0;
 }
@@ -211,70 +223,6 @@ void X11Application::eventLoop()
      * move/resize.
      */
 //     XButtonEvent start;
-    KeySym layout_key = XStringToKeysym("l");
-    KeySym redraw_key = XStringToKeysym("d");
-    KeySym rotate_key = XStringToKeysym("r");
-    KeySym prev_key = XStringToKeysym("p");
-    KeySym next_key = XStringToKeysym("n");
-    KeySym term_key = XStringToKeysym("t");
-//
-#if 1
-    KeySym prev_container_key = XStringToKeysym("comma");
-    KeySym next_container_key = XStringToKeysym("period");
-#endif
-//     KeySym create_west_key = XStringToKeysym("KP_Left");
-//     KeySym create_east_key = XStringToKeysym("KP_Right");
-
-
-    KeySym create_key = XStringToKeysym("c");
-
-
-    KeySym focus_left_key = XStringToKeysym("KP_Left");
-    KeySym focus_right_key = XStringToKeysym("KP_Right");
-    KeySym focus_up_key = XStringToKeysym("KP_Up");
-    KeySym focus_down_key = XStringToKeysym("KP_Down");
-
-
-
-    XGrabKey(display(), XKeysymToKeycode(display(), layout_key), Mod1Mask, root(),
-            true, GrabModeAsync, GrabModeAsync);
-    XGrabKey(display(), XKeysymToKeycode(display(), redraw_key), Mod1Mask, root(),
-            true, GrabModeAsync, GrabModeAsync);
-    XGrabKey(display(), XKeysymToKeycode(display(), rotate_key), Mod1Mask, root(),
-            true, GrabModeAsync, GrabModeAsync);
-    XGrabKey(display(), XKeysymToKeycode(display(), prev_key), Mod1Mask, root(),
-            true, GrabModeAsync, GrabModeAsync);
-    XGrabKey(display(), XKeysymToKeycode(display(), next_key), Mod1Mask, root(),
-            true, GrabModeAsync, GrabModeAsync);
-    XGrabKey(display(), XKeysymToKeycode(display(), term_key), Mod1Mask, root(),
-            false, GrabModeAsync, GrabModeAsync);
-#if 1
-    XGrabKey(display(), XKeysymToKeycode(display(), prev_container_key), Mod1Mask, root(),
-            false, GrabModeAsync, GrabModeAsync);
-    XGrabKey(display(), XKeysymToKeycode(display(), next_container_key), Mod1Mask, root(),
-            false, GrabModeAsync, GrabModeAsync);
-#endif
-
-    XGrabKey(display(), XKeysymToKeycode(display(), create_key), Mod1Mask, root(),
-            false, GrabModeAsync, GrabModeAsync);
-
-    XGrabKey(display(), XKeysymToKeycode(display(), focus_left_key), Mod1Mask, root(),
-            false, GrabModeAsync, GrabModeAsync);
-    XGrabKey(display(), XKeysymToKeycode(display(), focus_right_key), Mod1Mask, root(),
-            false, GrabModeAsync, GrabModeAsync);
-    XGrabKey(display(), XKeysymToKeycode(display(), focus_up_key), Mod1Mask, root(),
-            false, GrabModeAsync, GrabModeAsync);
-    XGrabKey(display(), XKeysymToKeycode(display(), focus_down_key), Mod1Mask, root(),
-            false, GrabModeAsync, GrabModeAsync);
-
-//     XGrabKey(display(), XKeysymToKeycode(display(), create_west_key), Mod1Mask, root(),
-//             false, GrabModeAsync, GrabModeAsync);
-//     XGrabKey(display(), XKeysymToKeycode(display(), create_east_key), Mod1Mask, root(),
-//             false, GrabModeAsync, GrabModeAsync);
-
-
-//     XGrabKey(display(), AnyKey, AnyModifier, root(),
-//             false, GrabModeAsync, GrabModeAsync);
 
 
     int x11_fd = ConnectionNumber(display());
@@ -317,7 +265,11 @@ void X11Application::eventLoop()
          */
         XNextEvent(_display, &ev);
 
-        if (ev.xany.window && X11Widget::handleEvent(ev)) {
+        if (ev.type == KeyPress && X11Shortcut::handleKeyPress(ev.xkey)) {
+            // NO-OP
+        }
+
+        else if (ev.xany.window && X11Widget::handleEvent(ev)) {
             // NO-OP
         }
 
@@ -334,59 +286,7 @@ void X11Application::eventLoop()
          * None, that means that the window the event happened in was the same
          * window that was grabbed on -- in this case, the root window.
          */
-#if 1
-        else if (ev.type == KeyPress) {
-            if (XLookupKeysym(&ev.xkey, 0) == layout_key) {
-//             if (ev.xkey.keycode == layout_key) {
-                std::cout << "layout key pressed.\n";
-//                 Container::root()->layout();
-                activeRootContainer()->layout();
-            } else if (XLookupKeysym(&ev.xkey, 0) == redraw_key) {
-//             if (ev.xkey.keycode == layout_key) {
-                std::cout << "redraw key pressed.\n";
-//                 Container::root()->layout();
-                activeRootContainer()->redrawAll();
-            } else if (XLookupKeysym(&ev.xkey, 0) == rotate_key) {
-                std::cout<<"rotate key pressed.\n";
-                Container::rotateOrientation();
-                activeRootContainer()->layout();
-            } else if (XLookupKeysym(&ev.xkey, 0) == prev_key) {
-                std::cout<<"prev key pressed.\n";
-                if (activeRootContainer()->activeClientContainer())
-                    activeRootContainer()->activeClientContainer()->focusPrevClient();
-            } else if (XLookupKeysym(&ev.xkey, 0) == next_key) {
-                std::cout<<"next key pressed.\n";
-                if (activeRootContainer()->activeClientContainer())
-                    activeRootContainer()->activeClientContainer()->focusNextClient();
-            } else if (XLookupKeysym(&ev.xkey, 0) == term_key) {
-                std::cout<<"terminal key pressed.\n";
-                runProgram("/usr/bin/xterm");
-            } else if (XLookupKeysym(&ev.xkey, 0) == prev_container_key) {
-                std::cout<<"prev container key\n";
-                _activeRootContainer->focusPrevChild();
-            } else if (XLookupKeysym(&ev.xkey, 0) == next_container_key) {
-                std::cout<<"next container key\n";
-                _activeRootContainer->focusNextChild();
-            } else if (XLookupKeysym(&ev.xkey, 0) == focus_left_key) {
-                _activeRootContainer->activeClientContainer()->focusSilbling(Container::WEST);
-            } else if (XLookupKeysym(&ev.xkey, 0) == focus_right_key) {
-                _activeRootContainer->activeClientContainer()->focusSilbling(Container::EAST);
-            } else if (XLookupKeysym(&ev.xkey, 0) == focus_up_key) {
-                _activeRootContainer->activeClientContainer()->focusSilbling(Container::NORTH);
-            } else if (XLookupKeysym(&ev.xkey, 0) == focus_down_key) {
-                _activeRootContainer->activeClientContainer()->focusSilbling(Container::SOUTH);
-            } else if (XLookupKeysym(&ev.xkey, 0) == create_key) {
-                activeRootContainer()->activeClientContainer()->createSilbling(Container::EAST);
-            }
-/*            else if (XLookupKeysym(&ev.xkey, 0) == create_west_key) {
-                std::cout<<"create west key\n";
-                activeRootContainer()->activeClientContainer()->createSilbling(Container::WEST);
-            } else if (XLookupKeysym(&ev.xkey, 0) == create_east_key) {
-                std::cout<<"create east key\n";
-                activeRootContainer()->activeClientContainer()->createSilbling(Container::EAST);
-            }*/
-        }
-#endif
+
 //         else if(ev.type == KeyPress && ev.xkey.subwindow != None)
 //             XRaiseWindow(_display, ev.xkey.subwindow);
 #if 0

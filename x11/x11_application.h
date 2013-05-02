@@ -6,6 +6,8 @@
 #if 1
 
 class X11ContainerContainer;
+class X11KeyHandler;
+
 
 class X11Application
 {
@@ -35,6 +37,7 @@ private:
     Display *_display;
     Window _root;
     X11ContainerContainer *_activeRootContainer;
+    X11KeyHandler *_key_handler;
     int _num_server_grabs;
     volatile bool _quit_requested;
 };
