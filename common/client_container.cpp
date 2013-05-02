@@ -251,7 +251,9 @@ void ClientContainer::draw(Canvas *canvas)
 
 void ClientContainer::drawStacked(Canvas *canvas)
 {
-    canvas->erase(_rect);
+    Rect bg_rect = _rect;
+    bg_rect.setPos(0, 0);
+    canvas->erase(bg_rect);
 
     const int tabbar_border = 5;
 
@@ -350,9 +352,10 @@ void ClientContainer::drawTabbed(Canvas *canvas)
 {
     std::cout<<"ClientContainer::draw()\n";
 
-    Rect r;
-//     r.set(10, 50, 50, 20);
-//     canvas->drawText("Hallo Welt !", r);
+    Rect bg_rect = _rect;
+    bg_rect.setPos(0, 0);
+    canvas->erase(bg_rect);
+
 
     const int tabbar_border = 5;
 
@@ -368,7 +371,6 @@ void ClientContainer::drawTabbed(Canvas *canvas)
     Rect tabbar_rect;
     tabbar_rect.set(tabbar_x, tabbar_y, tabbar_w, tabbar_h);
 
-    canvas->erase(r);
 
     if (!num_tabs)
         return;
