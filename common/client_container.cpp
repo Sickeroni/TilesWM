@@ -38,12 +38,6 @@ void ClientContainer::clear()
     }
 }
 
-void ClientContainer::setFocus()
-{
-    if (activeClient())
-        activeClient()->setFocus();
-}
-
 Client *ClientContainer::activeClient()
 {
     if (_active_client) {

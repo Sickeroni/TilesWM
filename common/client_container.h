@@ -14,7 +14,6 @@ public:
 
     virtual void redraw() = 0;
 
-    virtual void setFocus();
     virtual ClientContainer *activeClientContainer() {
         return this;
     }

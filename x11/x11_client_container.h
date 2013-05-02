@@ -17,6 +17,7 @@ public:
     X11ClientContainer(X11ContainerContainer *parent);
     virtual ~X11ClientContainer();
 
+    virtual void setFocus();
     virtual void setRect(const Rect &rect);
     virtual void redraw();
     virtual void reparent(ContainerContainer *p);
