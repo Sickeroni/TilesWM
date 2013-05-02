@@ -585,6 +585,16 @@ ClientContainer *ClientContainer::getOrCreateSilblingFor(Container *container, b
 }
 #endif
 
+ClientContainer *ClientContainer::getSilbling(bool get_prev)
+{
+    if (get_prev && prev())
+        return prev()->activeClientContainer();
+    else if (!get_prev && next())
+        return next()->activeClientContainer();
+    else
+        return 0;
+}
+
 #if 1
 void ClientContainer::moveClientToOther(Client *client, Direction dir)
 {
@@ -600,8 +610,10 @@ void ClientContainer::moveClientToOther(Client *client, Direction dir)
 
     if (_parent) {
         if (orientationOfDirection(dir) == _parent->orientation()) { // easy case
-            //if (numMappedClients() > 1) // only move to direct silbling if container doesn't become empty
+            if (numMappedClients() > 1) // only create new direct silbling if container doesn't become empty
                 target = getOrCreateSilblingFor(this, backward);
+            else
+                target = getSilbling(backward);
         }
 
         else { // difficult case:

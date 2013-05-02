@@ -59,6 +59,7 @@ protected:
 //     ClientContainer *splitContainer(Container *container, bool prepend_new_silbling);
     ClientContainer *createSilblingFor(Container *container, bool prepend_new_silbling);
     ClientContainer *getOrCreateSilblingFor(Container *container, bool get_prev);
+    ClientContainer *getSilbling(bool get_prev);
     void moveClientToOther(Client *client, Direction dir);
     void clear();
 
