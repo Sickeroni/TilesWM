@@ -48,13 +48,18 @@ public:
     void createSilbling(Direction where);
     void focusSilbling(Direction where);
 
+    void moveClient(Direction where) {
+        if (activeClient())
+            moveClientToOther(activeClient(), where);
+    }
+
 protected:
     ClientContainer(ContainerContainer *parent);
 
     void draw(Canvas *canvas);
 //     ClientContainer *splitContainer(Container *container, bool prepend_new_silbling);
-//     ClientContainer *createSilblingFor(Container *container, bool prepend_new_silbling);
-//     ClientContainer *getOrCreateSilblingFor(Container *container, bool get_prev);
+    ClientContainer *createSilblingFor(Container *container, bool prepend_new_silbling);
+    ClientContainer *getOrCreateSilblingFor(Container *container, bool get_prev);
     void moveClientToOther(Client *client, Direction dir);
     void clear();
 

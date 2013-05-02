@@ -80,6 +80,7 @@ public:
 
     bool hasFocus();
 
+    void makeActive();
 
 protected:
     static Container *_root;

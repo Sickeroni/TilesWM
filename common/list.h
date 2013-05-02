@@ -18,12 +18,17 @@ protected:
 
     public:
         Item() : _prev(0), _next(0) {}
-        ~Item() { assert(isUnlinked()); }
+        ~Item() {
+//             assert(isUnlinked());
+        }
 
         Item *prev() { return _prev; }
         Item *next() { return _next; }
 
-        bool isUnlinked() { return !_prev && !_next; }
+        //FIXME: this was meant to indicate if item belongs to a list
+        // _prev and _next are NOT indicators of that when list contains only one item
+        // add is_linked flag or point to list ?
+//         bool isUnlinked() { return !_prev && !_next; }
 
     private:
         Item *_prev, *_next;

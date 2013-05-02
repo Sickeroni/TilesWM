@@ -58,4 +58,13 @@ bool Container::hasFocus()
         return false;
 }
 
+
+void Container::makeActive()
+{
+    if (_parent) {
+        _parent->makeActive();
+        _parent->setActiveChild(this);
+    }
+}
+
 #endif

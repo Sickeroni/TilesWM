@@ -26,11 +26,12 @@ public:
     Container *activeChild() { return _active_child; }
     void focusPrevChild();
     void focusNextChild();
-//     void deleteEmptyChildren();
+    void deleteEmptyChildren();
     void setDirty(bool set);
     void draw(Canvas *canvas);
-    void addNewClientContainer(bool prepend);
+    ClientContainer *addNewClientContainer(bool prepend);
     ClientContainer *splitChild(Container *child, bool prepend_new_silbling);
+    void setActiveChild(Container *child);
 
 protected:
     virtual ClientContainer *createClientContainer() = 0;

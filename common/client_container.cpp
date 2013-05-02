@@ -563,20 +563,13 @@ ClientContainer *ClientContainer::splitContainer(Container *container, bool prep
 #endif
 }
 #endif
-#if 0
+#if 1
 ClientContainer *ClientContainer::createSilblingFor(Container *container, bool prepend_new_silbling)
 {
     ClientContainer *new_silbling = 0;
 
-    if (container->parent()) {
-        new_silbling = container->parent()->createClientContainer();
-        if (prepend_new_silbling)
-            container->parent()->prependChild(new_silbling);
-        else
-            container->parent()->appendChild(new_silbling);
-    } else
-        abort();
-//         new_silbling = splitContainer(container, prepend_new_silbling);
+    if (container->parent())
+        new_silbling = container->parent()->addNewClientContainer(prepend_new_silbling);
 
     return new_silbling;
 }
@@ -592,7 +585,7 @@ ClientContainer *ClientContainer::getOrCreateSilblingFor(Container *container, b
 }
 #endif
 
-#if 0
+#if 1
 void ClientContainer::moveClientToOther(Client *client, Direction dir)
 {
     if (client->container() != this)
@@ -606,8 +599,10 @@ void ClientContainer::moveClientToOther(Client *client, Direction dir)
     ClientContainer *target = 0;
 
     if (_parent) {
-        if (orientationOfDirection(dir) == _parent->orientation()) // easy case
-            target = getOrCreateSilblingFor(this, backward);
+        if (orientationOfDirection(dir) == _parent->orientation()) { // easy case
+            //if (numMappedClients() > 1) // only move to direct silbling if container doesn't become empty
+                target = getOrCreateSilblingFor(this, backward);
+        }
 
         else { // difficult case:
                  // if client container becomes empty -> use use silbling of parent container;
@@ -615,8 +610,14 @@ void ClientContainer::moveClientToOther(Client *client, Direction dir)
 
             if (numMappedClients() <= 1) // cant't split - use use silbling of parent container
                 target = getOrCreateSilblingFor(_parent, backward);
-            else // split this
-                target = splitContainer(this, backward);
+            else { // split this
+//                 target = splitContainer(this, backward);
+                target = _parent->splitChild(this, backward);
+
+                if (!target) { // split failed - maximum hierarchy depth exceeded ?
+                    target = getOrCreateSilblingFor(_parent, backward);
+                }
+            }
         }
     } else {
         abort();
@@ -647,7 +648,19 @@ void ClientContainer::moveClientToOther(Client *client, Direction dir)
 #endif
     }
 
-    target->addClient(client);
+    if (target) {
+        target->addClient(client);
+        target->setActiveClient(client);
+        target->makeActive();
+//         target->setFocus();
+        ContainerContainer *root = 0;
+        for (ContainerContainer *c = target->parent(); c; c = c->parent()) {
+            root = c;
+        }
+
+        root->setFocus();
+        root->redrawAll();
+    }
 }
 #endif
 

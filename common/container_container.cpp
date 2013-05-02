@@ -88,7 +88,7 @@ void ContainerContainer::draw(Canvas *canvas)
     Rect client_rect;
     getClientRect(client_rect);
 
-    if (!client_rect.w || !client_rect.h)
+    if (!_children.count() || !client_rect.w || !client_rect.h)
         return;
 
     int cell_width = 0, cell_height = 0;
@@ -199,7 +199,7 @@ void ContainerContainer::layout()
 }
 
 
-void ContainerContainer::addNewClientContainer(bool prepend)
+ClientContainer *ContainerContainer::addNewClientContainer(bool prepend)
 {
     std::cout<<"ContainerContainer::addNewClientContainer()\n";
     ClientContainer *client_container = createClientContainer();
@@ -208,14 +208,19 @@ void ContainerContainer::addNewClientContainer(bool prepend)
     else
         appendChild(client_container);
 
+    _active_child = client_container;
+
     layout();
+
+    return client_container;
 }
 
 
 void ContainerContainer::prependChild(Container *container)
 {
-    if (!container->isUnlinked())
-        abort();
+//FIXME
+//     if (!container->isUnlinked())
+//         abort();
 
     _children.prepend(container);
 
@@ -231,8 +236,9 @@ void ContainerContainer::appendChild(Container *container)
     std::cout<<"ContainerContainer::appendChild()\n";
     std::cout<<"children: "<<_children.count()<<'\n';
 
-    if (!container->isUnlinked())
-        abort();
+//FIXME
+//     if (!container->isUnlinked())
+//         abort();
 
     _children.append(container);
 
@@ -248,8 +254,9 @@ void ContainerContainer::appendChild(Container *container)
 
 void ContainerContainer::replaceChild(Container *old_container, Container *new_container)
 {
-    if (!new_container->isUnlinked())
-        abort();
+//FIXME
+//     if (!new_container->isUnlinked())
+//         abort();
 
     _children.replace(old_container, new_container);
 
@@ -294,13 +301,13 @@ void ContainerContainer::updateDirtyStatus()
     setDirty(dirty);
 }
 
-#if 0
+#if 1
 void ContainerContainer::deleteEmptyChildren()
 {
     //FIXME - _active_child
 
-    if (!_dirty)
-        return;
+//     if (!_dirty)
+//         return;
 
     for (Container *child = _children.first(); child; ) {
         Container *delete_this = 0;
@@ -309,7 +316,7 @@ void ContainerContainer::deleteEmptyChildren()
             delete_this = child;
         else if (child->isContainerContainer()) {
             ContainerContainer *c = static_cast<ContainerContainer*>(child);
-            if (c->_dirty)
+//             if (c->_dirty)
                 c->deleteEmptyChildren();
             if (c->isEmpty()) {
                 delete_this = child;
@@ -318,7 +325,27 @@ void ContainerContainer::deleteEmptyChildren()
 
         child = child->next();
 
-        deleteChild(delete_this);
+        if (delete_this)
+            deleteChild(delete_this);
+    }
+
+    if (_children.count() == 1 && !_children.first()->isClientContainer()) {
+        //FIXME add function dissolveChild()
+
+        // reparent child containers
+        ContainerContainer *child = static_cast<ContainerContainer*>(_children.first());
+        child->_active_child = 0;
+
+        Container *c = child->_children.first();
+        while (c) {
+            Container *reparent_this = c;
+            c = c->next();
+
+            child->_children.remove(reparent_this);
+            reparent_this->reparent(this);
+            appendChild(reparent_this);
+        }
+        deleteChild(child);
     }
 
     _dirty = isEmpty();
@@ -326,17 +353,31 @@ void ContainerContainer::deleteEmptyChildren()
     if (_dirty && !_parent) { // TODO - replace this with empty ClientContainer ?
 
     }
+
+    layout();
 }
 #endif
 
 
 void ContainerContainer::deleteChild(Container *child)
 {
-    //TODO if (_active_child)
+    if (child == _active_child) {
+        _active_child = child->prev();
+        if (!_active_child)
+            _active_child = child->next();
+    }
 
     _children.remove(child);
 
     delete child;
+}
+
+
+void ContainerContainer::setActiveChild(Container *child)
+{
+    assert(child->parent() == this);
+    _active_child = child;
+    _active_child->setFocus(); //FIXME
 }
 
 #if 1
@@ -360,6 +401,9 @@ ClientContainer *ContainerContainer::splitChild(Container *child, bool prepend_n
         new_parent->prependChild(new_silbling);
     else
         new_parent->appendChild(new_silbling);
+
+    _active_child = new_parent;
+    new_parent->_active_child = new_silbling;
 
     layout();
 

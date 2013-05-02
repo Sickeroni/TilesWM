@@ -7,8 +7,13 @@
 
 struct X11DefaultKeyHandler::Actions
 {
-    static X11ContainerContainer *rootContainer() {
+    static X11ContainerContainer *rootContainer()
+    {
         return X11Application::activeRootContainer();
+    }
+    static ClientContainer *clientContainer()
+    {
+        return rootContainer()->activeClientContainer();
     }
 
     static void layout()
@@ -22,19 +27,19 @@ struct X11DefaultKeyHandler::Actions
     }
     static void focusLeft()
     {
-        rootContainer()->activeClientContainer()->focusSilbling(Container::WEST);
+        clientContainer()->focusSilbling(Container::WEST);
     }
     static void focusRight()
     {
-        rootContainer()->activeClientContainer()->focusSilbling(Container::EAST);
+        clientContainer()->focusSilbling(Container::EAST);
     }
     static void focusUp()
     {
-        rootContainer()->activeClientContainer()->focusSilbling(Container::NORTH);
+        clientContainer()->focusSilbling(Container::NORTH);
     }
     static void focusDown()
     {
-        rootContainer()->activeClientContainer()->focusSilbling(Container::SOUTH);
+        clientContainer()->focusSilbling(Container::SOUTH);
     }
     static void runTerminal()
     {
@@ -46,11 +51,31 @@ struct X11DefaultKeyHandler::Actions
     }
     static void focusPrevClient()
     {
-        rootContainer()->activeClientContainer()->focusPrevClient();
+        clientContainer()->focusPrevClient();
     }
     static void focusNextClient()
     {
-        rootContainer()->activeClientContainer()->focusNextClient();
+        clientContainer()->focusNextClient();
+    }
+    static void moveClientLeft()
+    {
+        clientContainer()->moveClient(Container::WEST);
+    }
+    static void moveClientRight()
+    {
+        clientContainer()->moveClient(Container::EAST);
+    }
+    static void moveClientUp()
+    {
+        clientContainer()->moveClient(Container::NORTH);
+    }
+    static void moveClientDown()
+    {
+        clientContainer()->moveClient(Container::SOUTH);
+    }
+    static void deleteEmptyContainers()
+    {
+        rootContainer()->deleteEmptyChildren();
     }
 };
 
@@ -67,4 +92,9 @@ X11DefaultKeyHandler::X11DefaultKeyHandler()
     createShortcut("d", Mod1Mask, &Actions::redraw);
     createShortcut("comma", Mod1Mask, &Actions::focusPrevClient);
     createShortcut("period", Mod1Mask, &Actions::focusNextClient);
+    createShortcut("KP_Left", Mod1Mask | ShiftMask, &Actions::moveClientLeft);
+    createShortcut("KP_Right", Mod1Mask | ShiftMask, &Actions::moveClientRight);
+    createShortcut("KP_Up", Mod1Mask | ShiftMask, &Actions::moveClientUp);
+    createShortcut("KP_Down", Mod1Mask | ShiftMask, &Actions::moveClientDown);
+    createShortcut("c", Mod1Mask, &Actions::deleteEmptyContainers);
 }

@@ -14,7 +14,7 @@ ListBase::~ListBase()
 void ListBase::Private::prepend(Item *item)
 {
     assert(isSane());
-    assert(item->isUnlinked());
+//     assert(item->isUnlinked());
 
     if (_first) {
         item->_next = _first;
@@ -29,7 +29,7 @@ void ListBase::Private::prepend(Item *item)
 void ListBase::Private::append(Item *item)
 {
     assert(isSane());
-    assert(item->isUnlinked());
+//     assert(item->isUnlinked());
 
     if (_last) {
         item->_prev = _last;
@@ -44,7 +44,7 @@ void ListBase::Private::append(Item *item)
 void ListBase::Private::remove(Item *item)
 {
     assert(isSane());
-    assert(!item->isUnlinked());
+//     assert(!item->isUnlinked());
 
     if (item->_prev)
         item->_prev->_next = item->_next;
@@ -65,8 +65,8 @@ void ListBase::Private::remove(Item *item)
 void ListBase::Private::replace(Item *old_item, Item *new_item)
 {
     assert(isSane());
-    assert(!old_item->isUnlinked());
-    assert(new_item->isUnlinked());
+//     assert(!old_item->isUnlinked());
+//     assert(new_item->isUnlinked());
 
     Item *prev = old_item->_prev;
     Item *next = old_item->_next;
