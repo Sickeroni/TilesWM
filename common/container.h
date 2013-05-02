@@ -78,6 +78,8 @@ public:
 
     ContainerContainer *parent() { return _parent; }
 
+    bool hasFocus();
+
 
 protected:
     static Container *_root;

@@ -48,4 +48,14 @@ void Container::rotateOrientation()
         _root_orientation = VERTICAL;
 }
 
+bool Container::hasFocus()
+{
+    if (_parent && _parent->hasFocus() && (_parent->activeChild() == this))
+        return true;
+    else if (!_parent)
+        return true;
+    else
+        return false;
+}
+
 #endif

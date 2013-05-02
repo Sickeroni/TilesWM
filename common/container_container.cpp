@@ -34,6 +34,7 @@ void ContainerContainer::setFocus()
 {
     if (_active_child)
         _active_child->setFocus();
+    redrawAll();
 }
 
 void ContainerContainer::focusPrevChild()
@@ -41,7 +42,7 @@ void ContainerContainer::focusPrevChild()
     if (_active_child && _active_child->prev())
         _active_child = _active_child->prev();
     setFocus(); //FIXME HACK
-    redraw();
+    redrawAll();
 }
 
 void ContainerContainer::focusNextChild()
@@ -49,7 +50,7 @@ void ContainerContainer::focusNextChild()
     if (_active_child && _active_child->next())
         _active_child = _active_child->next();
     setFocus(); //FIXME HACK
-    redraw();
+    redrawAll();
 }
 
 ClientContainer *ContainerContainer::activeClientContainer()
@@ -122,13 +123,17 @@ void ContainerContainer::draw(Canvas *canvas)
 
         canvas->drawFrame(frame_rect, 0);
 
-        if (activeChild() == c) {
+//         if (hasFocus() && activeChild() == c) {
+        if (c->hasFocus()) {
             Rect focus_rect = frame_rect;
             focus_rect.x += 2;
             focus_rect.y += 2;
             focus_rect.w -= 4;
             focus_rect.h -= 4;
-            canvas->drawFrame(focus_rect, 0xFFBB00);
+
+            unsigned long color = c->isClientContainer() ? 0xFF5555 : 0xFFBB00;
+
+            canvas->drawFrame(focus_rect, color);
         }
 
         i++;
