@@ -22,11 +22,11 @@ public:
 //     virtual void layoutClients();
     virtual bool isEmpty() { return _children.isEmpty(); }
     virtual void redrawAll();
+    virtual void deleteEmptyChildren();
 
     Container *activeChild() { return _active_child; }
     void focusPrevChild();
     void focusNextChild();
-    void deleteEmptyChildren();
     void setDirty(bool set);
     void draw(Canvas *canvas);
     ClientContainer *addNewClientContainer(bool prepend);

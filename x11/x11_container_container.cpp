@@ -48,3 +48,10 @@ void X11ContainerContainer::reparent(ContainerContainer *p)
     ContainerContainer::reparent(p);
     _widget->reparent(static_cast<X11ContainerContainer*>(p)->widget());
 }
+
+void X11ContainerContainer::deleteEmptyChildren()
+{
+    _widget->unmap();
+    ContainerContainer::deleteEmptyChildren();
+    _widget->map();
+}
