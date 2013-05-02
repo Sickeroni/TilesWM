@@ -103,6 +103,11 @@ void X11Client::setFocus()
                        RevertToNone, CurrentTime);
 }
 
+void X11Client::raise()
+{
+    XRaiseWindow(X11Application::display(), _frame->wid());
+}
+
 void X11Client::setRect(const Rect &rect)
 {
     assert(rect.w && rect.h);

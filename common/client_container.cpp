@@ -59,6 +59,9 @@ void ClientContainer::setActiveClient(Client *client)
 
     _active_client = client;
 
+    if (_active_client)
+        _active_client->raise();
+
     if (_active_client && !_active_client->hasFocus() && hasFocus())
         _active_client->setFocus();
 }
@@ -79,8 +82,8 @@ void ClientContainer::handleClientUnmap(Client *client)
 
 void ClientContainer::handleClientAboutToBeMapped(Client *client)
 {
-    //FIXME layout mode
-    layoutStacked(client);
+    if (_mode == STACKED)
+        layoutStacked(client);
     redraw();
 }
 
@@ -240,7 +243,15 @@ void ClientContainer::removeClientInt(Client *c, bool moving_to_new_container)
 
 void ClientContainer::draw(Canvas *canvas)
 {
-    drawStacked(canvas);
+    switch(_mode) {
+    case TABBED:
+        drawTabbed(canvas);
+        break;
+    case STACKED:
+        drawStacked(canvas);
+        break;
+    }
+
 }
 
 void ClientContainer::drawStacked(Canvas *canvas)
@@ -380,6 +391,11 @@ void ClientContainer::drawTabbed(Canvas *canvas)
         Rect r;
         r.set(tabbar_x + (i * tab_width), tabbar_y, tab_width, tab_height);
 
+        r.x+=2;
+        r.y+=2;
+        r.w-=4;
+        r.h-=4;
+
         unsigned long fg, bg;
 
         bg = 0x0;
@@ -388,6 +404,22 @@ void ClientContainer::drawTabbed(Canvas *canvas)
             fg = 0x00FF00;
         else
             fg = 0xAAAAAA;
+
+        canvas->drawFrame(r, (activeClient() == c) ? 0x222299 : 0x222222);
+
+        #if 0
+        if (activeClient() == c) {
+            Rect tmp = r;
+            tmp.x+=2;
+            tmp.y+=2;
+            tmp.w-=4;
+            tmp.h-=4;
+            canvas->drawFrame(tmp,  0x000088);
+        }
+        #endif
+
+        r.x+=10;
+        r.y-= 10;
 
         canvas->drawText(c->name().c_str(), r, fg, bg);
 
@@ -399,7 +431,14 @@ void ClientContainer::drawTabbed(Canvas *canvas)
 
 void ClientContainer::layout()
 {
-    layoutStacked(0);
+    switch(_mode) {
+    case TABBED:
+        layoutTabbed();
+        break;
+    case STACKED:
+        layoutStacked(0);
+        break;
+    }
     redraw();
 }
 
@@ -413,7 +452,33 @@ void ClientContainer::layoutTabbed()
     int tab_height = (_titlebar_height - 2) - _frame_width;
 #endif
 
-    layoutStacked(0);
+//     layoutStacked(0);
+
+
+    const int tabbar_border = 5;
+
+//     int tab_border = 2;
+
+//     int num_tabs = _clients.count(); //numMappedClients();
+
+    int tabbar_x = _frame_width + tabbar_border;
+    int tabbar_y = _frame_width + tabbar_border;
+    int tabbar_w = (width() - (2 * tabbar_border)) - (2 * _frame_width);
+    int tabbar_h = _titlebar_height - (2 * tabbar_border);
+
+    Rect tabbar_rect;
+    tabbar_rect.set(tabbar_x, tabbar_y, tabbar_w, tabbar_h);
+
+    int client_w = width() - (2 * _frame_width);
+    int client_h = height() - ((2 * _frame_width) + _titlebar_height);
+
+    Rect client_rect;
+    client_rect.set(_frame_width, _frame_width + _titlebar_height, client_w, client_h);
+
+    if (activeClient())
+        activeClient()->raise();
+    for(Client *c = _clients.first(); c; c = c->next())
+        c->setRect(client_rect);
 }
 
 void ClientContainer::getClientSize(int &w, int &h)

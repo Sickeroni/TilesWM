@@ -28,6 +28,7 @@ public:
 
     virtual void setRect(const Rect &rect) = 0;
     virtual void setFocus() = 0;
+    virtual void raise() = 0;
 
     virtual void setContainer(ClientContainer *c);
 

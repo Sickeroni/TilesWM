@@ -25,6 +25,7 @@ public:
     virtual void setFocus();
     virtual void setRect(const Rect &rect);
     virtual void setContainer(ClientContainer *container);
+    virtual void raise();
 
     // X11ServerWidget::EventHandler implementation
     virtual void handleExpose();
