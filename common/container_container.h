@@ -15,6 +15,7 @@ public:
 
 
     virtual void redraw() = 0;
+    virtual int numElements() { return _children.count(); }
     virtual ClientContainer *activeClientContainer();
     virtual void setFocus();
     virtual void addClient(Client *c);

@@ -48,6 +48,7 @@ public:
 
     virtual ~Container() {}
 
+    virtual int numElements() = 0;
     virtual void setFocus() = 0;
     virtual ClientContainer *activeClientContainer() = 0;
     virtual void addClient(Client *c) = 0;
@@ -81,6 +82,8 @@ public:
     bool hasFocus();
 
     void makeActive();
+
+    ContainerContainer *root();
 
 protected:
     static Container *_root;

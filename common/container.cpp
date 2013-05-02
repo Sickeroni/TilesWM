@@ -67,4 +67,14 @@ void Container::makeActive()
     }
 }
 
+// ContainerContainer *Container::root()
+// {
+//     ContainerContainer *root = this;
+//     for (Container *c = this; c; c = c->parent())
+//         root = c;
+// 
+//     
+//     return root;
+// }
+
 #endif

@@ -304,24 +304,48 @@ void ContainerContainer::updateDirtyStatus()
 #if 1
 void ContainerContainer::deleteEmptyChildren()
 {
-    //FIXME - _active_child
 
 //     if (!_dirty)
 //         return;
 
+    // 1st pass: recurse
+    for (Container *child = _children.first(); child; child = child->next()) {
+        if (child->isContainerContainer())
+            static_cast<ContainerContainer*>(child)->deleteEmptyChildren();
+    }
+
+    // 2nd pass: dissolve child containers with only one child
+    for (Container *child = _children.first(); child; ) {
+        ContainerContainer *dissolve_this = 0;
+
+        if (child->isContainerContainer() && (child->numElements() == 1))
+            dissolve_this = static_cast<ContainerContainer*>(child);
+
+        child = child->next();
+
+        if (dissolve_this) {
+            Container *c = dissolve_this->_children.first();
+            dissolve_this->_active_child = 0;
+            dissolve_this->_children.remove(c);
+
+            c->reparent(this);
+
+            _children.replace(dissolve_this, c);
+
+            if (dissolve_this == _active_child)
+                _active_child = c;
+
+            delete dissolve_this;
+            dissolve_this = 0;
+        }
+    }
+
+    // 3rd pass: delete all empty children
     for (Container *child = _children.first(); child; ) {
         Container *delete_this = 0;
 
         if (child->isEmpty())
             delete_this = child;
-        else if (child->isContainerContainer()) {
-            ContainerContainer *c = static_cast<ContainerContainer*>(child);
-//             if (c->_dirty)
-                c->deleteEmptyChildren();
-            if (c->isEmpty()) {
-                delete_this = child;
-            }
-        }
 
         child = child->next();
 
@@ -329,11 +353,15 @@ void ContainerContainer::deleteEmptyChildren()
             deleteChild(delete_this);
     }
 
-    if (_children.count() == 1 && !_children.first()->isClientContainer()) {
+#if 1
+    if (_children.count() == 1 && _children.first()->isContainerContainer()) {
         //FIXME add function dissolveChild()
 
         // reparent child containers
         ContainerContainer *child = static_cast<ContainerContainer*>(_children.first());
+
+        _children.remove(child);
+        _active_child = child->_active_child;
         child->_active_child = 0;
 
         Container *c = child->_children.first();
@@ -343,16 +371,15 @@ void ContainerContainer::deleteEmptyChildren()
 
             child->_children.remove(reparent_this);
             reparent_this->reparent(this);
-            appendChild(reparent_this);
+            _children.append(reparent_this);
         }
-        deleteChild(child);
+
+        delete child;
     }
+#endif
 
     _dirty = isEmpty();
 
-    if (_dirty && !_parent) { // TODO - replace this with empty ClientContainer ?
-
-    }
 
     layout();
 }

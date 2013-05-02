@@ -14,9 +14,8 @@ public:
 
     virtual void redraw() = 0;
 
-    virtual ClientContainer *activeClientContainer() {
-        return this;
-    }
+    virtual int numElements() { return _clients.count(); }
+    virtual ClientContainer *activeClientContainer() { return this; }
     virtual void addClient(Client *c);
     virtual void layout();
 //     virtual void layoutClients;
