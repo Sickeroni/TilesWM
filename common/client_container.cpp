@@ -418,8 +418,6 @@ void ClientContainer::layoutTabbed()
 #endif
 
     layoutStacked(0);
-
-    redraw();
 }
 
 void ClientContainer::getClientSize(int &w, int &h)
@@ -650,6 +648,11 @@ int ClientContainer::numMappedClients()
             mapped_clients++;
     }
     return mapped_clients;
+}
+
+void ClientContainer::redrawAll()
+{
+    redraw();
 }
 
 #endif

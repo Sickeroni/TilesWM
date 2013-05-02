@@ -54,6 +54,7 @@ public:
     virtual void layout() = 0;
 //     virtual void layoutClients();
     virtual bool isEmpty() = 0;
+    virtual void redrawAll() = 0;
 
     virtual void reparent(ContainerContainer *p) {
         _parent = p;

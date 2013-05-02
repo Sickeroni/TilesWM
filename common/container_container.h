@@ -21,7 +21,7 @@ public:
     virtual void layout();
 //     virtual void layoutClients();
     virtual bool isEmpty() { return _children.isEmpty(); }
-
+    virtual void redrawAll();
 
     Container *activeChild() { return _active_child; }
     void focusPrevChild();
@@ -31,7 +31,6 @@ public:
     void draw(Canvas *canvas);
     void addNewClientContainer(bool prepend);
     ClientContainer *splitChild(Container *child, bool prepend_new_silbling);
-
 
 protected:
     virtual ClientContainer *createClientContainer() = 0;

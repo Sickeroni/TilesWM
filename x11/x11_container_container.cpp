@@ -22,8 +22,8 @@ X11ContainerContainer::~X11ContainerContainer()
 
 void X11ContainerContainer::setRect(const Rect &rect)
 {
-    ContainerContainer::setRect(rect);
     _widget->setRect(rect);
+    ContainerContainer::setRect(rect);
 }
 
 ClientContainer *X11ContainerContainer::createClientContainer()

@@ -21,8 +21,8 @@ X11ClientContainer::~X11ClientContainer()
 
 void X11ClientContainer::setRect(const Rect &rect)
 {
-    ClientContainer::setRect(rect);
     _widget->setRect(rect);
+    ClientContainer::setRect(rect);
 }
 
 void X11ClientContainer::redraw()

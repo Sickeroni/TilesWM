@@ -80,10 +80,9 @@ inline void ContainerContainer::getClientRect(Rect &rect)
 
 void ContainerContainer::draw(Canvas *canvas)
 {
-    canvas->erase(_rect);
-    Rect r(_rect.x+5, _rect.y+5, _rect.w-10, _rect.h-10);
-    canvas->drawFrame(r, 0);
-
+    Rect bg_rect = _rect;
+    bg_rect.setPos(0, 0);
+    canvas->erase(bg_rect);
 
     Rect client_rect;
     getClientRect(client_rect);
@@ -120,6 +119,7 @@ void ContainerContainer::draw(Canvas *canvas)
         frame_rect.x += 5;
         frame_rect.y += 5;
 
+
         canvas->drawFrame(frame_rect, 0);
 
         if (activeChild() == c) {
@@ -133,7 +133,6 @@ void ContainerContainer::draw(Canvas *canvas)
 
         i++;
    }
-
 }
 
 void ContainerContainer::layout()
@@ -370,6 +369,13 @@ int ContainerContainer::hierarchyDepth()
         return _parent->hierarchyDepth() + 1;
     else
         return 0;
+}
+
+void ContainerContainer::redrawAll()
+{
+    redraw();
+    for (Container *c = _children.first(); c; c = c->next())
+        c->redrawAll();
 }
 
 #endif

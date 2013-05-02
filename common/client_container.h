@@ -22,6 +22,7 @@ public:
     virtual void layout();
 //     virtual void layoutClients;
     virtual bool isEmpty() { return _clients.isEmpty(); }
+    virtual void redrawAll();
 
     bool hasFocus() {
         //FIXME HACK

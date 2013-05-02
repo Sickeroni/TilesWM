@@ -316,8 +316,7 @@ void X11Application::eventLoop()
 //             if (ev.xkey.keycode == layout_key) {
                 std::cout << "redraw key pressed.\n";
 //                 Container::root()->layout();
-                if (activeRootContainer()->activeClientContainer())
-                    activeRootContainer()->activeClientContainer()->redraw();
+                activeRootContainer()->redrawAll();
             } else if (XLookupKeysym(&ev.xkey, 0) == rotate_key) {
                 std::cout<<"rotate key pressed.\n";
                 Container::rotateOrientation();
