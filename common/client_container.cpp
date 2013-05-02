@@ -621,31 +621,6 @@ void ClientContainer::moveClientToOther(Client *client, Direction dir)
         }
     } else {
         abort();
-#if 0
-        if (orientationOfDirection(dir) == _root_orientation)
-            target = splitContainer(this, backward);
-        else {
-            target = new ClientContainer();
-
-            ContainerContainer *subcontainer_this = new ContainerContainer();
-            subcontainer_this->appendChild(this);
-
-            ContainerContainer *subcontainer_silbling = new ContainerContainer();
-            subcontainer_silbling->appendChild(target);
-
-            ContainerContainer *new_root = new ContainerContainer();
-
-            if (backward) {
-                new_root->appendChild(subcontainer_silbling);
-                new_root->appendChild(subcontainer_this);
-            } else {
-                new_root->appendChild(subcontainer_this);
-                new_root->appendChild(subcontainer_silbling);
-            }
-
-            _root = new_root;
-        }
-#endif
     }
 
     if (target) {

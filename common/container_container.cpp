@@ -174,6 +174,11 @@ void ContainerContainer::layout()
     new_rect.w -= 2*child_frame_width;
     new_rect.h -= 2*child_frame_width;
 
+    if (new_rect.w < 10)
+        new_rect.w = 10;
+    if (new_rect.h < 10)
+        new_rect.h = 10;
+
     int i = 0;
     for(Container *c = _children.first(); c; c = c->next()) {
         if (isHorizontal()) {
@@ -353,7 +358,7 @@ void ContainerContainer::deleteEmptyChildren()
             deleteChild(delete_this);
     }
 
-#if 1
+#if 0
     if (_children.count() == 1 && _children.first()->isContainerContainer()) {
         //FIXME add function dissolveChild()
 

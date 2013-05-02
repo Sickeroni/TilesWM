@@ -61,7 +61,7 @@ struct X11DefaultKeyHandler::Actions
     {
         rootContainer()->widget()->unmap(); //HACK
         clientContainer()->moveClient(Container::WEST);
-        rootContainer()->deleteEmptyChildren();
+//         rootContainer()->deleteEmptyChildren();
         rootContainer()->widget()->map(); //HACK
         rootContainer()->setFocus(); //HACK
     }
@@ -69,7 +69,7 @@ struct X11DefaultKeyHandler::Actions
     {
         rootContainer()->widget()->unmap(); //HACK
         clientContainer()->moveClient(Container::EAST);
-        rootContainer()->deleteEmptyChildren();
+//         rootContainer()->deleteEmptyChildren();
         rootContainer()->widget()->map(); //HACK
         rootContainer()->setFocus(); //HACK
     }
@@ -77,7 +77,7 @@ struct X11DefaultKeyHandler::Actions
     {
         rootContainer()->widget()->unmap(); //HACK
         clientContainer()->moveClient(Container::NORTH);
-        rootContainer()->deleteEmptyChildren();
+//         rootContainer()->deleteEmptyChildren();
         rootContainer()->widget()->map(); //HACK
         rootContainer()->setFocus(); //HACK
     }
@@ -85,7 +85,7 @@ struct X11DefaultKeyHandler::Actions
     {
         rootContainer()->widget()->unmap(); //HACK
         clientContainer()->moveClient(Container::SOUTH);
-        rootContainer()->deleteEmptyChildren();
+//         rootContainer()->deleteEmptyChildren();
         rootContainer()->widget()->map(); //HACK
         rootContainer()->setFocus(); //HACK
     }

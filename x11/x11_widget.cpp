@@ -78,8 +78,6 @@ void X11Widget::unmap()
 
 void X11Widget::reparent(X11ServerWidget *new_parent, int x, int y)
 {
-    if (!new_parent)
-        abort();
     Window new_parent_wid = new_parent ? new_parent->wid() : X11Application::root();
     XReparentWindow(X11Application::display(), _wid, new_parent_wid, x, y);
 }

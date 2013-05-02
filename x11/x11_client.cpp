@@ -121,6 +121,11 @@ void X11Client::setRect(const Rect &rect)
         r.w = _max_width;
     if (_max_height && r.h > _max_height)
         r.h = _max_height;
+    if (r.w < 10)
+        r.w = 10;
+    if (r.h < 10)
+        r.h = 10;
+
     _widget->setRect(r);
 
 }
