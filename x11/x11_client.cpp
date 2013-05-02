@@ -98,8 +98,9 @@ void X11Client::setFocus()
 
     assert(isMapped());
 
-    XSetInputFocus(X11Application::display(), _widget->wid(),
-                   RevertToNone, CurrentTime);
+    if (X11Application::activeRootContainer()->widget()->isMapped())
+        XSetInputFocus(X11Application::display(), _widget->wid(),
+                       RevertToNone, CurrentTime);
 }
 
 void X11Client::setRect(const Rect &rect)

@@ -51,7 +51,7 @@ void X11ContainerContainer::reparent(ContainerContainer *p)
 
 void X11ContainerContainer::deleteEmptyChildren()
 {
-    _widget->unmap();
+//     _widget->unmap();
     ContainerContainer::deleteEmptyChildren();
-    _widget->map();
+//     _widget->map();
 }
