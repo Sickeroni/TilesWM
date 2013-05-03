@@ -149,7 +149,7 @@ bool X11Application::init()
 
     /* return failure status if we can't connect */
     if(!(_display = XOpenDisplay(0))) {
-        std::cerr << "ERROR: can't open display.\n";
+        std::cerr << "ERROR: Can't open display.\n";
         return false;
     }
 
@@ -161,8 +161,16 @@ bool X11Application::init()
 
     XWindowAttributes root_attr;
     if (!XGetWindowAttributes(_display, _root, &root_attr)) {
-        std::cout << "XGetWindowAttributes() failed !\n";
+        std::cerr << "ERROR: XGetWindowAttributes() failed for root window.\n";
         XCloseDisplay(_display);
+        _display = 0;
+        return false;
+    }
+
+    if (root_attr.all_event_masks & SubstructureRedirectMask) {
+        std::cerr<<"ERROR: Another window manager is already running.\n";
+        XCloseDisplay(_display);
+        _display = 0;
         return false;
     }
 
