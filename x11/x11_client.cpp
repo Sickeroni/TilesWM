@@ -264,7 +264,7 @@ void X11Client::handleCreate(Window wid)
             }
 #endif
             if (/*!attr.x && !attr.y && */(client->_is_dialog || is_modal)) {
-                frame_rect.setPos(200, 200);
+                frame_rect.setPos(200, 200); //FIXME
             }
 
             client->_frame->setRect(frame_rect);
@@ -762,28 +762,6 @@ bool X11Client::handleEvent(const XEvent &ev)
         } else if (ev.type == CreateNotify) {
             handleCreate(ev.xcreatewindow.window);
             handled = true;
-        } else if (ev.type == MapRequest) {
-            abort();
-//             XMapWindow(X11Application::display(), wid);
-        } else if (ev.type == ConfigureRequest) {
-            abort();
-            #if 0
-            const XConfigureRequestEvent &crev = ev.xconfigurerequest;
-
-            XWindowChanges changes;
-            memset(&changes, 0, sizeof(changes));
-            changes.x = crev.x;
-            changes.y = crev.y;
-            changes.width = crev.width;
-            changes.height = crev.height;
-            changes.border_width = crev.border_width;
-            changes.sibling = crev.above;
-            changes.stack_mode = crev.detail;
-
-            CriticalSection sec;
-
-            XConfigureWindow(X11Application::display(), wid, crev.value_mask, &changes);
-            #endif
         } else {
 //             std::cout<<"no client with wid "<<wid<<'\n';
         }

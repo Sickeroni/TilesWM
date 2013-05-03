@@ -64,6 +64,7 @@ X11 events
 
 
 
+X11Application *X11Application::_self = 0;
 
 
 const char *X11Application::x11EventToString(size_t id)
@@ -112,9 +113,6 @@ const char *X11Application::x11EventToString(size_t id)
     else
         return table[id];
 }
-
-
-X11Application *X11Application::_self = 0;
 
 
 X11Application::X11Application() :
@@ -189,12 +187,10 @@ bool X11Application::init()
     _activeRootContainer = new X11ContainerContainer(0);
     _activeRootContainer->setRect(root_container_rect);
 
-    _activeRootContainer->addNewClientContainer(false); //FIXME HACK
-    _activeRootContainer->addNewClientContainer(false); //FIXME HACK
-
+//    _activeRootContainer->addNewClientContainer(false); //FIXME HACK
+//    _activeRootContainer->addNewClientContainer(false); //FIXME HACK
 
     X11Client::init();
-
 
     _key_handler = new X11DefaultKeyHandler();
 
@@ -415,8 +411,8 @@ void X11Application::runProgram(const char *path)
         waitpid(pid, 0, WNOHANG);
     } else if (pid == 0) {
         execv(path, args);
-        perror ("error: ");
+        perror ("ERROR: Can't execute program: ");
         exit(1);
     } else
-        std::cout<<"error executing "<<path<<'\n';
+        std::cerr<<"ERROR: running "<<path<<": Can't fork.";
 }
