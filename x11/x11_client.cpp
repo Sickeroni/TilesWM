@@ -705,6 +705,11 @@ bool X11Client::handleEvent(const XEvent &ev)
                 break;
             case MapRequest:
                 client->map();
+                if (ClientContainer *container =  client->container()) {
+                    container->setActiveClient(client);
+                    container->makeActive();
+                    client->setFocus();
+                }
                 break;
             case ConfigureRequest:
                 client->handleConfigureRequest(ev.xconfigurerequest);
@@ -748,7 +753,7 @@ bool X11Client::handleEvent(const XEvent &ev)
                                     //FIXME TODO place frame
                                 }
                             } else {
-                                //FIXME insert into active conteiner or something
+                                //FIXME insert into active container or something
                                 abort();
                             }
 
