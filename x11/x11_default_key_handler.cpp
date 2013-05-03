@@ -94,6 +94,10 @@ struct X11DefaultKeyHandler::Actions
         rootContainer()->deleteEmptyChildren();
         rootContainer()->setFocus(); //HACK
     }
+    static void runProgram()
+    {
+        X11Application::runProgram("/usr/bin/gmrun");
+    }
 };
 
 
@@ -114,4 +118,5 @@ X11DefaultKeyHandler::X11DefaultKeyHandler()
     createShortcut("KP_Up", Mod1Mask | ShiftMask, &Actions::moveClientUp);
     createShortcut("KP_Down", Mod1Mask | ShiftMask, &Actions::moveClientDown);
     createShortcut("c", Mod1Mask, &Actions::deleteEmptyContainers);
+    createShortcut("F2", Mod1Mask, &Actions::runProgram);
 }
