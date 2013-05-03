@@ -269,9 +269,6 @@ void X11Client::handleCreate(Window wid)
 
             client->_frame->setRect(frame_rect);
 
-            if (!client->_is_dialog && !is_modal)
-                X11Application::activeRootContainer()->addClient(client);
-
             _wid_index.insert(std::pair<Window, X11Client*>(wid, client));
 
             if (is_mapped)
@@ -374,6 +371,9 @@ void X11Client::mapInt()
     XAddToSaveSet(X11Application::display(), _widget->wid());
 
     _widget->reparent(_frame, 5, 5); // HACK: 5 = frame width
+
+    if (!container() && !_is_dialog && !_is_modal)
+        X11Application::activeRootContainer()->addClient(this);
 
     // notify container before mapping, to avoid visual glitches
     if (container())
