@@ -71,6 +71,7 @@ public:
     int y() { return _rect.y; }
     int width() { return _rect.w; }
     int height() { return _rect.h; }
+    const Rect &rect() { return _rect; }
 //     virtual void setRect(int x, int y, int w, int h);
 
     bool isHorizontal() {

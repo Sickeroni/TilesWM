@@ -139,53 +139,21 @@ int ContainerContainer::minimumHeight()
     return height;
 }
 
-
-
 void ContainerContainer::draw(Canvas *canvas)
 {
     Rect bg_rect = _rect;
     bg_rect.setPos(0, 0);
     canvas->erase(bg_rect);
 
-    Rect client_rect;
-    getClientRect(client_rect);
-
-    if (!_children.count() || !client_rect.w || !client_rect.h)
-        return;
-
-    int cell_width = 0, cell_height = 0;
-
-    if (isHorizontal()) {
-        cell_width = client_rect.w / _children.count();
-        cell_height = client_rect.h;
-    } else {
-        cell_width = client_rect.w;
-        cell_height = client_rect.h / _children.count();
-    }
-
-    Rect frame_rect;
-    frame_rect.setSize(cell_width, cell_height);
-
-    frame_rect.w -= 10;
-    frame_rect.h -= 10;
-
-    int i = 0;
-    for(Container *c = _children.first(); c; c = c->next()) {
-        if (isHorizontal()) {
-            frame_rect.x = client_rect.x + (i * cell_width);
-            frame_rect.y = client_rect.y;
-        } else {
-            frame_rect.x = client_rect.x;
-            frame_rect.y = client_rect.y + (i * cell_height);
-        }
-
-        frame_rect.x += 5;
-        frame_rect.y += 5;
-
+    for (Container *c = _children.first(); c; c = c->next()) {
+        Rect frame_rect = c->rect();
+        frame_rect.x -= 5;
+        frame_rect.y -= 5;
+        frame_rect.w += 10;
+        frame_rect.h += 10;
 
         canvas->drawFrame(frame_rect, 0);
 
-//         if (hasFocus() && activeChild() == c) {
         if (c->hasFocus()) {
             Rect focus_rect = frame_rect;
             focus_rect.x += 2;
@@ -198,8 +166,7 @@ void ContainerContainer::draw(Canvas *canvas)
             canvas->drawFrame(focus_rect, color);
         }
 
-        i++;
-   }
+    }
 }
 
 void ContainerContainer::layout()
@@ -216,45 +183,55 @@ void ContainerContainer::layout()
     std::cout<<"ContainerContainer::layout()\n";
     std::cout<<"children: "<<_children.count()<<'\n';
 
-    int cell_width = 0, cell_height = 0;
+    int available_space = isHorizontal() ? client_rect.w : client_rect.h;
 
-    if (isHorizontal()) {
-        cell_width = client_rect.w / _children.count();
-        cell_height = client_rect.h;
-    } else {
-        cell_width = client_rect.w;
-        cell_height = client_rect.h / _children.count();
+    for (Container *c = _children.first(); c; c = c->next()) {
+        if (isHorizontal())
+            available_space -= c->minimumWidth() + (2 * _child_frame_width);
+        else
+            available_space -= c->minimumHeight() + (2 * _child_frame_width);
     }
 
-    std::cout<<"cell_width: "<<cell_width<<"\n";
-    std::cout<<"cell_height: "<<cell_height<<"\n";
-    std::cout<<"=================================\n";
+    if (available_space < 0) // BAAD - children won't fit
+        available_space = 0;
 
-    Rect new_rect;
-    new_rect.setSize(cell_width, cell_height);
 
-    new_rect.w -= 2*_child_frame_width;
-    new_rect.h -= 2*_child_frame_width;
+    int additional_space_per_child = available_space / _children.count();
 
-    if (new_rect.w < 10)
-        new_rect.w = 10;
-    if (new_rect.h < 10)
-        new_rect.h = 10;
+    int current_x = client_rect.x;
+    int current_y = client_rect.y;
 
     int i = 0;
     for(Container *c = _children.first(); c; c = c->next()) {
+        Rect child_rect;
+
+
+        int additional_space = 0;
+
+        if (workspace()->maximized()) {
+            if (hasFocus() && activeChild() == c)
+                additional_space = available_space;
+        } else
+            additional_space = additional_space_per_child;
+
+
         if (isHorizontal()) {
-            new_rect.x = client_rect.x + (i * cell_width);
-            new_rect.y = client_rect.y;
+            child_rect.x = current_x;
+            child_rect.y = current_y;
+            child_rect.w = c->minimumWidth() + additional_space + (2 * _child_frame_width);;
+            child_rect.h = client_rect.h;
+
+            current_x += child_rect.w;
         } else {
-            new_rect.x = client_rect.x;
-            new_rect.y = client_rect.y + (i * cell_height);
+            child_rect.x = current_x;
+            child_rect.y = current_y;
+            child_rect.w = client_rect.w;
+            child_rect.h = c->minimumHeight() + additional_space + (2 * _child_frame_width);
+
+            current_y += child_rect.h;
         }
 
-        new_rect.x += _child_frame_width;
-        new_rect.y += _child_frame_width;
 #if 0
-//         localToGlobal(x, y);
         if (workspace()->maximized()) {
             if (hasFocus() && activeChild() == c)
                 c->setRect(client_rect);
@@ -265,6 +242,13 @@ void ContainerContainer::layout()
             c->layout();
         } else {
 #endif
+
+            Rect new_rect = child_rect;
+            new_rect.x += _child_frame_width;
+            new_rect.y += _child_frame_width;
+            new_rect.w -= (2 * _child_frame_width);
+            new_rect.h -= (2 * _child_frame_width);
+
             c->setRect(new_rect);
             c->layout();
 #if 0

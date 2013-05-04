@@ -8,7 +8,7 @@
 #include <stdlib.h>
 
 
-Container::Orientation Container::_root_orientation = VERTICAL;
+Container::Orientation Container::_root_orientation = HORIZONTAL;
 
 
 
