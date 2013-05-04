@@ -59,6 +59,8 @@ public:
     virtual void redrawAll() = 0;
     virtual void handleMaximizedChanged() = 0;
     virtual void handleActiveChanged() = 0;
+    virtual int minimumWidth() = 0;
+    virtual int minimumHeight() = 0;
 
     virtual void reparent(ContainerContainer *p) {
         _parent = p;
@@ -82,7 +84,7 @@ public:
 
     ContainerContainer *parent() { return _parent; }
 
-    bool hasFocus(); //FIXME change to isActive()
+    bool hasFocus();
 
     void makeActive(); //FIXME change to makeActiveAndFocus() ?
 
@@ -90,6 +92,7 @@ public:
 
     Workspace *workspace() { return _workspace; }
     bool isAncestorOf(Container *container);
+
 
 protected:
     Container(Type type, ContainerContainer *parent);

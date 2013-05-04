@@ -67,6 +67,29 @@ void ClientContainer::setActiveClient(Client *client)
         _active_client->setFocus();
 }
 
+
+bool ClientContainer::isMinimized()
+{
+    if (workspace()->maximized()) {
+        if (parent()->hasFocus() && parent()->activeChild() == this)
+            return false;
+        else
+            return true;
+    } else
+        return false;
+}
+
+int ClientContainer::minimumWidth()
+{
+    return 50; //FIXME
+}
+
+int ClientContainer::minimumHeight()
+{
+    return 50; //FIXME
+}
+
+
 void ClientContainer::handleClientMap(Client *client)
 {
     if (!_active_client)
@@ -244,15 +267,21 @@ void ClientContainer::removeClientInt(Client *c, bool moving_to_new_container)
 
 void ClientContainer::draw(Canvas *canvas)
 {
-    switch(_mode) {
-    case TABBED:
-        drawTabbed(canvas);
-        break;
-    case STACKED:
-        drawStacked(canvas);
-        break;
+    if (isMinimized()) {
+        if (isHorizontal())
+            drawTabs(canvas);
+        else
+            drawVerticalTabs(canvas);
+    } else {
+        switch(_mode) {
+        case TABBED:
+            drawTabs(canvas);
+            break;
+        case STACKED:
+            drawStacked(canvas);
+            break;
+        }
     }
-
 }
 
 void ClientContainer::drawStacked(Canvas *canvas)
@@ -354,7 +383,45 @@ void ClientContainer::drawStacked(Canvas *canvas)
    }
 }
 
-void ClientContainer::drawTabbed(Canvas *canvas)
+void ClientContainer::drawVerticalTabs(Canvas *canvas)
+{
+    Rect bg_rect = _rect;
+    bg_rect.setPos(0, 0);
+    canvas->erase(bg_rect);
+
+
+    int i = 0;
+    for (Client *c = _clients.first(); c; c = c->next()) {
+        Rect tab_rect(0, i * _tabbar_height, _vertical_tabbar_width, _tabbar_height);
+
+        canvas->drawFrame(tab_rect, (activeClient() == c) ? 0x222299 : 0x222222);
+
+        if (c->icon()) {
+            int icon_x = tab_rect.x + 2;
+            int icon_y = tab_rect.y + 2;
+            canvas->drawIcon(c->icon(), icon_x, icon_y);
+        }
+
+        Rect text_rect = tab_rect;
+
+        text_rect.x+=30;
+        text_rect.y-= 10;
+
+        unsigned long fg = 0, bg = 0;
+
+        if (activeClient() == c)
+            fg = 0x00FF00;
+        else
+            fg = 0xAAAAAA;
+
+        canvas->drawText(c->name().c_str(), text_rect, fg, bg);
+
+
+        i++;
+    }
+}
+
+void ClientContainer::drawTabs(Canvas *canvas)
 {
     std::cout<<"ClientContainer::draw()\n";
 

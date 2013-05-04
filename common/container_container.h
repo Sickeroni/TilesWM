@@ -26,6 +26,8 @@ public:
     virtual void deleteEmptyChildren();
     virtual void handleMaximizedChanged();
     virtual void handleActiveChanged();
+    virtual int minimumWidth();
+    virtual int minimumHeight();
 
     Container *activeChild() { return _active_child; }
     void focusPrevChild();
@@ -57,11 +59,11 @@ private:
     Container *_active_child;
     bool _dirty; // is this container unused or are there unused child containers ?;
 
-    static const int frame_width = 10;
-    static const int title_height = 10;
-    static const int child_frame_width = 10;
+    static const int _frame_width = 10;
+    static const int _title_height = 10;
+    static const int _child_frame_width = 10;
 
-    static const int max_hierarchy_depth = 1;
+    static const int _max_hierarchy_depth = 1;
 };
 
 

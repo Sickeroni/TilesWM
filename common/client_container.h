@@ -21,6 +21,9 @@ public:
 //     virtual void layoutClients;
     virtual bool isEmpty() { return _clients.isEmpty(); }
     virtual void redrawAll();
+    virtual int minimumWidth();
+    virtual int minimumHeight();
+
 
     bool hasFocus() {
         //FIXME HACK
@@ -52,6 +55,8 @@ public:
             moveClientToOther(activeClient(), where);
     }
 
+    bool isMinimized();
+
 protected:
     ClientContainer(ContainerContainer *parent);
 
@@ -63,8 +68,13 @@ protected:
     void moveClientToOther(Client *client, Direction dir);
     void clear();
 
+    List<Client> _clients;
+
 private:
     enum Mode { TABBED, STACKED };
+
+    static const int _vertical_tabbar_width = 200;
+    static const int _tabbar_height = 40;
 
     static int _frame_width;
     static int _titlebar_height;
@@ -73,12 +83,12 @@ private:
     void getStackCellSize(int num_cells, int &w, int &h);
     void layoutTabbed();
     void layoutStacked(Client *about_to_be_mapped);
-    void drawTabbed(Canvas *canvas);
+    void drawTabs(Canvas *canvas);
+    void drawVerticalTabs(Canvas *canvas);
     void drawStacked(Canvas *canvas);
     void removeClientInt(Client *c, bool moving_to_new_container);
     void unfocusActiveClient();
 
-    List<Client> _clients;
     Mode _mode;
     Client *_active_client;
 };

@@ -34,6 +34,7 @@ public:
     virtual void handleExpose();
 
     void map();
+    void unmap();
 
     static void init();
     static bool handleEvent(const XEvent &ev);
@@ -45,7 +46,6 @@ private:
 
 //     bool validate();
     void mapInt();
-    void unmap();
     void unmapInt();
     bool refreshMapState();
     void refreshSizeHints();

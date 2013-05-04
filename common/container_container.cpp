@@ -119,9 +119,27 @@ void ContainerContainer::addClient(Client *c)
 
 inline void ContainerContainer::getClientRect(Rect &rect)
 {
-    rect.set(frame_width, frame_width + title_height,
-             _rect.w - (frame_width * 2), _rect.h - title_height - (frame_width * 2));
+    rect.set(_frame_width, _frame_width + _title_height,
+             _rect.w - (_frame_width * 2), _rect.h - _title_height - (_frame_width * 2));
 }
+
+int ContainerContainer::minimumWidth()
+{
+    int width = 0;
+    for (Container *c = _children.first(); c; c = c->next())
+        width += c->minimumWidth() + (2 * _child_frame_width);
+    return width;
+}
+
+int ContainerContainer::minimumHeight()
+{
+    int height = 0;
+    for (Container *c = _children.first(); c; c = c->next())
+        height += c->minimumHeight() + (2 * _child_frame_width);
+    return height;
+}
+
+
 
 void ContainerContainer::draw(Canvas *canvas)
 {
@@ -215,8 +233,8 @@ void ContainerContainer::layout()
     Rect new_rect;
     new_rect.setSize(cell_width, cell_height);
 
-    new_rect.w -= 2*child_frame_width;
-    new_rect.h -= 2*child_frame_width;
+    new_rect.w -= 2*_child_frame_width;
+    new_rect.h -= 2*_child_frame_width;
 
     if (new_rect.w < 10)
         new_rect.w = 10;
@@ -233,9 +251,9 @@ void ContainerContainer::layout()
             new_rect.y = client_rect.y + (i * cell_height);
         }
 
-        new_rect.x += child_frame_width;
-        new_rect.y += child_frame_width;
-
+        new_rect.x += _child_frame_width;
+        new_rect.y += _child_frame_width;
+#if 0
 //         localToGlobal(x, y);
         if (workspace()->maximized()) {
             if (hasFocus() && activeChild() == c)
@@ -246,9 +264,12 @@ void ContainerContainer::layout()
             }
             c->layout();
         } else {
+#endif
             c->setRect(new_rect);
             c->layout();
+#if 0
         }
+#endif
 
         i++;
    }
@@ -459,7 +480,7 @@ void ContainerContainer::deleteChild(Container *child)
 #if 1
 ClientContainer *ContainerContainer::splitChild(Container *child, bool prepend_new_silbling)
 {
-    if (hierarchyDepth() >= max_hierarchy_depth)
+    if (hierarchyDepth() >= _max_hierarchy_depth)
         return 0;
 
     // create new parent

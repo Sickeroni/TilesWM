@@ -51,6 +51,7 @@ void X11ClientContainer::setFocus()
 
 void X11ClientContainer::handleActiveChanged()
 {
+#if 0
     if (workspace()->maximized()) {
         if (parent()->activeChild() != this || !parent()->hasFocus())
             _widget->unmap();
@@ -58,7 +59,16 @@ void X11ClientContainer::handleActiveChanged()
             _widget->map();
     } else
         _widget->map();
+#endif
 
+    //FIXME this dis hacky
+    if (isMinimized()) {
+        for (Client *c = _clients.first(); c; c = c->next())
+            static_cast<X11Client*>(c)->unmap();
+    } else {
+        for (Client *c = _clients.first(); c; c = c->next())
+            static_cast<X11Client*>(c)->map();
+    }
 }
 
 void X11ClientContainer::handleMaximizedChanged()
