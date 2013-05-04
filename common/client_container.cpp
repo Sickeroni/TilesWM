@@ -408,6 +408,13 @@ void ClientContainer::drawTabbed(Canvas *canvas)
 
         canvas->drawFrame(r, (activeClient() == c) ? 0x222299 : 0x222222);
 
+
+        if (c->icon()) {
+            int icon_x = r.x + 2;
+            int icon_y = r.y + 2;
+            canvas->drawIcon(c->icon(), icon_x, icon_y);
+        }
+
         #if 0
         if (activeClient() == c) {
             Rect tmp = r;
@@ -419,7 +426,7 @@ void ClientContainer::drawTabbed(Canvas *canvas)
         }
         #endif
 
-        r.x+=10;
+        r.x+=30;
         r.y-= 10;
 
         canvas->drawText(c->name().c_str(), r, fg, bg);

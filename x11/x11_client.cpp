@@ -6,6 +6,7 @@
 #include "x11_application.h"
 #include "x11_container_container.h"
 #include "x11_canvas.h"
+#include "x11_icon.h"
 
 #include <X11/Xutil.h>
 #include <X11/Xatom.h>
@@ -71,15 +72,21 @@ Atom X11Client::_net_wm_window_type_dialog = None;
 
 
 X11Client::X11Client() : Client(false),
-    _widget(0), _frame(0),
-    _max_width(0), _max_height(0),
-    _is_dialog(false), _is_modal(false)
+    _widget(0),
+    _frame(0),
+    _icon(0),
+    _max_width(0),
+    _max_height(0),
+    _is_dialog(false),
+    _is_modal(false)
 {
 }
 
 X11Client::~X11Client()
 {
     std::cout<<"X11Client::~X11Client()\n";
+    delete _icon;
+    _icon = 0;
     delete _widget;
     _widget= 0;
     delete _frame;
@@ -92,6 +99,13 @@ X11Client::~X11Client()
 //     std::cout<<"X11Client::validate(): "<<ret<<'\n';
 //     return ret;
 // }
+
+
+
+Icon *X11Client::icon()
+{
+    return _icon;
+}
 
 void X11Client::setFocus()
 {
@@ -171,13 +185,13 @@ void X11Client::init()
 
     for (unsigned int i = 0; i < num_children; i++) {
         if (!X11ServerWidget::isServerWidget(children[i]))
-            handleCreate(children[i]);
+            create(children[i]);
     }
 
     XFree(children);
 }
 
-void X11Client::handleCreate(Window wid)
+void X11Client::create(Window wid)
 {
     CriticalSection sec;
 
@@ -222,6 +236,8 @@ void X11Client::handleCreate(Window wid)
     if (XGetWindowAttributes(X11Application::display(), wid, &attr)) {
         if (!attr.override_redirect) {
             bool is_mapped = (attr.map_state != IsUnmapped);
+            
+            
 
             XSetWindowAttributes new_attr;
             memset(&new_attr, 0, sizeof(new_attr));
@@ -273,6 +289,8 @@ void X11Client::handleCreate(Window wid)
             }
 
             client->_frame->setRect(frame_rect);
+
+            client->_icon = new X11Icon(20, 20, client->_frame);
 
             _wid_index.insert(std::pair<Window, X11Client*>(wid, client));
 
@@ -770,7 +788,7 @@ bool X11Client::handleEvent(const XEvent &ev)
 
             handled = true;
         } else if (ev.type == CreateNotify) {
-            handleCreate(ev.xcreatewindow.window);
+            create(ev.xcreatewindow.window);
             handled = true;
         } else {
 //             std::cout<<"no client with wid "<<wid<<'\n';

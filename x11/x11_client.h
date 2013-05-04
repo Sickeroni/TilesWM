@@ -13,6 +13,8 @@
 
 class ClientContainer;
 class X11ClientWidget;
+class Icon;
+class X11Icon;
 
 
 //FIXME TODO - frame: draw focus
@@ -26,6 +28,7 @@ public:
     virtual void setRect(const Rect &rect);
     virtual void setContainer(ClientContainer *container);
     virtual void raise();
+    virtual Icon *icon();
 
     // X11ServerWidget::EventHandler implementation
     virtual void handleExpose();
@@ -54,7 +57,7 @@ private:
     void drawFrame();
 
     static X11Client *find(Window wid);
-    static void handleCreate(Window wid);
+    static void create(Window wid);
 
     // TODO - use hash
     static std::map<Window, X11Client*> _wid_index;
@@ -63,6 +66,7 @@ private:
 
     X11ClientWidget *_widget;
     X11ServerWidget *_frame;
+    X11Icon *_icon;
     int _max_width, _max_height;
     std::string _x11_name;
     std::string _x11_class;
