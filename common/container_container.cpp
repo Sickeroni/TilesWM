@@ -205,7 +205,6 @@ void ContainerContainer::layout()
     for(Container *c = _children.first(); c; c = c->next()) {
         Rect child_rect;
 
-
         int additional_space = 0;
 
         if (workspace()->maximized()) {

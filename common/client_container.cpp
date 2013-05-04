@@ -14,7 +14,7 @@
 #include <assert.h>
 
 
-int ClientContainer::_titlebar_height = 50;
+int ClientContainer::_titlebar_height = 0;
 int ClientContainer::_frame_width = 10;
 
 
@@ -67,26 +67,25 @@ void ClientContainer::setActiveClient(Client *client)
         _active_client->setFocus();
 }
 
-
-bool ClientContainer::isMinimized()
-{
-    if (workspace()->maximized()) {
-        if (parent()->hasFocus() && parent()->activeChild() == this)
-            return false;
-        else
-            return true;
-    } else
-        return false;
-}
-
 int ClientContainer::minimumWidth()
 {
-    return 50; //FIXME
+    return _vertical_tabbar_width + (2 * _frame_width);
 }
 
 int ClientContainer::minimumHeight()
 {
-    return 50; //FIXME
+    int ret = 0;
+    if (isMinimized()) {
+        if (isHorizontal())
+            ret = _tabbar_height;
+        else
+            ret = _clients.count() * _tabbar_height;
+    } else
+        ret = _tabbar_height;
+
+    ret += _frame_width + _titlebar_height;
+
+    return ret;
 }
 
 
@@ -430,7 +429,7 @@ void ClientContainer::drawTabs(Canvas *canvas)
     canvas->erase(bg_rect);
 
 
-    const int tabbar_border = 5;
+    const int tabbar_border = 0;
 
 //     int tab_border = 2;
 
@@ -439,7 +438,7 @@ void ClientContainer::drawTabs(Canvas *canvas)
     int tabbar_x = _frame_width + tabbar_border;
     int tabbar_y = _frame_width + tabbar_border;
     int tabbar_w = (width() - (2 * tabbar_border)) - (2 * _frame_width);
-    int tabbar_h = _titlebar_height - (2 * tabbar_border);
+    int tabbar_h = _tabbar_height;
 
     Rect tabbar_rect;
     tabbar_rect.set(tabbar_x, tabbar_y, tabbar_w, tabbar_h);
@@ -530,7 +529,7 @@ void ClientContainer::layoutTabbed()
 //     layoutStacked(0);
 
 
-    const int tabbar_border = 5;
+    const int tabbar_border = 0;
 
 //     int tab_border = 2;
 
@@ -539,16 +538,16 @@ void ClientContainer::layoutTabbed()
     int tabbar_x = _frame_width + tabbar_border;
     int tabbar_y = _frame_width + tabbar_border;
     int tabbar_w = (width() - (2 * tabbar_border)) - (2 * _frame_width);
-    int tabbar_h = _titlebar_height - (2 * tabbar_border);
+    int tabbar_h = _tabbar_height;
 
     Rect tabbar_rect;
     tabbar_rect.set(tabbar_x, tabbar_y, tabbar_w, tabbar_h);
 
     int client_w = width() - (2 * _frame_width);
-    int client_h = height() - ((2 * _frame_width) + _titlebar_height);
+    int client_h = height() - ((2 * _frame_width) + _tabbar_height);
 
     Rect client_rect;
-    client_rect.set(_frame_width, _frame_width + _titlebar_height, client_w, client_h);
+    client_rect.set(_frame_width, _frame_width + _tabbar_height, client_w, client_h);
 
     if (activeClient())
         activeClient()->raise();

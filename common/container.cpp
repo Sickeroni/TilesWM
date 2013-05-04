@@ -2,6 +2,7 @@
 
 #if 1
 
+#include "workspace.h"
 #include "client_container.h"
 #include "container_container.h"
 
@@ -34,6 +35,8 @@ Container::Orientation Container::orientation()
 {
     if (!_parent)
         return _root_orientation;
+    else if (_parent->isMinimized())
+        return _parent->orientation();
     else
         return _parent->isHorizontal() ? VERTICAL : HORIZONTAL;
 }
@@ -53,7 +56,7 @@ void Container::rotateOrientation()
 
 bool Container::hasFocus()
 {
-    if (_parent && _parent->hasFocus() && (_parent->activeChild() == this))
+    if (_parent && (_parent->hasFocus() && (_parent->activeChild() == this)))
         return true;
     else if (!_parent)
         return true;
@@ -61,6 +64,19 @@ bool Container::hasFocus()
         return false;
 }
 
+bool Container::isMinimized()
+{
+    if (workspace()->maximized()) {
+        if (parent()) {
+            if (parent()->hasFocus() && parent()->activeChild() == this)
+                return false;
+            else
+                return true;
+        } else
+            return false;
+    } else
+        return false;
+}
 
 void Container::makeActive()
 {

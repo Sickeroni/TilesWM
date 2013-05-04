@@ -55,8 +55,6 @@ public:
             moveClientToOther(activeClient(), where);
     }
 
-    bool isMinimized();
-
 protected:
     ClientContainer(ContainerContainer *parent);
 
