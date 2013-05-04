@@ -24,6 +24,8 @@ public:
     virtual bool isEmpty() { return _children.isEmpty(); }
     virtual void redrawAll();
     virtual void deleteEmptyChildren();
+    virtual void handleMaximizedChanged();
+    virtual void handleActiveChanged();
 
     Container *activeChild() { return _active_child; }
     void focusPrevChild();

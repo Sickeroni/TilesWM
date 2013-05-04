@@ -14,8 +14,11 @@ Container::Orientation Container::_root_orientation = VERTICAL;
 
 Container::Container(Type type, ContainerContainer *parent) :
     _parent(parent),
-    _type(type)
+    _type(type),
+    _workspace(0)
 {
+    if (parent)
+        _workspace = parent->workspace();
 }
 
 void Container::localToGlobal(int &x, int &y)
@@ -65,6 +68,20 @@ void Container::makeActive()
         _parent->makeActive();
         _parent->setActiveChild(this);
     }
+}
+
+bool Container::isAncestorOf(Container *container)
+{
+    for (Container *parent = container->parent(); parent; parent = parent->parent()) {
+        if (this == parent)
+            return true;
+    }
+    return false;
+}
+
+void Container::setWorkspace(Workspace *workspace)
+{
+    _workspace = workspace;
 }
 
 // ContainerContainer *Container::root()

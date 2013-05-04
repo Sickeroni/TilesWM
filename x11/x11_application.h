@@ -7,7 +7,7 @@
 
 class X11ContainerContainer;
 class X11KeyHandler;
-
+class Workspace;
 
 class X11Application
 {
@@ -15,11 +15,12 @@ public:
     static X11Application *self() { return _self; }
     static Display *display()  { return self()->_display; }
     static Window root()  { return self()->_root; }
-    static X11ContainerContainer *activeRootContainer() {
-        return self()->_activeRootContainer;
-    }
-    static const char *x11EventToString(size_t id);
+    static X11ContainerContainer *activeRootContainer();
+    static Workspace *activeWorkspace() { return self()->_workspace; }
     static void runProgram(const char *path);
+
+    static const char *eventTypeToString(size_t id);
+    static const char *errorCodeToString(size_t error_code);
 
     X11Application();
 
@@ -36,10 +37,10 @@ private:
 
     Display *_display;
     Window _root;
-    X11ContainerContainer *_activeRootContainer;
     X11KeyHandler *_key_handler;
     int _num_server_grabs;
     volatile bool _quit_requested;
+    Workspace *_workspace;
 };
 
 #endif

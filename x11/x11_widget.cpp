@@ -62,18 +62,20 @@ bool X11Widget::validate()
 
 void X11Widget::map()
 {
-    assert(!_is_mapped);
-
-    XMapWindow(X11Application::display(), _wid);
-    _is_mapped = true;
+//     assert(!_is_mapped);
+    if (!_is_mapped) {
+        XMapWindow(X11Application::display(), _wid);
+        _is_mapped = true;
+    }
 }
 
 void X11Widget::unmap()
 {
-    assert(_is_mapped);
-
-    XUnmapWindow(X11Application::display(), _wid);
-    _is_mapped = false;
+//     assert(_is_mapped);
+    if (_is_mapped) {
+        XUnmapWindow(X11Application::display(), _wid);
+        _is_mapped = false;
+    }
 }
 
 void X11Widget::reparent(X11ServerWidget *new_parent, int x, int y)

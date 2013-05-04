@@ -5,6 +5,8 @@
 
 #include "x11_server_widget.h"
 
+class Workspace;
+
 
 class X11ContainerContainer : public ContainerContainer, public X11ServerWidget::EventHandler
 {
@@ -18,7 +20,8 @@ class X11ContainerContainer : public ContainerContainer, public X11ServerWidget:
 #endif
 
 public:
-    X11ContainerContainer(X11ContainerContainer *parent);
+    static X11ContainerContainer *create(Workspace *workspace);
+
     virtual ~X11ContainerContainer();
 
     // X11ServerWidget::EventHandler implementaion
@@ -39,6 +42,8 @@ protected:
     virtual ClientContainer *createClientContainer();
 
 private:
+    X11ContainerContainer(Workspace *workspace, X11ContainerContainer *parent);
+
     X11ServerWidget *_widget;
 };
 

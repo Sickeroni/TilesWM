@@ -7,6 +7,7 @@
 class Client;
 class ContainerContainer;
 class ClientContainer;
+class Workspace;
 
 
 class Container : public List<Container>::Item
@@ -56,6 +57,8 @@ public:
 //     virtual void layoutClients();
     virtual bool isEmpty() = 0;
     virtual void redrawAll() = 0;
+    virtual void handleMaximizedChanged() = 0;
+    virtual void handleActiveChanged() = 0;
 
     virtual void reparent(ContainerContainer *p) {
         _parent = p;
@@ -79,26 +82,30 @@ public:
 
     ContainerContainer *parent() { return _parent; }
 
-    bool hasFocus();
+    bool hasFocus(); //FIXME change to isActive()
 
-    void makeActive();
+    void makeActive(); //FIXME change to makeActiveAndFocus() ?
 
     ContainerContainer *root();
 
-protected:
-    static Container *_root;
-    static Orientation _root_orientation;
+    Workspace *workspace() { return _workspace; }
+    bool isAncestorOf(Container *container);
 
+protected:
     Container(Type type, ContainerContainer *parent);
 
     void localToGlobal(int &x, int &y);
+    void setWorkspace(Workspace *workspace);
 
+    static Container *_root;
+    static Orientation _root_orientation;
 
     ContainerContainer *_parent;
     Rect _rect;
 
 private:
     const Type _type;
+    Workspace *_workspace;
 };
 
 #endif // __CONTAINER_H__

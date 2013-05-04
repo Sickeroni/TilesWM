@@ -5,6 +5,7 @@
 #include "client.h"
 #include "container_container.h"
 #include "canvas.h"
+#include "workspace.h"
 
 #include <iostream>
 #include <sstream>
@@ -663,6 +664,9 @@ ClientContainer *ClientContainer::getSilbling(bool get_prev)
 #if 1
 void ClientContainer::moveClientToOther(Client *client, Direction dir)
 {
+    if (workspace()->maximized())
+        return;
+
     if (client->container() != this)
         abort();
 
@@ -704,14 +708,15 @@ void ClientContainer::moveClientToOther(Client *client, Direction dir)
         target->addClient(client);
         target->setActiveClient(client);
         target->makeActive();
+        client->setFocus();
 //         target->setFocus();
-        ContainerContainer *root = 0;
-        for (ContainerContainer *c = target->parent(); c; c = c->parent()) {
-            root = c;
-        }
+//         ContainerContainer *root = 0;
+//         for (ContainerContainer *c = target->parent(); c; c = c->parent()) {
+//             root = c;
+//         }
 
-        root->setFocus();
-        root->redrawAll();
+//         root->setFocus();
+//         root->redrawAll();
     }
 }
 #endif

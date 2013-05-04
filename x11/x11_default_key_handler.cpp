@@ -3,6 +3,9 @@
 #include "x11_application.h"
 #include "x11_container_container.h"
 #include "client_container.h"
+#include "workspace.h"
+
+#include <iostream>
 
 
 struct X11DefaultKeyHandler::Actions
@@ -59,34 +62,34 @@ struct X11DefaultKeyHandler::Actions
     }
     static void moveClientLeft()
     {
-        rootContainer()->widget()->unmap(); //HACK
+        //rootContainer()->widget()->unmap(); //HACK
         clientContainer()->moveClient(Container::WEST);
 //         rootContainer()->deleteEmptyChildren();
-        rootContainer()->widget()->map(); //HACK
+        //rootContainer()->widget()->map(); //HACK
         rootContainer()->setFocus(); //HACK
     }
     static void moveClientRight()
     {
-        rootContainer()->widget()->unmap(); //HACK
+        //rootContainer()->widget()->unmap(); //HACK
         clientContainer()->moveClient(Container::EAST);
 //         rootContainer()->deleteEmptyChildren();
-        rootContainer()->widget()->map(); //HACK
+        //rootContainer()->widget()->map(); //HACK
         rootContainer()->setFocus(); //HACK
     }
     static void moveClientUp()
     {
-        rootContainer()->widget()->unmap(); //HACK
+        //rootContainer()->widget()->unmap(); //HACK
         clientContainer()->moveClient(Container::NORTH);
 //         rootContainer()->deleteEmptyChildren();
-        rootContainer()->widget()->map(); //HACK
+        //rootContainer()->widget()->map(); //HACK
         rootContainer()->setFocus(); //HACK
     }
     static void moveClientDown()
     {
-        rootContainer()->widget()->unmap(); //HACK
+        //rootContainer()->widget()->unmap(); //HACK
         clientContainer()->moveClient(Container::SOUTH);
 //         rootContainer()->deleteEmptyChildren();
-        rootContainer()->widget()->map(); //HACK
+        //rootContainer()->widget()->map(); //HACK
         rootContainer()->setFocus(); //HACK
     }
     static void deleteEmptyContainers()
@@ -97,6 +100,12 @@ struct X11DefaultKeyHandler::Actions
     static void runProgram()
     {
         X11Application::runProgram("/usr/bin/gmrun");
+    }
+    static void toggleMaximize()
+    {
+        std::cout<<"toggleMaximize()\n";
+        bool maximized = X11Application::activeWorkspace()->maximized();
+        X11Application::activeWorkspace()->setMaximized(!maximized);
     }
 };
 
@@ -119,4 +128,6 @@ X11DefaultKeyHandler::X11DefaultKeyHandler()
     createShortcut("KP_Down", Mod1Mask | ShiftMask, &Actions::moveClientDown);
     createShortcut("c", Mod1Mask, &Actions::deleteEmptyContainers);
     createShortcut("F2", Mod1Mask, &Actions::runProgram);
+//     createShortcut("Return", Mod1Mask, &Actions::toggleMaximize);
+    createShortcut("m", Mod1Mask, &Actions::toggleMaximize);
 }

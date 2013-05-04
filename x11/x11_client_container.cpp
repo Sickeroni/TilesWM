@@ -5,6 +5,7 @@
 #include "x11_server_widget.h"
 #include "x11_canvas.h"
 #include "x11_application.h"
+#include "workspace.h"
 
 
 X11ClientContainer::X11ClientContainer(X11ContainerContainer *parent) :
@@ -46,4 +47,21 @@ void X11ClientContainer::setFocus()
         XSetInputFocus(X11Application::display(), X11Application::root(),
                        RevertToNone, CurrentTime);
     redraw();
+}
+
+void X11ClientContainer::handleActiveChanged()
+{
+    if (workspace()->maximized()) {
+        if (parent()->activeChild() != this || !parent()->hasFocus())
+            _widget->unmap();
+        else if (parent()->activeChild() == this)
+            _widget->map();
+    } else
+        _widget->map();
+
+}
+
+void X11ClientContainer::handleMaximizedChanged()
+{
+    handleActiveChanged();
 }

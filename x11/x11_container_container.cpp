@@ -6,10 +6,18 @@
 
 #include <stdlib.h>
 
-X11ContainerContainer::X11ContainerContainer(X11ContainerContainer *parent) :
+
+X11ContainerContainer *X11ContainerContainer::create(Workspace *workspace)
+{
+    return new X11ContainerContainer(workspace, 0);
+}
+
+
+X11ContainerContainer::X11ContainerContainer(Workspace *workspace, X11ContainerContainer *parent) :
     ContainerContainer(parent),
     _widget(X11ServerWidget::create(parent ? parent->widget() : 0, this, ExposureMask))
 {
+    setWorkspace(workspace);
     _widget->map();
 }
 
@@ -34,7 +42,7 @@ ClientContainer *X11ContainerContainer::createClientContainer()
 
 ContainerContainer *X11ContainerContainer::createContainerContainer()
 {
-    X11ContainerContainer *container = new X11ContainerContainer(this);
+    X11ContainerContainer *container = new X11ContainerContainer(workspace(), this);
     return container;
 }
 

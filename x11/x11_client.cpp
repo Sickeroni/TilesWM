@@ -54,8 +54,11 @@ X11Client::CriticalSection::~CriticalSection()
 int X11Client::CriticalSection::errorHandler(Display *display, XErrorEvent *ev)
 {
     if (ev->error_code != BadWindow) {
-        std::cerr<<"X11Client::CriticalSection::errorHandler() - code: " <<
-            static_cast<unsigned int>(ev->error_code)<<'\n';
+        std::cerr << "X11Client::CriticalSection::errorHandler() - code: "
+            << static_cast<unsigned int>(ev->error_code)
+            << " - "
+            << X11Application::errorCodeToString(ev->error_code)
+            << '\n';
         abort();
     } else
         return 0;
@@ -97,6 +100,8 @@ void X11Client::setFocus()
     refreshMapState();
 
     assert(isMapped());
+    assert(static_cast<X11ClientContainer*>(container())->widget()->isMapped());
+    assert(static_cast<X11ContainerContainer*>(container()->parent())->widget()->isMapped());
 
     if (X11Application::activeRootContainer()->widget()->isMapped())
         XSetInputFocus(X11Application::display(), _widget->wid(),

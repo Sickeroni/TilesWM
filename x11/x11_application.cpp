@@ -5,6 +5,7 @@
 #include "x11_widget.h"
 #include "x11_default_key_handler.h"
 
+#include "workspace.h"
 #include "client_container.h"
 
 #include <sys/select.h>
@@ -67,11 +68,11 @@ X11 events
 X11Application *X11Application::_self = 0;
 
 
-const char *X11Application::x11EventToString(size_t id)
+const char *X11Application::eventTypeToString(size_t type)
 {
     static const char *table[] = {
-        "invalid event id",
-        "invalid event id",
+        "unknown event id",
+        "unknown event id",
         "KeyPress",
         "KeyRelease",
         "ButtonPress",
@@ -108,20 +109,50 @@ const char *X11Application::x11EventToString(size_t id)
         "GenericEvent"
     };
 
-    if (id >= (sizeof(table) / sizeof(table[0])))
-        return "invalid event id";
+    if (type >= (sizeof(table) / sizeof(table[0])))
+        return "unknown event id";
     else
-        return table[id];
+        return table[type];
+}
+
+const char *X11Application::errorCodeToString(size_t error_code)
+{
+    // core protocol errors
+    static const char *core_errors[] = {
+        "Success",
+        "BadRequest",
+        "BadValue",
+        "BadWindow",
+        "BadPixmap",
+        "BadAtom",
+        "BadCursor",
+        "BadFont",
+        "BadMatch",
+        "BadDrawable",
+        "BadAccess",
+        "BadAlloc",
+        "BadColor",
+        "BadGC",
+        "BadIDChoice",
+        "BadName",
+        "BadLength",
+        "BadImplementation"
+    };
+
+    if (error_code >= (sizeof(core_errors) / sizeof(core_errors[0])))
+        return "unknown error code";
+    else
+        return core_errors[error_code];
 }
 
 
 X11Application::X11Application() :
     _display(0),
     _root(0),
-    _activeRootContainer(0),
     _key_handler(0),
     _num_server_grabs(0),
-    _quit_requested(false)
+    _quit_requested(false),
+    _workspace(0)
 {
     if (_self)
         abort();
@@ -181,13 +212,16 @@ bool X11Application::init()
 
     XSync(_display, false);
 
+    _workspace = new Workspace();
+
     Rect root_container_rect;
     root_container_rect.set(0, 0, root_attr.width, root_attr.height);
 
-    _activeRootContainer = new X11ContainerContainer(0);
-    _activeRootContainer->setRect(root_container_rect);
+    _workspace->_root_container = X11ContainerContainer::create(_workspace);
 
-//    _activeRootContainer->addNewClientContainer(false); //FIXME HACK
+    activeRootContainer()->setRect(root_container_rect);
+
+    activeRootContainer()->addNewClientContainer(false); //FIXME HACK
 //    _activeRootContainer->addNewClientContainer(false); //FIXME HACK
 
     X11Client::init();
@@ -367,7 +401,7 @@ void X11Application::eventLoop()
 #endif
 #if 1
         else {
-//             std::cout<<"unhandled event: "<<x11EventToString(ev.type)<<'\n';
+//             std::cout<<"unhandled event: "<<eventTypeToString(ev.type)<<'\n';
         }
 #endif
 
@@ -415,4 +449,9 @@ void X11Application::runProgram(const char *path)
         exit(1);
     } else
         std::cerr<<"ERROR: running "<<path<<": Can't fork.";
+}
+
+X11ContainerContainer *X11Application::activeRootContainer()
+{
+    return static_cast<X11ContainerContainer*>(activeWorkspace()->rootContainer());
 }

@@ -2,6 +2,7 @@
 
 #include "client_container.h"
 #include "canvas.h"
+#include "workspace.h"
 
 #if 1
 
@@ -37,20 +38,63 @@ void ContainerContainer::setFocus()
     redrawAll();
 }
 
+void ContainerContainer::handleMaximizedChanged()
+{
+    for (Container *c = _children.first(); c; c = c->next())
+        c->handleMaximizedChanged();
+}
+
+void ContainerContainer::handleActiveChanged()
+{
+    if (_active_child)
+        _active_child->handleActiveChanged();
+}
+
+void ContainerContainer::setActiveChild(Container *child)
+{
+    assert(child->parent() == this);
+
+    if (_active_child == child)
+        return;
+
+    Container *old_active = _active_child;
+    _active_child = child;
+
+    old_active->handleActiveChanged();
+    _active_child->handleActiveChanged();
+
+    if (workspace()->maximized() && hasFocus())
+        layout();
+
+#if 0
+    if (old_active)
+        old_active->handleActiveChanged();
+    if (_active_child)
+        _active_child->handleActiveChanged();
+
+    if (workspace()->maximized() && hasFocus()) {
+        _active_child->handleMaximizedChanged();
+        _active_child = child;
+        _active_child->handleMaximizedChanged();
+        layout();
+    } else
+        _active_child = child;
+#endif
+    _active_child->setFocus(); //FIXME
+
+    redrawAll();
+}
+
 void ContainerContainer::focusPrevChild()
 {
     if (_active_child && _active_child->prev())
-        _active_child = _active_child->prev();
-    setFocus(); //FIXME HACK
-    redrawAll();
+        setActiveChild(_active_child->prev());
 }
 
 void ContainerContainer::focusNextChild()
 {
     if (_active_child && _active_child->next())
-        _active_child = _active_child->next();
-    setFocus(); //FIXME HACK
-    redrawAll();
+        setActiveChild(_active_child->next());
 }
 
 ClientContainer *ContainerContainer::activeClientContainer()
@@ -193,16 +237,24 @@ void ContainerContainer::layout()
         new_rect.y += child_frame_width;
 
 //         localToGlobal(x, y);
-
-        c->setRect(new_rect);
-        c->layout();
+        if (workspace()->maximized()) {
+            if (hasFocus() && activeChild() == c)
+                c->setRect(client_rect);
+            else {
+                Rect r(0,0,100,100);
+                c->setRect(r);
+            }
+            c->layout();
+        } else {
+            c->setRect(new_rect);
+            c->layout();
+        }
 
         i++;
    }
 
    redraw();
 }
-
 
 ClientContainer *ContainerContainer::addNewClientContainer(bool prepend)
 {
@@ -402,14 +454,6 @@ void ContainerContainer::deleteChild(Container *child)
     _children.remove(child);
 
     delete child;
-}
-
-
-void ContainerContainer::setActiveChild(Container *child)
-{
-    assert(child->parent() == this);
-    _active_child = child;
-    _active_child->setFocus(); //FIXME
 }
 
 #if 1

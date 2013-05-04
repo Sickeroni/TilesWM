@@ -21,6 +21,8 @@ public:
     virtual void setRect(const Rect &rect);
     virtual void redraw();
     virtual void reparent(ContainerContainer *p);
+    virtual void handleMaximizedChanged();
+    virtual void handleActiveChanged() ;
 
     // X11ServerWidget::EventHandler implementaion
     virtual void handleExpose() {
