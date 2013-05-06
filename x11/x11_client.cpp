@@ -309,8 +309,8 @@ void X11Client::create(Window wid)
             client->_frame->setRect(frame_rect);
 
             client->refreshIcon();
-            if (!client->_icon)
-                client->_icon = new X11Icon(20, 20, client->_frame);
+//             if (!client->_icon)
+//                 client->_icon = new X11Icon(20, 20, client->_frame);
 
             _wid_index.insert(std::pair<Window, X11Client*>(wid, client));
 
