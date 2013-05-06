@@ -179,6 +179,23 @@ void X11Client::init()
     _net_wm_window_type_dialog = XInternAtom(X11Application::display(), "_NET_WM_WINDOW_TYPE_DIALOG", false);
     _net_wm_icon = XInternAtom(X11Application::display(), "_NET_WM_ICON", false);
 
+    Atom net_supported = XInternAtom(X11Application::display(), "_NET_SUPPORTED", false);
+
+    Atom net_supported_values[] = {
+        _net_wm_icon, _net_wm_window_type, _net_wm_window_type_dialog
+    };
+
+    const int net_supported_count = sizeof(net_supported_values) / sizeof(net_supported_values[0]);
+
+    XChangeProperty(X11Application::display(),
+                    X11Application::root(),
+                    net_supported,
+                    XA_ATOM,
+                    32,
+                    PropModeReplace,
+                    reinterpret_cast<const unsigned char*>(net_supported_values),
+                    net_supported_count);
+
     Window unused = 0;
     Window *children = 0;
     unsigned int num_children = 0;
@@ -711,7 +728,17 @@ void X11Client::refreshIcon()
             std::cerr<<"bad data type for _NET_WM_ICON property.\n";
 
         XFree(ret);
-    } else
+    }
+#if 0
+    else if (XWMHints *hints = XGetWMHints(X11Application::display(), _widget->wid())) {
+        if (hints->flags & IconPixmapHint) {
+            std::cout<<"IconPixmapHint\n";
+            abort();
+        }
+        XFree(hints);
+    }
+#endif
+    else
         std::cout<<"no _NET_WM_ICON property.\n";
 }
 
