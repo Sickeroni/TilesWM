@@ -53,6 +53,7 @@ private:
     void refreshClass();
     void refreshFocusState();
     void refreshWindowType();
+    void refreshIcon();
     void handleConfigureRequest(const XConfigureRequestEvent &ev);
     void drawFrame();
 
@@ -63,6 +64,7 @@ private:
     static std::map<Window, X11Client*> _wid_index;
     static Atom _net_wm_window_type;
     static Atom _net_wm_window_type_dialog;
+    static Atom _net_wm_icon;
 
     X11ClientWidget *_widget;
     X11ServerWidget *_frame;

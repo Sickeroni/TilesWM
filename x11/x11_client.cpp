@@ -69,6 +69,7 @@ int X11Client::CriticalSection::errorHandler(Display *display, XErrorEvent *ev)
 std::map<Window, X11Client*> X11Client::_wid_index;
 Atom X11Client::_net_wm_window_type = None;
 Atom X11Client::_net_wm_window_type_dialog = None;
+Atom X11Client::_net_wm_icon = None;
 
 
 X11Client::X11Client() : Client(false),
@@ -173,8 +174,10 @@ void X11Client::init()
 {
     CriticalSection sec;
 
+    //FIXME clear these on shutdown (before closing display connection)
     _net_wm_window_type = XInternAtom(X11Application::display(), "_NET_WM_WINDOW_TYPE", false);
     _net_wm_window_type_dialog = XInternAtom(X11Application::display(), "_NET_WM_WINDOW_TYPE_DIALOG", false);
+    _net_wm_icon = XInternAtom(X11Application::display(), "_NET_WM_ICON", false);
 
     Window unused = 0;
     Window *children = 0;
@@ -236,8 +239,6 @@ void X11Client::create(Window wid)
     if (XGetWindowAttributes(X11Application::display(), wid, &attr)) {
         if (!attr.override_redirect) {
             bool is_mapped = (attr.map_state != IsUnmapped);
-            
-            
 
             XSetWindowAttributes new_attr;
             memset(&new_attr, 0, sizeof(new_attr));
@@ -290,7 +291,9 @@ void X11Client::create(Window wid)
 
             client->_frame->setRect(frame_rect);
 
-            client->_icon = new X11Icon(20, 20, client->_frame);
+            client->refreshIcon();
+            if (!client->_icon)
+                client->_icon = new X11Icon(20, 20, client->_frame);
 
             _wid_index.insert(std::pair<Window, X11Client*>(wid, client));
 
@@ -658,6 +661,60 @@ void X11Client::refreshWindowType()
         std::cout<<"failed to get _net_wm_window_type property.\n";
 }
 
+void X11Client::refreshIcon()
+{
+    std::cout<<"looking for _NET_WM_ICON property ...\n";
+
+    static long max_size = 32*32;
+    unsigned long nitems, bytesafter;
+    unsigned char *ret;
+    int format;
+    Atom type;
+
+    if (Success == XGetWindowProperty(X11Application::display(),
+                            _widget->wid(),
+                            _net_wm_icon,
+                            0, max_size,
+                            false, XA_CARDINAL,
+                            &type,
+                            &format,
+                            &nitems,
+                            &bytesafter,
+                            &ret))
+    {
+        if (XA_CARDINAL == type) {
+            std::cout<<"got icon: ";
+
+            if (nitems < 2)
+                std::cerr<<"bad length for _NET_WM_ICON property.\n";
+            else {
+                unsigned long width = 0;
+                unsigned long height = 0;
+
+                width = reinterpret_cast<unsigned long*>(ret)[0];
+                height = reinterpret_cast<unsigned long*>(ret)[1];
+
+                std::cout<<"width: "<<width<<" height: "<<height<<'\n';
+
+                unsigned long size = width * height;
+
+                if ((nitems - 2) < size)
+                    std::cerr<<"bad length for _NET_WM_ICON property.\n";
+                else {
+                    delete _icon;
+                    _icon = new X11Icon(width, height, _frame,
+                                        reinterpret_cast<unsigned long*>(ret) + 2,
+                                        0x999999 /*FIXME - taken form X11ServerWidget */);
+                }
+            }
+        } else
+            std::cerr<<"bad data type for _NET_WM_ICON property.\n";
+
+        XFree(ret);
+    } else
+        std::cout<<"no _NET_WM_ICON property.\n";
+}
+
 void X11Client::handleExpose()
 {
     if (!container())
@@ -781,6 +838,10 @@ bool X11Client::handleEvent(const XEvent &ev)
                             }
 
                         }
+                    } else if (ev.xproperty.atom == _net_wm_icon) {
+                        client->refreshIcon();
+                        if (client->container())
+                            client->container()->layout(); //FIXME use handleClientIconChanged()
                     }
                 }
                 break;

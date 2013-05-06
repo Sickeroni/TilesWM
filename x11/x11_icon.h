@@ -13,6 +13,7 @@ class X11Icon : public Icon
 {
 public:
     X11Icon(int width, int height, X11Widget *parent);
+    X11Icon(int width, int height, X11Widget *parent, const unsigned long *argb_data, unsigned long bg_color);
     X11Icon(const X11Icon &other);
     ~X11Icon();
     X11Icon &operator=(const X11Icon &other);
@@ -21,6 +22,8 @@ public:
     Pixmap mask() { return _mask; }
 
 private:
+    void init(X11Widget *parent);
+
     Pixmap _pixmap;
     Pixmap _mask;
 };

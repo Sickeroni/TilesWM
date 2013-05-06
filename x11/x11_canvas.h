@@ -22,6 +22,8 @@ public:
     void fillRectangle(const Rect &rect, unsigned long color);
     void drawLine(int x1, int y1, int x2, int y2, unsigned long color);
 
+    GC gc() { return _gc; }
+
 private:
     Drawable _drawable;
     GC _gc;
