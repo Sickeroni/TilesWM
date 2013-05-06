@@ -101,8 +101,6 @@ X11Client::~X11Client()
 //     return ret;
 // }
 
-
-
 Icon *X11Client::icon()
 {
     return _icon;
@@ -682,7 +680,7 @@ void X11Client::refreshIcon()
 {
     std::cout<<"looking for _NET_WM_ICON property ...\n";
 
-    static long max_size = 32*32;
+    static const long max_size = 24*24;
     unsigned long nitems, bytesafter;
     unsigned char *ret;
     int format;
