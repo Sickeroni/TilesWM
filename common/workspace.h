@@ -14,6 +14,7 @@ public:
     Workspace();
 
 // private:
+    //FIXME ContainerContainer *_dock
     ContainerContainer *_root_container;
     bool _maximized;
 };
