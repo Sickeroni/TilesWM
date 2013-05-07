@@ -47,9 +47,10 @@ void X11Canvas::erase(const Rect &rect)
 void X11Canvas::drawFrame(const Rect &rect, uint32 color)
 {
     XSetForeground(dpy(), _gc, color);
-
+    // the width and height parameters of XDrawRectangle()
+    // are actually offsets, so we have to subtract 1
     XDrawRectangle(dpy(), _drawable, _gc,
-                   rect.x, rect.y, rect.w, rect.h);
+                   rect.x, rect.y, rect.w - 1, rect.h - 1);
 }
 
 void X11Canvas::drawText(const std::string &text, const Rect &rect,
