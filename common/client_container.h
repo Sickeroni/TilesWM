@@ -89,6 +89,7 @@ private:
     void drawStacked(Canvas *canvas);
     void removeClientInt(Client *c, bool moving_to_new_container);
     void unfocusActiveClient();
+    void drawTab(Client *client, const Rect &rect, Canvas *canvas);
 
     Mode _mode;
     Client *_active_client;

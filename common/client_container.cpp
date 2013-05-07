@@ -325,8 +325,31 @@ void ClientContainer::drawStacked(Canvas *canvas)
    }
 }
 
+void ClientContainer::drawTab(Client *client, const Rect &rect, Canvas *canvas)
+{
+    canvas->drawFrame(rect, (activeClient() == client) ? 0x222299 : 0x444444);
+
+    if (client->icon()) {
+        int icon_x = rect.x + _tab_inner_margin;
+        int icon_y = rect.y + _tab_inner_margin;
+        canvas->drawIcon(client->icon(), icon_x, icon_y);
+    }
+
+    Rect text_rect(rect.x + _tab_inner_margin, rect.y + _tab_inner_margin,
+                   rect.w - (2* _tab_inner_margin), rect.h - (2* _tab_inner_margin));
+
+    if (Icon *icon = client->icon()) {
+        text_rect.x += (icon->width() + 5);
+        text_rect.w -= (icon->width() + 5);
+    }
+
+    canvas->drawText(client->name(), text_rect, activeClient() == client ? 0x0 : 0x666666, 0x0);
+}
+
 void ClientContainer::drawVerticalTabs(Canvas *canvas)
 {
+    static const int gap = 2;
+
     Rect bg_rect = _rect;
     bg_rect.setPos(0, 0);
     canvas->erase(bg_rect);
@@ -335,30 +358,10 @@ void ClientContainer::drawVerticalTabs(Canvas *canvas)
 
     int i = 0;
     for (Client *c = _clients.first(); c; c = c->next()) {
-        Rect tab_rect(0, i * tabbar_height, _vertical_tabbar_width, tabbar_height);
+        Rect tab_rect(_frame_width, _frame_width + (i * (tabbar_height + gap)),
+                      width() - (2 * _frame_width), tabbar_height);
 
-        canvas->drawFrame(tab_rect, (activeClient() == c) ? 0x222299 : 0x222222);
-
-        if (c->icon()) {
-            int icon_x = tab_rect.x + 2;
-            int icon_y = tab_rect.y + 2;
-            canvas->drawIcon(c->icon(), icon_x, icon_y);
-        }
-
-        Rect text_rect = tab_rect;
-
-        text_rect.x+=30;
-        text_rect.y-= 10;
-
-        uint32 fg = 0, bg = 0;
-
-        if (activeClient() == c)
-            fg = 0x00FF00;
-        else
-            fg = 0xAAAAAA;
-
-        canvas->drawText(c->name().c_str(), text_rect, fg, bg);
-
+        drawTab(c, tab_rect, canvas);
 
         i++;
     }
@@ -366,9 +369,7 @@ void ClientContainer::drawVerticalTabs(Canvas *canvas)
 
 void ClientContainer::drawTabs(Canvas *canvas)
 {
-    std::cout<<"ClientContainer::draw()\n";
-
-    const int gap = 2;
+    static const int gap = 2;
 
     Rect bg_rect = _rect;
     bg_rect.setPos(0, 0);
@@ -386,28 +387,12 @@ void ClientContainer::drawTabs(Canvas *canvas)
     int tab_width = (tabbar_rect.w - (num_gaps * gap)) / num_tabs;
     int tab_height = tabbar_rect.h;
 
-    int max_text_height = maxTextHeight();
-
     int i = 0;
     for(Client *c = _clients.first(); c; c = c->next()) {
-        Rect tab_rect(tabbar_rect.x + (i * (tab_width + gap)), tabbar_rect.y, tab_width, tab_height);
+        Rect tab_rect(tabbar_rect.x + (i * (tab_width + gap)),
+                      tabbar_rect.y, tab_width, tab_height);
 
-        Rect frame_rect = tab_rect;
-
-        canvas->drawFrame(frame_rect, (activeClient() == c) ? 0x222299 : 0x444444);
-
-        if (c->icon()) {
-            int icon_x = tab_rect.x + _tab_inner_margin;
-            int icon_y = tab_rect.y + _tab_inner_margin;
-            canvas->drawIcon(c->icon(), icon_x, icon_y);
-        }
-
-        Rect text_rect(tab_rect.x + _tab_inner_margin, tab_rect.y + _tab_inner_margin, 100, max_text_height);
-
-        if (c->icon())
-            text_rect.x += (c->icon()->width() + 5);
-
-        canvas->drawText(c->name(), text_rect, activeClient() == c ? 0x0 : 0x666666, 0x0);
+        drawTab(c, tab_rect, canvas);
 
         i++;
     }
