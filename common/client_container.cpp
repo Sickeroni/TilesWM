@@ -14,9 +14,6 @@
 #include <assert.h>
 
 
-int ClientContainer::_titlebar_height = 0;
-int ClientContainer::_frame_width = 10;
-
 
 ClientContainer::ClientContainer(ContainerContainer *parent) : Container(CLIENT, parent),
     _mode(TABBED),
@@ -83,11 +80,10 @@ int ClientContainer::minimumHeight()
     } else
         ret = _tabbar_height;
 
-    ret += _frame_width + _titlebar_height;
+    ret += _frame_width + _tabbar_height;
 
     return ret;
 }
-
 
 void ClientContainer::handleClientMap(Client *client)
 {
@@ -189,57 +185,11 @@ void ClientContainer::addClient(Client *c)
     if (c->isMapped() && !_active_client)
         setActiveClient(c);
 
-#if 0
-    //FIXME UGLY - layout client in advance
-    {
-        int client_w = width() - (2 * _frame_width);
-        int client_h = height() - ((2 * _frame_width) + _titlebar_height);
-
-        if (!client_w || !client_h)
-            return;
-
-        int mapped_clients = numMappedClients() + 1;
-
-//         std::cout<<"mapped_clients: "<<mapped_clients<<"\n";
-
-//         if (!mapped_clients)
-//             return;
-
-        int cell_width = 0, cell_height = 0;
-
-        if (isHorizontal()) {
-            cell_width = client_w / mapped_clients;
-            cell_height = client_h;
-        } else {
-            cell_width = client_w;
-            cell_height = client_h / mapped_clients;
-        }
-
-        std::cout<<"cell_width: "<<cell_width<<"\n";
-        std::cout<<"cell_height: "<<cell_height<<"\n";
-        std::cout<<"=================================\n";
-
-        Rect rect;
-        rect.setSize(cell_width, cell_height);
-
-        if (isHorizontal()) {
-            rect.x = (mapped_clients-1) * cell_width + _frame_width;
-            rect.y = _frame_width + _titlebar_height;
-        } else {
-            rect.x = _frame_width;
-            rect.y = ((mapped_clients-1) * cell_height) + _frame_width + _titlebar_height;
-        }
-
-        c->setRect(rect);
-
-    }
-#endif
     if (c->isMapped())
         layout();
     else
         redraw();
 }
-
 
 void ClientContainer::removeClientInt(Client *c, bool moving_to_new_container)
 {
@@ -289,16 +239,8 @@ void ClientContainer::drawStacked(Canvas *canvas)
     bg_rect.setPos(0, 0);
     canvas->erase(bg_rect);
 
-    const int tabbar_border = 5;
-
-    int tabbar_x = _frame_width + tabbar_border;
-    int tabbar_y = _frame_width + tabbar_border;
-    int tabbar_w = (width() - (2 * tabbar_border)) - (2 * _frame_width);
-    int tabbar_h = _titlebar_height - (2 * tabbar_border);
-
     Rect tabbar_rect;
-    tabbar_rect.set(tabbar_x, tabbar_y, tabbar_w, tabbar_h - 5);
-
+    getTabbbarRect(tabbar_rect);
 
     std::stringstream title;
 
@@ -314,10 +256,10 @@ void ClientContainer::drawStacked(Canvas *canvas)
 
     canvas->drawText(title.str().c_str(), tabbar_rect, 0xFFFFFF, 0x0);
 
-    int client_w = width() - (2 * _frame_width);
-    int client_h = height() - ((2 * _frame_width) + _titlebar_height);
+    Rect client_rect;
+    getClientRect(client_rect);
 
-    if (!client_w || !client_h)
+    if (!client_rect.w || !client_rect.h)
         return;
 
 //     std::cout<<"mapped_clients: "<<mapped_clients<<"\n";
@@ -328,11 +270,11 @@ void ClientContainer::drawStacked(Canvas *canvas)
     int cell_width = 0, cell_height = 0;
 
     if (isHorizontal()) {
-        cell_width = client_w / mapped_clients;
-        cell_height = client_h;
+        cell_width = client_rect.w / mapped_clients;
+        cell_height = client_rect.h;
     } else {
-        cell_width = client_w;
-        cell_height = client_h / mapped_clients;
+        cell_width = client_rect.w;
+        cell_height = client_rect.h / mapped_clients;
     }
 
 //     std::cout<<"cell_width: "<<cell_width<<"\n";
@@ -354,10 +296,10 @@ void ClientContainer::drawStacked(Canvas *canvas)
 
         if (isHorizontal()) {
             rect.x = i * cell_width + _frame_width;
-            rect.y = _frame_width + _titlebar_height;
+            rect.y = _frame_width + _tabbar_height;
         } else {
             rect.x = _frame_width;
-            rect.y = (i * cell_height) + _frame_width + _titlebar_height;
+            rect.y = (i * cell_height) + _frame_width + _tabbar_height;
         }
 
         rect.x += gap;
@@ -429,34 +371,20 @@ void ClientContainer::drawTabs(Canvas *canvas)
     canvas->erase(bg_rect);
 
 
-    const int tabbar_border = 0;
-
-//     int tab_border = 2;
-
     int num_tabs = _clients.count(); //numMappedClients();
-
-    int tabbar_x = _frame_width + tabbar_border;
-    int tabbar_y = _frame_width + tabbar_border;
-    int tabbar_w = (width() - (2 * tabbar_border)) - (2 * _frame_width);
-    int tabbar_h = _tabbar_height;
-
-    Rect tabbar_rect;
-    tabbar_rect.set(tabbar_x, tabbar_y, tabbar_w, tabbar_h);
-
-
     if (!num_tabs)
         return;
 
-//     int baseline = (_frame_width + _titlebar_height) - tab_border:
+    Rect tabbar_rect;
+    getTabbbarRect(tabbar_rect);
 
-    int tab_width = tabbar_w / num_tabs;
-    int tab_height = tabbar_h;
+    int tab_width = tabbar_rect.w / num_tabs;
+    int tab_height = tabbar_rect.h;
 
     int i = 0;
     for(Client *c = _clients.first(); c; c = c->next()) {
-//         std::string text;
         Rect r;
-        r.set(tabbar_x + (i * tab_width), tabbar_y, tab_width, tab_height);
+        r.set(tabbar_rect.x + (i * tab_width), tabbar_rect.y, tab_width, tab_height);
 
         r.x+=2;
         r.y+=2;
@@ -516,38 +444,31 @@ void ClientContainer::layout()
     redraw();
 }
 
-void ClientContainer::layoutTabbed()
+void ClientContainer::getTabbbarRect(Rect &rect)
 {
-#if 0
-    int client_w = width() - (2 * _frame_width);
-    int client_h = height() - ((2 * _frame_width) + _titlebar_height);
-
-    int tab_width = client_w / mapped_clients;
-    int tab_height = (_titlebar_height - 2) - _frame_width;
-#endif
-
-//     layoutStacked(0);
-
-
-    const int tabbar_border = 0;
-
-//     int tab_border = 2;
-
-//     int num_tabs = _clients.count(); //numMappedClients();
-
-    int tabbar_x = _frame_width + tabbar_border;
-    int tabbar_y = _frame_width + tabbar_border;
-    int tabbar_w = (width() - (2 * tabbar_border)) - (2 * _frame_width);
+    int tabbar_x = _frame_width;
+    int tabbar_y = _frame_width;
+    int tabbar_w = width() - (2 * _frame_width);
     int tabbar_h = _tabbar_height;
 
-    Rect tabbar_rect;
-    tabbar_rect.set(tabbar_x, tabbar_y, tabbar_w, tabbar_h);
+    rect.set(tabbar_x, tabbar_y, tabbar_w, tabbar_h);
+}
 
+void ClientContainer::getClientRect(Rect &rect)
+{
     int client_w = width() - (2 * _frame_width);
     int client_h = height() - ((2 * _frame_width) + _tabbar_height);
 
+    rect.set(_frame_width, _frame_width + _tabbar_height, client_w, client_h);
+}
+
+void ClientContainer::layoutTabbed()
+{
+    Rect tabbar_rect;
+    getTabbbarRect(tabbar_rect);
+
     Rect client_rect;
-    client_rect.set(_frame_width, _frame_width + _tabbar_height, client_w, client_h);
+    getClientRect(client_rect);
 
     if (activeClient())
         activeClient()->raise();
@@ -570,12 +491,11 @@ void ClientContainer::getClientSize(int &w, int &h)
 
 void ClientContainer::getStackCellSize(int num_cells, int &w, int &h)
 {
-    int client_w = width() - (2 * _frame_width);
-    int client_h = height() - ((2 * _frame_width) + _titlebar_height);
+    Rect client_rect;
+    getClientRect(client_rect);
 
-    if (!client_w || !client_h)
+    if (!client_rect.w || !client_rect.h)
         return;
-
 
 //     std::cout<<"mapped_clients: "<<mapped_clients<<"\n";
 
@@ -585,11 +505,11 @@ void ClientContainer::getStackCellSize(int num_cells, int &w, int &h)
     int cell_width = 0, cell_height = 0;
 
     if (isHorizontal()) {
-        cell_width = client_w / num_cells;
-        cell_height = client_h;
+        cell_width = client_rect.w / num_cells;
+        cell_height = client_rect.h;
     } else {
-        cell_width = client_w;
-        cell_height = client_h / num_cells;
+        cell_width = client_rect.w;
+        cell_height = client_rect.h / num_cells;
     }
 
     w = cell_width;
@@ -624,10 +544,10 @@ void ClientContainer::layoutStacked(Client *about_to_be_mapped)
 
         if (isHorizontal()) {
             rect.x = (i * cell_width) + _frame_width;
-            rect.y = _frame_width + _titlebar_height;
+            rect.y = _frame_width + _tabbar_height;
         } else {
             rect.x = _frame_width;
-            rect.y = (i * cell_height) + _frame_width + _titlebar_height;
+            rect.y = (i * cell_height) + _frame_width + _tabbar_height;
         }
 
         rect.x += cell_border;
@@ -668,41 +588,6 @@ void ClientContainer::createSilbling(Direction where)
         _parent->splitChild(this, prepend);
 }
 
-
-#if 0
-
-ClientContainer *ClientContainer::splitContainer(Container *container, bool prepend_new_silbling)
-{
-    if (!container->parent())
-        abort();
-
-    return container->parent()->splitChild(container);
-#if 0
-    // create new parent
-    ContainerContainer *new_parent = new ContainerContainer(container->parent());
-
-    if (container->parent()) {
-        // replace this with new parent
-        container->parent()->replaceChild(container, new_parent); // unlinks container
-    } else
-        _root = new_parent;
-
-    ClientContainer *new_silbling = new ClientContainer(new_parent);
-
-    // add this + new child container to new parent
-    if (prepend_new_silbling) {
-        new_parent->appendChild(new_silbling);
-        new_parent->appendChild(container);
-    } else {
-        new_parent->appendChild(container);
-        new_parent->appendChild(new_silbling);
-    }
-
-    return new_silbling;
-#endif
-}
-#endif
-#if 1
 ClientContainer *ClientContainer::createSilblingFor(Container *container, bool prepend_new_silbling)
 {
     ClientContainer *new_silbling = 0;
@@ -722,7 +607,6 @@ ClientContainer *ClientContainer::getOrCreateSilblingFor(Container *container, b
     else
         return createSilblingFor(container, get_prev);
 }
-#endif
 
 ClientContainer *ClientContainer::getSilbling(bool get_prev)
 {
@@ -734,7 +618,6 @@ ClientContainer *ClientContainer::getSilbling(bool get_prev)
         return 0;
 }
 
-#if 1
 void ClientContainer::moveClientToOther(Client *client, Direction dir)
 {
     if (workspace()->maximized())
@@ -792,7 +675,6 @@ void ClientContainer::moveClientToOther(Client *client, Direction dir)
 //         root->redrawAll();
     }
 }
-#endif
 
 int ClientContainer::numMappedClients()
 {

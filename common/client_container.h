@@ -65,6 +65,8 @@ protected:
     ClientContainer *getSilbling(bool get_prev);
     void moveClientToOther(Client *client, Direction dir);
     void clear();
+    void getTabbbarRect(Rect &rect);
+    void getClientRect(Rect &rect);
 
     List<Client> _clients;
 
@@ -73,9 +75,7 @@ private:
 
     static const int _vertical_tabbar_width = 200;
     static const int _tabbar_height = 40;
-
-    static int _frame_width;
-    static int _titlebar_height;
+    static const int _frame_width = 10;
 
     int numMappedClients();
     void getStackCellSize(int num_cells, int &w, int &h);
