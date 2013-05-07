@@ -285,7 +285,7 @@ void ClientContainer::drawStacked(Canvas *canvas)
     Rect rect;
     rect.setSize(cell_width, cell_height);
 
-    const int gap = 5;
+    static const int gap = 5;
 
     rect.w -= 2 * gap;
     rect.h -= 2 * gap;
@@ -446,10 +446,12 @@ void ClientContainer::getClientRect(Rect &rect)
 {
     int tabbar_height = calcTabbarHeight();
 
+    static const int gap = 2;
+
     rect.x = _frame_width;
-    rect.y = _frame_width + tabbar_height;
+    rect.y = _frame_width + tabbar_height + gap;
     rect.w = width() - (2 * _frame_width);
-    rect.h = height() - ((2 * _frame_width) + tabbar_height);
+    rect.h = height() - ((2 * _frame_width) + tabbar_height + gap);
 }
 
 void ClientContainer::layoutTabbed()
