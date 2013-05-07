@@ -632,7 +632,8 @@ void X11Client::refreshFocusState()
 
     if (focus_changed && container())
         container()->handleClientFocusChange(this);
-    else if (focus_changed)
+//     else 
+    if (focus_changed)
         drawFrame();
 }
 
@@ -746,7 +747,7 @@ void X11Client::refreshIcon()
 
 void X11Client::handleExpose()
 {
-    if (!container())
+//     if (!container())
         drawFrame();
 }
 
@@ -761,8 +762,8 @@ void X11Client::drawFrame()
     canvas->erase(frame_rect);
 
     frame_rect.set(frame_rect.x+2, frame_rect.y+2, frame_rect.w-4, frame_rect.h-4);
-    if (_has_focus)
-        canvas->drawFrame(frame_rect, 0xFF8888);
+
+    canvas->drawFrame(frame_rect, _has_focus ? 0xFF0000 : 0x0);
 }
 
 bool X11Client::handleEvent(const XEvent &ev)
