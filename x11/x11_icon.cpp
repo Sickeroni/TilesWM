@@ -3,7 +3,7 @@
 
 #include "x11_canvas.h"
 #include "x11_widget.h"
-#include "x11_application.h"
+#include "x11_global.h"
 
 #include <X11/Xutil.h>
 
@@ -14,10 +14,13 @@
 #include <assert.h>
 
 
+using namespace X11Global;
+
+
 void X11Icon::init(X11Widget *parent)
 {
    const unsigned int depth = 24; //FIXME HACK
-    _pixmap = XCreatePixmap(X11Application::display(), parent->wid(), _width, _height, depth);
+    _pixmap = XCreatePixmap(dpy(), parent->wid(), _width, _height, depth);
     if (_pixmap) {
         X11Canvas canvas(_pixmap);
 
@@ -49,7 +52,7 @@ X11Icon::X11Icon(int width, int height, X11Widget *parent, const unsigned long *
 {
     init(parent);
 
-    if (XImage *image = XGetImage(X11Application::display(), _pixmap,
+    if (XImage *image = XGetImage(dpy(), _pixmap,
                                   0, 0,
                                   _width, _height,
                                   0xFFFFFF,
@@ -79,7 +82,7 @@ X11Icon::X11Icon(int width, int height, X11Widget *parent, const unsigned long *
         }
 
         X11Canvas canvas(_pixmap);
-        XPutImage(X11Application::display(), _pixmap, canvas.gc(), image,
+        XPutImage(dpy(), _pixmap, canvas.gc(), image,
                 0, 0, 0, 0, _width, _height);
 
         XDestroyImage(image);
@@ -91,7 +94,7 @@ X11Icon::X11Icon(int width, int height, X11Widget *parent, const unsigned long *
 X11Icon::~X11Icon()
 {
     if (_pixmap)
-        XFreePixmap(X11Application::display(), _pixmap);
+        XFreePixmap(dpy(), _pixmap);
     if (_mask)
-        XFreePixmap(X11Application::display(), _mask);
+        XFreePixmap(dpy(), _mask);
 }

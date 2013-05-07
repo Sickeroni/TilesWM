@@ -2,11 +2,15 @@
 
 #include "x11_application.h"
 #include "x11_canvas.h"
+#include "x11_global.h"
 
 #include <iostream>
 #include <stdlib.h>
 #include <string.h>
 #include <assert.h>
+
+
+using namespace X11Global;
 
 
 std::map<Window, X11ServerWidget*> X11ServerWidget::_wid_index;
@@ -24,7 +28,7 @@ X11ServerWidget::~X11ServerWidget()
 
     delete _canvas;
     _canvas = 0;
-    XDestroyWindow(X11Application::display(), wid());
+    XDestroyWindow(dpy(), wid());
 }
 
 X11ServerWidget *X11ServerWidget ::find(Window wid)
@@ -55,7 +59,7 @@ X11ServerWidget *X11ServerWidget::create(X11ServerWidget *parent, EventHandler *
     attr.border_pixel = fg;
     attr.event_mask = event_mask;
 
-    Window wid = XCreateWindow(X11Application::display(),
+    Window wid = XCreateWindow(dpy(),
                                parent_wid,
                                0, 0,
                                width, height,

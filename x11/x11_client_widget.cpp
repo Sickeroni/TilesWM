@@ -4,9 +4,12 @@
 #include "x11_client.h"
 #include "x11_client_container.h"
 #include "x11_server_widget.h"
-#include "x11_application.h"
+#include "x11_global.h"
 
 #include <iostream>
+
+
+using namespace X11Global;
 
 
 X11ClientWidget::X11ClientWidget(Window wid, X11Client *client, bool is_mapped, const Rect &rect) :
@@ -35,18 +38,18 @@ bool X11ClientWidget::validate()
     else
         parent_wid = X11Application::root();
 
-    XSync(X11Application::display(), false);
+    XSync(dpy(), false);
 
     XEvent ev;
 
 
-    if (XCheckTypedWindowEvent(X11Application::display(), parent_wid, DestroyNotify, &ev)) {
+    if (XCheckTypedWindowEvent(dpy(), parent_wid, DestroyNotify, &ev)) {
         std::cout<<"got destroy notify.\n";
         std::cout<<"ev.xdestroywindow.window: "<<ev.xdestroywindow.window<<'\n';
         std::cout<<"_wid: "<<wid()<<'\n';
         if (ev.xdestroywindow.window == wid())
             _is_destroyed = true;
-        XPutBackEvent(X11Application::display(), &ev);
+        XPutBackEvent(dpy(), &ev);
     }
 
 
@@ -58,7 +61,7 @@ bool X11ClientWidget::validate()
 bool X11ClientWidget::refreshMapState()
 {
     XWindowAttributes attr;
-    if (XGetWindowAttributes(X11Application::display(), wid(), &attr)) {
+    if (XGetWindowAttributes(dpy(), wid(), &attr)) {
         _is_mapped = (attr.map_state != IsUnmapped);
         return true;
     } else {

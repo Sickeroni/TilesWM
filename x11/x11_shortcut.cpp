@@ -1,9 +1,13 @@
 #include "x11_shortcut.h"
 
 #include "x11_application.h"
+#include "x11_global.h"
 
 #include <iostream>
 #include <stdlib.h>
+
+
+using namespace X11Global;
 
 
 X11Shortcut::KeySymMapping X11Shortcut::_key_sym_index;
@@ -23,13 +27,13 @@ X11Shortcut::X11Shortcut(const char *key_sym, ModMask mod_mask, HandlerFunc hand
 
     list.push_back(this);
 
-    XGrabKey(X11Application::display(), XKeysymToKeycode(X11Application::display(), _key_sym),
+    XGrabKey(dpy(), XKeysymToKeycode(dpy(), _key_sym),
              _mod_mask, X11Application::root(), true, GrabModeAsync, GrabModeAsync);
 }
 
 X11Shortcut::~X11Shortcut()
 {
-    XUngrabKey(X11Application::display(), XKeysymToKeycode(X11Application::display(), _key_sym),
+    XUngrabKey(dpy(), XKeysymToKeycode(dpy(), _key_sym),
                _mod_mask, X11Application::root());
 
     ShortcutList &list = _key_sym_index[_key_sym];

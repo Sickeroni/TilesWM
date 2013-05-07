@@ -4,8 +4,12 @@
 #include "x11_client.h"
 #include "x11_server_widget.h"
 #include "x11_canvas.h"
+#include "x11_global.h"
 #include "x11_application.h"
 #include "workspace.h"
+
+
+using namespace X11Global;
 
 
 X11ClientContainer::X11ClientContainer(X11ContainerContainer *parent) :
@@ -44,7 +48,7 @@ void X11ClientContainer::setFocus()
     if (activeClient())
         activeClient()->setFocus();
     else // set focus to root
-        XSetInputFocus(X11Application::display(), X11Application::root(),
+        XSetInputFocus(dpy(), X11Application::root(),
                        RevertToNone, CurrentTime);
     redraw();
 }

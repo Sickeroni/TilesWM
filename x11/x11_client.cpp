@@ -7,12 +7,16 @@
 #include "x11_container_container.h"
 #include "x11_canvas.h"
 #include "x11_icon.h"
+#include "x11_global.h"
 
 #include <X11/Xutil.h>
 #include <X11/Xatom.h>
 
 #include <iostream>
 #include <string.h>
+
+
+using namespace X11Global;
 
 
 class X11Client::CriticalSection
@@ -36,7 +40,7 @@ X11Client::CriticalSection::CriticalSection() :
 {
     if (!in_critical_section) {
         X11Application::self()->grabServer();
-        XSync(X11Application::display(), false);
+        XSync(dpy(), false);
         saved_error_handler = XSetErrorHandler(&errorHandler);
     }
     in_critical_section++;
@@ -46,7 +50,7 @@ X11Client::CriticalSection::~CriticalSection()
 {
     in_critical_section--;
     if(!in_critical_section) {
-        XSync(X11Application::display(), false);
+        XSync(dpy(), false);
         XSetErrorHandler(saved_error_handler);
         X11Application::self()->ungrabServer();
     }
@@ -117,13 +121,13 @@ void X11Client::setFocus()
     assert(static_cast<X11ContainerContainer*>(container()->parent())->widget()->isMapped());
 
     if (X11Application::activeRootContainer()->widget()->isMapped())
-        XSetInputFocus(X11Application::display(), _widget->wid(),
+        XSetInputFocus(dpy(), _widget->wid(),
                        RevertToNone, CurrentTime);
 }
 
 void X11Client::raise()
 {
-    XRaiseWindow(X11Application::display(), _frame->wid());
+    XRaiseWindow(dpy(), _frame->wid());
 }
 
 void X11Client::setRect(const Rect &rect)
@@ -173,11 +177,11 @@ void X11Client::init()
     CriticalSection sec;
 
     //FIXME clear these on shutdown (before closing display connection)
-    _net_wm_window_type = XInternAtom(X11Application::display(), "_NET_WM_WINDOW_TYPE", false);
-    _net_wm_window_type_dialog = XInternAtom(X11Application::display(), "_NET_WM_WINDOW_TYPE_DIALOG", false);
-    _net_wm_icon = XInternAtom(X11Application::display(), "_NET_WM_ICON", false);
+    _net_wm_window_type = XInternAtom(dpy(), "_NET_WM_WINDOW_TYPE", false);
+    _net_wm_window_type_dialog = XInternAtom(dpy(), "_NET_WM_WINDOW_TYPE_DIALOG", false);
+    _net_wm_icon = XInternAtom(dpy(), "_NET_WM_ICON", false);
 
-    Atom net_supported = XInternAtom(X11Application::display(), "_NET_SUPPORTED", false);
+    Atom net_supported = XInternAtom(dpy(), "_NET_SUPPORTED", false);
 
     Atom net_supported_values[] = {
         _net_wm_icon, _net_wm_window_type, _net_wm_window_type_dialog
@@ -185,7 +189,7 @@ void X11Client::init()
 
     const int net_supported_count = sizeof(net_supported_values) / sizeof(net_supported_values[0]);
 
-    XChangeProperty(X11Application::display(),
+    XChangeProperty(dpy(),
                     X11Application::root(),
                     net_supported,
                     XA_ATOM,
@@ -198,7 +202,7 @@ void X11Client::init()
     Window *children = 0;
     unsigned int num_children = 0;
 
-    XQueryTree(X11Application::display(), X11Application::root(),
+    XQueryTree(dpy(), X11Application::root(),
                &unused, &unused, &children, &num_children);
 
     for (unsigned int i = 0; i < num_children; i++) {
@@ -220,7 +224,7 @@ void X11Client::create(Window wid)
 //     X11Client *transient_for = 0;
 
     Window transient_for_wid = 0;
-    if (XGetTransientForHint(X11Application::display(), wid, &transient_for_wid)) {
+    if (XGetTransientForHint(dpy(), wid, &transient_for_wid)) {
         if (transient_for_wid) {
             is_modal = true;
 //             transient_for = find(transient_for_wid);
@@ -230,12 +234,12 @@ void X11Client::create(Window wid)
 #if 0
     {
         int num_props = 0;
-        Atom *props = XListProperties(X11Application::display(), wid, &num_props);
+        Atom *props = XListProperties(dpy(), wid, &num_props);
 
         {
             std::cout<<"properties:\n===========================================\n";
             for(int i = 0; i < num_props; i++) {
-                char *atom_name = XGetAtomName(X11Application::display(), props[i]);
+                char *atom_name = XGetAtomName(dpy(), props[i]);
                 if (atom_name) {
                     std::cout<<atom_name<<'\n';
                     XFree(atom_name);
@@ -251,7 +255,7 @@ void X11Client::create(Window wid)
 #endif
 
     XWindowAttributes attr;
-    if (XGetWindowAttributes(X11Application::display(), wid, &attr)) {
+    if (XGetWindowAttributes(dpy(), wid, &attr)) {
         if (!attr.override_redirect) {
             bool is_mapped = (attr.map_state != IsUnmapped);
 
@@ -260,7 +264,7 @@ void X11Client::create(Window wid)
 
             new_attr.event_mask = attr.your_event_mask | PropertyChangeMask | FocusChangeMask;
 
-            XChangeWindowAttributes(X11Application::display(), wid, CWEventMask, &new_attr);
+            XChangeWindowAttributes(dpy(), wid, CWEventMask, &new_attr);
 
             X11Client *client = new X11Client();
 
@@ -294,7 +298,7 @@ void X11Client::create(Window wid)
             if (!attr.x && !attr.y && transient_for_wid) {
                 // place client above transient_for
                 XWindowAttributes transient_for_attr;
-                if (XGetWindowAttributes(X11Application::display(), transient_for_wid, &transient_for_attr)) {
+                if (XGetWindowAttributes(dpy(), transient_for_wid, &transient_for_attr)) {
                     //FIXME
                     frame_rect.setPos(transient_for_attr.x + 100, transient_for_attr.y + 100);
                 }
@@ -409,7 +413,7 @@ void X11Client::mapInt()
     assert(!_frame->isMapped());
 
 
-    XAddToSaveSet(X11Application::display(), _widget->wid());
+    XAddToSaveSet(dpy(), _widget->wid());
 
     _widget->reparent(_frame, 5, 5); // HACK: 5 = frame width
 
@@ -455,7 +459,7 @@ void X11Client::unmapInt()
         _widget->unmap();
     _widget->reparent(0);
 
-    XRemoveFromSaveSet(X11Application::display(), _widget->wid());
+    XRemoveFromSaveSet(dpy(), _widget->wid());
 
     _is_mapped = false;
 
@@ -498,7 +502,7 @@ void X11Client::handleConfigureRequest(const XConfigureRequestEvent &ev)
         Rect rect(changes.x, changes.y, changes.width, changes.height);
         _widget->setRect(rect);
 
-        XConfigureWindow(X11Application::display(), _widget->wid(), ev.value_mask, &changes);
+        XConfigureWindow(dpy(), _widget->wid(), ev.value_mask, &changes);
     } else {
         // HACK HACK HACK
 
@@ -511,7 +515,7 @@ void X11Client::handleConfigureRequest(const XConfigureRequestEvent &ev)
 
         //HACK
         XWindowAttributes frame_attr;
-        if (XGetWindowAttributes(X11Application::display(), _frame->wid(), &frame_attr)) {
+        if (XGetWindowAttributes(dpy(), _frame->wid(), &frame_attr)) {
             if (frame_attr.x || frame_attr.y)
                 frame_rect.setPos(frame_attr.x, frame_attr.y);
         }
@@ -525,7 +529,7 @@ void X11Client::handleConfigureRequest(const XConfigureRequestEvent &ev)
         Rect rect(changes.x, changes.y, changes.width, changes.height);
         _widget->setRect(rect);
         //FIXME - translate coordinates
-        XConfigureWindow(X11Application::display(), _widget->wid(), ev.value_mask, &changes);
+        XConfigureWindow(dpy(), _widget->wid(), ev.value_mask, &changes);
 
         _frame->setRect(frame_rect);
     }
@@ -539,7 +543,7 @@ void X11Client::refreshSizeHints()
 
     XSizeHints size_hints;
     long supplied_fields;
-    if (XGetWMNormalHints(X11Application::display(), _widget->wid(), &size_hints, &supplied_fields)) {
+    if (XGetWMNormalHints(dpy(), _widget->wid(), &size_hints, &supplied_fields)) {
             std::cout<<"size_hints.min_width: "<<size_hints.min_width<<'\n';
             std::cout<<"size_hints.min_height: "<<size_hints.min_height<<'\n';
             std::cout<<"size_hints.max_width: "<<size_hints.max_width<<'\n';
@@ -564,11 +568,11 @@ void X11Client::refreshName()
     CriticalSection sec;
 
     XTextProperty prop;
-    if (XGetWMName(X11Application::display(), _widget->wid(), &prop)) {
+    if (XGetWMName(dpy(), _widget->wid(), &prop)) {
         char **list = 0;
         int count = 0;
 
-        XmbTextPropertyToTextList(X11Application::display(), &prop,
+        XmbTextPropertyToTextList(dpy(), &prop,
                                   &list, &count);
         if (count) {
             _x11_name = list[0];
@@ -587,7 +591,7 @@ void X11Client::refreshClass()
     class_hint.res_name = 0;
     class_hint.res_class = 0;
 
-    if (XGetClassHint(X11Application::display(), _widget->wid(), &class_hint)) {
+    if (XGetClassHint(dpy(), _widget->wid(), &class_hint)) {
         _x11_class = class_hint.res_name;
 
         XFree(class_hint.res_name);
@@ -604,7 +608,7 @@ void X11Client::refreshFocusState()
 
     Window focus_return;
     int revert_to_return;
-    XGetInputFocus(X11Application::display(), &focus_return, &revert_to_return);
+    XGetInputFocus(dpy(), &focus_return, &revert_to_return);
 
     bool focus_changed = false;
 
@@ -623,7 +627,7 @@ void X11Client::refreshFocusState()
     }
 
     if (!focus_return)
-        XSetInputFocus(X11Application::display(), X11Application::root(),
+        XSetInputFocus(dpy(), X11Application::root(),
                        RevertToNone, CurrentTime);
 
     if (focus_changed && container())
@@ -648,7 +652,7 @@ void X11Client::refreshWindowType()
 
     long max_length = 1024; //FIXME this is bullshit
 
-    if (XGetWindowProperty(X11Application::display(), _widget->wid(), _net_wm_window_type,
+    if (XGetWindowProperty(dpy(), _widget->wid(), _net_wm_window_type,
                             0, max_length,
                             false,
                             XA_ATOM,
@@ -661,7 +665,7 @@ void X11Client::refreshWindowType()
         if (actual_type_return == XA_ATOM) {
             Atom value = *prop_return;
 
-//                     char *atom_name = XGetAtomName(X11Application::display(), value);
+//                     char *atom_name = XGetAtomName(dpy(), value);
 //                     if (atom_name) {
 //                         std::cout<<"_net_wm_window_type: "<<atom_name<<'\n';
 //                         XFree(atom_name);
@@ -686,7 +690,7 @@ void X11Client::refreshIcon()
     int format;
     Atom type;
 
-    if (Success == XGetWindowProperty(X11Application::display(),
+    if (Success == XGetWindowProperty(dpy(),
                             _widget->wid(),
                             _net_wm_icon,
                             0, max_size,
@@ -728,7 +732,7 @@ void X11Client::refreshIcon()
         XFree(ret);
     }
 #if 0
-    else if (XWMHints *hints = XGetWMHints(X11Application::display(), _widget->wid())) {
+    else if (XWMHints *hints = XGetWMHints(dpy(), _widget->wid())) {
         if (hints->flags & IconPixmapHint) {
             std::cout<<"IconPixmapHint\n";
             abort();
