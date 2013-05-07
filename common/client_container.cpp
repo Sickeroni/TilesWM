@@ -74,13 +74,13 @@ int ClientContainer::minimumHeight()
     int ret = 0;
     if (isMinimized()) {
         if (isHorizontal())
-            ret = _tabbar_height;
+            ret = calcTabbarHeight();
         else
-            ret = _clients.count() * _tabbar_height;
+            ret = _clients.count() * calcTabbarHeight();
     } else
-        ret = _tabbar_height;
+        ret = calcTabbarHeight();
 
-    ret += _frame_width + _tabbar_height;
+    ret += _frame_width;
 
     return ret;
 }
@@ -241,6 +241,8 @@ void ClientContainer::drawStacked(Canvas *canvas)
 
     Rect tabbar_rect;
     getTabbbarRect(tabbar_rect);
+    int tabbar_height = tabbar_rect.h;
+
 
     std::stringstream title;
 
@@ -296,10 +298,10 @@ void ClientContainer::drawStacked(Canvas *canvas)
 
         if (isHorizontal()) {
             rect.x = i * cell_width + _frame_width;
-            rect.y = _frame_width + _tabbar_height;
+            rect.y = _frame_width + tabbar_height;
         } else {
             rect.x = _frame_width;
-            rect.y = (i * cell_height) + _frame_width + _tabbar_height;
+            rect.y = (i * cell_height) + _frame_width + tabbar_height;
         }
 
         rect.x += gap;
@@ -330,10 +332,11 @@ void ClientContainer::drawVerticalTabs(Canvas *canvas)
     bg_rect.setPos(0, 0);
     canvas->erase(bg_rect);
 
+    int tabbar_height = calcTabbarHeight();
 
     int i = 0;
     for (Client *c = _clients.first(); c; c = c->next()) {
-        Rect tab_rect(0, i * _tabbar_height, _vertical_tabbar_width, _tabbar_height);
+        Rect tab_rect(0, i * tabbar_height, _vertical_tabbar_width, tabbar_height);
 
         canvas->drawFrame(tab_rect, (activeClient() == c) ? 0x222299 : 0x222222);
 
@@ -381,26 +384,19 @@ void ClientContainer::drawTabs(Canvas *canvas)
     int tab_width = tabbar_rect.w / num_tabs;
     int tab_height = tabbar_rect.h;
 
+    int max_text_height = maxTextHeight();
+
     int i = 0;
     for(Client *c = _clients.first(); c; c = c->next()) {
-        Rect r;
-        r.set(tabbar_rect.x + (i * tab_width), tabbar_rect.y, tab_width, tab_height);
+        Rect tab_rect(tabbar_rect.x + (i * tab_width), tabbar_rect.y, tab_width, tab_height);
+        Rect r = tab_rect;
 
         r.x+=2;
         r.y+=2;
         r.w-=4;
         r.h-=4;
 
-        uint32 fg, bg;
-
-        bg = 0x0;
-
-        if (activeClient() == c)
-            fg = 0x00FF00;
-        else
-            fg = 0xAAAAAA;
-
-        canvas->drawFrame(r, (activeClient() == c) ? 0x222299 : 0x222222);
+        canvas->drawFrame(r, (activeClient() == c) ? 0x222299 : 0x444444);
 
 
         if (c->icon()) {
@@ -420,16 +416,24 @@ void ClientContainer::drawTabs(Canvas *canvas)
         }
         #endif
 
-        r.x+=30;
-        r.y-= 10;
+        uint32 fg, bg;
 
-        canvas->drawText(c->name().c_str(), r, fg, bg);
+        bg = 0x0;
+
+        if (activeClient() == c)
+            fg = 0x0;
+        else
+            fg = 0x666666;
+
+
+        Rect text_rect(tab_rect.x + 30, tab_rect.y + _tab_text_vertical_spacing, 100, max_text_height);
+
+        canvas->drawText(c->name().c_str(), text_rect, fg, bg);
 
         i++;
     }
 
 }
-
 
 void ClientContainer::layout()
 {
@@ -444,22 +448,28 @@ void ClientContainer::layout()
     redraw();
 }
 
+int ClientContainer::calcTabbarHeight()
+{
+    return maxTextHeight() + (2 * _tab_text_vertical_spacing);
+}
+
 void ClientContainer::getTabbbarRect(Rect &rect)
 {
     int tabbar_x = _frame_width;
     int tabbar_y = _frame_width;
     int tabbar_w = width() - (2 * _frame_width);
-    int tabbar_h = _tabbar_height;
+    int tabbar_h = calcTabbarHeight();
 
     rect.set(tabbar_x, tabbar_y, tabbar_w, tabbar_h);
 }
 
 void ClientContainer::getClientRect(Rect &rect)
 {
+    int tabbar_height = calcTabbarHeight();
     int client_w = width() - (2 * _frame_width);
-    int client_h = height() - ((2 * _frame_width) + _tabbar_height);
+    int client_h = height() - ((2 * _frame_width) + tabbar_height);
 
-    rect.set(_frame_width, _frame_width + _tabbar_height, client_w, client_h);
+    rect.set(_frame_width, _frame_width + tabbar_height, client_w, client_h);
 }
 
 void ClientContainer::layoutTabbed()
@@ -523,6 +533,7 @@ void ClientContainer::layoutStacked(Client *about_to_be_mapped)
     std::cout<<"is horizontal: "<<isHorizontal()<<'\n';
 
     const int cell_border = 12; //FIXME
+    int tabbar_height = calcTabbarHeight();
 
     int num_cells = numMappedClients();
     if (about_to_be_mapped)
@@ -544,10 +555,10 @@ void ClientContainer::layoutStacked(Client *about_to_be_mapped)
 
         if (isHorizontal()) {
             rect.x = (i * cell_width) + _frame_width;
-            rect.y = _frame_width + _tabbar_height;
+            rect.y = _frame_width + tabbar_height;
         } else {
             rect.x = _frame_width;
-            rect.y = (i * cell_height) + _frame_width + _tabbar_height;
+            rect.y = (i * cell_height) + _frame_width + tabbar_height;
         }
 
         rect.x += cell_border;

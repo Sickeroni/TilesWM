@@ -58,6 +58,8 @@ public:
 protected:
     ClientContainer(ContainerContainer *parent);
 
+    virtual int maxTextHeight() = 0;
+
     void draw(Canvas *canvas);
 //     ClientContainer *splitContainer(Container *container, bool prepend_new_silbling);
     ClientContainer *createSilblingFor(Container *container, bool prepend_new_silbling);
@@ -67,6 +69,7 @@ protected:
     void clear();
     void getTabbbarRect(Rect &rect);
     void getClientRect(Rect &rect);
+    int calcTabbarHeight();
 
     List<Client> _clients;
 
@@ -74,8 +77,8 @@ private:
     enum Mode { TABBED, STACKED };
 
     static const int _vertical_tabbar_width = 200;
-    static const int _tabbar_height = 40;
     static const int _frame_width = 10;
+    static const int _tab_text_vertical_spacing = 5;
 
     int numMappedClients();
     void getStackCellSize(int num_cells, int &w, int &h);

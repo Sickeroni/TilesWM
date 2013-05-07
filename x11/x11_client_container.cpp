@@ -79,3 +79,8 @@ void X11ClientContainer::handleMaximizedChanged()
 {
     handleActiveChanged();
 }
+
+int X11ClientContainer::maxTextHeight()
+{
+    return _widget->canvas()->maxTextHeight();
+}

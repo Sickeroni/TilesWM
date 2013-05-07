@@ -31,7 +31,6 @@ public:
 
     virtual void redraw();
     virtual void setRect(const Rect &rect);
-
     virtual void reparent(ContainerContainer *p);
     virtual void deleteEmptyChildren();
 

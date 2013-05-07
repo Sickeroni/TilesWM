@@ -23,6 +23,7 @@ public:
     virtual void reparent(ContainerContainer *p);
     virtual void handleMaximizedChanged();
     virtual void handleActiveChanged() ;
+    virtual int maxTextHeight();
 
     // X11ServerWidget::EventHandler implementaion
     virtual void handleExpose() {

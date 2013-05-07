@@ -19,6 +19,7 @@ public:
                           uint32 fg, uint32 bg);
     virtual void drawIcon(Icon *icon, int x, int y);
 
+    int maxTextHeight();
     void fillRectangle(const Rect &rect, uint32 color);
     void drawLine(int x1, int y1, int x2, int y2, uint32 color);
 
@@ -27,6 +28,7 @@ public:
 private:
     Drawable _drawable;
     GC _gc;
+    XFontStruct *_font_info;
 };
 
 
