@@ -71,18 +71,16 @@ int ClientContainer::minimumWidth()
 
 int ClientContainer::minimumHeight()
 {
-    int ret = 0;
+    int tabbar_height = 0;
     if (isMinimized()) {
         if (isHorizontal())
-            ret = calcTabbarHeight();
-        else
-            ret = _clients.count() * calcTabbarHeight();
+            tabbar_height = calcTabbarHeight();
+        else // vertical tabbar
+            tabbar_height = _clients.count() * calcTabbarHeight();
     } else
-        ret = calcTabbarHeight();
+        tabbar_height = calcTabbarHeight();
 
-    ret += _frame_width;
-
-    return ret;
+    return tabbar_height + (2 * _frame_width);;
 }
 
 void ClientContainer::handleClientMap(Client *client)
@@ -389,46 +387,20 @@ void ClientContainer::drawTabs(Canvas *canvas)
     int i = 0;
     for(Client *c = _clients.first(); c; c = c->next()) {
         Rect tab_rect(tabbar_rect.x + (i * tab_width), tabbar_rect.y, tab_width, tab_height);
-        Rect r = tab_rect;
 
-        r.x+=2;
-        r.y+=2;
-        r.w-=4;
-        r.h-=4;
+        Rect frame_rect = tab_rect;
 
-        canvas->drawFrame(r, (activeClient() == c) ? 0x222299 : 0x444444);
-
+        canvas->drawFrame(frame_rect, (activeClient() == c) ? 0x222299 : 0x444444);
 
         if (c->icon()) {
-            int icon_x = r.x + 2;
-            int icon_y = r.y + 2;
+            int icon_x = tab_rect.x + 2;
+            int icon_y = tab_rect.y + 2;
             canvas->drawIcon(c->icon(), icon_x, icon_y);
         }
 
-        #if 0
-        if (activeClient() == c) {
-            Rect tmp = r;
-            tmp.x+=2;
-            tmp.y+=2;
-            tmp.w-=4;
-            tmp.h-=4;
-            canvas->drawFrame(tmp,  0x000088);
-        }
-        #endif
-
-        uint32 fg, bg;
-
-        bg = 0x0;
-
-        if (activeClient() == c)
-            fg = 0x0;
-        else
-            fg = 0x666666;
-
-
         Rect text_rect(tab_rect.x + 30, tab_rect.y + _tab_text_vertical_spacing, 100, max_text_height);
 
-        canvas->drawText(c->name(), text_rect, fg, bg);
+        canvas->drawText(c->name(), text_rect, activeClient() == c ? 0x0 . 0x666666, 0x0);
 
         i++;
     }
@@ -466,17 +438,15 @@ void ClientContainer::getTabbbarRect(Rect &rect)
 void ClientContainer::getClientRect(Rect &rect)
 {
     int tabbar_height = calcTabbarHeight();
-    int client_w = width() - (2 * _frame_width);
-    int client_h = height() - ((2 * _frame_width) + tabbar_height);
 
-    rect.set(_frame_width, _frame_width + tabbar_height, client_w, client_h);
+    rect.x = _frame_width;
+    rect.y = _frame_width + tabbar_height;
+    rect.w = width() - (2 * _frame_width);
+    rect.h = height() - ((2 * _frame_width) + tabbar_height);
 }
 
 void ClientContainer::layoutTabbed()
 {
-    Rect tabbar_rect;
-    getTabbbarRect(tabbar_rect);
-
     Rect client_rect;
     getClientRect(client_rect);
 
