@@ -52,8 +52,7 @@ void X11Canvas::drawFrame(const Rect &rect, uint32 color)
                    rect.x, rect.y, rect.w, rect.h);
 }
 
-//FIXME use std::string as parameter
-void X11Canvas::drawText(const char *text, const Rect &rect,
+void X11Canvas::drawText(const std::string &text, const Rect &rect,
                          uint32 fg, uint32 bg)
 {
     assert(_font_info);
@@ -62,8 +61,8 @@ void X11Canvas::drawText(const char *text, const Rect &rect,
     XSetBackground(dpy(), _gc, bg);
 
     XTextItem text_item = {
-        const_cast<char*>(text),
-        strlen(text),
+        const_cast<char*>(text.c_str()),
+        text.length(),
         0,
         None
     };

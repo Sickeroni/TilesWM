@@ -428,7 +428,7 @@ void ClientContainer::drawTabs(Canvas *canvas)
 
         Rect text_rect(tab_rect.x + 30, tab_rect.y + _tab_text_vertical_spacing, 100, max_text_height);
 
-        canvas->drawText(c->name().c_str(), text_rect, fg, bg);
+        canvas->drawText(c->name(), text_rect, fg, bg);
 
         i++;
     }
