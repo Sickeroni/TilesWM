@@ -161,7 +161,7 @@ void ContainerContainer::draw(Canvas *canvas)
             focus_rect.w -= 4;
             focus_rect.h -= 4;
 
-            unsigned long color = c->isClientContainer() ? 0xFF5555 : 0xFFBB00;
+            uint32 color = c->isClientContainer() ? 0xFF5555 : 0xFFBB00;
 
             canvas->drawFrame(focus_rect, color);
         }

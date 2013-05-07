@@ -28,7 +28,7 @@ void X11Canvas::erase(const Rect &rect)
     XClearArea(dpy(), _drawable, rect.x, rect.y, rect.w, rect.h, false);
 }
 
-void X11Canvas::drawFrame(const Rect &rect, unsigned long color)
+void X11Canvas::drawFrame(const Rect &rect, uint32 color)
 {
     XSetForeground(dpy(), _gc, color);
 
@@ -37,7 +37,7 @@ void X11Canvas::drawFrame(const Rect &rect, unsigned long color)
 }
 
 void X11Canvas::drawText(const char *text, const Rect &rect,
-                         unsigned long fg, unsigned long bg)
+                         uint32 fg, uint32 bg)
 {
     XSetForeground(dpy(), _gc, fg);
     XSetBackground(dpy(), _gc, bg);
@@ -46,13 +46,13 @@ void X11Canvas::drawText(const char *text, const Rect &rect,
                      rect.x, rect.y + rect.h, text, strlen(text));
 }
 
-void X11Canvas::fillRectangle(const Rect &rect, unsigned long color)
+void X11Canvas::fillRectangle(const Rect &rect, uint32 color)
 {
     XSetForeground(dpy(), _gc, color);
     XFillRectangle(dpy(), _drawable, _gc, rect.x, rect.y, rect.w, rect.h);
 }
 
-void X11Canvas::drawLine(int x1, int y1, int x2, int y2, unsigned long color)
+void X11Canvas::drawLine(int x1, int y1, int x2, int y2, uint32 color)
 {
     XSetForeground(dpy(), _gc, color);
     XDrawLine(dpy(), _drawable, _gc, x1, y1, x2, y2);

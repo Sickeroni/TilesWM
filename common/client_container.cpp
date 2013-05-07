@@ -406,7 +406,7 @@ void ClientContainer::drawVerticalTabs(Canvas *canvas)
         text_rect.x+=30;
         text_rect.y-= 10;
 
-        unsigned long fg = 0, bg = 0;
+        uint32 fg = 0, bg = 0;
 
         if (activeClient() == c)
             fg = 0x00FF00;
@@ -463,7 +463,7 @@ void ClientContainer::drawTabs(Canvas *canvas)
         r.w-=4;
         r.h-=4;
 
-        unsigned long fg, bg;
+        uint32 fg, bg;
 
         bg = 0x0;
 
