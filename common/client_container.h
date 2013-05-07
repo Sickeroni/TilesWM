@@ -78,7 +78,7 @@ private:
 
     static const int _vertical_tabbar_width = 200;
     static const int _frame_width = 10;
-    static const int _tab_text_vertical_spacing = 5;
+    static const int _tab_inner_margin = 5;
 
     int numMappedClients();
     void getStackCellSize(int num_cells, int &w, int &h);

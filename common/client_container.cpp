@@ -367,10 +367,11 @@ void ClientContainer::drawTabs(Canvas *canvas)
 {
     std::cout<<"ClientContainer::draw()\n";
 
+    const int gap = 2;
+
     Rect bg_rect = _rect;
     bg_rect.setPos(0, 0);
     canvas->erase(bg_rect);
-
 
     int num_tabs = _clients.count(); //numMappedClients();
     if (!num_tabs)
@@ -379,14 +380,16 @@ void ClientContainer::drawTabs(Canvas *canvas)
     Rect tabbar_rect;
     getTabbbarRect(tabbar_rect);
 
-    int tab_width = tabbar_rect.w / num_tabs;
+    int num_gaps = num_tabs - 1;
+
+    int tab_width = (tabbar_rect.w - (num_gaps * gap)) / num_tabs;
     int tab_height = tabbar_rect.h;
 
     int max_text_height = maxTextHeight();
 
     int i = 0;
     for(Client *c = _clients.first(); c; c = c->next()) {
-        Rect tab_rect(tabbar_rect.x + (i * tab_width), tabbar_rect.y, tab_width, tab_height);
+        Rect tab_rect(tabbar_rect.x + (i * (tab_width + gap)), tabbar_rect.y, tab_width, tab_height);
 
         Rect frame_rect = tab_rect;
 
@@ -398,9 +401,9 @@ void ClientContainer::drawTabs(Canvas *canvas)
             canvas->drawIcon(c->icon(), icon_x, icon_y);
         }
 
-        Rect text_rect(tab_rect.x + 30, tab_rect.y + _tab_text_vertical_spacing, 100, max_text_height);
+        Rect text_rect(tab_rect.x + 30, tab_rect.y + _tab_inner_margin, 100, max_text_height);
 
-        canvas->drawText(c->name(), text_rect, activeClient() == c ? 0x0 . 0x666666, 0x0);
+        canvas->drawText(c->name(), text_rect, activeClient() == c ? 0x0 : 0x666666, 0x0);
 
         i++;
     }
@@ -422,7 +425,7 @@ void ClientContainer::layout()
 
 int ClientContainer::calcTabbarHeight()
 {
-    return maxTextHeight() + (2 * _tab_text_vertical_spacing);
+    return maxTextHeight() + (2 * _tab_inner_margin);
 }
 
 void ClientContainer::getTabbbarRect(Rect &rect)
