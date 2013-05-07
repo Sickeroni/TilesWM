@@ -6,6 +6,7 @@
 #include "container_container.h"
 #include "canvas.h"
 #include "workspace.h"
+#include "icon.h"
 
 #include <iostream>
 #include <sstream>
@@ -396,12 +397,15 @@ void ClientContainer::drawTabs(Canvas *canvas)
         canvas->drawFrame(frame_rect, (activeClient() == c) ? 0x222299 : 0x444444);
 
         if (c->icon()) {
-            int icon_x = tab_rect.x + 2;
-            int icon_y = tab_rect.y + 2;
+            int icon_x = tab_rect.x + _tab_inner_margin;
+            int icon_y = tab_rect.y + _tab_inner_margin;
             canvas->drawIcon(c->icon(), icon_x, icon_y);
         }
 
-        Rect text_rect(tab_rect.x + 30, tab_rect.y + _tab_inner_margin, 100, max_text_height);
+        Rect text_rect(tab_rect.x + _tab_inner_margin, tab_rect.y + _tab_inner_margin, 100, max_text_height);
+
+        if (c->icon())
+            text_rect.x += (c->icon()->width() + 5);
 
         canvas->drawText(c->name(), text_rect, activeClient() == c ? 0x0 : 0x666666, 0x0);
 
