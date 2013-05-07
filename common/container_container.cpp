@@ -195,7 +195,6 @@ void ContainerContainer::layout()
     if (available_space < 0) // BAAD - children won't fit
         available_space = 0;
 
-
     int additional_space_per_child = available_space / _children.count();
 
     int current_x = client_rect.x;
@@ -212,7 +211,6 @@ void ContainerContainer::layout()
                 additional_space = available_space;
         } else
             additional_space = additional_space_per_child;
-
 
         if (isHorizontal()) {
             child_rect.x = current_x;
@@ -276,7 +274,6 @@ ClientContainer *ContainerContainer::addNewClientContainer(bool prepend)
     return client_container;
 }
 
-
 void ContainerContainer::prependChild(Container *container)
 {
 //FIXME
@@ -290,7 +287,6 @@ void ContainerContainer::prependChild(Container *container)
 
     layout();
 }
-
 
 void ContainerContainer::appendChild(Container *container)
 {
@@ -311,8 +307,6 @@ void ContainerContainer::appendChild(Container *container)
     layout();
 }
 
-
-
 void ContainerContainer::replaceChild(Container *old_container, Container *new_container)
 {
 //FIXME
@@ -328,8 +322,6 @@ void ContainerContainer::replaceChild(Container *old_container, Container *new_c
 
     layout();
 }
-
-
 
 void ContainerContainer::setDirty(bool set)
 {
@@ -362,7 +354,6 @@ void ContainerContainer::updateDirtyStatus()
     setDirty(dirty);
 }
 
-#if 1
 void ContainerContainer::deleteEmptyChildren()
 {
 
@@ -441,11 +432,8 @@ void ContainerContainer::deleteEmptyChildren()
 
     _dirty = isEmpty();
 
-
     layout();
 }
-#endif
-
 
 void ContainerContainer::deleteChild(Container *child)
 {
@@ -460,7 +448,6 @@ void ContainerContainer::deleteChild(Container *child)
     delete child;
 }
 
-#if 1
 ClientContainer *ContainerContainer::splitChild(Container *child, bool prepend_new_silbling)
 {
     if (hierarchyDepth() >= _max_hierarchy_depth)
@@ -489,8 +476,6 @@ ClientContainer *ContainerContainer::splitChild(Container *child, bool prepend_n
 
     return new_silbling;
 }
-#endif
-
 
 int ContainerContainer::hierarchyDepth()
 {
