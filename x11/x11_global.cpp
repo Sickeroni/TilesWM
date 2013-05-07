@@ -5,5 +5,5 @@
 
 Display *X11Global::dpy()
 {
-    return X11Application::display();
+    return X11Application::dpy();
 }

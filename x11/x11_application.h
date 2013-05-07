@@ -13,7 +13,7 @@ class X11Application
 {
 public:
     static X11Application *self() { return _self; }
-    static Display *display()  { return self()->_display; }
+    static Display *dpy()  { return self()->_dpy; }
     static Window root()  { return self()->_root; }
     static X11ContainerContainer *activeRootContainer();
     static Workspace *activeWorkspace() { return self()->_workspace; }
@@ -35,7 +35,7 @@ private:
 
     static X11Application *_self;
 
-    Display *_display;
+    Display *_dpy;
     Window _root;
     X11KeyHandler *_key_handler;
     int _num_server_grabs;

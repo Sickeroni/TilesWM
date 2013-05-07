@@ -147,7 +147,7 @@ const char *X11Application::errorCodeToString(size_t error_code)
 
 
 X11Application::X11Application() :
-    _display(0),
+    _dpy(0),
     _root(0),
     _key_handler(0),
     _num_server_grabs(0),
@@ -177,29 +177,29 @@ bool X11Application::init()
 //     XSetErrorHandler(&xErrorHandler);
 
     /* return failure status if we can't connect */
-    if(!(_display = XOpenDisplay(0))) {
+    if(!(_dpy = XOpenDisplay(0))) {
         std::cerr << "ERROR: Can't open display.\n";
         return false;
     }
 
-    XSynchronize(_display, true);
+    XSynchronize(_dpy, true);
 
     grabServer();
 
-    _root = DefaultRootWindow(_display);
+    _root = DefaultRootWindow(_dpy);
 
     XWindowAttributes root_attr;
-    if (!XGetWindowAttributes(_display, _root, &root_attr)) {
+    if (!XGetWindowAttributes(_dpy, _root, &root_attr)) {
         std::cerr << "ERROR: XGetWindowAttributes() failed for root window.\n";
-        XCloseDisplay(_display);
-        _display = 0;
+        XCloseDisplay(_dpy);
+        _dpy = 0;
         return false;
     }
 
     if (root_attr.all_event_masks & SubstructureRedirectMask) {
         std::cerr<<"ERROR: Another window manager is already running.\n";
-        XCloseDisplay(_display);
-        _display = 0;
+        XCloseDisplay(_dpy);
+        _dpy = 0;
         return false;
     }
 
@@ -208,9 +208,9 @@ bool X11Application::init()
 
     new_root_attr.event_mask = SubstructureNotifyMask | SubstructureRedirectMask;
 
-    XChangeWindowAttributes(_display, _root, CWEventMask, &new_root_attr);
+    XChangeWindowAttributes(_dpy, _root, CWEventMask, &new_root_attr);
 
-    XSync(_display, false);
+    XSync(_dpy, false);
 
     _workspace = new Workspace();
 
@@ -228,8 +228,8 @@ bool X11Application::init()
 
     _key_handler = new X11DefaultKeyHandler();
 
-//     XFlush(display());
-    XSync(_display, false);
+//     XFlush(_dpy);
+    XSync(_dpy, false);
 
     ungrabServer();
 
@@ -243,8 +243,8 @@ void X11Application::shutdown()
     //FIXME delete root container
     delete _key_handler;
     _key_handler = 0;
-    XCloseDisplay(_display);
-    _display = 0;
+    XCloseDisplay(_dpy);
+    _dpy = 0;
 }
 
 #if 1
@@ -263,7 +263,7 @@ void X11Application::eventLoop()
 //     XButtonEvent start;
 
 
-    int x11_fd = ConnectionNumber(display());
+    int x11_fd = ConnectionNumber(_dpy);
 
     timeval timeout_spec;
     fd_set x11_fd_set;
@@ -271,12 +271,12 @@ void X11Application::eventLoop()
 
     for( ; ; )
     {
-//         XFlush(display());
+//         XFlush(_dpy);
 
         if (_quit_requested)
             return;
 
-        while (!XPending(display())) {
+        while (!XPending(_dpy)) {
             // Wait for X Event or a timeout
             FD_ZERO(&x11_fd_set);
             FD_SET(x11_fd, &x11_fd_set);
@@ -301,7 +301,7 @@ void X11Application::eventLoop()
          * more flexible by using XPending(), or ConnectionNumber() along with
          * select() (or poll() or whatever floats your boat).
          */
-        XNextEvent(_display, &ev);
+        XNextEvent(_dpy, &ev);
 
         if (ev.type == KeyPress && X11Shortcut::handleKeyPress(ev.xkey)) {
             // NO-OP
@@ -326,14 +326,14 @@ void X11Application::eventLoop()
          */
 
 //         else if(ev.type == KeyPress && ev.xkey.subwindow != None)
-//             XRaiseWindow(_display, ev.xkey.subwindow);
+//             XRaiseWindow(_dpy, ev.xkey.subwindow);
 #if 0
         else if(ev.type == ButtonPress && ev.xbutton.subwindow != None)
         {
             /* now we take command of the pointer, looking for motion and
              * button release events.
              */
-            XGrabPointer(_display, ev.xbutton.subwindow, True,
+            XGrabPointer(_dpy, ev.xbutton.subwindow, True,
                     PointerMotionMask|ButtonReleaseMask, GrabModeAsync,
                     GrabModeAsync, None, None, CurrentTime);
 
@@ -342,7 +342,7 @@ void X11Application::eventLoop()
              * when the pointer moves, we can compare it to our initial data
              * and move/resize accordingly.
              */
-            XGetWindowAttributes(_display, ev.xbutton.subwindow, &attr);
+            XGetWindowAttributes(_dpy, ev.xbutton.subwindow, &attr);
             start = ev.xbutton;
         }
 #endif
@@ -364,7 +364,7 @@ void X11Application::eventLoop()
              * get "focus flicker" as windows shuffle around underneath the
              * pointer.
              */
-            while(XCheckTypedEvent(_display, MotionNotify, &ev));
+            while(XCheckTypedEvent(_dpy, MotionNotify, &ev));
 
             /* now we use the stuff we saved at the beginning of the
              * move/resize and compare it to the pointer's current position to
@@ -384,7 +384,7 @@ void X11Application::eventLoop()
              */
             xdiff = ev.xbutton.x_root - start.x_root;
             ydiff = ev.xbutton.y_root - start.y_root;
-            XMoveResizeWindow(_display, ev.xmotion.window,
+            XMoveResizeWindow(_dpy, ev.xmotion.window,
                 attr.x + (start.button==1 ? xdiff : 0),
                 attr.y + (start.button==1 ? ydiff : 0),
                 MAX(1, attr.width + (start.button==3 ? xdiff : 0)),
@@ -397,7 +397,7 @@ void X11Application::eventLoop()
          */
 #if 0
         else if(ev.type == ButtonRelease)
-            XUngrabPointer(_display, CurrentTime);
+            XUngrabPointer(_dpy, CurrentTime);
 #endif
 #if 1
         else {
@@ -405,9 +405,9 @@ void X11Application::eventLoop()
         }
 #endif
 
-        XSync(display(), false);
+        XSync(_dpy, false);
 
-//         XUngrabServer(display());
+//         XUngrabServer(_dpy);
     }
 }
 #endif
@@ -417,7 +417,7 @@ void X11Application::grabServer()
     assert(_num_server_grabs >= 0);
 
     if (!_num_server_grabs)
-        XGrabServer(_display);
+        XGrabServer(_dpy);
 
     _num_server_grabs++;
 }
@@ -429,7 +429,7 @@ void X11Application::ungrabServer()
     assert(_num_server_grabs >= 0);
 
     if (!_num_server_grabs)
-        XUngrabServer(_display);
+        XUngrabServer(_dpy);
 }
 
 void X11Application::runProgram(const char *path)
