@@ -83,7 +83,7 @@ int ClientContainer::minimumHeight()
     } else
         tabbar_height = calcTabbarHeight();
 
-    return tabbar_height + (2 * _frame_width);;
+    return tabbar_height + (2 * _frame_width);
 }
 
 void ClientContainer::handleClientMap(Client *client)

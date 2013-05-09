@@ -138,6 +138,9 @@ int ContainerContainer::minimumWidth()
         }
         width += (2 * _child_frame_width);
     }
+
+    width += 2 * _frame_width;
+
     return width;
 }
 
@@ -155,6 +158,9 @@ int ContainerContainer::minimumHeight()
         for (Container *c = _children.first(); c; c = c->next())
             height += c->minimumHeight() + (2 * _child_frame_width);
     }
+
+    height += _title_height + (2 * _frame_width);
+
     return height;
 }
 
@@ -210,9 +216,10 @@ void ContainerContainer::layout()
 
     for (Container *c = _children.first(); c; c = c->next()) {
         if (isHorizontal())
-            available_space -= c->minimumWidth() + (2 * _child_frame_width);
+            available_space -= c->minimumWidth();
         else
-            available_space -= c->minimumHeight() + (2 * _child_frame_width);
+            available_space -= c->minimumHeight();
+        available_space -= (2 * _child_frame_width);
     }
 
     if (available_space < 0) // BAAD - children won't fit
@@ -229,8 +236,8 @@ void ContainerContainer::layout()
 
         int additional_space = 0;
 
-        if (workspace()->maximized()) {
-            if (hasFocus() && activeChild() == c)
+        if (workspace()->maximized() && hasFocus()) {
+            if (activeChild() == c)
                 additional_space = available_space;
         } else
             additional_space = additional_space_per_child;
