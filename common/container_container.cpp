@@ -201,7 +201,6 @@ void ContainerContainer::draw(Canvas *canvas)
 
             canvas->drawFrame(focus_rect, color);
         }
-
     }
 }
 

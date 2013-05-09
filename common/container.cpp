@@ -58,10 +58,10 @@ bool Container::hasFocus()
 {
     if (_parent && (_parent->hasFocus() && (_parent->activeChild() == this)))
         return true;
-    else if (!_parent)
-        return true;
-    else
+    else if (_parent) {
         return false;
+    } else
+        return true;
 }
 
 bool Container::isMinimized()
