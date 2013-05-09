@@ -329,11 +329,24 @@ void ClientContainer::drawStacked(Canvas *canvas)
 
 void ClientContainer::drawTab(Client *client, const Rect &rect, Canvas *canvas)
 {
-    canvas->fillRectangle(rect, (activeClient() == client) ? Colors::TAB_ACTIVE :
-                                                             Colors::TAB);
 
-    canvas->drawFrame(rect, (activeClient() == client) ? Colors::TAB_FRAME_ACTIVE :
-                                                         Colors::TAB_FRAME);
+    uint32 fg = Colors::TAB_TEXT;
+    uint32 bg = Colors::TAB;
+
+    if (client->hasFocus()) {
+        bg = Colors::TAB_FOCUSED;
+        fg = Colors::TAB_FOCUSED_TEXT;
+    } else if (hasFocus() && activeClient() == client) {
+        bg = Colors::TAB_ACTIVE;
+        fg = Colors::TAB_ACTIVE_TEXT;
+    } else if (activeClient() == client) {
+        bg = Colors::TAB_CURRENT;
+        fg = Colors::TAB_CURRENT_TEXT;
+    }
+
+    canvas->fillRectangle(rect, bg);
+
+    canvas->drawFrame(rect, fg);
 
     if (client->icon()) {
         int icon_x = rect.x + _tab_inner_margin;
@@ -349,9 +362,7 @@ void ClientContainer::drawTab(Client *client, const Rect &rect, Canvas *canvas)
         text_rect.w -= (icon->width() + 5);
     }
 
-    canvas->drawText(client->name(), text_rect,
-                     activeClient() == client ? Colors::TAB_TEXT_ACTIVE:
-                                                Colors::TAB_TEXT);
+    canvas->drawText(client->name(), text_rect, fg);
 }
 
 void ClientContainer::drawVerticalTabs(Canvas *canvas)
