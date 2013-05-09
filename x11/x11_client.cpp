@@ -683,6 +683,8 @@ void X11Client::refreshIcon()
 {
     std::cout<<"looking for _NET_WM_ICON property ...\n";
 
+    CriticalSection sec;
+
     static const long max_size = 24*24;
     unsigned long nitems, bytesafter;
     unsigned char *ret;
