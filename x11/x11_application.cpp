@@ -185,7 +185,7 @@ bool X11Application::init()
     XSynchronize(_dpy, true);
 
     grabServer();
-
+ 
     _root = DefaultRootWindow(_dpy);
 
     XWindowAttributes root_attr;
@@ -221,7 +221,7 @@ bool X11Application::init()
 
     activeRootContainer()->setRect(root_container_rect);
 
-    activeRootContainer()->addNewClientContainer(false); //FIXME HACK
+//    activeRootContainer()->addNewClientContainer(false); //FIXME HACK
 //    _activeRootContainer->addNewClientContainer(false); //FIXME HACK
 
     X11Client::init();
