@@ -256,7 +256,7 @@ void ClientContainer::drawStacked(Canvas *canvas)
 
     title<<"  |  Clients: "<<_clients.count()<<"  |  Mapped: "<<mapped_clients;
 
-    canvas->drawText(title.str().c_str(), tabbar_rect, 0xFFFFFF, 0x0);
+    canvas->drawText(title.str().c_str(), tabbar_rect, 0xFFFFFF);
 
     Rect client_rect;
     getClientRect(client_rect);
@@ -344,7 +344,7 @@ void ClientContainer::drawTab(Client *client, const Rect &rect, Canvas *canvas)
         text_rect.w -= (icon->width() + 5);
     }
 
-    canvas->drawText(client->name(), text_rect, activeClient() == client ? 0x0 : 0x666666, 0x0);
+    canvas->drawText(client->name(), text_rect, activeClient() == client ? 0x0 : 0x666666);
 }
 
 void ClientContainer::drawVerticalTabs(Canvas *canvas)

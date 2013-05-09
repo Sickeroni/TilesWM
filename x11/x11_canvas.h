@@ -15,8 +15,7 @@ public:
 
     virtual void erase(const Rect &rect);
     virtual void drawFrame(const Rect &rect, uint32 color);
-    virtual void drawText(const std::string &text, const Rect &rect,
-                          uint32 fg, uint32 bg);
+    virtual void drawText(const std::string &text, const Rect &rect, uint32 color);
     virtual void drawIcon(Icon *icon, int x, int y);
 
     int maxTextHeight();

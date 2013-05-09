@@ -53,8 +53,7 @@ void X11Canvas::drawFrame(const Rect &rect, uint32 color)
                    rect.x, rect.y, rect.w - 1, rect.h - 1);
 }
 
-void X11Canvas::drawText(const std::string &text, const Rect &rect,
-                         uint32 fg, uint32 bg)
+void X11Canvas::drawText(const std::string &text, const Rect &rect, uint32 color)
 {
     assert(_font_info);
 
@@ -69,8 +68,7 @@ void X11Canvas::drawText(const std::string &text, const Rect &rect,
                        1,
                        Unsorted);
 
-    XSetForeground(dpy(), _gc, fg);
-    XSetBackground(dpy(), _gc, bg);
+    XSetForeground(dpy(), _gc, color);
 
     XTextItem text_item = {
         const_cast<char*>(text.c_str()),
