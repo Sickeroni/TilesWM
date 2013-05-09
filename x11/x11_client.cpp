@@ -137,14 +137,12 @@ void X11Client::setRect(const Rect &rect)
 
     _frame->setRect(rect);
 
-    const int frame_width = 5; //FIXME
-
     CriticalSection sec;
 
     Rect r;
-    r.x = r.y = frame_width;
-    r.w = rect.w - (2 * frame_width);
-    r.h = rect.h - (2 * frame_width);
+    r.x = r.y = _inner_frame_width;
+    r.w = rect.w - (2 * _inner_frame_width);
+    r.h = rect.h - (2 * _inner_frame_width);
     if (_max_width && r.w > _max_width)
         r.w = _max_width;
     if (_max_height && r.h > _max_height)
@@ -418,7 +416,7 @@ void X11Client::mapInt()
 
     XAddToSaveSet(dpy(), _widget->wid());
 
-    _widget->reparent(_frame, 5, 5); // HACK: 5 = frame width
+    _widget->reparent(_frame, Metrics::CLIENT_INNER_FRAME, Metrics::CLIENT_INNER_FRAME);
 
     if (!container() && !_is_dialog && !_is_modal)
         X11Application::activeRootContainer()->addClient(this);
@@ -513,8 +511,7 @@ void X11Client::handleConfigureRequest(const XConfigureRequestEvent &ev)
         //HACK
 //         frame_rect.set(ev.x, ev.y, ev.width + 10, ev.height + 10);
 
-        //HACK
-        frame_rect.setSize(ev.width + 10, ev.height + 10);
+        frame_rect.setSize(ev.width + (2 * _inner_frame_width), ev.height + (2 * _inner_frame_width));
 
         //HACK
         XWindowAttributes frame_attr;
@@ -523,10 +520,8 @@ void X11Client::handleConfigureRequest(const XConfigureRequestEvent &ev)
                 frame_rect.setPos(frame_attr.x, frame_attr.y);
         }
 
-        //HACK
-        changes.x = 5;
-        changes.y = 5;
-
+        changes.x = _inner_frame_width;
+        changes.y = _inner_frame_width;
 
         //UGLY
         Rect rect(changes.x, changes.y, changes.width, changes.height);

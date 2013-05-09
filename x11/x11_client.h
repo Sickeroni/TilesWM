@@ -5,6 +5,7 @@
 
 #include "x11_server_widget.h"
 #include "rect.h"
+#include "metrics.h"
 
 #include <X11/Xlib.h>
 
@@ -65,6 +66,8 @@ private:
     static Atom _net_wm_window_type;
     static Atom _net_wm_window_type_dialog;
     static Atom _net_wm_icon;
+
+    static const int _inner_frame_width = Metrics::CLIENT_INNER_FRAME;
 
     X11ClientWidget *_widget;
     X11ServerWidget *_frame;
