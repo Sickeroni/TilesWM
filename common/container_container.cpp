@@ -191,10 +191,10 @@ void ContainerContainer::draw(Canvas *canvas)
 
         if (c->hasFocus()) {
             Rect focus_rect = frame_rect;
-            focus_rect.x += 2;
-            focus_rect.y += 2;
-            focus_rect.w -= 4;
-            focus_rect.h -= 4;
+            focus_rect.x += 1;
+            focus_rect.y += 1;
+            focus_rect.w -= 2;
+            focus_rect.h -= 2;
 
             uint32 color = c->isClientContainer() ? Colors::CLIENT_CONTAINER_FOCUS :
                                                     Colors::CONTAINER_FOCUS;
