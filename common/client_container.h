@@ -25,11 +25,6 @@ public:
     virtual int minimumHeight();
 
 
-    bool hasFocus() {
-        //FIXME HACK
-        return true;
-    }
-
     Client *activeClient();
     void setActiveClient(Client *client);
 
