@@ -77,7 +77,8 @@ int ClientContainer::minimumHeight()
         if (isHorizontal())
             tabbar_height = calcTabbarHeight();
         else // vertical tabbar
-            tabbar_height = _clients.count() * calcTabbarHeight();
+            tabbar_height = (_clients.count() * calcTabbarHeight()
+                             + ((!_clients.count() ? 0 : _clients.count() - 1) * _tab_gap));
     } else
         tabbar_height = calcTabbarHeight();
 
@@ -348,8 +349,6 @@ void ClientContainer::drawTab(Client *client, const Rect &rect, Canvas *canvas)
 
 void ClientContainer::drawVerticalTabs(Canvas *canvas)
 {
-    static const int gap = 2;
-
     Rect bg_rect = _rect;
     bg_rect.setPos(0, 0);
     canvas->erase(bg_rect);
@@ -358,7 +357,7 @@ void ClientContainer::drawVerticalTabs(Canvas *canvas)
 
     int i = 0;
     for (Client *c = _clients.first(); c; c = c->next()) {
-        Rect tab_rect(_frame_width, _frame_width + (i * (tabbar_height + gap)),
+        Rect tab_rect(_frame_width, _frame_width + (i * (tabbar_height + _tab_gap)),
                       width() - (2 * _frame_width), tabbar_height);
 
         drawTab(c, tab_rect, canvas);
@@ -369,8 +368,6 @@ void ClientContainer::drawVerticalTabs(Canvas *canvas)
 
 void ClientContainer::drawTabs(Canvas *canvas)
 {
-    static const int gap = 2;
-
     Rect bg_rect = _rect;
     bg_rect.setPos(0, 0);
     canvas->erase(bg_rect);
@@ -384,12 +381,12 @@ void ClientContainer::drawTabs(Canvas *canvas)
 
     int num_gaps = num_tabs - 1;
 
-    int tab_width = (tabbar_rect.w - (num_gaps * gap)) / num_tabs;
+    int tab_width = (tabbar_rect.w - (num_gaps * _tab_gap)) / num_tabs;
     int tab_height = tabbar_rect.h;
 
     int i = 0;
     for(Client *c = _clients.first(); c; c = c->next()) {
-        Rect tab_rect(tabbar_rect.x + (i * (tab_width + gap)),
+        Rect tab_rect(tabbar_rect.x + (i * (tab_width + _tab_gap)),
                       tabbar_rect.y, tab_width, tab_height);
 
         drawTab(c, tab_rect, canvas);
