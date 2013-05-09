@@ -7,6 +7,7 @@
 #include "canvas.h"
 #include "workspace.h"
 #include "icon.h"
+#include "colors.h"
 
 #include <iostream>
 #include <sstream>
@@ -328,7 +329,8 @@ void ClientContainer::drawStacked(Canvas *canvas)
 
 void ClientContainer::drawTab(Client *client, const Rect &rect, Canvas *canvas)
 {
-    canvas->drawFrame(rect, (activeClient() == client) ? 0x222299 : 0x444444);
+    canvas->drawFrame(rect, (activeClient() == client) ? Colors::TAB_FRAME_ACTIVE :
+                                                         Colors::TAB_FRAME);
 
     if (client->icon()) {
         int icon_x = rect.x + _tab_inner_margin;
@@ -344,7 +346,9 @@ void ClientContainer::drawTab(Client *client, const Rect &rect, Canvas *canvas)
         text_rect.w -= (icon->width() + 5);
     }
 
-    canvas->drawText(client->name(), text_rect, activeClient() == client ? 0x0 : 0x666666);
+    canvas->drawText(client->name(), text_rect,
+                     activeClient() == client ? Colors::TAB_TEXT_ACTIVE:
+                                                Colors::TAB_TEXT);
 }
 
 void ClientContainer::drawVerticalTabs(Canvas *canvas)

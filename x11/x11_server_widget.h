@@ -2,6 +2,7 @@
 #define __X11__SERVER_WIDGET_H__
 
 #include "x11_widget.h"
+#include "types.h"
 
 #include <X11/Xlib.h>
 
@@ -24,7 +25,8 @@ public:
         virtual void handleExpose() = 0;
     };
 
-    static X11ServerWidget *create(X11ServerWidget *parent, EventHandler *event_handler, long event_mask);
+    static X11ServerWidget *create(X11ServerWidget *parent, uint32 bg_color,
+                                   EventHandler *event_handler, long event_mask);
     static bool handleEvent(const XEvent &ev);
 
     static bool isServerWidget(Window wid) {

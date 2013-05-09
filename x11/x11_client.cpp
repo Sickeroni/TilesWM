@@ -8,6 +8,7 @@
 #include "x11_canvas.h"
 #include "x11_icon.h"
 #include "x11_global.h"
+#include "colors.h"
 
 #include <X11/Xutil.h>
 #include <X11/Xatom.h>
@@ -289,7 +290,9 @@ void X11Client::create(Window wid)
             if (is_mapped)
                 client->_widget->unmap();
 
-            client->_frame = X11ServerWidget::create(0, client, SubstructureNotifyMask | SubstructureRedirectMask);
+            client->_frame = X11ServerWidget::create(0, Colors::CLIENT,
+                                                     client,
+                                                     SubstructureNotifyMask | SubstructureRedirectMask);
 
             Rect frame_rect;
             frame_rect.set(attr.x, attr.y, attr.width + 10, attr.height + 10);
@@ -763,7 +766,8 @@ void X11Client::drawFrame()
 
     frame_rect.set(frame_rect.x+2, frame_rect.y+2, frame_rect.w-4, frame_rect.h-4);
 
-    canvas->drawFrame(frame_rect, _has_focus ? 0xFF0000 : 0x0);
+    canvas->drawFrame(frame_rect, _has_focus ? Colors::CLIENT_FOCUS :
+                                               Colors::CLIENT_FRAME);
 }
 
 bool X11Client::handleEvent(const XEvent &ev)

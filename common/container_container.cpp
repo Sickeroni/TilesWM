@@ -2,6 +2,7 @@
 
 #include "client_container.h"
 #include "canvas.h"
+#include "colors.h"
 #include "workspace.h"
 
 #if 1
@@ -170,7 +171,10 @@ void ContainerContainer::draw(Canvas *canvas)
         frame_rect.w += 10;
         frame_rect.h += 10;
 
-        canvas->drawFrame(frame_rect, 0);
+        uint32 frame_color = c->isClientContainer() ? Colors::CLIENT_CONTAINER_FRAME :
+                                                      Colors::CONTAINER_FRAME;
+
+        canvas->drawFrame(frame_rect, frame_color);
 
         if (c->hasFocus()) {
             Rect focus_rect = frame_rect;
@@ -179,7 +183,8 @@ void ContainerContainer::draw(Canvas *canvas)
             focus_rect.w -= 4;
             focus_rect.h -= 4;
 
-            uint32 color = c->isClientContainer() ? 0xFF5555 : 0xFFBB00;
+            uint32 color = c->isClientContainer() ? Colors::CLIENT_CONTAINER_FOCUS :
+                                                    Colors::CONTAINER_FOCUS;
 
             canvas->drawFrame(focus_rect, color);
         }

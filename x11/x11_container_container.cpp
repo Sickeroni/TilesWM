@@ -3,6 +3,7 @@
 #include "x11_client_container.h"
 #include "x11_server_widget.h"
 #include "x11_canvas.h"
+#include "colors.h"
 
 #include <stdlib.h>
 
@@ -15,7 +16,9 @@ X11ContainerContainer *X11ContainerContainer::create(Workspace *workspace)
 
 X11ContainerContainer::X11ContainerContainer(Workspace *workspace, X11ContainerContainer *parent) :
     ContainerContainer(parent),
-    _widget(X11ServerWidget::create(parent ? parent->widget() : 0, this, ExposureMask))
+    _widget(X11ServerWidget::create(parent ? parent->widget() : 0,
+                                    Colors::CONTAINER,
+                                    this, ExposureMask))
 {
     setWorkspace(workspace);
     _widget->map();

@@ -7,6 +7,7 @@
 #include "x11_global.h"
 #include "x11_application.h"
 #include "workspace.h"
+#include "colors.h"
 
 
 using namespace X11Global;
@@ -14,7 +15,9 @@ using namespace X11Global;
 
 X11ClientContainer::X11ClientContainer(X11ContainerContainer *parent) :
     ClientContainer(parent),
-    _widget(X11ServerWidget::create(parent->widget(), this, ExposureMask))
+    _widget(X11ServerWidget::create(parent->widget(),
+                                    Colors::CLIENT_CONTAINER,
+                                    this, ExposureMask))
 {
     _widget->map();
 }

@@ -40,7 +40,8 @@ X11ServerWidget *X11ServerWidget ::find(Window wid)
         return 0;
 }
 
-X11ServerWidget *X11ServerWidget::create(X11ServerWidget *parent, EventHandler *event_handler, long event_mask)
+X11ServerWidget *X11ServerWidget::create(X11ServerWidget *parent, uint32 bg_color,
+                                         EventHandler *event_handler, long event_mask)
 {
     std::cout << "X11ServerWidget::create()\n";
 
@@ -49,14 +50,13 @@ X11ServerWidget *X11ServerWidget::create(X11ServerWidget *parent, EventHandler *
     std::cout << "parent_wid: " << parent_wid << '\n';
 
     const unsigned int width = 100, height = 100;
-    const unsigned long fg = 0xFFFFFF;
-    const unsigned long bg = 0x999999;
+//     const unsigned long fg = 0xFFFFFF;
 
     XSetWindowAttributes attr;
     memset(&attr, 0, sizeof(attr));
 
-    attr.background_pixel = bg;
-    attr.border_pixel = fg;
+    attr.background_pixel = bg_color;
+//     attr.border_pixel = fg;
     attr.event_mask = event_mask;
 
     Window wid = XCreateWindow(dpy(),
@@ -67,7 +67,7 @@ X11ServerWidget *X11ServerWidget::create(X11ServerWidget *parent, EventHandler *
                                CopyFromParent,
                                InputOutput,
                                CopyFromParent,
-                               CWBackPixel | CWBorderPixel | CWEventMask,
+                               CWBackPixel /*| CWBorderPixel*/ | CWEventMask,
                                &attr);
 
     if (!wid)
