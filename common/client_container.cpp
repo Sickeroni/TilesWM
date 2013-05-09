@@ -329,6 +329,9 @@ void ClientContainer::drawStacked(Canvas *canvas)
 
 void ClientContainer::drawTab(Client *client, const Rect &rect, Canvas *canvas)
 {
+    canvas->fillRectangle(rect, (activeClient() == client) ? Colors::TAB_ACTIVE :
+                                                             Colors::TAB);
+
     canvas->drawFrame(rect, (activeClient() == client) ? Colors::TAB_FRAME_ACTIVE :
                                                          Colors::TAB_FRAME);
 

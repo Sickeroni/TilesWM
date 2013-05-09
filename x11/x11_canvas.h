@@ -14,12 +14,12 @@ public:
     ~X11Canvas();
 
     virtual void erase(const Rect &rect);
+    virtual void fillRectangle(const Rect &rect, uint32 color);
     virtual void drawFrame(const Rect &rect, uint32 color);
     virtual void drawText(const std::string &text, const Rect &rect, uint32 color);
     virtual void drawIcon(Icon *icon, int x, int y);
 
     int maxTextHeight();
-    void fillRectangle(const Rect &rect, uint32 color);
     void drawLine(int x1, int y1, int x2, int y2, uint32 color);
 
     GC gc() { return _gc; }
