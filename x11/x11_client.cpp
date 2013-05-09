@@ -488,6 +488,7 @@ void X11Client::handleConfigureRequest(const XConfigureRequestEvent &ev)
     CriticalSection sec;
 
     if (container()) {
+#if 0
         changes.x = 0;
         changes.y = 0;
 
@@ -504,6 +505,7 @@ void X11Client::handleConfigureRequest(const XConfigureRequestEvent &ev)
         _widget->setRect(rect);
 
         XConfigureWindow(dpy(), _widget->wid(), ev.value_mask, &changes);
+#endif
     } else {
         // HACK HACK HACK
 
