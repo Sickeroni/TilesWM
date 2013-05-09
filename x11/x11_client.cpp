@@ -761,13 +761,14 @@ void X11Client::drawFrame()
     Rect frame_rect = _frame->rect();
     frame_rect.setPos(0, 0);
 
+    uint32 frame_color = _has_focus ? Colors::CLIENT_FOCUS : Colors::CLIENT_FRAME;
+
     //FIXME
     canvas->erase(frame_rect);
+    canvas->fillRectangle(frame_rect, frame_color);
 
-    frame_rect.set(frame_rect.x+2, frame_rect.y+2, frame_rect.w-4, frame_rect.h-4);
-
-    canvas->drawFrame(frame_rect, _has_focus ? Colors::CLIENT_FOCUS :
-                                               Colors::CLIENT_FRAME);
+//     frame_rect.set(frame_rect.x+2, frame_rect.y+2, frame_rect.w-4, frame_rect.h-4);
+//     canvas->drawFrame(frame_rect, frame_color);
 }
 
 bool X11Client::handleEvent(const XEvent &ev)
