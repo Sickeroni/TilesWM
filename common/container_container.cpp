@@ -170,6 +170,13 @@ void ContainerContainer::draw(Canvas *canvas)
     bg_rect.setPos(0, 0);
     canvas->erase(bg_rect);
 
+    Rect title_rect(_frame_width - 2, _frame_width - 2,
+                    width() - 4 - (2 * _frame_width), _title_height);
+
+    canvas->drawText(isHorizontal() ? "H" : "V",
+                     title_rect,
+                     hasFocus() ?  Colors::CONTAINER_FOCUS : Colors::CONTAINER_FRAME);
+
     for (Container *c = _children.first(); c; c = c->next()) {
         Rect frame_rect = c->rect();
         frame_rect.x -= 5;
