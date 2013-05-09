@@ -24,7 +24,7 @@ void X11Icon::init(X11Widget *parent)
     if (_pixmap) {
         X11Canvas canvas(_pixmap);
 
-        Rect frame_rect(0, 0, _width - 1, _height - 1);
+        Rect frame_rect(0, 0, _width, _height);
 
         canvas.fillRectangle(frame_rect, 0x0);
 
@@ -38,8 +38,8 @@ void X11Icon::init(X11Widget *parent)
 
 
 X11Icon::X11Icon(int width, int height, X11Widget *parent) : Icon(width, height),
-    _pixmap(0),
-    _mask(0)
+    _pixmap(0)
+//     _mask(0)
 {
     init(parent);
 }
@@ -47,10 +47,12 @@ X11Icon::X11Icon(int width, int height, X11Widget *parent) : Icon(width, height)
 
 
 X11Icon::X11Icon(int width, int height, X11Widget *parent, const uint32 *argb_data, uint32 bg_color) : Icon(width, height),
-    _pixmap(0),
-    _mask(0)
+    _pixmap(0)
+//     _mask(0)
 {
     init(parent);
+
+    assert(_pixmap);
 
     if (XImage *image = XGetImage(dpy(), _pixmap,
                                   0, 0,
@@ -95,6 +97,6 @@ X11Icon::~X11Icon()
 {
     if (_pixmap)
         XFreePixmap(dpy(), _pixmap);
-    if (_mask)
-        XFreePixmap(dpy(), _mask);
+//     if (_mask)
+//         XFreePixmap(dpy(), _mask);
 }

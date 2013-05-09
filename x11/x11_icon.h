@@ -20,13 +20,13 @@ public:
     X11Icon &operator=(const X11Icon &other);
 
     Pixmap pixmap() { return _pixmap; }
-    Pixmap mask() { return _mask; }
+//     Pixmap mask() { return _mask; }
 
 private:
     void init(X11Widget *parent);
 
     Pixmap _pixmap;
-    Pixmap _mask;
+//     Pixmap _mask;
 };
 
 #endif // __X11_ICON_H__
