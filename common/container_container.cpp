@@ -126,16 +126,34 @@ inline void ContainerContainer::getClientRect(Rect &rect)
 int ContainerContainer::minimumWidth()
 {
     int width = 0;
-    for (Container *c = _children.first(); c; c = c->next())
-        width += c->minimumWidth() + (2 * _child_frame_width);
+    if (isHorizontal()) {
+        for (Container *c = _children.first(); c; c = c->next())
+            width += c->minimumWidth() + (2 * _child_frame_width);
+    } else {
+        for (Container *c = _children.first(); c; c = c->next()) {
+            int w = c->minimumWidth();
+            if (w > width)
+                width = w;
+        }
+        width += (2 * _child_frame_width);
+    }
     return width;
 }
 
 int ContainerContainer::minimumHeight()
 {
     int height = 0;
-    for (Container *c = _children.first(); c; c = c->next())
-        height += c->minimumHeight() + (2 * _child_frame_width);
+    if (isHorizontal()) {
+        for (Container *c = _children.first(); c; c = c->next()) {
+            int h = c->minimumHeight();
+            if (h > height)
+                height = h;
+        }
+        height += (2 * _child_frame_width);
+    } else {
+        for (Container *c = _children.first(); c; c = c->next())
+            height += c->minimumHeight() + (2 * _child_frame_width);
+    }
     return height;
 }
 
