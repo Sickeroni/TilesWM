@@ -58,6 +58,17 @@ void X11Canvas::drawText(const std::string &text, const Rect &rect,
 {
     assert(_font_info);
 
+    XRectangle x_rect = {
+        rect.x, rect.y,
+        rect.w, rect.h
+    };
+
+    XSetClipRectangles(dpy(), _gc,
+                       0, 0,
+                       &x_rect,
+                       1,
+                       Unsorted);
+
     XSetForeground(dpy(), _gc, fg);
     XSetBackground(dpy(), _gc, bg);
 
@@ -71,6 +82,8 @@ void X11Canvas::drawText(const std::string &text, const Rect &rect,
     XDrawText(dpy(), _drawable, _gc, rect.x, rect.y + _font_info->max_bounds.ascent,
               &text_item,
               1);
+
+    XSetClipMask(dpy(), _gc, None);
 }
 
 void X11Canvas::fillRectangle(const Rect &rect, uint32 color)
@@ -90,7 +103,7 @@ void X11Canvas::drawIcon(Icon *icon, int x, int y)
     X11Icon *x11_icon = static_cast<X11Icon*>(icon);
     if (x11_icon->pixmap()) {
         XCopyArea(dpy(), x11_icon->pixmap(), _drawable, _gc,
-                    0, 0,
-                    icon->width(), icon->height(), x, y);
+                  0, 0,
+                  icon->width(), icon->height(), x, y);
     }
 }
