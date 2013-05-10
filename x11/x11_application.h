@@ -6,7 +6,7 @@
 #if 1
 
 class X11ContainerContainer;
-class X11KeyHandler;
+class X11ShortcutSet;
 class Workspace;
 
 class X11Application
@@ -37,7 +37,7 @@ private:
 
     Display *_dpy;
     Window _root;
-    X11KeyHandler *_key_handler;
+    X11ShortcutSet *_shortcuts;
     int _num_server_grabs;
     volatile bool _quit_requested;
     Workspace *_workspace;

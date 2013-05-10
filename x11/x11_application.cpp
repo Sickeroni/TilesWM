@@ -3,7 +3,7 @@
 #include "x11_container_container.h"
 #include "x11_client.h"
 #include "x11_widget.h"
-#include "x11_default_key_handler.h"
+#include "x11_default_key_bindings.h"
 
 #include "workspace.h"
 #include "client_container.h"
@@ -149,7 +149,7 @@ const char *X11Application::errorCodeToString(size_t error_code)
 X11Application::X11Application() :
     _dpy(0),
     _root(0),
-    _key_handler(0),
+    _shortcuts(0),
     _num_server_grabs(0),
     _quit_requested(false),
     _workspace(0)
@@ -226,7 +226,7 @@ bool X11Application::init()
 
     X11Client::init();
 
-    _key_handler = new X11DefaultKeyHandler();
+    _shortcuts = new X11DefaultKeyBindings();
 
 //     XFlush(_dpy);
     XSync(_dpy, false);
@@ -243,8 +243,8 @@ void X11Application::shutdown()
     grabServer();
 
     //FIXME delete root container
-    delete _key_handler;
-    _key_handler = 0;
+    delete _shortcuts;
+    _shortcuts = 0;
 
     XSetWindowAttributes new_root_attr;
     memset(&new_root_attr, 0, sizeof(XSetWindowAttributes));

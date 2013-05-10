@@ -1,4 +1,4 @@
-#include "x11_default_key_handler.h"
+#include "x11_default_key_bindings.h"
 
 #include "x11_application.h"
 #include "x11_container_container.h"
@@ -8,7 +8,7 @@
 #include <iostream>
 
 
-struct X11DefaultKeyHandler::Actions
+struct X11DefaultKeyBindings::Actions
 {
     static X11ContainerContainer *rootContainer()
     {
@@ -110,7 +110,7 @@ struct X11DefaultKeyHandler::Actions
 };
 
 
-X11DefaultKeyHandler::X11DefaultKeyHandler()
+X11DefaultKeyBindings::X11DefaultKeyBindings()
 {
     createShortcut("l", Mod1Mask, &Actions::layout);
     createShortcut("r", Mod1Mask, &Actions::rotate);

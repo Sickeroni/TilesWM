@@ -1,10 +1,10 @@
-#ifndef __X11_KEY_HANDLER_H__
-#define __X11_KEY_HANDLER_H__
+#ifndef __X11_SHORTCUT_SET_H__
+#define __X11_SHORTCUT_SET_H__
 
 #include "x11_shortcut.h"
 
 
-class X11KeyHandler
+class X11ShortcutSet
 {
     std::vector<X11Shortcut*> _shortcuts;
 
@@ -13,8 +13,8 @@ protected:
                         X11Shortcut::HandlerFunc handler_func);
 
 public:
-    ~X11KeyHandler();
+    virtual ~X11ShortcutSet();
 };
 
 
-#endif // __X11_KEY_HANDLER_H__
+#endif // __X11_SHORTCUT_SET_H__
