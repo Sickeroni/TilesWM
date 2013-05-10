@@ -3,9 +3,14 @@
 #include "x11_client_container.h"
 #include "x11_server_widget.h"
 #include "x11_canvas.h"
+#include "x11_application.h"
+#include "x11_global.h"
 #include "colors.h"
 
 #include <stdlib.h>
+
+
+using namespace X11Global;
 
 
 X11ContainerContainer *X11ContainerContainer::create(Workspace *workspace)
@@ -65,4 +70,14 @@ void X11ContainerContainer::deleteEmptyChildren()
 //     _widget->unmap();
     ContainerContainer::deleteEmptyChildren();
 //     _widget->map();
+}
+
+void X11ContainerContainer::setFocus()
+{
+    if (activeChild())
+        activeChild()->setFocus();
+    else // set focus to root
+        XSetInputFocus(dpy(), X11Application::root(),
+                       RevertToNone, CurrentTime);
+    redrawAll();
 }

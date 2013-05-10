@@ -119,10 +119,10 @@ void X11Client::setFocus()
     refreshMapState();
 
     assert(isMapped());
-    assert(static_cast<X11ClientContainer*>(container())->widget()->isMapped());
-    assert(static_cast<X11ContainerContainer*>(container()->parent())->widget()->isMapped());
+    assert(isFloating() ||  static_cast<X11ClientContainer*>(container())->widget()->isMapped());
+    assert(isFloating() || static_cast<X11ContainerContainer*>(container()->parent())->widget()->isMapped());
 
-    if (X11Application::activeRootContainer()->widget()->isMapped())
+    if (isFloating() || X11Application::activeRootContainer()->widget()->isMapped())
         XSetInputFocus(dpy(), _widget->wid(),
                        RevertToNone, CurrentTime);
 }
@@ -424,6 +424,7 @@ void X11Client::mapInt()
     if (isOverrideRedirect()) {
         _widget->map();
         _is_mapped = true;
+        setFocus();
     } else {
         XAddToSaveSet(dpy(), _widget->wid());
 
@@ -443,6 +444,8 @@ void X11Client::mapInt()
 
         if (container())
             container()->handleClientMap(this);
+        else
+            setFocus();
     }
 }
 
@@ -653,12 +656,11 @@ void X11Client::refreshFocusState()
     }
 
     if (!focus_return)
-        XSetInputFocus(dpy(), X11Application::root(),
-                       RevertToNone, CurrentTime);
+        X11Application::activeRootContainer()->setFocus();
 
     if (focus_changed && container())
         container()->handleClientFocusChange(this);
-//     else 
+//     else
     if (focus_changed)
         drawFrame();
 }

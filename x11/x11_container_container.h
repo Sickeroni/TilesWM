@@ -33,6 +33,7 @@ public:
     virtual void setRect(const Rect &rect);
     virtual void reparent(ContainerContainer *p);
     virtual void deleteEmptyChildren();
+    virtual void setFocus();
 
     X11ServerWidget *widget() { return _widget; }
 

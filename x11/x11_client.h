@@ -71,6 +71,9 @@ private:
     bool isDialog() {
         return _window_type == DIALOG;
     }
+    bool isFloating() {
+        return isDialog() || isOverrideRedirect();
+    }
 
     // TODO - use hash
     static std::map<Window, X11Client*> _wid_index;
