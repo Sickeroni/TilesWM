@@ -240,9 +240,23 @@ bool X11Application::init()
 
 void X11Application::shutdown()
 {
+    grabServer();
+
     //FIXME delete root container
     delete _key_handler;
     _key_handler = 0;
+
+    XSetWindowAttributes new_root_attr;
+    memset(&new_root_attr, 0, sizeof(XSetWindowAttributes));
+
+    XChangeWindowAttributes(_dpy, _root, CWEventMask, &new_root_attr); // clears event mask
+
+    XSetInputFocus(_dpy, _root, RevertToNone, CurrentTime);
+
+    XSync(_dpy, false);
+
+    ungrabServer();
+
     XCloseDisplay(_dpy);
     _dpy = 0;
 }
