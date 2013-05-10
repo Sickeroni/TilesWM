@@ -23,6 +23,9 @@ class X11Icon;
 class X11Client : public Client, public X11ServerWidget::EventHandler
 {
 public:
+    static void init();
+    static bool handleEvent(const XEvent &ev);
+
     virtual ~X11Client();
 
     virtual void setFocus();
@@ -37,11 +40,16 @@ public:
     void map();
     void unmap();
 
-    static void init();
-    static bool handleEvent(const XEvent &ev);
-
 private:
     class CriticalSection;
+
+    enum WindowType { NORMAL, DIALOG, OVERRIDE_REDIRECT };
+
+    static const int _inner_frame_width = Metrics::CLIENT_INNER_FRAME;
+
+    static X11Client *find(Window wid);
+    static void create(Window wid);
+    static Atom getAtomProperty(Window wid, Atom property);
 
     X11Client();
 
@@ -57,17 +65,19 @@ private:
     void refreshIcon();
     void handleConfigureRequest(const XConfigureRequestEvent &ev);
     void drawFrame();
-
-    static X11Client *find(Window wid);
-    static void create(Window wid);
+    bool isOverrideRedirect() {
+        return _window_type == OVERRIDE_REDIRECT;
+    }
+    bool isDialog() {
+        return _window_type == DIALOG;
+    }
 
     // TODO - use hash
     static std::map<Window, X11Client*> _wid_index;
     static Atom _net_wm_window_type;
     static Atom _net_wm_window_type_dialog;
     static Atom _net_wm_icon;
-
-    static const int _inner_frame_width = Metrics::CLIENT_INNER_FRAME;
+    static Atom _kde_net_wm_window_type_override;
 
     X11ClientWidget *_widget;
     X11ServerWidget *_frame;
@@ -75,7 +85,7 @@ private:
     int _max_width, _max_height;
     std::string _x11_name;
     std::string _x11_class;
-    bool _is_dialog;
+    WindowType _window_type;
     bool _is_modal;
 };
 

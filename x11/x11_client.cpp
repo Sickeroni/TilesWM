@@ -75,6 +75,7 @@ std::map<Window, X11Client*> X11Client::_wid_index;
 Atom X11Client::_net_wm_window_type = None;
 Atom X11Client::_net_wm_window_type_dialog = None;
 Atom X11Client::_net_wm_icon = None;
+Atom X11Client::_kde_net_wm_window_type_override = None;
 
 
 X11Client::X11Client() : Client(false),
@@ -83,7 +84,7 @@ X11Client::X11Client() : Client(false),
     _icon(0),
     _max_width(0),
     _max_height(0),
-    _is_dialog(false),
+    _window_type(NORMAL),
     _is_modal(false)
 {
 }
@@ -128,11 +129,15 @@ void X11Client::setFocus()
 
 void X11Client::raise()
 {
+    assert(!isOverrideRedirect());
+
     XRaiseWindow(dpy(), _frame->wid());
 }
 
 void X11Client::setRect(const Rect &rect)
 {
+    assert(!isOverrideRedirect());
+
     assert(rect.w && rect.h);
 
     _frame->setRect(rect);
@@ -160,6 +165,8 @@ void X11Client::setContainer(ClientContainer *container)
 {
     std::cout << "void X11Client::setContainer(ClientContainer *container)\n";
 
+    assert(!isOverrideRedirect());
+
     Client::setContainer(container);
 
     X11ServerWidget *new_parent_widget = 0;
@@ -176,9 +183,10 @@ void X11Client::init()
     CriticalSection sec;
 
     //FIXME clear these on shutdown (before closing display connection)
+    _net_wm_icon = XInternAtom(dpy(), "_NET_WM_ICON", false);
     _net_wm_window_type = XInternAtom(dpy(), "_NET_WM_WINDOW_TYPE", false);
     _net_wm_window_type_dialog = XInternAtom(dpy(), "_NET_WM_WINDOW_TYPE_DIALOG", false);
-    _net_wm_icon = XInternAtom(dpy(), "_NET_WM_ICON", false);
+    _kde_net_wm_window_type_override = XInternAtom(dpy(), "_KDE_NET_WM_WINDOW_TYPE_OVERRIDE", false);
 
     Atom net_supported = XInternAtom(dpy(), "_NET_SUPPORTED", false);
 
@@ -281,7 +289,7 @@ void X11Client::create(Window wid)
             std::cout<<"new client: "<<(client->_name)<<'\n';
             std::cout<<"-------------------------------------------------------------------\n";
 
-            std::cout<<"is_dialog: "<<client->_is_dialog<<'\n';
+            std::cout<<"is_dialog: "<<client->isDialog()<<'\n';
 
             client->refreshSizeHints();
 
@@ -305,7 +313,7 @@ void X11Client::create(Window wid)
                 }
             }
 #endif
-            if (/*!attr.x && !attr.y && */(client->_is_dialog || is_modal)) {
+            if (/*!attr.x && !attr.y && */(client->isDialog()|| is_modal)) {
                 frame_rect.setPos(200, 200); //FIXME
             }
 
@@ -375,7 +383,7 @@ bool X11Client::refreshMapState()
     bool is_mapped_cached = _widget->isMapped();
 
     assert(isMapped() == is_mapped_cached);
-    assert(_frame->isMapped() == is_mapped_cached);
+    assert(isOverrideRedirect() || (_frame->isMapped() == is_mapped_cached));
 
     if (_widget->refreshMapState()) {
 
@@ -413,25 +421,29 @@ void X11Client::mapInt()
     assert(!isMapped());
     assert(!_frame->isMapped());
 
+    if (isOverrideRedirect()) {
+        _widget->map();
+        _is_mapped = true;
+    } else {
+        XAddToSaveSet(dpy(), _widget->wid());
 
-    XAddToSaveSet(dpy(), _widget->wid());
+        _widget->reparent(_frame, Metrics::CLIENT_INNER_FRAME, Metrics::CLIENT_INNER_FRAME);
 
-    _widget->reparent(_frame, Metrics::CLIENT_INNER_FRAME, Metrics::CLIENT_INNER_FRAME);
+        if (!container() && !isDialog() && !_is_modal)
+            X11Application::activeRootContainer()->addClient(this);
 
-    if (!container() && !_is_dialog && !_is_modal)
-        X11Application::activeRootContainer()->addClient(this);
+        // notify container before mapping, to avoid visual glitches
+        if (container())
+            container()->handleClientAboutToBeMapped(this);
 
-    // notify container before mapping, to avoid visual glitches
-    if (container())
-        container()->handleClientAboutToBeMapped(this);
+        _widget->map();
+        _frame->map();
 
-    _widget->map();
-    _frame->map();
+        _is_mapped = true;
 
-    _is_mapped = true;
-
-    if (container())
-        container()->handleClientMap(this);
+        if (container())
+            container()->handleClientMap(this);
+    }
 }
 
 void X11Client::unmap()
@@ -449,23 +461,31 @@ void X11Client::unmap()
 void X11Client::unmapInt()
 {
     assert(isMapped());
-    assert(_frame->isMapped());
+    assert(isOverrideRedirect() || _frame->isMapped());
 
-    _frame->unmap();
+    if (isOverrideRedirect()) {
+        // if this was called because the client unmapped itself,
+        // _widget is already unmapped
+        if (_widget->isMapped())
+            _widget->unmap();
 
+        _is_mapped = false;
+    } else {
+        _frame->unmap();
 
-    // if this was called because the client unmapped itself,
-    // _widget is already unmapped
-    if (_widget->isMapped())
-        _widget->unmap();
-    _widget->reparent(0);
+        // if this was called because the client unmapped itself,
+        // _widget is already unmapped
+        if (_widget->isMapped())
+            _widget->unmap();
+        _widget->reparent(0);
 
-    XRemoveFromSaveSet(dpy(), _widget->wid());
+        XRemoveFromSaveSet(dpy(), _widget->wid());
 
-    _is_mapped = false;
+        _is_mapped = false;
 
-    if (container())
-        container()->handleClientUnmap(this);
+        if (container())
+            container()->handleClientUnmap(this);
+    }
 }
 
 void X11Client::handleConfigureRequest(const XConfigureRequestEvent &ev)
@@ -487,7 +507,13 @@ void X11Client::handleConfigureRequest(const XConfigureRequestEvent &ev)
 
     CriticalSection sec;
 
-    if (container()) {
+    if (isOverrideRedirect()) {
+        Rect rect(changes.x, changes.y, changes.width, changes.height);
+        _widget->setRect(rect);
+
+        XConfigureWindow(dpy(), _widget->wid(), ev.value_mask, &changes);
+    } else if (container()) {
+        // ignore configure request as configuring should happen on our behalf only
 #if 0
         changes.x = 0;
         changes.y = 0;
@@ -637,13 +663,12 @@ void X11Client::refreshFocusState()
         drawFrame();
 }
 
-void X11Client::refreshWindowType()
-{
-    std::cout<<"X11Client::refreshWindowType()\n";
 
+Atom X11Client::getAtomProperty(Window wid, Atom property)
+{
     CriticalSection sec;
 
-    _is_dialog = false;
+    Atom value = None;
 
     Atom actual_type_return;
     int actual_format_return;
@@ -651,9 +676,9 @@ void X11Client::refreshWindowType()
     unsigned long bytes_after_return;
     Atom *prop_return;
 
-    long max_length = 1024; //FIXME this is bullshit
+    long max_length = 1;
 
-    if (XGetWindowProperty(dpy(), _widget->wid(), _net_wm_window_type,
+    if (Success == XGetWindowProperty(dpy(), wid, property,
                             0, max_length,
                             false,
                             XA_ATOM,
@@ -661,24 +686,32 @@ void X11Client::refreshWindowType()
                             &actual_format_return,
                             &nitems_return,
                             &bytes_after_return,
-                            (unsigned char**)&prop_return) == Success)
+                            (unsigned char**)&prop_return))
     {
-        if (actual_type_return == XA_ATOM) {
-            Atom value = *prop_return;
-
-//                     char *atom_name = XGetAtomName(dpy(), value);
-//                     if (atom_name) {
-//                         std::cout<<"_net_wm_window_type: "<<atom_name<<'\n';
-//                         XFree(atom_name);
-//                     }
-
-            if (value == _net_wm_window_type_dialog)
-                _is_dialog = true;
-        }
+        if (actual_type_return == XA_ATOM)
+            value = *prop_return;
 
         XFree(prop_return);
-    } else
-        std::cout<<"failed to get _net_wm_window_type property.\n";
+    }
+
+    return value;
+}
+
+void X11Client::refreshWindowType()
+{
+    std::cout<<"X11Client::refreshWindowType()\n";
+
+    CriticalSection sec;
+
+    Atom window_type = getAtomProperty(_widget->wid(), _net_wm_window_type);
+    if (window_type != None) {
+        if (window_type == _kde_net_wm_window_type_override)
+            _window_type = OVERRIDE_REDIRECT;
+        else if (window_type == _net_wm_window_type_dialog)
+            _window_type = DIALOG;
+        else
+            _window_type = NORMAL;
+    }
 }
 
 void X11Client::refreshIcon()
@@ -854,14 +887,15 @@ bool X11Client::handleEvent(const XEvent &ev)
                     break;
                 default:
                     if (ev.xproperty.atom ==  _net_wm_window_type) {
-                        bool was_dialog = client->_is_dialog;
+                        //FIXME handle override_redirect
+                        bool was_dialog = client->isDialog();
                         std::cout<<"was_dialog: "<<was_dialog<<'\n';
                         client->refreshWindowType();
-                        std::cout<<"is_dialog: "<<(client->_is_dialog)<<'\n';
-                        if (was_dialog != client->_is_dialog) {
+                        std::cout<<"is_dialog: "<<(client->isDialog())<<'\n';
+                        if (was_dialog != client->isDialog()) {
                             if (client->isMapped())
                                 abort(); //FIXME
-                            if (client->_is_dialog) {
+                            if (client->isDialog()) {
                                 if (client->container()) {
                                     client->container()->removeClient(client);
                                     //FIXME TODO place frame
