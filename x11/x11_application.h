@@ -3,6 +3,9 @@
 
 #include <X11/Xlib.h>
 
+#include <string>
+#include <map>
+
 #if 1
 
 class X11ContainerContainer;
@@ -29,6 +32,7 @@ public:
     void eventLoop();
     void grabServer();
     void ungrabServer();
+    Atom atom(const char *name);
 
 private:
     static void quit(int signum);
@@ -41,7 +45,11 @@ private:
     int _num_server_grabs;
     volatile bool _quit_requested;
     Workspace *_workspace;
+    std::map<std::string, Atom> _atoms; // TODO - use hash
 };
+
+#define ATOM(name) (X11Application::self()->atom(#name))
+
 
 #endif
 

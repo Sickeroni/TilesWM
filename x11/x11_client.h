@@ -78,12 +78,6 @@ private:
 
     // TODO - use hash
     static std::map<Window, X11Client*> _wid_index;
-    static Atom _net_wm_window_type;
-    static Atom _net_wm_window_type_dialog;
-    static Atom _net_wm_icon;
-    static Atom _kde_net_wm_window_type_override;
-    static Atom _wm_state;
-    static Atom _card32;
 
     X11ClientWidget *_widget;
     X11ServerWidget *_frame;

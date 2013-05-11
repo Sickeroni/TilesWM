@@ -255,6 +255,8 @@ void X11Application::shutdown()
 
     XSync(_dpy, false);
 
+    _atoms.clear();
+
     ungrabServer();
 
     XCloseDisplay(_dpy);
@@ -468,4 +470,13 @@ void X11Application::runProgram(const char *path)
 X11ContainerContainer *X11Application::activeRootContainer()
 {
     return static_cast<X11ContainerContainer*>(activeWorkspace()->rootContainer());
+}
+
+Atom X11Application::atom(const char *name)
+{
+    Atom &value = _atoms[name];
+    if (value == None)
+        value = XInternAtom(_dpy, name, false);
+
+    return value;
 }

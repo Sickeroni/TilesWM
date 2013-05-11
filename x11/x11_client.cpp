@@ -72,12 +72,6 @@ int X11Client::CriticalSection::errorHandler(Display *display, XErrorEvent *ev)
 
 
 std::map<Window, X11Client*> X11Client::_wid_index;
-Atom X11Client::_net_wm_window_type = None;
-Atom X11Client::_net_wm_window_type_dialog = None;
-Atom X11Client::_net_wm_icon = None;
-Atom X11Client::_kde_net_wm_window_type_override = None;
-Atom X11Client::_wm_state = None;
-Atom X11Client::_card32 = None;
 
 
 X11Client::X11Client() : Client(false),
@@ -185,24 +179,15 @@ void X11Client::init()
     CriticalSection sec;
 
     //FIXME clear these on shutdown (before closing display connection)
-    _net_wm_icon = XInternAtom(dpy(), "_NET_WM_ICON", false);
-    _net_wm_window_type = XInternAtom(dpy(), "_NET_WM_WINDOW_TYPE", false);
-    _net_wm_window_type_dialog = XInternAtom(dpy(), "_NET_WM_WINDOW_TYPE_DIALOG", false);
-    _kde_net_wm_window_type_override = XInternAtom(dpy(), "_KDE_NET_WM_WINDOW_TYPE_OVERRIDE", false);
-    _wm_state = XInternAtom(dpy(), "WM_STATE", false);
-    _card32 = XInternAtom(dpy(), "CARD32", false);
-
-    Atom net_supported = XInternAtom(dpy(), "_NET_SUPPORTED", false);
-
     Atom net_supported_values[] = {
-        _net_wm_icon, _net_wm_window_type, _net_wm_window_type_dialog
+        ATOM(_NET_WM_ICON), ATOM(_NET_WM_WINDOW_TYPE), ATOM(_NET_WM_WINDOW_TYPE_DIALOG)
     };
 
     const int net_supported_count = sizeof(net_supported_values) / sizeof(net_supported_values[0]);
 
     XChangeProperty(dpy(),
                     X11Application::root(),
-                    net_supported,
+                    ATOM(_NET_SUPPORTED),
                     XA_ATOM,
                     32,
                     PropModeReplace,
@@ -447,7 +432,7 @@ void X11Client::mapInt()
             STATE_NORMAL, None
         };
 
-        XChangeProperty(dpy(), _widget->wid(), _wm_state, _card32, 32, PropModeReplace,
+        XChangeProperty(dpy(), _widget->wid(), ATOM(WM_STATE), ATOM(CARD32), 32, PropModeReplace,
                         reinterpret_cast<const unsigned char*>(state), 2);
 
         _widget->map();
@@ -495,7 +480,7 @@ void X11Client::unmapInt()
             _widget->unmap();
         _widget->reparent(0);
 
-        XDeleteProperty(dpy(), _widget->wid(), _wm_state);
+        XDeleteProperty(dpy(), _widget->wid(), ATOM(WM_STATE));
 
         XRemoveFromSaveSet(dpy(), _widget->wid());
 
@@ -722,7 +707,7 @@ void X11Client::refreshWindowType()
 
     CriticalSection sec;
 
-    Atom window_type = getAtomProperty(_widget->wid(), _net_wm_window_type);
+    Atom window_type = getAtomProperty(_widget->wid(), ATOM(_NET_WM_WINDOW_TYPE));
     if (window_type != None) {
 #if 1
         char *atom_name = XGetAtomName(dpy(), window_type);
@@ -732,9 +717,9 @@ void X11Client::refreshWindowType()
         }
 #endif
 
-        if (window_type == _kde_net_wm_window_type_override)
+        if (window_type == ATOM(_KDE_NET_WM_WINDOW_TYPE_OVERRIDE))
             _window_type = OVERRIDE_REDIRECT;
-        else if (window_type == _net_wm_window_type_dialog)
+        else if (window_type == ATOM(_NET_WM_WINDOW_TYPE_DIALOG))
             _window_type = DIALOG;
         else
             _window_type = NORMAL;
@@ -755,7 +740,7 @@ void X11Client::refreshIcon()
 
     if (Success == XGetWindowProperty(dpy(),
                             _widget->wid(),
-                            _net_wm_icon,
+                            ATOM(_NET_WM_ICON),
                             0, max_size,
                             false, XA_CARDINAL,
                             &type,
@@ -913,7 +898,7 @@ bool X11Client::handleEvent(const XEvent &ev)
                     //FIXME
                     break;
                 default:
-                    if (ev.xproperty.atom ==  _net_wm_window_type) {
+                    if (ev.xproperty.atom == ATOM(_NET_WM_WINDOW_TYPE)) {
                         //FIXME handle override_redirect
                         bool was_dialog = client->isDialog();
                         std::cout<<"was_dialog: "<<was_dialog<<'\n';
@@ -933,7 +918,7 @@ bool X11Client::handleEvent(const XEvent &ev)
                             }
 
                         }
-                    } else if (ev.xproperty.atom == _net_wm_icon) {
+                    } else if (ev.xproperty.atom == ATOM(_NET_WM_ICON)) {
                         client->refreshIcon();
                         if (client->container())
                             client->container()->layout(); //FIXME use handleClientIconChanged()
