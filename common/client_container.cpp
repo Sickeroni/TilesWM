@@ -416,13 +416,15 @@ void ClientContainer::drawTabs(Canvas *canvas)
 
 void ClientContainer::layout()
 {
-    switch(_mode) {
-    case TABBED:
-        layoutTabbed();
-        break;
-    case STACKED:
-        layoutStacked(0);
-        break;
+    if (!isMinimized()) {
+        switch(_mode) {
+        case TABBED:
+            layoutTabbed();
+            break;
+        case STACKED:
+            layoutStacked(0);
+            break;
+        }
     }
     redraw();
 }

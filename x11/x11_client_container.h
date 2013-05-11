@@ -33,7 +33,11 @@ public:
     X11ServerWidget *widget() { return _widget; }
 
 private:
-    X11ServerWidget *_widget;
+    X11ServerWidget *currentWidget() {
+        return isMinimized() ? _minimized_widget : _widget;
+    }
+
+    X11ServerWidget *_widget, *_minimized_widget;
 };
 
 #endif // __X11_CLIENT_CONTAINER_H__

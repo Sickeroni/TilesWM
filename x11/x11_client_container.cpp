@@ -17,7 +17,10 @@ X11ClientContainer::X11ClientContainer(X11ContainerContainer *parent) :
     ClientContainer(parent),
     _widget(X11ServerWidget::create(parent->widget(),
                                     Colors::CLIENT_CONTAINER,
-                                    this, ExposureMask))
+                                    this, ExposureMask)),
+    _minimized_widget(X11ServerWidget::create(parent->widget(),
+                                              Colors::CLIENT_CONTAINER,
+                                              this, ExposureMask))
 {
     _widget->map();
 }
@@ -25,25 +28,28 @@ X11ClientContainer::X11ClientContainer(X11ContainerContainer *parent) :
 X11ClientContainer::~X11ClientContainer()
 {
     clear();
+    delete _minimized_widget;
+    _minimized_widget = 0;
     delete _widget;
     _widget = 0;
 }
 
 void X11ClientContainer::setRect(const Rect &rect)
 {
-    _widget->setRect(rect);
+    currentWidget()->setRect(rect);
     ClientContainer::setRect(rect);
 }
 
 void X11ClientContainer::redraw()
 {
-    draw(_widget->canvas());
+    draw(currentWidget()->canvas());
 }
 
 void X11ClientContainer::reparent(ContainerContainer *p)
 {
     ClientContainer::reparent(p);
     _widget->reparent(static_cast<X11ContainerContainer*>(p)->widget());
+    _minimized_widget->reparent(static_cast<X11ContainerContainer*>(p)->widget());
 }
 
 void X11ClientContainer::setFocus()
@@ -58,23 +64,12 @@ void X11ClientContainer::setFocus()
 
 void X11ClientContainer::handleActiveChanged()
 {
-#if 0
-    if (workspace()->maximized()) {
-        if (parent()->activeChild() != this || !parent()->hasFocus())
-            _widget->unmap();
-        else if (parent()->activeChild() == this)
-            _widget->map();
-    } else
-        _widget->map();
-#endif
-
-    //FIXME this dis hacky
     if (isMinimized()) {
-        for (Client *c = _clients.first(); c; c = c->next())
-            static_cast<X11Client*>(c)->unmap();
+        _widget->unmap();
+        _minimized_widget->map();
     } else {
-        for (Client *c = _clients.first(); c; c = c->next())
-            static_cast<X11Client*>(c)->map();
+        _minimized_widget->unmap();
+        _widget->map();
     }
 }
 
@@ -85,5 +80,5 @@ void X11ClientContainer::handleMaximizedChanged()
 
 int X11ClientContainer::maxTextHeight()
 {
-    return _widget->canvas()->maxTextHeight();
+    return currentWidget()->canvas()->maxTextHeight();
 }
