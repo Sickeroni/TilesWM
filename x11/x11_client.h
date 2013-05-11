@@ -44,6 +44,7 @@ private:
     class CriticalSection;
 
     enum WindowType { NORMAL, DIALOG, OVERRIDE_REDIRECT };
+    enum WmState { STATE_WITHDRAWN = 0, STATE_NORMAL = 1, STATE_ICONIC = 3 };
 
     static const int _inner_frame_width = Metrics::CLIENT_INNER_FRAME;
 
@@ -72,7 +73,7 @@ private:
         return _window_type == DIALOG;
     }
     bool isFloating() {
-        return isDialog() || isOverrideRedirect();
+        return _is_modal || isDialog() || isOverrideRedirect();
     }
 
     // TODO - use hash
@@ -81,6 +82,8 @@ private:
     static Atom _net_wm_window_type_dialog;
     static Atom _net_wm_icon;
     static Atom _kde_net_wm_window_type_override;
+    static Atom _wm_state;
+    static Atom _card32;
 
     X11ClientWidget *_widget;
     X11ServerWidget *_frame;

@@ -76,6 +76,8 @@ Atom X11Client::_net_wm_window_type = None;
 Atom X11Client::_net_wm_window_type_dialog = None;
 Atom X11Client::_net_wm_icon = None;
 Atom X11Client::_kde_net_wm_window_type_override = None;
+Atom X11Client::_wm_state = None;
+Atom X11Client::_card32 = None;
 
 
 X11Client::X11Client() : Client(false),
@@ -119,7 +121,7 @@ void X11Client::setFocus()
     refreshMapState();
 
     assert(isMapped());
-    assert(isFloating() ||  static_cast<X11ClientContainer*>(container())->widget()->isMapped());
+    assert(isFloating() || static_cast<X11ClientContainer*>(container())->widget()->isMapped());
     assert(isFloating() || static_cast<X11ContainerContainer*>(container()->parent())->widget()->isMapped());
 
     if (isFloating() || X11Application::activeRootContainer()->widget()->isMapped())
@@ -187,6 +189,8 @@ void X11Client::init()
     _net_wm_window_type = XInternAtom(dpy(), "_NET_WM_WINDOW_TYPE", false);
     _net_wm_window_type_dialog = XInternAtom(dpy(), "_NET_WM_WINDOW_TYPE_DIALOG", false);
     _kde_net_wm_window_type_override = XInternAtom(dpy(), "_KDE_NET_WM_WINDOW_TYPE_OVERRIDE", false);
+    _wm_state = XInternAtom(dpy(), "WM_STATE", false);
+    _card32 = XInternAtom(dpy(), "CARD32", false);
 
     Atom net_supported = XInternAtom(dpy(), "_NET_SUPPORTED", false);
 
@@ -433,9 +437,18 @@ void X11Client::mapInt()
         if (!container() && !isDialog() && !_is_modal)
             X11Application::activeRootContainer()->addClient(this);
 
+        assert(isFloating() || container());
+
         // notify container before mapping, to avoid visual glitches
         if (container())
             container()->handleClientAboutToBeMapped(this);
+
+        const uint32 state[2] = {
+            STATE_NORMAL, None
+        };
+
+        XChangeProperty(dpy(), _widget->wid(), _wm_state, _card32, 32, PropModeReplace,
+                        reinterpret_cast<const unsigned char*>(state), 2);
 
         _widget->map();
         _frame->map();
@@ -482,11 +495,14 @@ void X11Client::unmapInt()
             _widget->unmap();
         _widget->reparent(0);
 
+        XDeleteProperty(dpy(), _widget->wid(), _wm_state);
+
         XRemoveFromSaveSet(dpy(), _widget->wid());
 
         _is_mapped = false;
 
         if (container())
+//             container()->removeClient(this);
             container()->handleClientUnmap(this);
     }
 }
@@ -573,6 +589,7 @@ void X11Client::refreshSizeHints()
     XSizeHints size_hints;
     long supplied_fields;
     if (XGetWMNormalHints(dpy(), _widget->wid(), &size_hints, &supplied_fields)) {
+#if 0
             std::cout<<"size_hints.min_width: "<<size_hints.min_width<<'\n';
             std::cout<<"size_hints.min_height: "<<size_hints.min_height<<'\n';
             std::cout<<"size_hints.max_width: "<<size_hints.max_width<<'\n';
@@ -583,7 +600,7 @@ void X11Client::refreshSizeHints()
             std::cout<<"has resize inc: "<<((supplied_fields & PResizeInc) != 0)<<'\n';
             std::cout<<"size_hints.width_inc: "<<size_hints.width_inc<<'\n';
             std::cout<<"size_hints.height_inc: "<<size_hints.height_inc<<'\n';
-
+#endif
         if (supplied_fields & PMaxSize) {
             _max_width = size_hints.max_width;
             _max_height = size_hints.max_height;
@@ -707,6 +724,14 @@ void X11Client::refreshWindowType()
 
     Atom window_type = getAtomProperty(_widget->wid(), _net_wm_window_type);
     if (window_type != None) {
+#if 1
+        char *atom_name = XGetAtomName(dpy(), window_type);
+        if (atom_name) {
+            std::cout<<"window type: "<<atom_name<<'\n';
+            XFree(atom_name);
+        }
+#endif
+
         if (window_type == _kde_net_wm_window_type_override)
             _window_type = OVERRIDE_REDIRECT;
         else if (window_type == _net_wm_window_type_dialog)
