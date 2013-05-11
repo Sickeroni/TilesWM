@@ -17,6 +17,9 @@
 #include <string.h>
 
 
+// FIXME implement iconic state
+
+
 using namespace X11Global;
 
 
@@ -487,8 +490,7 @@ void X11Client::unmapInt()
         _is_mapped = false;
 
         if (container())
-//             container()->removeClient(this);
-            container()->handleClientUnmap(this);
+            container()->removeClient(this);
     }
 }
 
