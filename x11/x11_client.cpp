@@ -135,6 +135,8 @@ void X11Client::raise()
 
 void X11Client::setRect(const Rect &rect)
 {
+    //FIXME handle floating
+
     assert(!isOverrideRedirect());
 
     assert(rect.w && rect.h);
@@ -157,7 +159,6 @@ void X11Client::setRect(const Rect &rect)
         r.h = 10;
 
     _widget->setRect(r);
-
 }
 
 void X11Client::setContainer(ClientContainer *container)
@@ -293,8 +294,9 @@ void X11Client::create(Window wid)
                                                      SubstructureNotifyMask | SubstructureRedirectMask);
 
             Rect frame_rect;
-            frame_rect.set(attr.x, attr.y, attr.width + 10, attr.height + 10);
-
+            client->calcFrameRect(rect, frame_rect);
+            if (frame_rect.y < 0) //FIXME make sure it's inside client area of screen (screen area minus panels)
+                frame_rect.y = 0;
 #if 0
             if (!attr.x && !attr.y && transient_for_wid) {
                 // place client above transient_for
@@ -420,7 +422,10 @@ void X11Client::mapInt()
     } else {
         XAddToSaveSet(dpy(), _widget->wid());
 
-        _widget->reparent(_frame, Metrics::CLIENT_INNER_FRAME, Metrics::CLIENT_INNER_FRAME);
+        Rect client_rect;
+        calcClientRect(_frame->rect(), client_rect);
+
+        _widget->reparent(_frame, client_rect.x, client_rect.y);
 
         if (!container() && !isDialog() && !_is_modal)
             X11Application::activeRootContainer()->addClient(this);
@@ -500,7 +505,7 @@ void X11Client::handleConfigureRequest(const XConfigureRequestEvent &ev)
     //FIXME - both frame and client widget need to be configured
 
     std::cout<<"X11Client::handleConfigureRequest()\n";
-
+#if 0
     XWindowChanges changes;
     memset(&changes, 0, sizeof(changes));
     changes.x = ev.x;
@@ -510,14 +515,14 @@ void X11Client::handleConfigureRequest(const XConfigureRequestEvent &ev)
     changes.border_width = ev.border_width;
     changes.sibling = ev.above;
     changes.stack_mode = ev.detail;
-
+#endif
     CriticalSection sec;
 
     if (isOverrideRedirect()) {
-        Rect rect(changes.x, changes.y, changes.width, changes.height);
+        Rect rect(ev.x, ev.y, ev.width, ev.height);
         _widget->setRect(rect);
 
-        XConfigureWindow(dpy(), _widget->wid(), ev.value_mask, &changes);
+//         XConfigureWindow(dpy(), _widget->wid(), ev.value_mask, &changes);
     } else if (container()) {
         // ignore configure request as configuring should happen on our behalf only
 #if 0
@@ -538,31 +543,17 @@ void X11Client::handleConfigureRequest(const XConfigureRequestEvent &ev)
 
         XConfigureWindow(dpy(), _widget->wid(), ev.value_mask, &changes);
 #endif
-    } else {
-        // HACK HACK HACK
+    } else if (isDialog() || _is_modal) {
+        
+        Rect widget_rect(ev.x, ev.y, ev.width, ev.height);
+        Rect frame_rect;
+        calcFrameRect(widget_rect, frame_rect);
+        frame_rect.setPos(widget_rect.x, widget_rect.y);
+        calcClientRect(frame_rect, widget_rect);
 
-        Rect frame_rect = _frame->rect();
-        //HACK
-//         frame_rect.set(ev.x, ev.y, ev.width + 10, ev.height + 10);
+        frame_rect.setPos(200, 200); //FIXME HACK
 
-        frame_rect.setSize(ev.width + (2 * _inner_frame_width), ev.height + (2 * _inner_frame_width));
-
-        //HACK
-        XWindowAttributes frame_attr;
-        if (XGetWindowAttributes(dpy(), _frame->wid(), &frame_attr)) {
-            if (frame_attr.x || frame_attr.y)
-                frame_rect.setPos(frame_attr.x, frame_attr.y);
-        }
-
-        changes.x = _inner_frame_width;
-        changes.y = _inner_frame_width;
-
-        //UGLY
-        Rect rect(changes.x, changes.y, changes.width, changes.height);
-        _widget->setRect(rect);
-        //FIXME - translate coordinates
-        XConfigureWindow(dpy(), _widget->wid(), ev.value_mask, &changes);
-
+        _widget->setRect(widget_rect);
         _frame->setRect(frame_rect);
     }
 }
@@ -816,6 +807,49 @@ void X11Client::drawFrame()
 //     frame_rect.set(frame_rect.x+2, frame_rect.y+2, frame_rect.w-4, frame_rect.h-4);
 //     canvas->drawFrame(frame_rect, frame_color);
 }
+
+void X11Client::calcFrameMargins(int &side, int &top, int &bottom)
+{
+    int frame_margin = Metrics::CLIENT_INNER_FRAME_MARGIN;
+    int titlebar_height = 0;
+
+    if (isDialog() || _is_modal) {
+        frame_margin += Metrics::CLIENT_DECORATION_MARGIN;
+        titlebar_height +=
+            (_frame->canvas()->maxTextHeight() + (2 * Metrics::CLIENT_TITLEBAR_INNER_MARGIN));
+    }
+
+    side = frame_margin;
+    top = frame_margin + titlebar_height;
+    bottom = frame_margin;
+}
+
+void X11Client::calcFrameRect(const Rect &client_rect, Rect &frame_rect)
+{
+    int side_margin, top_margin, bottom_margin;
+    calcFrameMargins(side_margin, top_margin, bottom_margin);
+
+    frame_rect.set(client_rect);
+
+    frame_rect.x -= side_margin;
+    frame_rect.y -= top_margin;
+    frame_rect.w += (2 * side_margin);
+    frame_rect.h += (top_margin + bottom_margin);
+}
+
+void X11Client::calcClientRect(const Rect &frame_rect, Rect &client_rect)
+{
+    int side_margin, top_margin, bottom_margin;
+    calcFrameMargins(side_margin, top_margin, bottom_margin);
+
+    client_rect.set(frame_rect);
+
+    client_rect.x = side_margin;
+    client_rect.y = top_margin;
+    client_rect.w -= (2 * side_margin);
+    client_rect.h -= (top_margin + bottom_margin);
+}
+
 
 bool X11Client::handleEvent(const XEvent &ev)
 {

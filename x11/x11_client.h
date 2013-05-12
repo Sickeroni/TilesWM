@@ -18,7 +18,7 @@ class Icon;
 class X11Icon;
 
 
-//FIXME TODO - frame: draw focus
+//FIXME TODO - set border width via XConfigureWindow
 
 class X11Client : public Client, public X11ServerWidget::EventHandler
 {
@@ -44,9 +44,10 @@ private:
     class CriticalSection;
 
     enum WindowType { NORMAL, DIALOG, OVERRIDE_REDIRECT };
+    // values for the WM_STATE property
     enum WmState { STATE_WITHDRAWN = 0, STATE_NORMAL = 1, STATE_ICONIC = 3 };
 
-    static const int _inner_frame_width = Metrics::CLIENT_INNER_FRAME;
+    static const int _inner_frame_width = Metrics::CLIENT_INNER_FRAME_MARGIN; //FIXME remove
 
     static X11Client *find(Window wid);
     static void create(Window wid);
@@ -75,6 +76,9 @@ private:
     bool isFloating() {
         return _is_modal || isDialog() || isOverrideRedirect();
     }
+    void calcFrameMargins(int &side, int &top, int &bottom);
+    void calcFrameRect(const Rect &client_rect, Rect &frame_rect);
+    void calcClientRect(const Rect &frame_rect, Rect &client_rect);
 
     // TODO - use hash
     static std::map<Window, X11Client*> _wid_index;
