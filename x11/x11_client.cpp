@@ -304,7 +304,7 @@ void X11Client::create(Window wid)
 
             client->_frame = X11ServerWidget::create(0, Colors::CLIENT,
                                                      client,
-                                                     ButtonPressMask | SubstructureNotifyMask | SubstructureRedirectMask);
+                                                     ExposureMask | ButtonPressMask | SubstructureNotifyMask | SubstructureRedirectMask);
 
             Rect frame_rect;
             client->calcFrameRect(rect, frame_rect);
