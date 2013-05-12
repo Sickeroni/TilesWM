@@ -21,6 +21,7 @@
 
 
 using namespace X11Global;
+using std::cout;
 
 
 class X11Client::CriticalSection
@@ -75,6 +76,12 @@ int X11Client::CriticalSection::errorHandler(Display *display, XErrorEvent *ev)
 
 
 std::map<Window, X11Client*> X11Client::_wid_index;
+std::map<Window, X11Client*> X11Client::_frame_wid_index;
+X11Client *X11Client::_dragged = 0;
+int X11Client::_dragged_original_x = 0;
+int X11Client::_dragged_original_y = 0;
+int X11Client::_drag_start_x = 0;
+int X11Client::_drag_start_y = 0;
 
 
 X11Client::X11Client() : Client(false),
@@ -181,6 +188,12 @@ void X11Client::setContainer(ClientContainer *container)
 void X11Client::init()
 {
     CriticalSection sec;
+
+    XGrabButton(dpy(), 1, Mod1Mask, X11Application::root(), true, ButtonPressMask, GrabModeAsync,
+            GrabModeAsync, None, None);
+//     XGrabButton(dpy(), 3, Mod1Mask, X11Application::root(), true, ButtonPressMask, GrabModeAsync,
+//             GrabModeAsync, None, None);
+
 
     //FIXME clear these on shutdown (before closing display connection)
     Atom net_supported_values[] = {
@@ -291,7 +304,7 @@ void X11Client::create(Window wid)
 
             client->_frame = X11ServerWidget::create(0, Colors::CLIENT,
                                                      client,
-                                                     SubstructureNotifyMask | SubstructureRedirectMask);
+                                                     ButtonPressMask | SubstructureNotifyMask | SubstructureRedirectMask);
 
             Rect frame_rect;
             client->calcFrameRect(rect, frame_rect);
@@ -318,6 +331,7 @@ void X11Client::create(Window wid)
 //                 client->_icon = new X11Icon(20, 20, client->_frame);
 
             _wid_index.insert(std::pair<Window, X11Client*>(wid, client));
+            _frame_wid_index.insert(std::pair<Window, X11Client*>(client->_frame->wid(), client));
 
             if (is_mapped)
                 client->map();
@@ -887,6 +901,38 @@ void X11Client::calcClientRect(const Rect &frame_rect, Rect &client_rect)
     client_rect.h -= (top_margin + bottom_margin);
 }
 
+void X11Client::startDrag(int x, int y)
+{
+    //FIXME what if the pointer is already grabbed ?
+    cout<<"X11Client::startDrag()\n";
+    assert(!_dragged);
+
+    _dragged = this;
+    _dragged_original_x = _frame->rect().x;
+    _dragged_original_y = _frame->rect().y;
+
+    _drag_start_x = x;
+    _drag_start_y = y;
+
+    XGrabPointer(dpy(), _frame->wid(), true,
+                 PointerMotionMask | ButtonReleaseMask,
+                 GrabModeAsync, GrabModeAsync, None, None, CurrentTime);
+}
+
+void X11Client::cancelDrag()
+{
+    cout<<"X11Client::cancelDrag()\n";
+    finishDrag();
+}
+
+void X11Client::finishDrag()
+{
+    cout<<"X11Client::finishDrag()\n";
+    _dragged = 0;
+    _dragged_original_x = _dragged_original_y = 0;
+    _drag_start_x = _drag_start_y = 0;
+    XUngrabPointer(dpy(), CurrentTime);
+}
 
 bool X11Client::handleEvent(const XEvent &ev)
 {
@@ -897,6 +943,43 @@ bool X11Client::handleEvent(const XEvent &ev)
     Window wid = 0;
 
     switch (ev.type) {
+    case MotionNotify:
+//         cout<<"MotionNotify\n";
+        if (_dragged) {
+            XEvent motion_event = ev;
+            while(XCheckTypedEvent(dpy(), MotionNotify, &motion_event)) {} //FIXME - what about motion events after botton release ?
+            int xdiff = motion_event.xbutton.x_root - _drag_start_x;
+            int ydiff = motion_event.xbutton.y_root - _drag_start_y;
+//             cout<<"startx: "<<_drag_start_x<<" starty: "<<_drag_start_y<<'\n';
+//             cout<<"xdiff: "<<xdiff<<" ydiff: "<<ydiff<<'\n';
+            _dragged->_frame->move(_dragged_original_x + xdiff, _dragged_original_y + ydiff);
+        }
+        break;
+    case ButtonPress:
+        if (ev.xbutton.subwindow != None) {
+            X11Client *client = findByFrame(ev.xbutton.subwindow);
+            if (!client)
+                client = find(ev.xbutton.subwindow);
+            if (client && (ev.xbutton.button == 1) && (ev.xbutton.state & Mod1Mask)) {
+                assert(!_dragged);
+                client->startDrag(ev.xbutton.x_root, ev.xbutton.y_root);
+                return true;
+            }
+        } else {
+            X11Client *client = findByFrame(ev.xbutton.window);
+            if (client) {
+                client->setFocus();
+                client->raise();
+                return true;
+            }
+        }
+        break;
+    case ButtonRelease:
+        if (ev.xbutton.button == 1 && _dragged) {
+            finishDrag();
+            return true;
+        }
+        break;
     case CreateNotify:
         wid = ev.xcreatewindow.window;
         break;
@@ -926,6 +1009,9 @@ bool X11Client::handleEvent(const XEvent &ev)
             case CreateNotify:
                 abort(); // BAD - CreateNotify for already existing client
             case DestroyNotify:
+                if (_dragged == client)
+                    cancelDrag();
+                _frame_wid_index.erase(client->_frame->wid());
                 _wid_index.erase(wid);
                 if (client->container())
                     client->container()->removeClient(client);
@@ -933,6 +1019,8 @@ bool X11Client::handleEvent(const XEvent &ev)
                 client = 0;
                 break;
             case UnmapNotify:
+                if (_dragged == client)
+                    cancelDrag();
                 client->refreshMapState();
                 break;
             case MapRequest:
@@ -1019,5 +1107,13 @@ X11Client *X11Client::find(Window wid)
         return it->second;
     } else
         return 0;
+}
 
+X11Client *X11Client::findByFrame(Window wid)
+{
+    std::map<Window, X11Client*>::iterator it = _frame_wid_index.find(wid);
+    if (it != _frame_wid_index.end()) {
+        return it->second;
+    } else
+        return 0;
 }

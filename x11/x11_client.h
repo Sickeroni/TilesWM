@@ -51,8 +51,11 @@ private:
     static const int _titlebar_gap = 4;
 
     static X11Client *find(Window wid);
+    static X11Client *findByFrame(Window wid);
     static void create(Window wid);
     static Atom getAtomProperty(Window wid, Atom property);
+    static void cancelDrag();
+    static void finishDrag();
 
     X11Client();
 
@@ -80,9 +83,14 @@ private:
     void calcFrameMargins(int &side, int &top, int &bottom);
     void calcFrameRect(const Rect &client_rect, Rect &frame_rect);
     void calcClientRect(const Rect &frame_rect, Rect &client_rect);
+    void startDrag(int x, int y);
 
     // TODO - use hash
     static std::map<Window, X11Client*> _wid_index;
+    static std::map<Window, X11Client*> _frame_wid_index;
+    static X11Client *_dragged;
+    static int _dragged_original_x, _dragged_original_y;
+    static int _drag_start_x, _drag_start_y;
 
     X11ClientWidget *_widget;
     X11ServerWidget *_frame;
