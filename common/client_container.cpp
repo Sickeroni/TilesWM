@@ -348,10 +348,10 @@ void ClientContainer::drawTab(Client *client, const Rect &rect, Canvas *canvas)
 
     canvas->drawFrame(rect, fg);
 
-    if (client->icon()) {
+    if (Icon *icon = client->icon()) {
         int icon_x = rect.x + _tab_inner_margin;
         int icon_y = rect.y + _tab_inner_margin;
-        canvas->drawIcon(client->icon(), icon_x, icon_y);
+        canvas->drawIcon(icon, icon_x, icon_y);
     }
 
     Rect text_rect(rect.x + _tab_inner_margin, rect.y + _tab_inner_margin,

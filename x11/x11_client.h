@@ -48,6 +48,7 @@ private:
     enum WmState { STATE_WITHDRAWN = 0, STATE_NORMAL = 1, STATE_ICONIC = 3 };
 
     static const int _inner_frame_width = Metrics::CLIENT_INNER_FRAME_MARGIN; //FIXME remove
+    static const int _titlebar_gap = 4;
 
     static X11Client *find(Window wid);
     static void create(Window wid);
