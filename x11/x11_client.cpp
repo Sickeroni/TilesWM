@@ -956,6 +956,7 @@ bool X11Client::handleEvent(const XEvent &ev)
         }
         break;
     case ButtonPress:
+        assert(!_dragged);
         if (ev.xbutton.subwindow != None) {
             X11Client *client = findByFrame(ev.xbutton.subwindow);
             if (!client)
@@ -970,6 +971,8 @@ bool X11Client::handleEvent(const XEvent &ev)
             if (client) {
                 client->setFocus();
                 client->raise();
+                if (ev.xbutton.button == 1)
+                    client->startDrag(ev.xbutton.x_root, ev.xbutton.y_root);
                 return true;
             }
         }
