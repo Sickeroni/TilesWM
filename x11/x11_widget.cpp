@@ -90,6 +90,7 @@ void X11Widget::reparent(X11ServerWidget *new_parent, int x, int y)
 
 void X11Widget::move(int x, int y)
 {
+    _rect.setPos(x, y);
     XMoveWindow(dpy(), _wid, x, y);
 }
 
