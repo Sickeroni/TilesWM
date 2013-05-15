@@ -9,14 +9,15 @@
 #include <map>
 #include <string>
 
+
 // class Widget;
 class ClientContainer;
 class Icon;
+class Canvas;
+
 
 class Client : public List<Client>::Item
 {
-//FIXME
-//TODO cache size, pos
 public:
 //     static void startup();
 //     static void shutdown();
@@ -40,13 +41,24 @@ public:
     const std::string &name() { return _name; }
 
 protected:
+    static const int _titlebar_gap = 4;
+
     Client(bool is_mapped);
+
+    virtual const Rect &frameRect() = 0;
+    virtual bool hasDecoration() = 0;
+    virtual int maxTextHeight() = 0;
+
+    void calcFrameRect(const Rect &client_rect, Rect &frame_rect);
+    void calcClientRect(const Rect &frame_rect, Rect &client_rect);
+    void drawFrame(Canvas *canvas);
 
     bool _is_mapped;
     bool _has_focus;
     std::string _name;
 
 private:
+    void calcFrameMargins(int &side, int &top, int &bottom);
 
 //     Window _window;
 //     Widget *_widget;

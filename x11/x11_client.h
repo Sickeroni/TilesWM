@@ -40,6 +40,13 @@ public:
     void map();
     void unmap();
 
+protected:
+    virtual const Rect &frameRect() { return _frame->rect(); }
+    virtual bool hasDecoration() {
+        return isDialog() || _is_modal;
+    }
+    virtual int maxTextHeight();
+
 private:
     class CriticalSection;
 
@@ -48,7 +55,6 @@ private:
     enum WmState { STATE_WITHDRAWN = 0, STATE_NORMAL = 1, STATE_ICONIC = 3 };
 
     static const int _inner_frame_width = Metrics::CLIENT_INNER_FRAME_MARGIN; //FIXME remove
-    static const int _titlebar_gap = 4;
 
     static X11Client *find(Window wid);
     static X11Client *findByFrame(Window wid);
@@ -80,9 +86,6 @@ private:
     bool isFloating() {
         return _is_modal || isDialog() || isOverrideRedirect();
     }
-    void calcFrameMargins(int &side, int &top, int &bottom);
-    void calcFrameRect(const Rect &client_rect, Rect &frame_rect);
-    void calcClientRect(const Rect &frame_rect, Rect &client_rect);
     void startDrag(int x, int y);
 
     // TODO - use hash
