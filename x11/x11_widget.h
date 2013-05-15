@@ -18,12 +18,13 @@ public:
 
     virtual ~X11Widget();
 
-    virtual bool validate() { return !_is_destroyed; }
-    virtual void setRect(const Rect &rect);
+//     virtual bool validate() { return !_is_destroyed; }
 
     Type type() { return _type; }
     const Rect &rect() { return _rect; }
 
+    void configure(unsigned int value_mask, const XWindowChanges &changes);
+    void setRect(const Rect &rect);
     void move(int x, int y);
     bool isMapped() { return _is_mapped; }
     Window wid() { return _wid; }
@@ -31,12 +32,11 @@ public:
     void map();
     void unmap();
 
-
 protected:
     X11Widget(Window wid, Type type, bool is_mapped, const Rect &rect);
 
     Rect _rect;
-    bool _is_destroyed;
+//     bool _is_destroyed;
     bool _is_mapped;
 
 private:

@@ -515,11 +515,8 @@ void X11Client::unmapInt()
 
 void X11Client::handleConfigureRequest(const XConfigureRequestEvent &ev)
 {
-    //FIXME - take window decoration into account
-    //FIXME - both frame and client widget need to be configured
-
     std::cout<<"X11Client::handleConfigureRequest()\n";
-#if 0
+
     XWindowChanges changes;
     memset(&changes, 0, sizeof(changes));
     changes.x = ev.x;
@@ -529,46 +526,51 @@ void X11Client::handleConfigureRequest(const XConfigureRequestEvent &ev)
     changes.border_width = ev.border_width;
     changes.sibling = ev.above;
     changes.stack_mode = ev.detail;
-#endif
+
     CriticalSection sec;
 
-    if (isOverrideRedirect()) {
-        Rect rect(ev.x, ev.y, ev.width, ev.height);
-        _widget->setRect(rect);
+    if (!refreshMapState())
+        return;
 
-//         XConfigureWindow(dpy(), _widget->wid(), ev.value_mask, &changes);
-    } else if (container()) {
-        // ignore configure request as configuring should happen on our behalf only
-#if 0
-        changes.x = 0;
-        changes.y = 0;
+    if (isOverrideRedirect() || !isMapped())
+        _widget->configure(ev.value_mask, changes);
+    else if (isMapped()) {
+        if (container()) {
+            // ignore geometry/stacking requests, as that should be changed on our behalf only
+            if (ev.value_mask & CWBorderWidth)
+                _widget->configure(CWBorderWidth, changes);
+        } else if (isDialog() || _is_modal) {
+            Rect client_rect = _widget->rect();
+            if (ev.value_mask & CWX)
+                client_rect.x = changes.x;
+            if (ev.value_mask & CWY)
+                client_rect.y = changes.y;
+            if (ev.value_mask & CWWidth)
+                client_rect.w = changes.width;
+            if (ev.value_mask & CWHeight)
+                client_rect.h = changes.height;
 
-        int w, h;
-        container()->getClientSize(w, h);
+            // new frame rect based on requested client rect
+            Rect frame_rect;
+            calcFrameRect(client_rect, frame_rect);
 
-        if (changes.width > w)
-            changes.width = w;
-        if (changes.height > h)
-            changes.height = h;
+            frame_rect.setPos(client_rect.x, client_rect.y);
+            calcClientRect(frame_rect, client_rect);
 
-        //UGLY
-        Rect rect(changes.x, changes.y, changes.width, changes.height);
-        _widget->setRect(rect);
+            //FIXME use a less random placement - see also X11Client::create()
+            frame_rect.setPos(200, 200);
 
-        XConfigureWindow(dpy(), _widget->wid(), ev.value_mask, &changes);
-#endif
-    } else if (isDialog() || _is_modal) {
-        
-        Rect widget_rect(ev.x, ev.y, ev.width, ev.height);
-        Rect frame_rect;
-        calcFrameRect(widget_rect, frame_rect);
-        frame_rect.setPos(widget_rect.x, widget_rect.y);
-        calcClientRect(frame_rect, widget_rect);
+            changes.x = client_rect.x;
+            changes.y = client_rect.y;
+            changes.width = client_rect.w;
+            changes.height = client_rect.h;
 
-        frame_rect.setPos(200, 200); //FIXME HACK
+            // ignore stacking requests
+            unsigned int values = ev.value_mask & ~(CWSibling | CWStackMode);
 
-        _widget->setRect(widget_rect);
-        _frame->setRect(frame_rect);
+            _widget->configure(values, changes);
+            _frame->setRect(frame_rect);
+        }
     }
 }
 

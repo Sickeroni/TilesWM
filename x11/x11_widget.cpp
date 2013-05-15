@@ -17,7 +17,7 @@ using namespace X11Global;
 
 X11Widget::X11Widget(Window wid, Type type, bool is_mapped, const Rect &rect) :
     _rect(rect),
-    _is_destroyed(false),
+//     _is_destroyed(false),
     _is_mapped(is_mapped),
     _wid(wid),
     _type(type)
@@ -86,6 +86,19 @@ void X11Widget::reparent(X11ServerWidget *new_parent, int x, int y)
 {
     Window new_parent_wid = new_parent ? new_parent->wid() : X11Application::root();
     XReparentWindow(dpy(), _wid, new_parent_wid, x, y);
+}
+
+void X11Widget::configure(unsigned int value_mask, const XWindowChanges &changes)
+{
+    if (value_mask & CWX)
+        _rect.x = changes.x;
+    if (value_mask & CWY)
+        _rect.y = changes.y;
+    if (value_mask & CWWidth)
+        _rect.w = changes.width;
+    if (value_mask & CWHeight)
+        _rect.h = changes.height;
+    XConfigureWindow(dpy(), _wid, value_mask, const_cast<XWindowChanges*>(&changes));
 }
 
 void X11Widget::move(int x, int y)
