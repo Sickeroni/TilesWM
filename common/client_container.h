@@ -44,8 +44,8 @@ public:
     void handleClientAboutToBeMapped(Client *client);
     void handleClientFocusChange(Client *client);
 
-    void createSilbling(Direction where);
-    void focusSilbling(Direction where);
+    void createSibling(Direction where);
+    void focusSibling(Direction where);
 
     void moveClient(Direction where) {
         if (activeClient())
@@ -58,10 +58,10 @@ protected:
     virtual int maxTextHeight() = 0;
 
     void draw(Canvas *canvas);
-//     ClientContainer *splitContainer(Container *container, bool prepend_new_silbling);
-    ClientContainer *createSilblingFor(Container *container, bool prepend_new_silbling);
-    ClientContainer *getOrCreateSilblingFor(Container *container, bool get_prev);
-    ClientContainer *getSilbling(bool get_prev);
+//     ClientContainer *splitContainer(Container *container, bool prepend_new_sibling);
+    ClientContainer *createSiblingFor(Container *container, bool prepend_new_sibling);
+    ClientContainer *getOrCreateSiblingFor(Container *container, bool get_prev);
+    ClientContainer *getSibling(bool get_prev);
     void moveClientToOther(Client *client, Direction dir);
     void clear();
     void getTabbbarRect(Rect &rect);

@@ -30,19 +30,19 @@ struct X11DefaultKeyBindings::Actions
     }
     static void focusLeft()
     {
-        clientContainer()->focusSilbling(Container::WEST);
+        clientContainer()->focusSibling(Container::WEST);
     }
     static void focusRight()
     {
-        clientContainer()->focusSilbling(Container::EAST);
+        clientContainer()->focusSibling(Container::EAST);
     }
     static void focusUp()
     {
-        clientContainer()->focusSilbling(Container::NORTH);
+        clientContainer()->focusSibling(Container::NORTH);
     }
     static void focusDown()
     {
-        clientContainer()->focusSilbling(Container::SOUTH);
+        clientContainer()->focusSibling(Container::SOUTH);
     }
     static void runTerminal()
     {

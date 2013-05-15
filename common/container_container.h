@@ -35,7 +35,7 @@ public:
     void setDirty(bool set);
     void draw(Canvas *canvas);
     ClientContainer *addNewClientContainer(bool prepend);
-    ClientContainer *splitChild(Container *child, bool prepend_new_silbling);
+    ClientContainer *splitChild(Container *child, bool prepend_new_sibling);
     void setActiveChild(Container *child);
 
 protected:

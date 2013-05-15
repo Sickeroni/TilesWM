@@ -554,7 +554,7 @@ void ClientContainer::layoutStacked(Client *about_to_be_mapped)
 }
 
 
-void ClientContainer::focusSilbling(Direction where)
+void ClientContainer::focusSibling(Direction where)
 {
     ContainerContainer *parent = 0;
     if (orientationOfDirection(where) == _parent->orientation())
@@ -570,9 +570,9 @@ void ClientContainer::focusSilbling(Direction where)
     }
 }
 
-void ClientContainer::createSilbling(Direction where)
+void ClientContainer::createSibling(Direction where)
 {
-    std::cout<<"ClientContainer::createSilbling()\n";
+    std::cout<<"ClientContainer::createSibling()\n";
     bool prepend = !isForwardDirection(where);
     if (orientationOfDirection(where) == _parent->orientation()) {
         _parent->addNewClientContainer(prepend);
@@ -580,27 +580,27 @@ void ClientContainer::createSilbling(Direction where)
         _parent->splitChild(this, prepend);
 }
 
-ClientContainer *ClientContainer::createSilblingFor(Container *container, bool prepend_new_silbling)
+ClientContainer *ClientContainer::createSiblingFor(Container *container, bool prepend_new_sibling)
 {
-    ClientContainer *new_silbling = 0;
+    ClientContainer *new_sibling = 0;
 
     if (container->parent())
-        new_silbling = container->parent()->addNewClientContainer(prepend_new_silbling);
+        new_sibling = container->parent()->addNewClientContainer(prepend_new_sibling);
 
-    return new_silbling;
+    return new_sibling;
 }
 
-ClientContainer *ClientContainer::getOrCreateSilblingFor(Container *container, bool get_prev)
+ClientContainer *ClientContainer::getOrCreateSiblingFor(Container *container, bool get_prev)
 {
     if (!get_prev && container->next())
         return container->next()->activeClientContainer();
     else if (get_prev && container->prev())
         return container->prev()->activeClientContainer();
     else
-        return createSilblingFor(container, get_prev);
+        return createSiblingFor(container, get_prev);
 }
 
-ClientContainer *ClientContainer::getSilbling(bool get_prev)
+ClientContainer *ClientContainer::getSibling(bool get_prev)
 {
     if (get_prev && prev())
         return prev()->activeClientContainer();
@@ -627,24 +627,24 @@ void ClientContainer::moveClientToOther(Client *client, Direction dir)
 
     if (_parent) {
         if (orientationOfDirection(dir) == _parent->orientation()) { // easy case
-            if (numMappedClients() > 1) // only create new direct silbling if container doesn't become empty
-                target = getOrCreateSilblingFor(this, backward);
+            if (numMappedClients() > 1) // only create new direct sibling if container doesn't become empty
+                target = getOrCreateSiblingFor(this, backward);
             else
-                target = getSilbling(backward);
+                target = getSibling(backward);
         }
 
         else { // difficult case:
-                 // if client container becomes empty -> use use silbling of parent container;
+                 // if client container becomes empty -> use use sibling of parent container;
                  // else: 1. replace this with new parent container; 2. add this and new client container to parent created in step 1
 
-            if (numMappedClients() <= 1) // cant't split - use use silbling of parent container
-                target = getOrCreateSilblingFor(_parent, backward);
+            if (numMappedClients() <= 1) // cant't split - use use sibling of parent container
+                target = getOrCreateSiblingFor(_parent, backward);
             else { // split this
 //                 target = splitContainer(this, backward);
                 target = _parent->splitChild(this, backward);
 
                 if (!target) { // split failed - maximum hierarchy depth exceeded ?
-                    target = getOrCreateSilblingFor(_parent, backward);
+                    target = getOrCreateSiblingFor(_parent, backward);
                 }
             }
         }

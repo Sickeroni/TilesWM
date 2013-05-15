@@ -484,7 +484,7 @@ void ContainerContainer::deleteChild(Container *child)
     delete child;
 }
 
-ClientContainer *ContainerContainer::splitChild(Container *child, bool prepend_new_silbling)
+ClientContainer *ContainerContainer::splitChild(Container *child, bool prepend_new_sibling)
 {
     if (hierarchyDepth() >= _max_hierarchy_depth)
         return 0;
@@ -497,20 +497,20 @@ ClientContainer *ContainerContainer::splitChild(Container *child, bool prepend_n
     child->reparent(new_parent);
     new_parent->appendChild(child);
 
-    ClientContainer *new_silbling = new_parent->createClientContainer();
+    ClientContainer *new_sibling = new_parent->createClientContainer();
 
     // add this + new child container to new parent
-    if (prepend_new_silbling)
-        new_parent->prependChild(new_silbling);
+    if (prepend_new_sibling)
+        new_parent->prependChild(new_sibling);
     else
-        new_parent->appendChild(new_silbling);
+        new_parent->appendChild(new_sibling);
 
     _active_child = new_parent;
-    new_parent->_active_child = new_silbling;
+    new_parent->_active_child = new_sibling;
 
     layout();
 
-    return new_silbling;
+    return new_sibling;
 }
 
 int ContainerContainer::hierarchyDepth()
