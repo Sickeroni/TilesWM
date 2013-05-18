@@ -532,14 +532,10 @@ void X11Client::handleConfigureRequest(const XConfigureRequestEvent &ev)
     if (!refreshMapState())
         return;
 
-    if (isOverrideRedirect() || !isMapped())
+    if (isOverrideRedirect())
         _widget->configure(ev.value_mask, changes);
-    else if (isMapped()) {
-        if (container()) {
-            // ignore geometry/stacking requests, as that should be changed on our behalf only
-            if (ev.value_mask & CWBorderWidth)
-                _widget->configure(CWBorderWidth, changes);
-        } else if (isDialog() || _is_modal) {
+    else {
+        if (!isMapped() || isDialog() || _is_modal) { // client is either not mapped or not in tiling mode
             Rect client_rect = _widget->rect();
             if (ev.value_mask & CWX)
                 client_rect.x = changes.x;
@@ -555,21 +551,28 @@ void X11Client::handleConfigureRequest(const XConfigureRequestEvent &ev)
             calcFrameRect(client_rect, frame_rect);
 
             frame_rect.setPos(client_rect.x, client_rect.y);
-            calcClientRect(frame_rect, client_rect);
 
             //FIXME use a less random placement - see also X11Client::create()
             frame_rect.setPos(200, 200);
 
-            changes.x = client_rect.x;
-            changes.y = client_rect.y;
-            changes.width = client_rect.w;
-            changes.height = client_rect.h;
+            unsigned int values = ev.value_mask;
 
-            // ignore stacking requests
-            unsigned int values = ev.value_mask & ~(CWSibling | CWStackMode);
+            if (isMapped()) {
+                // the client rect needs to be positioned in respect to the frame rect
+                calcClientRect(frame_rect, client_rect);
+                changes.x = client_rect.x;
+                changes.y = client_rect.y;
+
+                // ignore stacking requests
+                values &= ~(CWSibling | CWStackMode);
+            } 
 
             _widget->configure(values, changes);
             _frame->setRect(frame_rect);
+        } else { // client is mapped and in tiling mode
+            // ignore geometry/stacking requests, as that should be changed on our behalf only
+            if (ev.value_mask & CWBorderWidth)
+                _widget->configure(CWBorderWidth, changes);
         }
     }
 }
