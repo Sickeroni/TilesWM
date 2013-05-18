@@ -666,8 +666,15 @@ void X11Client::refreshFocusState()
         } // else: no change
     }
 
-    if (!focus_return)
-        X11Application::activeRootContainer()->setFocus();
+    if (!focus_return) { // we lost focus and no other window is currently focused
+        if (container()) 
+            // a tiled window lost focus
+            // don't give focus to active container - otherwise the window would be focused again
+            // give focus to root window - otherwise we wouldn't receive grabbed key events anymore
+            XSetInputFocus(dpy(), X11Application::root(), RevertToNone, CurrentTime);
+        else // a floating window lost focus - give focus to active container
+            X11Application::activeRootContainer()->setFocus();
+    }
 
     if (focus_changed && container())
         container()->handleClientFocusChange(this);
