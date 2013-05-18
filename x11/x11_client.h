@@ -36,6 +36,7 @@ public:
 
     // X11ServerWidget::EventHandler implementation
     virtual void handleExpose();
+    virtual void handleButtonPress(const XButtonEvent &ev);
 
     void map();
     void unmap();

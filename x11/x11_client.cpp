@@ -817,6 +817,17 @@ void X11Client::handleExpose()
         drawFrame();
 }
 
+// the frame has been clicked
+void X11Client::handleButtonPress(const XButtonEvent &ev)
+{
+    assert(!_dragged);
+
+    setFocus();
+    raise();
+    if (ev.button == 1)
+        startDrag(ev.x_root, ev.y_root);
+}
+
 void X11Client::drawFrame()
 {
     Client::drawFrame(_frame->canvas());
@@ -879,28 +890,6 @@ bool X11Client::handleEvent(const XEvent &ev)
 //             cout<<"startx: "<<_drag_start_x<<" starty: "<<_drag_start_y<<'\n';
 //             cout<<"xdiff: "<<xdiff<<" ydiff: "<<ydiff<<'\n';
             _dragged->_frame->move(_dragged_original_x + xdiff, _dragged_original_y + ydiff);
-        }
-        break;
-    case ButtonPress:
-        assert(!_dragged);
-        if (ev.xbutton.subwindow != None) {
-            X11Client *client = findByFrame(ev.xbutton.subwindow);
-            if (!client)
-                client = find(ev.xbutton.subwindow);
-            if (client && (ev.xbutton.button == 1) && (ev.xbutton.state & Mod1Mask)) {
-                assert(!_dragged);
-                client->startDrag(ev.xbutton.x_root, ev.xbutton.y_root);
-                return true;
-            }
-        } else {
-            X11Client *client = findByFrame(ev.xbutton.window);
-            if (client) {
-                client->setFocus();
-                client->raise();
-                if (ev.xbutton.button == 1)
-                    client->startDrag(ev.xbutton.x_root, ev.xbutton.y_root);
-                return true;
-            }
         }
         break;
     case ButtonRelease:

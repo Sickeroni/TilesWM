@@ -87,7 +87,19 @@ bool X11ServerWidget::handleEvent(const XEvent &ev)
 {
     if (ev.type == CreateNotify && find(ev.xcreatewindow.window)) // eat create event
         return true;
-    else if (ev.type == Expose && !ev.xexpose.count) {
+    else if (ev.type == ButtonPress) {
+        X11ServerWidget *widget = 0;
+        if (ev.xbutton.window != X11Application::root())
+            widget = find(ev.xbutton.window);
+        else if (ev.xbutton.subwindow)
+            widget = find(ev.xbutton.subwindow);
+        if (widget) {
+            if (widget->_event_handler)
+                widget->_event_handler->handleButtonPress(ev.xbutton);
+            return true;
+        } else
+            return false;
+    } else if (ev.type == Expose && !ev.xexpose.count) {
         if (X11ServerWidget *widget = find(ev.xexpose.window)) {
             if (widget->_event_handler)
                 widget->_event_handler->handleExpose();
