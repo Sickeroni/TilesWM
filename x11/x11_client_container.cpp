@@ -54,7 +54,7 @@ void X11ClientContainer::reparent(ContainerContainer *p)
 
 void X11ClientContainer::setFocus()
 {
-    if (activeClient())
+    if (activeClient() && activeClient()->isMapped())
         activeClient()->setFocus();
     else // set focus to root
         XSetInputFocus(dpy(), X11Application::root(),
