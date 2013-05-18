@@ -17,10 +17,10 @@ X11ClientContainer::X11ClientContainer(X11ContainerContainer *parent) :
     ClientContainer(parent),
     _widget(X11ServerWidget::create(parent->widget(),
                                     Colors::CLIENT_CONTAINER,
-                                    this, ExposureMask)),
+                                    this, ButtonPressMask | ExposureMask)),
     _minimized_widget(X11ServerWidget::create(parent->widget(),
                                               Colors::CLIENT_CONTAINER,
-                                              this, ExposureMask))
+                                              this, ButtonPressMask | ExposureMask))
 {
     _widget->map();
 }
