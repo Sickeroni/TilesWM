@@ -81,7 +81,7 @@ protected:
 private:
     enum Mode { TABBED, STACKED };
 
-    static const int _vertical_tabbar_width = 200;
+    static const int _vertical_tabbar_width = 100;
     static const int _frame_width = Metrics::CLIENT_CONTAINER_FRAME;
     static const int _tab_inner_margin = 5;
     static const int _tab_gap = 2;
