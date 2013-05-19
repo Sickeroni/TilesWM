@@ -18,6 +18,7 @@
 
 
 ClientContainer::ClientContainer(ContainerContainer *parent) : Container(CLIENT, parent),
+    _is_expanding(false),
     _mode(TABBED),
     _active_client(0)
 {
@@ -70,7 +71,10 @@ void ClientContainer::setActiveClient(Client *client)
 
 int ClientContainer::minimumWidth()
 {
-    return _vertical_tabbar_width + (2 * _frame_width);
+    int min_w = _vertical_tabbar_width;
+    if (activeClient() && activeClient()->minWidth() > min_w)
+        min_w = activeClient()->minWidth();
+    return min_w + (2 * _frame_width);
 }
 
 int ClientContainer::minimumHeight()
@@ -125,27 +129,29 @@ void ClientContainer::handleMouseClick(int global_x, int global_y)
     }
 }
 
+int ClientContainer::maximumHeight()
+{
+    return 0;
+}
+
 int ClientContainer::maximumWidth()
 {
     int min_width = minimumWidth();
 
     if (activeClient() && !isMinimized()) {
-        if (activeClient()->maxWidth()) {
-            int max_width = (2 * _frame_width) + activeClient()->maxWidth();
-            if (max_width > min_width)
-                return max_width;
-            else
-                return min_width;
+        if (_is_expanding) {
+            if (activeClient()->maxWidth()) {
+                int max_width = (2 * _frame_width) + activeClient()->maxWidth();
+                if (max_width > min_width)
+                    return max_width;
+                else
+                    return min_width;
+            } else
+                return 0;
         } else
-            return 0;
-
+            return min_width;
     } else
         return min_width;
-}
-
-int ClientContainer::maximumHeight()
-{
-    return 0;
 }
 
 void ClientContainer::handleClientMap(Client *client)

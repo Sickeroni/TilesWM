@@ -95,6 +95,7 @@ private:
     void unfocusActiveClient();
     void drawTab(Client *client, const Rect &rect, Canvas *canvas);
 
+    bool _is_expanding;
     Mode _mode;
     Client *_active_client;
 };
