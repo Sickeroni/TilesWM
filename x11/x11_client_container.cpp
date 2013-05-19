@@ -9,6 +9,8 @@
 #include "workspace.h"
 #include "colors.h"
 
+#include <iostream>
+
 
 using namespace X11Global;
 
@@ -60,6 +62,14 @@ void X11ClientContainer::setFocus()
         XSetInputFocus(dpy(), X11Application::root(),
                        RevertToNone, CurrentTime);
     redraw();
+}
+
+void X11ClientContainer::handleButtonPress(const XButtonEvent &ev)
+{
+    std::cout<<"X11ClientContainer::handleButtonPress()\n";
+    if (activeClient())
+        makeActive();
+    handleMouseClick(ev.x_root, ev.y_root);
 }
 
 void X11ClientContainer::handleActiveChanged()

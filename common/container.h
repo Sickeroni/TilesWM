@@ -99,6 +99,7 @@ protected:
     Container(Type type, ContainerContainer *parent);
 
     void localToGlobal(int &x, int &y);
+    void globalToLocal(int &x, int &y);
     void setWorkspace(Workspace *workspace);
 
     static Container *_root;

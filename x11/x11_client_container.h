@@ -29,10 +29,7 @@ public:
     virtual void handleExpose() {
         redraw();
     }
-    virtual void handleButtonPress(const XButtonEvent &ev) {
-        if (activeClient())
-            makeActive();
-    }
+    virtual void handleButtonPress(const XButtonEvent &ev);
 
     X11ServerWidget *widget() { return _widget; }
 

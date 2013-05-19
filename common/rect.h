@@ -26,6 +26,11 @@ struct Rect
         this->w = w; this->h = h;
     }
 
+    bool isPointInside(int x, int y) {
+        return x >= this->x && x < (this->x + this->w) &&
+               y >= this->y && y < (this->y + this->h);
+    }
+
     int x, y, w, h;
 };
 

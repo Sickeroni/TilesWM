@@ -39,6 +39,7 @@ public:
     void focusPrevClient();
     void focusNextClient();
 
+    void handleMouseClick(int global_x, int global_y);
     void handleClientMap(Client *client);
     void handleClientUnmap(Client *client);
     void handleClientAboutToBeMapped(Client *client);
@@ -79,6 +80,7 @@ private:
     static const int _tab_gap = 2;
 
     int numMappedClients();
+    void getTabSize(int &tab_width, int &tab_height);
     void getStackCellSize(int num_cells, int &w, int &h);
     void layoutTabbed();
     void layoutStacked(Client *about_to_be_mapped);

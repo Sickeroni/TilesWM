@@ -24,11 +24,19 @@ Container::Container(Type type, ContainerContainer *parent) :
 
 void Container::localToGlobal(int &x, int &y)
 {
-    x += this->x();
-    y += this->y();
+    x += _rect.x;
+    y += _rect.y;
 
     if (_parent)
         _parent->localToGlobal(x, y);
+}
+
+void Container::globalToLocal(int &x, int &y)
+{
+    if (_parent)
+        _parent->globalToLocal(x, y);
+    x -= _rect.x;
+    y -= _rect.y;
 }
 
 Container::Orientation Container::orientation()

@@ -86,6 +86,43 @@ int ClientContainer::minimumHeight()
     return tabbar_height + (2 * _frame_width);
 }
 
+void ClientContainer::handleMouseClick(int global_x, int global_y)
+{
+    std::cout<<"ClientContainer::handleMouseClick()\n";
+    std::cout<<"global: "<<global_x<<", "<<global_y<<'\n';
+
+    int local_x = global_x;
+    int local_y = global_y;
+    globalToLocal(local_x, local_y);
+
+    std::cout<<"local: "<<local_x<<", "<<local_y<<'\n';
+
+    Rect tabbar_rect;
+    getTabbbarRect(tabbar_rect);
+
+    std::cout<<"tabbar y: "<<tabbar_rect.y<<'\n';
+    std::cout<<"tabbar h: "<<tabbar_rect.h<<'\n';
+
+    if (tabbar_rect.isPointInside(local_x, local_y)) {
+//         std::cout<<"inside tabbar.\n";
+        int tab_width, tab_height;
+        getTabSize(tab_width, tab_height);
+
+        int i = 0;
+        for(Client *c = _clients.first(); c; c = c->next()) {
+            Rect tab_rect(tabbar_rect.x + (i * (tab_width + _tab_gap)),
+                          tabbar_rect.y, tab_width, tab_height);
+
+            if (tab_rect.isPointInside(local_x, local_y)) {
+                setActiveClient(c);
+                break;
+            }
+
+            i++;
+        }
+    }
+}
+
 void ClientContainer::handleClientMap(Client *client)
 {
     if (!_active_client)
@@ -329,7 +366,6 @@ void ClientContainer::drawStacked(Canvas *canvas)
 
 void ClientContainer::drawTab(Client *client, const Rect &rect, Canvas *canvas)
 {
-
     uint32 fg = Colors::TAB_TEXT;
     uint32 bg = Colors::TAB;
 
@@ -390,17 +426,14 @@ void ClientContainer::drawTabs(Canvas *canvas)
     bg_rect.setPos(0, 0);
     canvas->erase(bg_rect);
 
-    int num_tabs = _clients.count(); //numMappedClients();
-    if (!num_tabs)
+    if (!_clients.count())
         return;
 
     Rect tabbar_rect;
     getTabbbarRect(tabbar_rect);
 
-    int num_gaps = num_tabs - 1;
-
-    int tab_width = (tabbar_rect.w - (num_gaps * _tab_gap)) / num_tabs;
-    int tab_height = tabbar_rect.h;
+    int tab_width, tab_height;
+    getTabSize(tab_width, tab_height);
 
     int i = 0;
     for(Client *c = _clients.first(); c; c = c->next()) {
@@ -442,6 +475,22 @@ void ClientContainer::getTabbbarRect(Rect &rect)
     int tabbar_h = calcTabbarHeight();
 
     rect.set(tabbar_x, tabbar_y, tabbar_w, tabbar_h);
+}
+
+void ClientContainer::getTabSize(int &tab_width, int &tab_height)
+{
+    if (_clients.count()) {
+        Rect tabbar_rect;
+        getTabbbarRect(tabbar_rect);
+
+        int num_gaps = _clients.count() - 1;
+
+        tab_width = (tabbar_rect.w - (num_gaps * _tab_gap)) / _clients.count();
+        tab_height = tabbar_rect.h;
+    } else {
+        tab_width = 0;
+        tab_height = 0;
+    }
 }
 
 void ClientContainer::getClientRect(Rect &rect)
