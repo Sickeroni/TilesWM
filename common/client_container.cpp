@@ -69,6 +69,14 @@ void ClientContainer::setActiveClient(Client *client)
     parent()->handleSizeHintsChanged(this);
 }
 
+void ClientContainer::setExpanding(bool enable)
+{
+    if (_is_expanding != enable) {
+        _is_expanding = enable;
+        parent()->handleSizeHintsChanged(this);
+    }
+}
+
 int ClientContainer::minimumWidth()
 {
     int min_w = _vertical_tabbar_width;
@@ -294,13 +302,13 @@ void ClientContainer::draw(Canvas *canvas)
 {
     if (isMinimized()) {
         if (isHorizontal())
-            drawTabs(canvas);
+            drawTabbar(canvas);
         else
             drawVerticalTabs(canvas);
     } else {
         switch(_mode) {
         case TABBED:
-            drawTabs(canvas);
+            drawTabbar(canvas);
             break;
         case STACKED:
             drawStacked(canvas);
@@ -458,17 +466,31 @@ void ClientContainer::drawVerticalTabs(Canvas *canvas)
     }
 }
 
-void ClientContainer::drawTabs(Canvas *canvas)
+void ClientContainer::drawTabbar(Canvas *canvas)
 {
     Rect bg_rect = _rect;
     bg_rect.setPos(0, 0);
     canvas->erase(bg_rect);
 
+    Rect tabbar_rect;
+    getTabbbarRect(tabbar_rect);
+
+    //FIXME hackish
+    Rect status_bar_rect = tabbar_rect;
+    status_bar_rect.x = _frame_width;
+    status_bar_rect.w = _status_bar_width;
+    status_bar_rect.x += _tab_inner_margin;
+    status_bar_rect.y += _tab_inner_margin;
+    status_bar_rect.w += (2 * _tab_inner_margin);
+    status_bar_rect.h += (2 * _tab_inner_margin);
+
+    uint32 status_bar_fg = Colors::TAB_TEXT;
+
+    canvas->drawText(_is_expanding ? "<->" : ">-<", status_bar_rect, status_bar_fg);
+
     if (!_clients.count())
         return;
 
-    Rect tabbar_rect;
-    getTabbbarRect(tabbar_rect);
 
     int tab_width, tab_height;
     getTabSize(tab_width, tab_height);
@@ -507,9 +529,9 @@ int ClientContainer::calcTabbarHeight()
 
 void ClientContainer::getTabbbarRect(Rect &rect)
 {
-    int tabbar_x = _frame_width;
+    int tabbar_x = _frame_width + _status_bar_width;
     int tabbar_y = _frame_width;
-    int tabbar_w = width() - (2 * _frame_width);
+    int tabbar_w = _rect.w - _status_bar_width - (2 * _frame_width);
     int tabbar_h = calcTabbarHeight();
 
     rect.set(tabbar_x, tabbar_y, tabbar_w, tabbar_h);

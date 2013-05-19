@@ -107,6 +107,11 @@ struct X11DefaultKeyBindings::Actions
         bool maximized = X11Application::activeWorkspace()->maximized();
         X11Application::activeWorkspace()->setMaximized(!maximized);
     }
+    static void toggleExpanding()
+    {
+        if (ClientContainer *c = clientContainer())
+            c->setExpanding(!c->isExpanding());
+    }
 
     //HACK
     static void addNewClientContainer()
@@ -136,6 +141,7 @@ X11DefaultKeyBindings::X11DefaultKeyBindings()
     createShortcut("F2", Mod1Mask, &Actions::runProgram);
 //     createShortcut("Return", Mod1Mask, &Actions::toggleMaximize);
     createShortcut("m", Mod1Mask, &Actions::toggleMaximize);
+    createShortcut("e", Mod1Mask, &Actions::toggleExpanding);
 
     //HACK
     createShortcut("n", Mod1Mask, &Actions::addNewClientContainer);

@@ -57,6 +57,9 @@ public:
             moveClientToOther(activeClient(), where);
     }
 
+    bool isExpanding() { return _is_expanding; }
+    void setExpanding(bool enable);
+
 protected:
     ClientContainer(ContainerContainer *parent);
 
@@ -82,13 +85,14 @@ private:
     static const int _frame_width = Metrics::CLIENT_CONTAINER_FRAME;
     static const int _tab_inner_margin = 5;
     static const int _tab_gap = 2;
+    static const int _status_bar_width = 40;
 
     int numMappedClients();
     void getTabSize(int &tab_width, int &tab_height);
     void getStackCellSize(int num_cells, int &w, int &h);
     void layoutTabbed();
     void layoutStacked(Client *about_to_be_mapped);
-    void drawTabs(Canvas *canvas);
+    void drawTabbar(Canvas *canvas);
     void drawVerticalTabs(Canvas *canvas);
     void drawStacked(Canvas *canvas);
     void removeClientInt(Client *c, bool moving_to_new_container);
