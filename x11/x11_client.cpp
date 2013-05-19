@@ -88,8 +88,6 @@ X11Client::X11Client() : Client(false),
     _widget(0),
     _frame(0),
     _icon(0),
-    _max_width(0),
-    _max_height(0),
     _window_type(NORMAL),
     _is_modal(false)
 {
@@ -601,6 +599,8 @@ void X11Client::refreshSizeHints()
         if (supplied_fields & PMaxSize) {
             _max_width = size_hints.max_width;
             _max_height = size_hints.max_height;
+            if (container())
+                container()->handleClientSizeHintChanged(this);
         }
     } else
         std::cerr<<"failed to get size hints for client \""<<_name<<"\"\n";

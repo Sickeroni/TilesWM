@@ -25,6 +25,9 @@ public:
     virtual void redrawAll();
     virtual int minimumWidth();
     virtual int minimumHeight();
+    virtual int maximumWidth() ;
+    virtual int maximumHeight();
+
 
 
     Client *activeClient();
@@ -44,8 +47,9 @@ public:
     void handleClientUnmap(Client *client);
     void handleClientAboutToBeMapped(Client *client);
     void handleClientFocusChange(Client *client);
+    void handleClientSizeHintChanged(Client *client);
 
-    void createSibling(Direction where);
+//     void createSibling(Direction where);
     void focusSibling(Direction where);
 
     void moveClient(Direction where) {

@@ -64,6 +64,8 @@ void ClientContainer::setActiveClient(Client *client)
 
     if (_active_client && !_active_client->hasFocus() && hasFocus())
         _active_client->setFocus();
+
+    parent()->handleSizeHintsChanged(this);
 }
 
 int ClientContainer::minimumWidth()
@@ -123,6 +125,29 @@ void ClientContainer::handleMouseClick(int global_x, int global_y)
     }
 }
 
+int ClientContainer::maximumWidth()
+{
+    int min_width = minimumWidth();
+
+    if (activeClient() && !isMinimized()) {
+        if (activeClient()->maxWidth()) {
+            int max_width = (2 * _frame_width) + activeClient()->maxWidth();
+            if (max_width > min_width)
+                return max_width;
+            else
+                return min_width;
+        } else
+            return 0;
+
+    } else
+        return min_width;
+}
+
+int ClientContainer::maximumHeight()
+{
+    return 0;
+}
+
 void ClientContainer::handleClientMap(Client *client)
 {
     if (!_active_client)
@@ -149,6 +174,13 @@ void ClientContainer::handleClientFocusChange(Client *client)
     if (client->hasFocus())
         setActiveClient(client);
     redraw();
+}
+
+void ClientContainer::handleClientSizeHintChanged(Client *client)
+{
+    if (activeClient() == client)
+        parent()->handleSizeHintsChanged(this);
+    layout();
 }
 
 void ClientContainer::focusPrevClient()
@@ -619,6 +651,7 @@ void ClientContainer::focusSibling(Direction where)
     }
 }
 
+#if 0
 void ClientContainer::createSibling(Direction where)
 {
     std::cout<<"ClientContainer::createSibling()\n";
@@ -628,6 +661,7 @@ void ClientContainer::createSibling(Direction where)
     } else
         _parent->splitChild(this, prepend);
 }
+#endif
 
 ClientContainer *ClientContainer::createSiblingFor(Container *container, bool prepend_new_sibling)
 {

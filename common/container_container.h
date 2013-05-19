@@ -28,6 +28,8 @@ public:
     virtual void handleActiveChanged();
     virtual int minimumWidth();
     virtual int minimumHeight();
+    virtual int maximumWidth();
+    virtual int maximumHeight();
 
     Container *activeChild() { return _active_child; }
     void focusPrevChild();
@@ -37,6 +39,7 @@ public:
     ClientContainer *addNewClientContainer(bool prepend);
     ClientContainer *splitChild(Container *child, bool prepend_new_sibling);
     void setActiveChild(Container *child);
+    void handleSizeHintsChanged(Container *child);
 
 protected:
     virtual ClientContainer *createClientContainer() = 0;

@@ -61,6 +61,8 @@ public:
     virtual void handleActiveChanged() = 0;
     virtual int minimumWidth() = 0;
     virtual int minimumHeight() = 0;
+    virtual int maximumWidth() = 0;
+    virtual int maximumHeight() = 0;
 
     virtual void reparent(ContainerContainer *p) {
         _parent = p;

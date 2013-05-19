@@ -11,6 +11,10 @@
 #include <stdlib.h>
 
 
+using std::cout;
+using std::endl;
+
+
 ContainerContainer::ContainerContainer(ContainerContainer *parent) : Container(CONTAINER, parent),
     _active_child(0),
     _dirty(true)
@@ -50,6 +54,15 @@ void ContainerContainer::handleActiveChanged()
     if (_active_child)
         _active_child->handleActiveChanged();
 }
+
+void ContainerContainer::handleSizeHintsChanged(Container *child)
+{
+    if (parent())
+        parent()->handleSizeHintsChanged(this);
+    else
+        layout();
+}
+
 
 void ContainerContainer::setActiveChild(Container *child)
 {
@@ -164,6 +177,26 @@ int ContainerContainer::minimumHeight()
     return height;
 }
 
+int ContainerContainer::maximumWidth()
+{
+    int max_width = 100;
+    for(Container *c = _children.first(); c; c = c->next()) {
+        if (int w = c->maximumWidth()) {
+            if (w > max_width)
+                max_width = w;
+        } else { // at least one child has unlimited maximum width
+            max_width = 0; // unlimited width
+            break;
+        }
+    }
+    return max_width;
+}
+
+int ContainerContainer::maximumHeight()
+{
+    return 0;
+}
+
 void ContainerContainer::draw(Canvas *canvas)
 {
     Rect bg_rect = _rect;
@@ -204,8 +237,40 @@ void ContainerContainer::draw(Canvas *canvas)
     }
 }
 
+
+
 void ContainerContainer::layout()
 {
+    static const bool respect_size_hints = true;
+
+    struct LayoutItem
+    {
+        void init(int min_size, int max_size) {
+            if (respect_size_hints) {
+                this->min_size = min_size;
+                this->max_size = max_size;
+            } else
+                this->max_size = this->min_size = 0;
+
+            if (max_size && max_size < min_size) // normalize
+                max_size = min_size;
+
+            this->min_size += (2 * _child_frame_width);
+            if (this->max_size)
+                this->max_size += (2 * _child_frame_width);
+
+            size = min_size;
+        }
+
+        bool canGrow() {
+            return !max_size || size < max_size;
+        }
+
+        int size;
+        int min_size, max_size;
+    };
+
+
     if (!width() || !height() || !_children.count())
         return;
 
@@ -220,76 +285,122 @@ void ContainerContainer::layout()
 
     int available_space = isHorizontal() ? client_rect.w : client_rect.h;
 
+    cout<<"space: "<<available_space<<endl;
+
+
+    // create layout item for each child
+    LayoutItem *layout_items = new LayoutItem[_children.count()];
+
+
+    int num_growable_children = _children.count();
+
+    // initialize layout items
+    int i = 0;
     for (Container *c = _children.first(); c; c = c->next()) {
+        LayoutItem &item = layout_items[i];
         if (isHorizontal())
-            available_space -= c->minimumWidth();
+            item.init(c->minimumWidth(), c->maximumWidth());
         else
-            available_space -= c->minimumHeight();
-        available_space -= (2 * _child_frame_width);
+            item.init(c->minimumHeight(), c->maximumHeight());
+
+        cout<<"item "<<i<<" max size: "<<item.max_size<<endl;
+
+        available_space -= item.size;
+
+        if(!item.canGrow())
+            num_growable_children--;
+
+        i++;
     }
 
     if (available_space < 0) // BAAD - children won't fit
         available_space = 0;
 
-    int additional_space_per_child = available_space / _children.count();
+    cout<<"space after - minimum size: "<<available_space<<endl;
+
+    if (!(workspace()->maximized())) {
+        // distribute remaining available space
+        while (available_space && num_growable_children) {
+            int available_space_per_child = available_space / num_growable_children;
+            cout<<"available space before: "<<available_space<<endl;
+            cout<<"available space per child: "<<available_space_per_child<<endl;
+
+            if (!available_space_per_child)
+                break;
+
+            for (int i = 0; i < _children.count(); i++) {
+                LayoutItem &item = layout_items[i];
+                cout<<"i: "<<i<<endl;
+                cout<<"item size before: "<<item.size<<endl;
+
+                if (item.canGrow()) {
+                    if (item.max_size) {
+                        if (item.max_size < (item.size + available_space_per_child)) {
+                            available_space -= (item.max_size - item.size);
+                            item.size = item.max_size;
+                        } else {
+                            available_space -= available_space_per_child;
+                            item.size += available_space_per_child;
+                        }
+                    } else {
+                        available_space -= available_space_per_child;
+                        item.size += available_space_per_child;
+                    }
+
+                    if (!item.canGrow())
+                        num_growable_children--;
+                }
+
+                cout<<"item size after: "<<item.size<<endl;
+            }
+            cout<<"available space after: "<<available_space<<endl;
+        }
+    }
+
+    assert(available_space >= 0);
 
     int current_x = client_rect.x;
     int current_y = client_rect.y;
 
-    int i = 0;
+    i = 0;
     for(Container *c = _children.first(); c; c = c->next()) {
-        Rect child_rect;
+        LayoutItem &item = layout_items[i];
 
-        int additional_space = 0;
+        Rect child_rect;
+        child_rect.setPos(current_x, current_y);
+
+        int size = item.size;
 
         if (workspace()->maximized() && hasFocus()) {
             if (activeChild() == c)
-                additional_space = available_space;
-        } else
-            additional_space = additional_space_per_child;
+                size += available_space;
+        }
 
         if (isHorizontal()) {
-            child_rect.x = current_x;
-            child_rect.y = current_y;
-            child_rect.w = c->minimumWidth() + additional_space + (2 * _child_frame_width);;
+            child_rect.w = size;
             child_rect.h = client_rect.h;
 
             current_x += child_rect.w;
         } else {
-            child_rect.x = current_x;
-            child_rect.y = current_y;
             child_rect.w = client_rect.w;
-            child_rect.h = c->minimumHeight() + additional_space + (2 * _child_frame_width);
+            child_rect.h = size;
 
             current_y += child_rect.h;
         }
 
-#if 0
-        if (workspace()->maximized()) {
-            if (hasFocus() && activeChild() == c)
-                c->setRect(client_rect);
-            else {
-                Rect r(0,0,100,100);
-                c->setRect(r);
-            }
-            c->layout();
-        } else {
-#endif
+        Rect new_rect = child_rect;
+        new_rect.x += _child_frame_width;
+        new_rect.y += _child_frame_width;
+        new_rect.w -= (2 * _child_frame_width);
+        new_rect.h -= (2 * _child_frame_width);
 
-            Rect new_rect = child_rect;
-            new_rect.x += _child_frame_width;
-            new_rect.y += _child_frame_width;
-            new_rect.w -= (2 * _child_frame_width);
-            new_rect.h -= (2 * _child_frame_width);
-
-            c->setRect(new_rect);
-            c->layout();
-#if 0
-        }
-#endif
+        c->setRect(new_rect);
+        c->layout();
 
         i++;
    }
+
+   delete[] layout_items;
 
    redraw();
 }
@@ -339,6 +450,9 @@ void ContainerContainer::appendChild(Container *container)
 
     if (!_active_child)
         _active_child = container;
+
+    if (parent())
+        parent()->handleSizeHintsChanged(this);
 
     layout();
 }
