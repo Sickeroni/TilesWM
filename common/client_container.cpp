@@ -410,7 +410,7 @@ void ClientContainer::drawStacked(Canvas *canvas)
    }
 }
 
-void ClientContainer::drawTab(Client *client, const Rect &rect, bool minimized, Canvas *canvas)
+void ClientContainer::drawTab(Client *client, const Rect &rect, bool minimized, bool vertical, Canvas *canvas)
 {
     uint32 fg = Colors::TAB_TEXT;
     uint32 bg = Colors::TAB;
@@ -440,8 +440,12 @@ void ClientContainer::drawTab(Client *client, const Rect &rect, bool minimized, 
                    rect.w - (2* _tab_inner_margin), rect.h - (2* _tab_inner_margin));
 
     if (Icon *icon = client->icon()) {
-        text_rect.x += (icon->width() + 5);
-        text_rect.w -= (icon->width() + 5);
+        if (vertical) {
+            text_rect.y += (icon->width() + 5);
+        } else {
+            text_rect.x += (icon->width() + 5);
+            text_rect.w -= (icon->width() + 5);
+        }
     }
 
     const std::string text = (minimized && !client->iconName().empty()) ?
@@ -458,12 +462,15 @@ void ClientContainer::drawVerticalTabs(Canvas *canvas)
 
     int tabbar_height = calcTabbarHeight();
 
+
+    tabbar_height += 30; //HACK - reserve space for icon
+
     int i = 0;
     for (Client *c = _clients.first(); c; c = c->next()) {
         Rect tab_rect(_frame_width, _frame_width + (i * (tabbar_height + _tab_gap)),
                       width() - (2 * _frame_width), tabbar_height);
 
-        drawTab(c, tab_rect, true, canvas);
+        drawTab(c, tab_rect, isMinimized(), true, canvas);
 
         i++;
     }
@@ -503,7 +510,7 @@ void ClientContainer::drawTabbar(Canvas *canvas)
         Rect tab_rect(tabbar_rect.x + (i * (tab_width + _tab_gap)),
                       tabbar_rect.y, tab_width, tab_height);
 
-        drawTab(c, tab_rect, false, canvas);
+        drawTab(c, tab_rect, isMinimized(), false, canvas);
 
         i++;
     }
