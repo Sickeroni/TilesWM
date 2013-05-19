@@ -80,7 +80,7 @@ void ClientContainer::setExpanding(bool enable)
 int ClientContainer::minimumWidth()
 {
     int min_w = _vertical_tabbar_width;
-    if (activeClient() && activeClient()->minWidth() > min_w)
+    if (!isMinimized() && activeClient() && activeClient()->minWidth() > min_w)
         min_w = activeClient()->minWidth();
     return min_w + (2 * _frame_width);
 }
