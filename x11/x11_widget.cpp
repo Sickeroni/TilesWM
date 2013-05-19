@@ -117,7 +117,7 @@ void X11Widget::setRect(const Rect &rect)
 
 bool X11Widget::handleEvent(const XEvent &ev)
 {
-//     std::cout<<"X11Widget::handleEvent(): "<<X11Application::x11EventToString(ev.type)<<'\n';
+//     std::cout<<"X11Widget::handleEvent(): "<<X11Application::eventTypeToString(ev.type)<<'\n';
 
     bool handled = false;
 
