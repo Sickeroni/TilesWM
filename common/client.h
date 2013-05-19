@@ -39,6 +39,8 @@ public:
     bool isMapped() { return _is_mapped; }
     bool hasFocus() { return _has_focus; }
     const std::string &name() { return _name; }
+    int minWidth() { return _min_width; }
+    int minHeight() { return _min_height; }
     int maxWidth() { return _max_width; }
     int maxHeight() { return _max_height; }
 
@@ -58,6 +60,7 @@ protected:
     bool _is_mapped;
     bool _has_focus;
     std::string _name;
+    int _min_width, _min_height;
     int _max_width, _max_height;
 
 private:

@@ -597,6 +597,8 @@ void X11Client::refreshSizeHints()
             std::cout<<"size_hints.height_inc: "<<size_hints.height_inc<<'\n';
 #endif
         if (supplied_fields & PMaxSize) {
+            _min_width = size_hints.min_width;
+            _min_height = size_hints.min_height;
             _max_width = size_hints.max_width;
             _max_height = size_hints.max_height;
             if (container())
