@@ -259,7 +259,7 @@ void ContainerContainer::layout()
             if (this->max_size)
                 this->max_size += (2 * _child_frame_width);
 
-            size = min_size;
+            size = this->min_size;
         }
 
         bool canGrow() {
