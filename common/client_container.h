@@ -94,10 +94,10 @@ private:
     void layoutStacked(Client *about_to_be_mapped);
     void drawTabbar(Canvas *canvas);
     void drawVerticalTabs(Canvas *canvas);
+    void drawTab(Client *client, const Rect &rect, bool minimized, Canvas *canvas);
     void drawStacked(Canvas *canvas);
     void removeClientInt(Client *c, bool moving_to_new_container);
     void unfocusActiveClient();
-    void drawTab(Client *client, const Rect &rect, Canvas *canvas);
 
     bool _is_expanding;
     Mode _mode;

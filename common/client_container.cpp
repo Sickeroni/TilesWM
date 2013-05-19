@@ -410,7 +410,7 @@ void ClientContainer::drawStacked(Canvas *canvas)
    }
 }
 
-void ClientContainer::drawTab(Client *client, const Rect &rect, Canvas *canvas)
+void ClientContainer::drawTab(Client *client, const Rect &rect, bool minimized, Canvas *canvas)
 {
     uint32 fg = Colors::TAB_TEXT;
     uint32 bg = Colors::TAB;
@@ -444,7 +444,10 @@ void ClientContainer::drawTab(Client *client, const Rect &rect, Canvas *canvas)
         text_rect.w -= (icon->width() + 5);
     }
 
-    canvas->drawText(client->name(), text_rect, fg);
+    const std::string text = (minimized && !client->iconName().empty()) ?
+                                        client->iconName() : client->name();
+
+    canvas->drawText(text, text_rect, fg);
 }
 
 void ClientContainer::drawVerticalTabs(Canvas *canvas)
@@ -460,7 +463,7 @@ void ClientContainer::drawVerticalTabs(Canvas *canvas)
         Rect tab_rect(_frame_width, _frame_width + (i * (tabbar_height + _tab_gap)),
                       width() - (2 * _frame_width), tabbar_height);
 
-        drawTab(c, tab_rect, canvas);
+        drawTab(c, tab_rect, true, canvas);
 
         i++;
     }
@@ -500,7 +503,7 @@ void ClientContainer::drawTabbar(Canvas *canvas)
         Rect tab_rect(tabbar_rect.x + (i * (tab_width + _tab_gap)),
                       tabbar_rect.y, tab_width, tab_height);
 
-        drawTab(c, tab_rect, canvas);
+        drawTab(c, tab_rect, false, canvas);
 
         i++;
     }

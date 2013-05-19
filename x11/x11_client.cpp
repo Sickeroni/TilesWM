@@ -286,6 +286,7 @@ void X11Client::create(Window wid)
             client->_widget = new X11ClientWidget(wid, client, is_mapped, rect);
 
             client->refreshName();
+            client->refreshIconName();
             client->refreshClass();
             client->refreshWindowType();
 
@@ -628,6 +629,24 @@ void X11Client::refreshName()
     _name = _x11_class + " - " + _x11_name;
 }
 
+void X11Client::refreshIconName()
+{
+    CriticalSection sec;
+
+    XTextProperty prop;
+    if (XGetWMIconName(dpy(), _widget->wid(), &prop)) {
+        char **list = 0;
+        int count = 0;
+
+        XmbTextPropertyToTextList(dpy(), &prop,
+                                  &list, &count);
+        if (count) {
+            _icon_name = list[0];
+            XFreeStringList(list);
+        }
+    }
+}
+
 void X11Client::refreshClass()
 {
     CriticalSection sec;
@@ -967,6 +986,11 @@ bool X11Client::handleEvent(const XEvent &ev)
                     break;
                 case XA_WM_NAME:
                     client->refreshName();
+                    if (client->container())
+                        client->container()->redraw();
+                    break;
+                case XA_WM_ICON_NAME:
+                    client->refreshIconName();
                     if (client->container())
                         client->container()->redraw();
                     break;

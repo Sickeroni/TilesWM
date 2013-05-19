@@ -72,6 +72,7 @@ private:
     bool refreshMapState();
     void refreshSizeHints();
     void refreshName();
+    void refreshIconName();
     void refreshClass();
     void refreshFocusState();
     void refreshWindowType();
