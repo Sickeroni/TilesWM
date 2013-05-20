@@ -303,6 +303,8 @@ void ContainerContainer::layout()
         else
             item.init(c->minimumHeight(), c->maximumHeight());
 
+        cout<<"item "<<i<<" size: "<<item.size<<endl;
+        cout<<"item "<<i<<" min size: "<<item.min_size<<endl;
         cout<<"item "<<i<<" max size: "<<item.max_size<<endl;
 
         available_space -= item.size;
@@ -371,6 +373,8 @@ void ContainerContainer::layout()
 
         int size = item.size;
 
+        cout<<"child "<<i<<" final size: "<<size<<endl;
+
         if (workspace()->maximized() && hasFocus()) {
             if (activeChild() == c)
                 size += available_space;
@@ -393,6 +397,8 @@ void ContainerContainer::layout()
         new_rect.y += _child_frame_width;
         new_rect.w -= (2 * _child_frame_width);
         new_rect.h -= (2 * _child_frame_width);
+
+        cout<<"child "<<i<<" final width: "<<new_rect.w<<endl;
 
         c->setRect(new_rect);
         c->layout();
