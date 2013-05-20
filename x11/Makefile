@@ -19,11 +19,11 @@ main.o
 
 all: ttm-wm
 
-common:
-	(cd ../common && make)
+../common/libcommon.a:
+	make -C ../common
 
-ttm-wm: common $(OBJS)
-	$(CXX) $(CXXFLAGS) -L../common -lfoo -lX11 $(OBJS) -o ttm-wm --verbose
+ttm-wm: ../common/libcommon.a $(OBJS)
+	$(CXX) $(CXXFLAGS) -L../common $(OBJS) -lX11 -lcommon -o ttm-wm
 
 # pull in dependency info for *existing* .o files
 # from gnu make manual:
