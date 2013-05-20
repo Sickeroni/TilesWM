@@ -16,9 +16,12 @@
 #include <assert.h>
 
 
+using std::cout;
+using std::endl;
+
 
 ClientContainer::ClientContainer(ContainerContainer *parent) : Container(CLIENT, parent),
-    _is_expanding(false),
+    _is_expanding(true),
     _mode(TABBED),
     _active_client(0)
 {
@@ -448,10 +451,18 @@ void ClientContainer::drawTab(Client *client, const Rect &rect, bool minimized, 
         }
     }
 
-    const std::string text = (minimized && !client->iconName().empty()) ?
-                                        client->iconName() : client->name();
+    if (vertical) {
+        const std::string name = client->iconName().empty() ?
+                                    client->name() : client->iconName();
+        canvas->drawText(client->className(), text_rect, fg);
+        text_rect.y += (maxTextHeight() + _tab_inner_margin);
+        canvas->drawText(name, text_rect, fg);
+    } else {
+        const std::string text = (minimized && !client->iconName().empty()) ?
+                                            client->iconName() : client->name();
 
-    canvas->drawText(text, text_rect, fg);
+        canvas->drawText(client->title(), text_rect, fg);
+    }
 }
 
 void ClientContainer::drawVerticalTabs(Canvas *canvas)
@@ -460,15 +471,10 @@ void ClientContainer::drawVerticalTabs(Canvas *canvas)
     bg_rect.setPos(0, 0);
     canvas->erase(bg_rect);
 
-    int tabbar_height = calcTabbarHeight();
-
-
-    tabbar_height += 30; //HACK - reserve space for icon
-
     int i = 0;
     for (Client *c = _clients.first(); c; c = c->next()) {
-        Rect tab_rect(_frame_width, _frame_width + (i * (tabbar_height + _tab_gap)),
-                      width() - (2 * _frame_width), tabbar_height);
+        Rect tab_rect(_frame_width, _frame_width + (i * (_vertical_tabbar_width + _tab_gap)),
+                      _vertical_tabbar_width, _vertical_tabbar_width);
 
         drawTab(c, tab_rect, isMinimized(), true, canvas);
 
