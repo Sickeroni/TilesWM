@@ -621,12 +621,12 @@ void X11Client::refreshName()
         XmbTextPropertyToTextList(dpy(), &prop,
                                   &list, &count);
         if (count) {
-            _x11_name = list[0];
+            _name = list[0];
             XFreeStringList(list);
         }
     }
 
-    _name = _x11_class + " - " + _x11_name;
+    _title = _class + " - " + _name;
 }
 
 void X11Client::refreshIconName()
@@ -656,14 +656,14 @@ void X11Client::refreshClass()
     class_hint.res_class = 0;
 
     if (XGetClassHint(dpy(), _widget->wid(), &class_hint)) {
-        _x11_class = class_hint.res_name;
+        _class = class_hint.res_name;
 
         XFree(class_hint.res_name);
         XFree(class_hint.res_class);
         class_hint.res_name = class_hint.res_class = 0;
     }
 
-    _name = _x11_class + " - " + _x11_name;
+    _title = _class + " - " + _name;
 }
 
 void X11Client::refreshFocusState()

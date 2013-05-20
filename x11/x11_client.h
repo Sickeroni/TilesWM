@@ -100,8 +100,6 @@ private:
     X11ClientWidget *_widget;
     X11ServerWidget *_frame;
     X11Icon *_icon;
-    std::string _x11_name;
-    std::string _x11_class;
     WindowType _window_type;
     bool _is_modal;
 };
