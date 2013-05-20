@@ -237,8 +237,6 @@ void ContainerContainer::draw(Canvas *canvas)
     }
 }
 
-
-
 void ContainerContainer::layout()
 {
     static const bool respect_size_hints = true;
