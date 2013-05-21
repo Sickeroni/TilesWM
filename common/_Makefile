@@ -9,11 +9,9 @@ client.o \
 list.o
 
 all: libcommon.a
-# 	echo objects: $(OBJS)
 
 libcommon.a: $(OBJS)
 	ar rcs libcommon.a $(OBJS)
-
 
 # pull in dependency info for *existing* .o files
 # from gnu make manual:
