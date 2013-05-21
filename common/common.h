@@ -5,6 +5,8 @@
 #include "debug_stream.h"
 
 #include <iostream>
+#include <assert.h>
+#include <stdlib.h>
 
 using std::cout;
 using std::cerr;
