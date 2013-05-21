@@ -8,16 +8,12 @@
 #include "workspace.h"
 #include "icon.h"
 #include "colors.h"
+#include "common.h"
 
-#include <iostream>
 #include <sstream>
 #include <string>
 #include <stdlib.h>
 #include <assert.h>
-
-
-using std::cout;
-using std::endl;
 
 
 ClientContainer::ClientContainer(ContainerContainer *parent) : Container(CLIENT, parent),
@@ -105,20 +101,21 @@ int ClientContainer::minimumHeight()
 
 void ClientContainer::handleMouseClick(int global_x, int global_y)
 {
-    std::cout<<"ClientContainer::handleMouseClick()\n";
-    std::cout<<"global: "<<global_x<<", "<<global_y<<'\n';
+    printvar(global_x);
+    printvar(global_y);
 
     int local_x = global_x;
     int local_y = global_y;
     globalToLocal(local_x, local_y);
 
-    std::cout<<"local: "<<local_x<<", "<<local_y<<'\n';
+    printvar(local_x);
+    printvar(local_y);
 
     Rect tabbar_rect;
     getTabbbarRect(tabbar_rect);
 
-    std::cout<<"tabbar y: "<<tabbar_rect.y<<'\n';
-    std::cout<<"tabbar h: "<<tabbar_rect.h<<'\n';
+    printvar(tabbar_rect.y);
+    printvar(tabbar_rect.h);
 
     if (tabbar_rect.isPointInside(local_x, local_y)) {
 //         std::cout<<"inside tabbar.\n";
@@ -254,11 +251,11 @@ void ClientContainer::unfocusActiveClient()
 
 void ClientContainer::addClient(Client *c)
 {
-    std::cout<<"ClientContainer::addClient()\n";
+    debug;
 
     if (ClientContainer *old_container = c->container()) {
         //FIXME  - TODO: unmap before and remap client after move
-        std::cout<<"removing from old container ...\n";
+        debug<<"removing from old container ...";
         old_container->removeClientInt(c, true);
     }
 
@@ -266,8 +263,7 @@ void ClientContainer::addClient(Client *c)
 
     _clients.append(c);
 
-    std::cout<<"num clients: "<<_clients.count()<<'\n';
-
+    printvar(_clients.count());
 
     if (c->isMapped() && !_active_client)
         setActiveClient(c);
@@ -280,14 +276,14 @@ void ClientContainer::addClient(Client *c)
 
 void ClientContainer::removeClientInt(Client *c, bool moving_to_new_container)
 {
-    std::cout<<"ClientContainer::removeClient()\n";
+    debug;
 
     if (c == _active_client)
         unfocusActiveClient();
 
     _clients.remove(c);
 
-    std::cout<<"num clients: "<<_clients.count()<<'\n';
+    printvar(_clients.count());
 
     if (!moving_to_new_container)
         c->setContainer(0);
@@ -635,8 +631,7 @@ void ClientContainer::getStackCellSize(int num_cells, int &w, int &h)
 
 void ClientContainer::layoutStacked(Client *about_to_be_mapped)
 {
-    std::cout<<"======================\nClientContainer::layout()\n";
-    std::cout<<"is horizontal: "<<isHorizontal()<<'\n';
+    debug;
 
     const int cell_border = 12; //FIXME
     int tabbar_height = calcTabbarHeight();

@@ -2,8 +2,8 @@
 
 #include "x11_application.h"
 #include "x11_global.h"
+#include "common.h"
 
-#include <iostream>
 #include <stdlib.h>
 
 
@@ -51,7 +51,7 @@ X11Shortcut::~X11Shortcut()
 
 bool X11Shortcut::handleKeyPress(const XKeyEvent &ev)
 {
-    std::cout<<"X11Shortcut::handleKeyPress()\n";
+    debug;
 
     KeySym key_sym = XLookupKeysym(const_cast<XKeyEvent*>(&ev), 0);
     if (key_sym != NoSymbol) {

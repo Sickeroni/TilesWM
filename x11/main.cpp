@@ -23,11 +23,11 @@
 
 #include "x11_application.h"
 
+#include "common.h"
 
 #include <X11/Xlib.h>
 #include <X11/keysym.h>
 
-#include <iostream>
 #include <string.h>
 
 
@@ -103,7 +103,7 @@ int main()
 #endif
     app.eventLoop();
 
-    std::cout << "returnd from main loop - shutting down ...\n";
+    cout << "returnd from main loop - shutting down ...\n";
 
     app.shutdown();
 

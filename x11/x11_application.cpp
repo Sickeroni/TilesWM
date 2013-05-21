@@ -7,6 +7,7 @@
 
 #include "workspace.h"
 #include "client_container.h"
+#include "common.h"
 
 #include <sys/select.h>
 #include <sys/types.h>
@@ -178,7 +179,7 @@ bool X11Application::init()
 
     /* return failure status if we can't connect */
     if(!(_dpy = XOpenDisplay(0))) {
-        std::cerr << "ERROR: Can't open display.\n";
+        cerr << "ERROR: Can't open display.\n";
         return false;
     }
 
@@ -190,14 +191,14 @@ bool X11Application::init()
 
     XWindowAttributes root_attr;
     if (!XGetWindowAttributes(_dpy, _root, &root_attr)) {
-        std::cerr << "ERROR: XGetWindowAttributes() failed for root window.\n";
+        cerr << "ERROR: XGetWindowAttributes() failed for root window.\n";
         XCloseDisplay(_dpy);
         _dpy = 0;
         return false;
     }
 
     if (root_attr.all_event_masks & SubstructureRedirectMask) {
-        std::cerr<<"ERROR: Another window manager is already running.\n";
+        cerr<<"ERROR: Another window manager is already running.\n";
         XCloseDisplay(_dpy);
         _dpy = 0;
         return false;
@@ -233,7 +234,7 @@ bool X11Application::init()
 
     ungrabServer();
 
-    std::cout<<"initialisation finished.\n";
+    cout<<"initialisation finished.\n";
 
     return true;
 }
@@ -266,9 +267,9 @@ void X11Application::shutdown()
 #if 1
 void X11Application::eventLoop()
 {
-    std::cout<<"------------------------------\n";
-    std::cout<<"event loop started.\n";
-    std::cout<<"------------------------------\n";
+    cout<<"------------------------------\n";
+    cout<<"event loop started.\n";
+    cout<<"------------------------------\n";
 
     
 //     XWindowAttributes attr;
@@ -417,7 +418,7 @@ void X11Application::eventLoop()
 #endif
 #if 1
         else {
-//             std::cout<<"unhandled event: "<<eventTypeToString(ev.type)<<'\n';
+//             cout<<"unhandled event: "<<eventTypeToString(ev.type)<<'\n';
         }
 #endif
 
@@ -464,7 +465,7 @@ void X11Application::runProgram(const char *path)
         perror ("ERROR: Can't execute program: ");
         exit(1);
     } else
-        std::cerr<<"ERROR: running "<<path<<": Can't fork.";
+        cerr<<"ERROR: running "<<path<<": Can't fork.";
 }
 
 X11ContainerContainer *X11Application::activeRootContainer()

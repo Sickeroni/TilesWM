@@ -4,13 +4,12 @@
 #include "x11_canvas.h"
 #include "x11_widget.h"
 #include "x11_global.h"
+#include "common.h"
 
 #include <X11/Xutil.h>
 
-#include <iostream>
 #include <string.h>
 #include <stdlib.h>
-#include <stdio.h>
 #include <assert.h>
 
 
@@ -89,7 +88,7 @@ X11Icon::X11Icon(int width, int height, X11Widget *parent, const uint32 *argb_da
 
         XDestroyImage(image);
     } else
-        std::cerr<<"XGetImage() failed.\n";
+        debug<<"XGetImage() failed.";
 }
 
 

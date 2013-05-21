@@ -9,11 +9,11 @@
 #include "x11_icon.h"
 #include "x11_global.h"
 #include "colors.h"
+#include "common.h"
 
 #include <X11/Xutil.h>
 #include <X11/Xatom.h>
 
-#include <iostream>
 #include <string.h>
 
 
@@ -21,7 +21,6 @@
 
 
 using namespace X11Global;
-using std::cout;
 
 
 class X11Client::CriticalSection
@@ -64,7 +63,7 @@ X11Client::CriticalSection::~CriticalSection()
 int X11Client::CriticalSection::errorHandler(Display *display, XErrorEvent *ev)
 {
     if (ev->error_code != BadWindow) {
-        std::cerr << "X11Client::CriticalSection::errorHandler() - code: "
+        cerr << "X11Client::CriticalSection::errorHandler() - code: "
             << static_cast<unsigned int>(ev->error_code)
             << " - "
             << X11Application::errorCodeToString(ev->error_code)
@@ -95,7 +94,7 @@ X11Client::X11Client() : Client(false),
 
 X11Client::~X11Client()
 {
-    std::cout<<"X11Client::~X11Client()\n";
+    debug;
     delete _icon;
     _icon = 0;
     delete _widget;
@@ -168,7 +167,7 @@ void X11Client::setRect(const Rect &rect)
 
 void X11Client::setContainer(ClientContainer *container)
 {
-    std::cout << "void X11Client::setContainer(ClientContainer *container)\n";
+    debug;
 
     assert(!isOverrideRedirect());
 
@@ -178,7 +177,7 @@ void X11Client::setContainer(ClientContainer *container)
     if (container)
         new_parent_widget = static_cast<X11ClientContainer*>(container)->widget();
 
-    std::cout << "new_parent_widget: " << new_parent_widget << '\n';
+    printvar(new_parent_widget);
     _frame->reparent(new_parent_widget);
 }
 
@@ -290,11 +289,11 @@ void X11Client::create(Window wid)
             client->refreshClass();
             client->refreshWindowType();
 
-            std::cout<<"-------------------------------------------------------------------\n";
-            std::cout<<"new client: "<<(client->_name)<<'\n';
-            std::cout<<"-------------------------------------------------------------------\n";
+            cout<<"-------------------------------------------------------------------\n";
+            cout<<"new client: "<<(client->_name)<<'\n';
+            cout<<"-------------------------------------------------------------------\n";
 
-            std::cout<<"is_dialog: "<<client->isDialog()<<'\n';
+            printvar(client->isDialog());
 
             client->refreshSizeHints();
 
@@ -336,7 +335,7 @@ void X11Client::create(Window wid)
                 client->map();
         }
     } else {
-        std::cerr << "XGetWindowAttributes() for client window " << wid << "failed\n";
+        debug << "XGetWindowAttributes() for client window" << wid << "failed.";
     }
 }
 
@@ -383,7 +382,7 @@ theoretically possible transitions:
 
 bool X11Client::refreshMapState()
 {
-    std::cout<<"X11Client::handleUnmap()\n";
+    debug;
 
     CriticalSection sec;
 
@@ -406,14 +405,14 @@ bool X11Client::refreshMapState()
             abort();
         return true;
     } else {
-        std::cerr<<"WARNING: failed to get current map state of client \""<<_name<<"\"\n";
+        debug<<"WARNING: failed to get current map state of client"<<_name;
         return false;
     }
 }
 
 void X11Client::map()
 {
-    std::cout<<"X11Client::map()\n";
+    debug;
 
     CriticalSection sec;
 
@@ -470,7 +469,7 @@ void X11Client::mapInt()
 
 void X11Client::unmap()
 {
-    std::cout<<"X11Client::unmap()\n";
+    debug;
 
     CriticalSection sec;
 
@@ -514,7 +513,7 @@ void X11Client::unmapInt()
 
 void X11Client::handleConfigureRequest(const XConfigureRequestEvent &ev)
 {
-    std::cout<<"X11Client::handleConfigureRequest()\n";
+    debug;
 
     XWindowChanges changes;
     memset(&changes, 0, sizeof(changes));
@@ -578,7 +577,7 @@ void X11Client::handleConfigureRequest(const XConfigureRequestEvent &ev)
 
 void X11Client::refreshSizeHints()
 {
-    std::cout<<"X11Client::refreshSizeHints()\n";
+    debug;
 
     CriticalSection sec;
 
@@ -606,7 +605,7 @@ void X11Client::refreshSizeHints()
                 container()->handleClientSizeHintChanged(this);
         }
     } else
-        std::cerr<<"failed to get size hints for client \""<<_name<<"\"\n";
+        debug<<"failed to get size hints for client"<<_name;
 }
 
 void X11Client::refreshName()
@@ -743,7 +742,7 @@ Atom X11Client::getAtomProperty(Window wid, Atom property)
 
 void X11Client::refreshWindowType()
 {
-    std::cout<<"X11Client::refreshWindowType()\n";
+    debug;
 
     CriticalSection sec;
 
@@ -752,7 +751,7 @@ void X11Client::refreshWindowType()
 #if 1
         char *atom_name = XGetAtomName(dpy(), window_type);
         if (atom_name) {
-            std::cout<<"window type: "<<atom_name<<'\n';
+            debug<<"window type:"<<atom_name;
             XFree(atom_name);
         }
 #endif
@@ -768,7 +767,7 @@ void X11Client::refreshWindowType()
 
 void X11Client::refreshIcon()
 {
-    std::cout<<"looking for _NET_WM_ICON property ...\n";
+    debug<<"looking for _NET_WM_ICON property ...";
 
     CriticalSection sec;
 
@@ -790,10 +789,8 @@ void X11Client::refreshIcon()
                             &ret))
     {
         if (XA_CARDINAL == type) {
-            std::cout<<"got icon: ";
-
             if (nitems < 2)
-                std::cerr<<"bad length for _NET_WM_ICON property.\n";
+                debug<<"bad length for _NET_WM_ICON property.";
             else {
                 unsigned long width = 0;
                 unsigned long height = 0;
@@ -801,12 +798,13 @@ void X11Client::refreshIcon()
                 width = reinterpret_cast<unsigned long*>(ret)[0];
                 height = reinterpret_cast<unsigned long*>(ret)[1];
 
-                std::cout<<"width: "<<width<<" height: "<<height<<'\n';
+                printvar(width);
+                printvar(height);
 
                 unsigned long size = width * height;
 
                 if ((nitems - 2) < size)
-                    std::cerr<<"bad length for _NET_WM_ICON property.\n";
+                    debug<<"bad length for _NET_WM_ICON property.";
                 else {
                     delete _icon;
                     _icon = new X11Icon(width, height, _frame,
@@ -815,7 +813,7 @@ void X11Client::refreshIcon()
                 }
             }
         } else
-            std::cerr<<"bad data type for _NET_WM_ICON property.\n";
+            debug<<"bad data type for _NET_WM_ICON property.";
 
         XFree(ret);
     }
@@ -829,7 +827,7 @@ void X11Client::refreshIcon()
     }
 #endif
     else
-        std::cout<<"no _NET_WM_ICON property.\n";
+        debug<<"no _NET_WM_ICON property.";
 }
 
 void X11Client::handleExpose()
@@ -862,7 +860,7 @@ int X11Client::maxTextHeight()
 void X11Client::startDrag(int x, int y)
 {
     //FIXME what if the pointer is already grabbed ?
-    cout<<"X11Client::startDrag()\n";
+    debug;
     assert(!_dragged);
 
     _dragged = this;
@@ -879,13 +877,13 @@ void X11Client::startDrag(int x, int y)
 
 void X11Client::cancelDrag()
 {
-    cout<<"X11Client::cancelDrag()\n";
+    debug;
     finishDrag();
 }
 
 void X11Client::finishDrag()
 {
-    cout<<"X11Client::finishDrag()\n";
+    debug;
     _dragged = 0;
     _dragged_original_x = _dragged_original_y = 0;
     _drag_start_x = _drag_start_y = 0;
@@ -902,7 +900,7 @@ bool X11Client::handleEvent(const XEvent &ev)
 
     switch (ev.type) {
     case MotionNotify:
-//         cout<<"MotionNotify\n";
+//         debug<<"MotionNotify";
         if (_dragged) {
             XEvent motion_event = ev;
             while(XCheckTypedEvent(dpy(), MotionNotify, &motion_event)) {} //FIXME - what about motion events after botton release ?
@@ -1006,9 +1004,9 @@ bool X11Client::handleEvent(const XEvent &ev)
                     if (ev.xproperty.atom == ATOM(_NET_WM_WINDOW_TYPE)) {
                         //FIXME handle override_redirect
                         bool was_dialog = client->isDialog();
-                        std::cout<<"was_dialog: "<<was_dialog<<'\n';
+                        printvar(was_dialog);
                         client->refreshWindowType();
-                        std::cout<<"is_dialog: "<<(client->isDialog())<<'\n';
+                        printvar(client->isDialog());
                         if (was_dialog != client->isDialog()) {
                             if (client->isMapped())
                                 abort(); //FIXME

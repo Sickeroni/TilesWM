@@ -4,15 +4,11 @@
 #include "canvas.h"
 #include "colors.h"
 #include "workspace.h"
+#include "common.h"
 
 #if 1
 
-#include <iostream>
 #include <stdlib.h>
-
-
-using std::cout;
-using std::endl;
 
 
 ContainerContainer::ContainerContainer(ContainerContainer *parent) : Container(CONTAINER, parent),
@@ -278,13 +274,10 @@ void ContainerContainer::layout()
     if (!client_rect.w || !client_rect.h)
         return;
 
-    std::cout<<"ContainerContainer::layout()\n";
-    std::cout<<"children: "<<_children.count()<<'\n';
+    printvar(_children.count());
 
     int available_space = isHorizontal() ? client_rect.w : client_rect.h;
-
-    cout<<"space: "<<available_space<<endl;
-
+    printvar(available_space);
 
     // create layout item for each child
     LayoutItem *layout_items = new LayoutItem[_children.count()];
@@ -301,9 +294,9 @@ void ContainerContainer::layout()
         else
             item.init(c->minimumHeight(), c->maximumHeight());
 
-        cout<<"item "<<i<<" size: "<<item.size<<endl;
-        cout<<"item "<<i<<" min size: "<<item.min_size<<endl;
-        cout<<"item "<<i<<" max size: "<<item.max_size<<endl;
+        debug<<"item"<<i<<"size: "<<item.size;
+        debug<<"item"<<i<<"min size:"<<item.min_size;
+        debug<<"item"<<i<<"max size:"<<item.max_size;
 
         available_space -= item.size;
 
@@ -316,22 +309,22 @@ void ContainerContainer::layout()
     if (available_space < 0) // BAAD - children won't fit
         available_space = 0;
 
-    cout<<"space after - minimum size: "<<available_space<<endl;
+    debug<<"space after - minimum size: "<<available_space;
 
     if (!(workspace()->maximized())) {
         // distribute remaining available space
         while (available_space && num_growable_children) {
             int available_space_per_child = available_space / num_growable_children;
-            cout<<"available space before: "<<available_space<<endl;
-            cout<<"available space per child: "<<available_space_per_child<<endl;
+            debug<<"available space before:"<<available_space;
+            debug<<"available space per child:"<<available_space_per_child;
 
             if (!available_space_per_child)
                 break;
 
             for (int i = 0; i < _children.count(); i++) {
                 LayoutItem &item = layout_items[i];
-                cout<<"i: "<<i<<endl;
-                cout<<"item size before: "<<item.size<<endl;
+                printvar(i);
+                debug<<"item size before "<<item.size;
 
                 if (item.canGrow()) {
                     if (item.max_size) {
@@ -351,9 +344,9 @@ void ContainerContainer::layout()
                         num_growable_children--;
                 }
 
-                cout<<"item size after: "<<item.size<<endl;
+                debug<<"item size after:"<<item.size;
             }
-            cout<<"available space after: "<<available_space<<endl;
+            debug<<"available space after:"<<available_space;
         }
     }
 
@@ -371,7 +364,7 @@ void ContainerContainer::layout()
 
         int size = item.size;
 
-        cout<<"child "<<i<<" final size: "<<size<<endl;
+        debug<<"child"<<i<<"final size:"<<size;
 
         if (workspace()->maximized() && hasFocus()) {
             if (activeChild() == c)
@@ -396,7 +389,7 @@ void ContainerContainer::layout()
         new_rect.w -= (2 * _child_frame_width);
         new_rect.h -= (2 * _child_frame_width);
 
-        cout<<"child "<<i<<" final width: "<<new_rect.w<<endl;
+        debug<<"child"<<i<<"final width:"<<new_rect.w;
 
         c->setRect(new_rect);
         c->layout();
@@ -411,7 +404,7 @@ void ContainerContainer::layout()
 
 ClientContainer *ContainerContainer::addNewClientContainer(bool prepend)
 {
-    std::cout<<"ContainerContainer::addNewClientContainer()\n";
+    debug;
     ClientContainer *client_container = createClientContainer();
     if (prepend)
         prependChild(client_container);
@@ -441,8 +434,7 @@ void ContainerContainer::prependChild(Container *container)
 
 void ContainerContainer::appendChild(Container *container)
 {
-    std::cout<<"ContainerContainer::appendChild()\n";
-    std::cout<<"children: "<<_children.count()<<'\n';
+    printvar(_children.count());
 
 //FIXME
 //     if (!container->isUnlinked())
@@ -450,7 +442,7 @@ void ContainerContainer::appendChild(Container *container)
 
     _children.append(container);
 
-    std::cout<<"children: "<<_children.count()<<'\n';
+    printvar(_children.count());
 
     if (!_active_child)
         _active_child = container;

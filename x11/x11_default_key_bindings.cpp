@@ -4,8 +4,7 @@
 #include "x11_container_container.h"
 #include "client_container.h"
 #include "workspace.h"
-
-#include <iostream>
+#include "common.h"
 
 
 struct X11DefaultKeyBindings::Actions
@@ -103,7 +102,7 @@ struct X11DefaultKeyBindings::Actions
     }
     static void toggleMaximize()
     {
-        std::cout<<"toggleMaximize()\n";
+        debug;
         bool maximized = X11Application::activeWorkspace()->maximized();
         X11Application::activeWorkspace()->setMaximized(!maximized);
     }

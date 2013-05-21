@@ -5,9 +5,9 @@
 #include "icon.h"
 #include "colors.h"
 #include "types.h"
+#include "common.h"
 
 #include <stdio.h>
-#include <iostream>
 
 #if 0
 
@@ -52,7 +52,7 @@ Client::Client(bool is_mapped) :
 
 Client::~Client()
 {
-    std::cout<<"Client::~Client()\n";
+    debug;
     assert(!_container);
 }
 void Client::setContainer(ClientContainer *c)

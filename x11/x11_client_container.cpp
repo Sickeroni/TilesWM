@@ -8,8 +8,7 @@
 #include "x11_application.h"
 #include "workspace.h"
 #include "colors.h"
-
-#include <iostream>
+#include "common.h"
 
 
 using namespace X11Global;
@@ -66,7 +65,7 @@ void X11ClientContainer::setFocus()
 
 void X11ClientContainer::handleButtonPress(const XButtonEvent &ev)
 {
-    std::cout<<"X11ClientContainer::handleButtonPress()\n";
+    debug;
     if (activeClient())
         makeActive();
     handleMouseClick(ev.x_root, ev.y_root);

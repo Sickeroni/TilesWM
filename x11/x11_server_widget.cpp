@@ -3,8 +3,8 @@
 #include "x11_application.h"
 #include "x11_canvas.h"
 #include "x11_global.h"
+#include "common.h"
 
-#include <iostream>
 #include <stdlib.h>
 #include <string.h>
 #include <assert.h>
@@ -43,11 +43,11 @@ X11ServerWidget *X11ServerWidget ::find(Window wid)
 X11ServerWidget *X11ServerWidget::create(X11ServerWidget *parent, uint32 bg_color,
                                          EventHandler *event_handler, long event_mask)
 {
-    std::cout << "X11ServerWidget::create()\n";
+    debug;
 
     Window parent_wid = parent ? parent->wid() : X11Application::root();
 
-    std::cout << "parent_wid: " << parent_wid << '\n';
+    printvar(parent_wid);
 
     const unsigned int width = 100, height = 100;
 //     const unsigned long fg = 0xFFFFFF;

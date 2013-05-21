@@ -5,8 +5,7 @@
 #include "x11_client_container.h"
 #include "x11_server_widget.h"
 #include "x11_global.h"
-
-#include <iostream>
+#include "common.h"
 
 
 using namespace X11Global;
@@ -65,7 +64,7 @@ bool X11ClientWidget::refreshMapState()
         _is_mapped = (attr.map_state != IsUnmapped);
         return true;
     } else {
-        std::cerr<<"XGetWindowAttributes() failed.\n";
+        debug<<"XGetWindowAttributes() failed.";
         return false;
     }
 

@@ -4,7 +4,6 @@
 #include "types.h"
 
 #include <iostream>
-#include <sstream>
 
 
 class DebugStream
@@ -43,9 +42,9 @@ private:
 };
 
 
-// #define debug (DebugStream(__LINE__, __PRETTY_FUNCTION__ ))
-#define debug (DebugStream(__PRETTY_FUNCTION__ ))
-#define printvar(var) debug << #var << "=" << var;
+// #define debug (DebugStream(__LINE__, __PRETTY_FUNCTION__))
+#define debug (DebugStream(__PRETTY_FUNCTION__))
+#define printvar(var) { debug << #var << "=" << var; }
 
 
 #endif // __DEBUG_STREAM_H__
