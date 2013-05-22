@@ -283,7 +283,7 @@ void ContainerContainer::layout()
     LayoutItem *layout_items = new LayoutItem[_children.count()];
 
 
-    int num_growable_children = _children.count();
+    int num_growable_items = _children.count();
 
     // initialize layout items
     int i = 0;
@@ -294,14 +294,14 @@ void ContainerContainer::layout()
         else
             item.init(c->minimumHeight(), c->maximumHeight());
 
-        debug<<"item"<<i<<"size: "<<item.size;
+        debug<<"item"<<i<<"size:"<<item.size;
         debug<<"item"<<i<<"min size:"<<item.min_size;
         debug<<"item"<<i<<"max size:"<<item.max_size;
 
         available_space -= item.size;
 
         if(!item.canGrow())
-            num_growable_children--;
+            num_growable_items--;
 
         i++;
     }
@@ -309,45 +309,51 @@ void ContainerContainer::layout()
     if (available_space < 0) // BAAD - children won't fit
         available_space = 0;
 
-    debug<<"space after - minimum size: "<<available_space;
 
     if (!(workspace()->maximized())) {
         // distribute remaining available space
-        while (available_space && num_growable_children) {
-            int available_space_per_child = available_space / num_growable_children;
-            debug<<"available space before:"<<available_space;
-            debug<<"available space per child:"<<available_space_per_child;
+        while (available_space && num_growable_items) {
+            int available_space_per_item = available_space / num_growable_items;
 
-            if (!available_space_per_child)
+            debug<<"available space before:"<<available_space;
+            debug<<"available space per child:"<<available_space_per_item;
+
+            if (!available_space_per_item)
                 break;
+
+            // determine minimum current size among growable items
+            int min_size = 0;
+            for (int i = 0; i < _children.count(); i++) {
+                LayoutItem &item = layout_items[i];
+                if (item.canGrow()) {
+                    if (!min_size || min_size > item.size)
+                        min_size = item.size;
+                }
+            }
+
+            int new_min_size = min_size + available_space_per_item;
+            printvar(new_min_size);
 
             for (int i = 0; i < _children.count(); i++) {
                 LayoutItem &item = layout_items[i];
-                printvar(i);
-                debug<<"item size before "<<item.size;
-
                 if (item.canGrow()) {
-                    if (item.max_size) {
-                        if (item.max_size < (item.size + available_space_per_child)) {
-                            available_space -= (item.max_size - item.size);
-                            item.size = item.max_size;
-                        } else {
-                            available_space -= available_space_per_child;
-                            item.size += available_space_per_child;
-                        }
-                    } else {
-                        available_space -= available_space_per_child;
-                        item.size += available_space_per_child;
+                    int delta = new_min_size - item.size;
+                    printvar(delta);
+                    if (delta) { // item is smaller than new_min_size
+                        if (item.max_size && item.max_size < new_min_size)
+                            delta = item.max_size - item.size;
+
+                        available_space -= delta;
+                        item.size += delta;
                     }
-
                     if (!item.canGrow())
-                        num_growable_children--;
+                        num_growable_items--;
                 }
-
-                debug<<"item size after:"<<item.size;
             }
+
             debug<<"available space after:"<<available_space;
         }
+        // TODO: don't waste any available space: if (available_space) { ... }
     }
 
     assert(available_space >= 0);
