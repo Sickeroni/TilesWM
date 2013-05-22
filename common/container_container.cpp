@@ -240,11 +240,8 @@ void ContainerContainer::layout()
     struct LayoutItem
     {
         void init(int min, int max) {
-            if (respect_size_hints) {
-                min_size = min;
-                max_size = max;
-            } else
-                max_size = min_size = 0;
+            min_size = min;
+            max_size = max;
 
             if (max_size && max_size < min_size) // normalize
                 max_size = min_size;
@@ -289,7 +286,9 @@ void ContainerContainer::layout()
     int i = 0;
     for (Container *c = _children.first(); c; c = c->next()) {
         LayoutItem &item = layout_items[i];
-        if (isHorizontal())
+        if (!respect_size_hints)
+            item.init(0, 0);
+        else if (isHorizontal())
             item.init(c->minimumWidth(), c->maximumWidth());
         else
             item.init(c->minimumHeight(), c->maximumHeight());
