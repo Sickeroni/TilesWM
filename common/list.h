@@ -19,6 +19,7 @@ protected:
     public:
         Item() : _prev(0), _next(0) {}
         ~Item() {
+            //FIXME either remove from list or assert we are not part of a list
 //             assert(isUnlinked());
         }
 
