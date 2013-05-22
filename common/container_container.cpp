@@ -239,21 +239,21 @@ void ContainerContainer::layout()
 
     struct LayoutItem
     {
-        void init(int min_size, int max_size) {
+        void init(int min, int max) {
             if (respect_size_hints) {
-                this->min_size = min_size;
-                this->max_size = max_size;
+                min_size = min;
+                max_size = max;
             } else
-                this->max_size = this->min_size = 0;
+                max_size = min_size = 0;
 
             if (max_size && max_size < min_size) // normalize
                 max_size = min_size;
 
-            this->min_size += (2 * _child_frame_width);
-            if (this->max_size)
-                this->max_size += (2 * _child_frame_width);
+            min_size += (2 * _child_frame_width);
+            if (max_size)
+                max_size += (2 * _child_frame_width);
 
-            size = this->min_size;
+            size = min_size;
         }
 
         bool canGrow() {
