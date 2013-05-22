@@ -306,7 +306,7 @@ void ContainerContainer::layout()
         }
     }
 
-    debug<<"distributed minimum sizes";
+    debug<<"done distributing minimum sizes.";
     printvar(available_space);
 
     if (available_space < 0) // BAAD - children won't fit
