@@ -338,12 +338,15 @@ void ContainerContainer::layout()
                 if (item.canGrow()) {
                     int delta = new_min_size - item.size;
                     printvar(delta);
-                    if (delta) { // item is smaller than new_min_size
+                    if (delta > 0) { // item is smaller than new_min_size
                         if (item.max_size && item.max_size < new_min_size)
                             delta = item.max_size - item.size;
 
-                        available_space -= delta;
-                        item.size += delta;
+
+                        if (delta > 0) {
+                            available_space -= delta;
+                            item.size += delta;
+                        }
                     }
                     if (!item.canGrow())
                         num_growable_items--;
