@@ -16,7 +16,10 @@ Container::Orientation Container::_root_orientation = HORIZONTAL;
 Container::Container(Type type, ContainerContainer *parent) :
     _parent(parent),
     _type(type),
-    _workspace(0)
+    _workspace(0),
+//     _available_space_portion(0)
+    _fixed_width(0),
+    _fixed_height(0)
 {
     if (parent)
         _workspace = parent->workspace();
@@ -117,5 +120,119 @@ void Container::setWorkspace(Workspace *workspace)
 //     
 //     return root;
 // }
+
+
+// int Container::size()
+// {
+//     int size = 0;
+//     if (parent())
+//         size = parent()->isHorizontal() ? width() : height();
+//     return size;
+// }
+// 
+// int Container::minSize()
+// {
+//     int min_size = 0;
+//     if (parent())
+//         min_size = parent()->isHorizontal() ? minimumWidth() : minimumHeight();
+// 
+//     if (_fixed_size > min_size)
+//         min_size = _fixed_size;
+// 
+//     return min_size;
+// }
+// 
+// int Container::maxSize()
+// {
+//     
+// }
+
+
+int Container::minWidth()
+{
+    int ret = minWidthInt();
+    if (_fixed_width && _fixed_width > ret)
+        ret = _fixed_width;
+    return ret;
+}
+
+int Container::maxWidth()
+{
+    int ret = maxWidthInt();
+    if (_fixed_width && _fixed_width < ret)
+        ret = _fixed_width;
+    return ret;
+}
+
+int Container::minHeight()
+{
+    int ret = minHeightInt();
+    if (_fixed_height && _fixed_height > ret)
+        ret = _fixed_height;
+    return ret;
+}
+
+int Container::maxHeight()
+{
+    int ret = maxHeightInt();
+    if (_fixed_height && _fixed_height < ret)
+        ret = _fixed_height;
+    return ret;
+}
+
+void Container::setFixedWidth(int width)
+{
+    _fixed_width = width;
+    parent()->handleSizeHintsChanged(this);
+}
+
+void Container::setFixedHeight(int height)
+{
+    _fixed_height = height;
+    parent()->handleSizeHintsChanged(this);
+}
+
+// void Container::setCustomSizeActive(bool active)
+// {
+// //     if (!active)
+//         _custom_size = 0;
+// //     else
+// //         _custom_size = size();
+//     if (parent())
+//         parent()->layout();
+// 
+// }
+// 
+// void Container::incCustomSize()
+// {
+//     if (!_custom_size)
+//         setCustomSizeActive(true);
+//     _custom_size += 100;
+//     if (parent())
+//         parent()->layout();
+// }
+// 
+// void Container::decCustomSize()
+// {
+//     if (!_custom_size)
+//         setCustomSizeActive(true);
+//     _custom_size -= 100;
+//     if (_custom_size < 0)
+//         _custom_size = 0;
+//     if (parent())
+//         parent()->layout();
+// }
+
+
+// void Container::incAvailableSpacePortion(int pixels)
+// {
+//     parent()->incAvailableSpacePortion(this, pixels);
+// }
+// 
+// void Container::decAvailableSpacePortion(int pixels)
+// {
+//     parent()->decAvailableSpacePortion(this, pixels);
+// }
+
 
 #endif

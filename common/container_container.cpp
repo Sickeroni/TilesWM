@@ -13,7 +13,8 @@
 
 ContainerContainer::ContainerContainer(ContainerContainer *parent) : Container(CONTAINER, parent),
     _active_child(0),
-    _dirty(true)
+    _dirty(true),
+    _reserved_space(0)
 {
 }
 
@@ -133,15 +134,15 @@ inline void ContainerContainer::getClientRect(Rect &rect)
              _rect.w - (_frame_width * 2), _rect.h - _title_height - (_frame_width * 2));
 }
 
-int ContainerContainer::minimumWidth()
+int ContainerContainer::minWidthInt()
 {
     int width = 0;
     if (isHorizontal()) {
         for (Container *c = _children.first(); c; c = c->next())
-            width += c->minimumWidth() + (2 * _child_frame_width);
+            width += c->minWidth() + (2 * _child_frame_width);
     } else {
         for (Container *c = _children.first(); c; c = c->next()) {
-            int w = c->minimumWidth();
+            int w = c->minWidth();
             if (w > width)
                 width = w;
         }
@@ -153,19 +154,19 @@ int ContainerContainer::minimumWidth()
     return width;
 }
 
-int ContainerContainer::minimumHeight()
+int ContainerContainer::minHeightInt()
 {
     int height = 0;
     if (isHorizontal()) {
         for (Container *c = _children.first(); c; c = c->next()) {
-            int h = c->minimumHeight();
+            int h = c->minHeight();
             if (h > height)
                 height = h;
         }
         height += (2 * _child_frame_width);
     } else {
         for (Container *c = _children.first(); c; c = c->next())
-            height += c->minimumHeight() + (2 * _child_frame_width);
+            height += c->minHeight() + (2 * _child_frame_width);
     }
 
     height += _title_height + (2 * _frame_width);
@@ -173,11 +174,11 @@ int ContainerContainer::minimumHeight()
     return height;
 }
 
-int ContainerContainer::maximumWidth()
+int ContainerContainer::maxWidthInt()
 {
     int max_width = 100;
     for(Container *c = _children.first(); c; c = c->next()) {
-        if (int w = c->maximumWidth()) {
+        if (int w = c->maxWidth()) {
             if (w > max_width)
                 max_width = w;
         } else { // at least one child has unlimited maximum width
@@ -188,7 +189,7 @@ int ContainerContainer::maximumWidth()
     return max_width;
 }
 
-int ContainerContainer::maximumHeight()
+int ContainerContainer::maxHeightInt()
 {
     return 0;
 }
@@ -233,6 +234,23 @@ void ContainerContainer::draw(Canvas *canvas)
     }
 }
 
+int ContainerContainer::calcAvailableSpace()
+{
+    //FIXME duplicated in layout()
+    Rect client_rect;
+    getClientRect(client_rect);
+
+    int available_space = isHorizontal() ? client_rect.w : client_rect.h;
+
+    for(Container *c = _children.first(); c; c = c->next())
+        available_space -= isHorizontal() ? c->minWidth() : c->minHeight();
+
+    if (available_space < 0)
+        available_space = 0;
+
+    return available_space;
+}
+
 void ContainerContainer::layout()
 {
     static const bool respect_size_hints = true;
@@ -252,6 +270,8 @@ void ContainerContainer::layout()
                 max_size += (2 * _child_frame_width);
 
             size = min_size;
+
+//             extra_space = 0;
         }
 
         bool canGrow() {
@@ -261,6 +281,7 @@ void ContainerContainer::layout()
         Container *container;
         int size;
         int min_size, max_size;
+//         int extra_space;
     };
 
 
@@ -287,13 +308,24 @@ void ContainerContainer::layout()
         int i;
         Container *c;
         for (i = 0, c = _children.first(); c; c = c->next(), i++) {
+            int min_size, max_size;
+            if (!respect_size_hints) // FIXME move this flag to Container and test against in it Container::minSize()/maxSize()
+                min_size = max_size = 0;
+            else if (isHorizontal()) {
+                min_size = c->minWidth();
+                max_size = c->maxWidth();
+            } else {
+                min_size = c->minHeight();
+                max_size = c->maxHeight();
+            }
+
+//             if (c->extraSize() > 0)
+//                 min_size += c->extraSize();
+//             if (c->extraSize() > 0)
+//                 available_space -= c->extraSize();
+
             LayoutItem &item = layout_items[i];
-            if (!respect_size_hints)
-                item.init(c, 0, 0);
-            else if (isHorizontal())
-                item.init(c, c->minimumWidth(), c->maximumWidth());
-            else
-                item.init(c, c->minimumHeight(), c->maximumHeight());
+            item.init(c, min_size, max_size);
 
             debug<<"item"<<i<<"size:"<<item.size;
             debug<<"item"<<i<<"min size:"<<item.min_size;
@@ -307,6 +339,19 @@ void ContainerContainer::layout()
     }
 
     debug<<"done distributing minimum sizes.";
+    printvar(available_space);
+
+//     for(int i = 0; i < _children.count(); i++)
+//     {
+//         LayoutItem &item = layout_items[i];
+//         Container *c = item.container;
+//         if (c->availableSpacePortion()) {
+//             item.extra_space = (c->availableSpacePortion() * available_space);
+//             available_space -= item.extra_space;
+//         }
+//     }
+
+    debug<<"done distributing extra space.";
     printvar(available_space);
 
     if (available_space < 0) // BAAD - children won't fit
@@ -381,6 +426,7 @@ void ContainerContainer::layout()
         child_rect.setPos(current_x, current_y);
 
         int size = item.size;
+//         int size = item.size + item.extra_space;
 
         debug<<"child"<<i<<"final size:"<<size;
 
@@ -653,5 +699,50 @@ void ContainerContainer::redrawAll()
     for (Container *c = _children.first(); c; c = c->next())
         c->redrawAll();
 }
+
+// void ContainerContainer::incAvailableSpacePortion(Container *child, int pixels)
+// {
+//     printvar(pixels);
+//     if (pixels <= 0)
+//         return;
+//     if (_reserved_space < 1) {
+//         int available_space = calcAvailableSpace();
+//         printvar(available_space);
+//         double portion_delta = static_cast<double>(pixels) / static_cast<double>(available_space);
+//         printvar(portion_delta);
+//         printvar(_reserved_space);
+//         printvar(_reserved_space + portion_delta);
+//         if (_reserved_space + portion_delta > 1)
+//             portion_delta = (1 - _reserved_space);
+//         printvar(portion_delta);
+//         _reserved_space += portion_delta;
+//         printvar(_reserved_space);
+//         child->setAvailableSpacePortion(child->availableSpacePortion() + portion_delta);
+//         layout();
+//     }
+// }
+// 
+// void ContainerContainer::decAvailableSpacePortion(Container *child, int pixels)
+// {
+//     printvar(pixels);
+//     if (pixels <= 0)
+//         return;
+//     if (_reserved_space > 0 && child->availableSpacePortion() > 0) {
+//         int available_space = calcAvailableSpace();
+//         printvar(available_space);
+//         double portion_delta = static_cast<double>(pixels) / static_cast<double>(available_space);
+//         printvar(portion_delta);
+//         printvar(_reserved_space);
+//         printvar(_reserved_space - portion_delta);
+// //         if (_reserved_space - portion_delta < 0)
+// //             portion_delta -= _reserved_space;
+//         printvar(portion_delta);
+//         _reserved_space -= portion_delta;
+//         printvar(_reserved_space);
+//         child->setAvailableSpacePortion(child->availableSpacePortion() - portion_delta);
+//         layout();
+//     }
+// }
+
 
 #endif

@@ -18,6 +18,8 @@
 
 ClientContainer::ClientContainer(ContainerContainer *parent) : Container(CLIENT, parent),
     _is_expanding(true),
+//     _extra_space(0),
+//     _custom_size_active(false),
     _mode(TABBED),
     _active_client(0)
 {
@@ -76,7 +78,7 @@ void ClientContainer::setExpanding(bool enable)
     }
 }
 
-int ClientContainer::minimumWidth()
+int ClientContainer::minWidthInt()
 {
     int min_w = _vertical_tabbar_width;
     if (!isMinimized() && activeClient() && activeClient()->minWidth() > min_w)
@@ -84,7 +86,7 @@ int ClientContainer::minimumWidth()
     return min_w + (2 * _frame_width);
 }
 
-int ClientContainer::minimumHeight()
+int ClientContainer::minHeightInt()
 {
     int tabbar_height = 0;
     if (isMinimized()) {
@@ -137,14 +139,17 @@ void ClientContainer::handleMouseClick(int global_x, int global_y)
     }
 }
 
-int ClientContainer::maximumHeight()
+
+//FIXME bring in order
+
+int ClientContainer::maxHeightInt()
 {
     return 0;
 }
 
-int ClientContainer::maximumWidth()
+int ClientContainer::maxWidthInt()
 {
-    int min_width = minimumWidth();
+    int min_width = minWidthInt();
 
     if (activeClient() && !isMinimized()) {
         if (_is_expanding) {
@@ -161,6 +166,19 @@ int ClientContainer::maximumWidth()
     } else
         return min_width;
 }
+
+// void ClientContainer::setExtraSpace(int space)
+// {
+//     _extra_space = space;
+//     if (_extra_space < 0)
+//         _extra_space = 0;
+//     parent()->layout();
+// }
+
+// void ClientContainer::setCustomSizeActive(bool active)
+// {
+//     _custom_size_active = active;
+// }
 
 void ClientContainer::handleClientMap(Client *client)
 {

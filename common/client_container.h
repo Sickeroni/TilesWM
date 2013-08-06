@@ -23,12 +23,6 @@ public:
 //     virtual void layoutClients;
     virtual bool isEmpty() { return _clients.isEmpty(); }
     virtual void redrawAll();
-    virtual int minimumWidth();
-    virtual int minimumHeight();
-    virtual int maximumWidth() ;
-    virtual int maximumHeight();
-
-
 
     Client *activeClient();
     void setActiveClient(Client *client);
@@ -60,7 +54,16 @@ public:
     bool isExpanding() { return _is_expanding; }
     void setExpanding(bool enable);
 
+//     void incCustomSize()
+//     void decCustomSize();
+//     void setCustomSizeActive(bool active);
+
 protected:
+    virtual int minWidthInt();
+    virtual int maxWidthInt();
+    virtual int minHeightInt();
+    virtual int maxHeightInt();
+
     ClientContainer(ContainerContainer *parent);
 
     virtual int maxTextHeight() = 0;
@@ -100,6 +103,10 @@ private:
     void unfocusActiveClient();
 
     bool _is_expanding;
+    // this value is addet to the client-specified minimum size
+    // configurable by user
+//     int _extra_space;
+//     bool _custom_size_active;
     Mode _mode;
     Client *_active_client;
 };

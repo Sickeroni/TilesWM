@@ -111,6 +111,56 @@ struct X11DefaultKeyBindings::Actions
         if (ClientContainer *c = clientContainer())
             c->setExpanding(!c->isExpanding());
     }
+    static void incExtraSpace()
+    {
+//         clientContainer()->parent()->incAvailableSpacePortion(clientContainer(), 100);
+    }
+    static void decExtraSpace()
+    {
+//         clientContainer()->parent()->decAvailableSpacePortion(clientContainer(), 100);
+//         clientContainer()->decCustomSize();
+    }
+    static void resetExtraSpace()
+    {
+//         
+//         clientContainer()->setCustomSizeActive(false);
+    }
+
+
+    static void incWidth()
+    {
+        changeSize(true, 100);
+    }
+    static void decWidth()
+    {
+        changeSize(true, -100);
+    }
+    static void incHeight()
+    {
+        changeSize(false, 100);
+    }
+    static void decHeight()
+    {
+        changeSize(false, -100);
+    }
+
+    static void changeSize(bool horizontal, int delta)
+    {
+        if (Container *c = clientContainer()) {
+            Container *target = (c->parent()->isHorizontal() == horizontal) ? c : c->parent();
+            if (horizontal) {
+                if (target->fixedWidth())
+                    target->setFixedWidth(target->fixedWidth() + delta);
+                else
+                    target->setFixedWidth(target->width() + delta);
+            } else {
+                if (target->fixedHeight())
+                    target->setFixedHeight(target->fixedHeight() + delta);
+                else
+                    target->setFixedHeight(target->height() + delta);
+            }
+        }
+    }
 
     //HACK
     static void addNewClientContainer()
@@ -139,8 +189,15 @@ X11DefaultKeyBindings::X11DefaultKeyBindings()
     createShortcut("c", Mod1Mask, &Actions::deleteEmptyContainers);
     createShortcut("F2", Mod1Mask, &Actions::runProgram);
 //     createShortcut("Return", Mod1Mask, &Actions::toggleMaximize);
+
     createShortcut("m", Mod1Mask, &Actions::toggleMaximize);
     createShortcut("e", Mod1Mask, &Actions::toggleExpanding);
+
+    createShortcut("KP_Right", ControlMask | Mod1Mask, &Actions::incWidth);
+    createShortcut("KP_Left", ControlMask | Mod1Mask, &Actions::decWidth);
+    createShortcut("KP_Down", ControlMask | Mod1Mask, &Actions::incHeight);
+    createShortcut("KP_Up", ControlMask | Mod1Mask, &Actions::decHeight);
+
 
     //HACK
     createShortcut("n", Mod1Mask, &Actions::addNewClientContainer);

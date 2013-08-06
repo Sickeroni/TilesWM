@@ -59,15 +59,38 @@ public:
     virtual void redrawAll() = 0;
     virtual void handleMaximizedChanged() = 0;
     virtual void handleActiveChanged() = 0;
-    virtual int minimumWidth() = 0;
-    virtual int minimumHeight() = 0;
-    virtual int maximumWidth() = 0;
-    virtual int maximumHeight() = 0;
+
+
+//     int minSize();
+//     int maxSize();
+//     int size();
+//     double availableSpacePortion() { return _available_space_portion; }
+//     void setAvailableSpacePortion(double portion) {
+//         _available_space_portion = portion;
+//     }
+
+//     void incAvailableSpacePortion(int pixels);
+//     void decAvailableSpacePortion(int pixels);
+//     int extraSize() { return _custom_size; }
+//     void setCustomSizeActive(bool active);
+
+    int minWidth();
+    int maxWidth();
+    int minHeight();
+    int maxHeight();
+    int fixedWidth() { return _fixed_width; }
+    void setFixedWidth(int width);
+//     void changeFixedWidth(int delta);
+    int fixedHeight() { return _fixed_height; }
+    void setFixedHeight(int height);
+//     void changeFixedHaight(int delta);
 
     virtual void reparent(ContainerContainer *p) {
         _parent = p;
     }
     virtual void setRect(const Rect &rect);
+    // FIXME UGLY
+//     virtual int extraSpace() { return 0; }
 
     int x() { return _rect.x; }
     int y() { return _rect.y; }
@@ -97,7 +120,13 @@ public:
     bool isAncestorOf(Container *container);
     bool isMinimized();
 
+
 protected:
+    virtual int minWidthInt() = 0;
+    virtual int maxWidthInt() = 0;
+    virtual int minHeightInt() = 0;
+    virtual int maxHeightInt() = 0;
+
     Container(Type type, ContainerContainer *parent);
 
     void localToGlobal(int &x, int &y);
@@ -113,6 +142,10 @@ protected:
 private:
     const Type _type;
     Workspace *_workspace;
+    // reserved portion of available space
+    double _available_space_portion;
+    int _fixed_width;
+    int _fixed_height;
 };
 
 #endif // __CONTAINER_H__

@@ -26,10 +26,6 @@ public:
     virtual void deleteEmptyChildren();
     virtual void handleMaximizedChanged();
     virtual void handleActiveChanged();
-    virtual int minimumWidth();
-    virtual int minimumHeight();
-    virtual int maximumWidth();
-    virtual int maximumHeight();
 
     Container *activeChild() { return _active_child; }
     void focusPrevChild();
@@ -40,10 +36,17 @@ public:
     ClientContainer *splitChild(Container *child, bool prepend_new_sibling);
     void setActiveChild(Container *child);
     void handleSizeHintsChanged(Container *child);
+//     void incAvailableSpacePortion(Container *child, int pixels);
+//     void decAvailableSpacePortion(Container *child, int pixels);
+
 
 protected:
     virtual ClientContainer *createClientContainer() = 0;
     virtual ContainerContainer *createContainerContainer() = 0;
+    virtual int minWidthInt();
+    virtual int maxWidthInt();
+    virtual int minHeightInt();
+    virtual int maxHeightInt();
 
     ContainerContainer(ContainerContainer *parent);
 
@@ -57,10 +60,12 @@ private:
     void updateDirtyStatus();
     void deleteChild(Container *child);
     void getClientRect(Rect &rect);
+    int calcAvailableSpace();
 
     List<Container> _children;
     Container *_active_child;
-    bool _dirty; // is this container unused or are there unused child containers ?;
+    bool _dirty; // is this container unused or are there unused child containers ?
+    double _reserved_space;
 
     static const int _frame_width = 10;
     static const int _title_height = 10;
