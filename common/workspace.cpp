@@ -8,6 +8,11 @@ Workspace::Workspace() :
 {
 }
 
+void Workspace::setRootContainer(ContainerContainer *container)
+{
+    _root_container = container;
+}
+
 void Workspace::setMaximized(bool enable)
 {
     _maximized = enable;

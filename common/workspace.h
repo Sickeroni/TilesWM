@@ -8,13 +8,14 @@ class Workspace
 {
 public:
     ContainerContainer *rootContainer() { return _root_container; }
+    void setRootContainer(ContainerContainer *container);
     bool maximized() { return _maximized; }
     void setMaximized(bool enable);
 
     Workspace();
 
-// private:
-    //FIXME ContainerContainer *_dock
+private:
+    //ContainerContainer *_dock
     ContainerContainer *_root_container;
     bool _maximized;
 };

@@ -218,7 +218,7 @@ bool X11Application::init()
     Rect root_container_rect;
     root_container_rect.set(0, 0, root_attr.width, root_attr.height);
 
-    _workspace->_root_container = X11ContainerContainer::create(_workspace);
+    _workspace->setRootContainer(X11ContainerContainer::create(_workspace));
 
     activeRootContainer()->setRect(root_container_rect);
 
