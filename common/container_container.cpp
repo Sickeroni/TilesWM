@@ -220,7 +220,7 @@ void ContainerContainer::draw(Canvas *canvas)
 
     canvas->drawText(title.str().c_str(),
                      title_rect,
-                     hasFocus() ?  Colors::CONTAINER_FOCUS : Colors::CONTAINER_FRAME);
+                     hasFocus() ?  Colors::CONTAINER_FOCUS : Colors::CONTAINER_BORDER);
 
     for (Container *c = _children.first(); c; c = c->next()) {
         Rect frame_rect = c->rect();
@@ -229,8 +229,8 @@ void ContainerContainer::draw(Canvas *canvas)
         frame_rect.w += 10;
         frame_rect.h += 10;
 
-        uint32 frame_color = c->isClientContainer() ? Colors::CLIENT_CONTAINER_FRAME :
-                                                      Colors::CONTAINER_FRAME;
+        uint32 frame_color = c->isClientContainer() ? Colors::CLIENT_CONTAINER_BORDER:
+                                                      Colors::CONTAINER_BORDER;
 
         canvas->drawFrame(frame_rect, frame_color);
 
