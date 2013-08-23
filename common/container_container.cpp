@@ -6,6 +6,8 @@
 #include "workspace.h"
 #include "common.h"
 
+#include <sstream>
+
 #if 1
 
 #include <stdlib.h>
@@ -22,7 +24,6 @@ ContainerContainer::~ContainerContainer()
 {
     clear();
 }
-
 
 void ContainerContainer::clear()
 {
@@ -59,7 +60,6 @@ void ContainerContainer::handleSizeHintsChanged(Container *child)
     else
         layout();
 }
-
 
 void ContainerContainer::setActiveChild(Container *child)
 {
@@ -115,7 +115,6 @@ ClientContainer *ContainerContainer::activeClientContainer()
     } else
         return 0;
 }
-
 
 void ContainerContainer::addClient(Client *c)
 {
@@ -176,14 +175,18 @@ int ContainerContainer::minHeightInt()
 
 int ContainerContainer::maxWidthInt()
 {
-    int max_width = 100;
-    for(Container *c = _children.first(); c; c = c->next()) {
-        if (int w = c->maxWidth()) {
-            if (w > max_width)
-                max_width = w;
-        } else { // at least one child has unlimited maximum width
-            max_width = 0; // unlimited width
-            break;
+    int max_width = 0;
+    if (isHorizontal()) {
+        abort();
+    } else {
+        for(Container *c = _children.first(); c; c = c->next()) {
+            if (int w = c->maxWidth()) {
+                if (w > max_width)
+                    max_width = w;
+            } else { // at least one child has unlimited maximum width
+                max_width = 0; // unlimited width
+                break;
+            }
         }
     }
     return max_width;
@@ -203,7 +206,19 @@ void ContainerContainer::draw(Canvas *canvas)
     Rect title_rect(_frame_width - 2, _frame_width - 2,
                     width() - 4 - (2 * _frame_width), _title_height);
 
-    canvas->drawText(isHorizontal() ? "H" : "V",
+    std::stringstream title;
+
+    if (isHorizontal())
+        title<<"H";
+    else
+        title<<"V";
+
+    if (isFixedSize())
+        title<<"  - ";
+    else
+        title<<" <->";
+
+    canvas->drawText(title.str().c_str(),
                      title_rect,
                      hasFocus() ?  Colors::CONTAINER_FOCUS : Colors::CONTAINER_FRAME);
 
@@ -319,10 +334,16 @@ void ContainerContainer::layout()
                 max_size = c->maxHeight();
             }
 
-//             if (c->extraSize() > 0)
-//                 min_size += c->extraSize();
-//             if (c->extraSize() > 0)
-//                 available_space -= c->extraSize();
+            if (c->isFixedSize()) {
+                //FIXME - make sure min_size <= c->[maxWidth()|maxHeight()]
+                if (isHorizontal()) {
+                    min_size = c->minWidth() + c->fixedWidth();
+                } else {
+                    min_size = c->minHeight() + c->fixedHeight();
+                }
+                max_size = min_size;
+            }
+
 
             LayoutItem &item = layout_items[i];
             item.init(c, min_size, max_size);
@@ -339,19 +360,6 @@ void ContainerContainer::layout()
     }
 
     debug<<"done distributing minimum sizes.";
-    printvar(available_space);
-
-//     for(int i = 0; i < _children.count(); i++)
-//     {
-//         LayoutItem &item = layout_items[i];
-//         Container *c = item.container;
-//         if (c->availableSpacePortion()) {
-//             item.extra_space = (c->availableSpacePortion() * available_space);
-//             available_space -= item.extra_space;
-//         }
-//     }
-
-    debug<<"done distributing extra space.";
     printvar(available_space);
 
     if (available_space < 0) // BAAD - children won't fit
@@ -426,7 +434,6 @@ void ContainerContainer::layout()
         child_rect.setPos(current_x, current_y);
 
         int size = item.size;
-//         int size = item.size + item.extra_space;
 
         debug<<"child"<<i<<"final size:"<<size;
 

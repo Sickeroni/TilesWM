@@ -49,6 +49,10 @@ public:
 
     virtual ~Container() {}
 
+
+    bool isFixedSize() { return _is_fixed_size; }
+    void enableFixedSize(bool enable);
+
     virtual int numElements() = 0;
     virtual void setFocus() = 0;
     virtual ClientContainer *activeClientContainer() = 0;
@@ -61,43 +65,26 @@ public:
     virtual void handleActiveChanged() = 0;
 
 
-//     int minSize();
-//     int maxSize();
-//     int size();
-//     double availableSpacePortion() { return _available_space_portion; }
-//     void setAvailableSpacePortion(double portion) {
-//         _available_space_portion = portion;
-//     }
-
-//     void incAvailableSpacePortion(int pixels);
-//     void decAvailableSpacePortion(int pixels);
-//     int extraSize() { return _custom_size; }
-//     void setCustomSizeActive(bool active);
 
     int minWidth();
     int maxWidth();
     int minHeight();
     int maxHeight();
-    int fixedWidth() { return _fixed_width; }
+    int fixedWidth() { return isMinimized() ? 0 : _fixed_width; }
     void setFixedWidth(int width);
-//     void changeFixedWidth(int delta);
-    int fixedHeight() { return _fixed_height; }
+    int fixedHeight() { return isMinimized() ? 0 : _fixed_height; }
     void setFixedHeight(int height);
-//     void changeFixedHaight(int delta);
 
     virtual void reparent(ContainerContainer *p) {
         _parent = p;
     }
     virtual void setRect(const Rect &rect);
-    // FIXME UGLY
-//     virtual int extraSpace() { return 0; }
 
     int x() { return _rect.x; }
     int y() { return _rect.y; }
     int width() { return _rect.w; }
     int height() { return _rect.h; }
     const Rect &rect() { return _rect; }
-//     virtual void setRect(int x, int y, int w, int h);
 
     bool isHorizontal() {
         return orientation() == HORIZONTAL;
@@ -142,10 +129,9 @@ protected:
 private:
     const Type _type;
     Workspace *_workspace;
-    // reserved portion of available space
-    double _available_space_portion;
     int _fixed_width;
     int _fixed_height;
+    bool _is_fixed_size;
 };
 
 #endif // __CONTAINER_H__

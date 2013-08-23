@@ -109,7 +109,12 @@ struct X11DefaultKeyBindings::Actions
     static void toggleExpanding()
     {
         if (ClientContainer *c = clientContainer())
-            c->setExpanding(!c->isExpanding());
+            c->enableFixedSize(!c->isFixedSize());
+    }
+    static void toggleParentExpanding()
+    {
+        if (ClientContainer *c = clientContainer())
+            c->parent()->enableFixedSize(!c->parent()->isFixedSize());
     }
     static void incExtraSpace()
     {
@@ -148,16 +153,11 @@ struct X11DefaultKeyBindings::Actions
     {
         if (Container *c = clientContainer()) {
             Container *target = (c->parent()->isHorizontal() == horizontal) ? c : c->parent();
-            if (horizontal) {
-                if (target->fixedWidth())
+            if (target->isFixedSize()) {
+                if (horizontal)
                     target->setFixedWidth(target->fixedWidth() + delta);
                 else
-                    target->setFixedWidth(target->width() + delta);
-            } else {
-                if (target->fixedHeight())
                     target->setFixedHeight(target->fixedHeight() + delta);
-                else
-                    target->setFixedHeight(target->height() + delta);
             }
         }
     }
@@ -192,6 +192,7 @@ X11DefaultKeyBindings::X11DefaultKeyBindings()
 
     createShortcut("m", Mod1Mask, &Actions::toggleMaximize);
     createShortcut("e", Mod1Mask, &Actions::toggleExpanding);
+    createShortcut("e", ControlMask | Mod1Mask, &Actions::toggleParentExpanding);
 
     createShortcut("KP_Right", ControlMask | Mod1Mask, &Actions::incWidth);
     createShortcut("KP_Left", ControlMask | Mod1Mask, &Actions::decWidth);

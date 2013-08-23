@@ -51,8 +51,7 @@ public:
             moveClientToOther(activeClient(), where);
     }
 
-    bool isExpanding() { return _is_expanding; }
-    void setExpanding(bool enable);
+
 
 //     void incCustomSize()
 //     void decCustomSize();
@@ -102,7 +101,6 @@ private:
     void removeClientInt(Client *c, bool moving_to_new_container);
     void unfocusActiveClient();
 
-    bool _is_expanding;
     // this value is addet to the client-specified minimum size
     // configurable by user
 //     int _extra_space;

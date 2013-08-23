@@ -17,7 +17,6 @@
 
 
 ClientContainer::ClientContainer(ContainerContainer *parent) : Container(CLIENT, parent),
-    _is_expanding(true),
 //     _extra_space(0),
 //     _custom_size_active(false),
     _mode(TABBED),
@@ -70,14 +69,6 @@ void ClientContainer::setActiveClient(Client *client)
     parent()->handleSizeHintsChanged(this);
 }
 
-void ClientContainer::setExpanding(bool enable)
-{
-    if (_is_expanding != enable) {
-        _is_expanding = enable;
-        parent()->handleSizeHintsChanged(this);
-    }
-}
-
 int ClientContainer::minWidthInt()
 {
     int min_w = _vertical_tabbar_width;
@@ -97,8 +88,12 @@ int ClientContainer::minHeightInt()
                              + ((!_clients.count() ? 0 : _clients.count() - 1) * _tab_gap));
     } else
         tabbar_height = calcTabbarHeight();
+	
+	int min_client_height = 0;
+	if (!isMinimized() && activeClient())
+		min_client_height = activeClient()->minHeight();
 
-    return tabbar_height + (2 * _frame_width);
+    return tabbar_height + min_client_height + (2 * _frame_width);
 }
 
 void ClientContainer::handleMouseClick(int global_x, int global_y)
@@ -144,6 +139,7 @@ void ClientContainer::handleMouseClick(int global_x, int global_y)
 
 int ClientContainer::maxHeightInt()
 {
+	//FIXME
     return 0;
 }
 
@@ -152,7 +148,7 @@ int ClientContainer::maxWidthInt()
     int min_width = minWidthInt();
 
     if (activeClient() && !isMinimized()) {
-        if (_is_expanding) {
+//         if (!isFixedSize()) {
             if (activeClient()->maxWidth()) {
                 int max_width = (2 * _frame_width) + activeClient()->maxWidth();
                 if (max_width > min_width)
@@ -161,8 +157,8 @@ int ClientContainer::maxWidthInt()
                     return min_width;
             } else
                 return 0;
-        } else
-            return min_width;
+//         } else
+//             return min_width;
     } else
         return min_width;
 }
@@ -516,11 +512,10 @@ void ClientContainer::drawTabbar(Canvas *canvas)
 
     uint32 status_bar_fg = Colors::TAB_TEXT;
 
-    canvas->drawText(_is_expanding ? "<->" : ">-<", status_bar_rect, status_bar_fg);
+    canvas->drawText(isFixedSize() ? "-" : "<->", status_bar_rect, status_bar_fg);
 
     if (!_clients.count())
         return;
-
 
     int tab_width, tab_height;
     getTabSize(tab_width, tab_height);
@@ -534,7 +529,6 @@ void ClientContainer::drawTabbar(Canvas *canvas)
 
         i++;
     }
-
 }
 
 void ClientContainer::layout()
