@@ -21,6 +21,7 @@ X11ContainerContainer *X11ContainerContainer::create(Workspace *workspace)
 
 X11ContainerContainer::X11ContainerContainer(Workspace *workspace, X11ContainerContainer *parent) :
     ContainerContainer(parent),
+//     _active_child(0),
     _widget(X11ServerWidget::create(parent ? parent->widget() : 0,
                                     Colors::CONTAINER,
                                     this, ExposureMask))
@@ -35,6 +36,33 @@ X11ContainerContainer::~X11ContainerContainer()
     delete _widget;
     _widget = 0;
 }
+
+
+void X11ContainerContainer::clear()
+{
+//     _active_child = 0;
+
+    for (int i = 0; i < _children.size(); i++)
+        delete _children[i];
+    _children.clear();
+}
+
+#if 0
+void X11ContainerContainer::deleteChild(Container *child)
+{
+    if (child == _active_child)
+        _active_child = 0;
+
+    _children.remove(child);
+
+    delete child;
+
+    //FIXME should this be done here or by the caller ?
+    if (!_active_child && _children.size())
+        _active_child = _children[0]:
+}
+#endif
+
 
 void X11ContainerContainer::setRect(const Rect &rect)
 {

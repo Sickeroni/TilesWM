@@ -66,9 +66,12 @@ void X11ClientContainer::setFocus()
 void X11ClientContainer::handleButtonPress(const XButtonEvent &ev)
 {
     debug;
+//FIXME
+#if 0
     if (activeClient())
         makeActive();
     handleMouseClick(ev.x_root, ev.y_root);
+#endif
 }
 
 void X11ClientContainer::handleActiveChanged()

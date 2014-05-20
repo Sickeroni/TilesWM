@@ -89,6 +89,7 @@ bool Container::isMinimized()
         return false;
 }
 
+#if 0
 void Container::makeActive()
 {
     if (_parent) {
@@ -96,6 +97,7 @@ void Container::makeActive()
         _parent->setActiveChild(this);
     }
 }
+#endif
 
 bool Container::isAncestorOf(Container *container)
 {

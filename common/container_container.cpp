@@ -16,7 +16,6 @@
 
 
 ContainerContainer::ContainerContainer(ContainerContainer *parent) : Container(CONTAINER, parent),
-//     _active_child(0),
     _dirty(true),
     _reserved_space(0)
 {
@@ -24,19 +23,8 @@ ContainerContainer::ContainerContainer(ContainerContainer *parent) : Container(C
 
 ContainerContainer::~ContainerContainer()
 {
-    clear();
 }
 
-#if 0
-void ContainerContainer::clear()
-{
-    for (Container *c = _children.first(); c; ) {
-        Container *delete_this= c;
-        c = c->next();
-        deleteChild(delete_this);
-    }
-}
-#endif
 
 #if 0
 void ContainerContainer::setFocus()
@@ -314,6 +302,7 @@ void ContainerContainer::replaceChild(Container *old_container, Container *new_c
 }
 #endif
 
+#if 0
 void ContainerContainer::setDirty(bool set)
 {
     _dirty = set;
@@ -325,6 +314,7 @@ void ContainerContainer::setDirty(bool set)
             _parent->updateDirtyStatus();
     }
 }
+#endif
 #if 0
 void ContainerContainer::updateDirtyStatus()
 {
@@ -474,6 +464,7 @@ ClientContainer *ContainerContainer::splitChild(Container *child, bool prepend_n
 }
 #endif
 
+#if 0
 int ContainerContainer::hierarchyDepth()
 {
     if (_parent)
@@ -481,6 +472,7 @@ int ContainerContainer::hierarchyDepth()
     else
         return 0;
 }
+#endif
 
 #if 0
 void ContainerContainer::redrawAll()

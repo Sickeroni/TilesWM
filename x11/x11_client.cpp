@@ -966,7 +966,8 @@ bool X11Client::handleEvent(const XEvent &ev)
                 client->map();
                 if (ClientContainer *container =  client->container()) {
                     container->setActiveClient(client);
-                    container->makeActive();
+                    abort();
+//                     container->makeActive(); //FIXME
                     client->setFocus();
                 }
                 break;

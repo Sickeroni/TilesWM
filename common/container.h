@@ -98,7 +98,7 @@ public:
 
     bool hasFocus();
 
-    void makeActive(); //FIXME change to makeActiveAndFocus() ?
+//     void makeActive(); //FIXME change to makeActiveAndFocus() ?
 
     ContainerContainer *root();
 

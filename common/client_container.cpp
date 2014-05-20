@@ -263,6 +263,7 @@ void ClientContainer::unfocusActiveClient()
     redraw();
 }
 
+#if 0
 void ClientContainer::addClient(Client *c)
 {
     debug;
@@ -287,7 +288,9 @@ void ClientContainer::addClient(Client *c)
     else
         redraw();
 }
+#endif
 
+#if 0
 void ClientContainer::removeClientInt(Client *c, bool moving_to_new_container)
 {
     debug;
@@ -310,6 +313,7 @@ void ClientContainer::removeClientInt(Client *c, bool moving_to_new_container)
     if (isEmpty() && _parent)
         _parent->setDirty(true);
 }
+#endif
 
 void ClientContainer::draw(Canvas *canvas)
 {

@@ -13,54 +13,57 @@ class ContainerContainer : public Container
 public:
     virtual ~ContainerContainer();
 
-
     virtual void redraw() = 0;
-    virtual int numElements();
+    virtual int numElements() = 0;
+    virtual Container *activeChild() = 0;
+    virtual Container *child(int index) = 0;
+    virtual bool isEmpty() = 0;
+
+
     virtual ClientContainer *activeClientContainer();
     virtual void setFocus();
 //     virtual void addClient(Client *c);
     virtual void layout();
 //     virtual void layoutClients();
-    virtual bool isEmpty();
     virtual void redrawAll();
 //     virtual void deleteEmptyChildren();
     virtual void handleMaximizedChanged();
     virtual void handleActiveChanged();
 
-    Container *activeChild();
-    void focusPrevChild();
-    void focusNextChild();
+//     void focusPrevChild();
+//     void focusNextChild();
     void setDirty(bool set);
     void draw(Canvas *canvas);
 //     ClientContainer *addNewClientContainer(bool prepend);
 //     ClientContainer *splitChild(Container *child, bool prepend_new_sibling);
-    void setActiveChild(Container *child);
+    
     void handleSizeHintsChanged(Container *child);
 //     void incAvailableSpacePortion(Container *child, int pixels);
 //     void decAvailableSpacePortion(Container *child, int pixels);
 
     void getClientRect(Rect &rect);
-    Container *child(int index);
 
     static const int _child_frame_width = 10;
     static const int _title_height = 10;
     static const int _frame_width = 10;
 
 protected:
+//     void clear() = 0;
 //     virtual ClientContainer *createClientContainer() = 0;
 //     virtual ContainerContainer *createContainerContainer() = 0;
     virtual int minWidthInt();
     virtual int maxWidthInt();
     virtual int minHeightInt();
     virtual int maxHeightInt();
+    
+    
 
     ContainerContainer(ContainerContainer *parent);
 
-    void appendChild(Container *container);
-    void prependChild(Container *container);
-    void replaceChild(Container *old_container, Container *new_container);
-    void clear();
-    int hierarchyDepth();
+//     void appendChild(Container *container);
+//     void prependChild(Container *container);
+//     void replaceChild(Container *old_container, Container *new_container);
+//     int hierarchyDepth();
 
 private:
     void updateDirtyStatus();

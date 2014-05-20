@@ -28,7 +28,8 @@ public:
     void setActiveClient(Client *client);
 
     void removeClient(Client *c) {
-        removeClientInt(c, false);
+        abort();
+//         removeClientInt(c, false);
     }
 
     void getClientSize(int &w, int &h);
@@ -98,7 +99,7 @@ private:
     void drawVerticalTabs(Canvas *canvas);
     void drawTab(Client *client, const Rect &rect, bool minimized, bool vertical, Canvas *canvas);
     void drawStacked(Canvas *canvas);
-    void removeClientInt(Client *c, bool moving_to_new_container);
+//     void removeClientInt(Client *c, bool moving_to_new_container);
     void unfocusActiveClient();
 
     // this value is addet to the client-specified minimum size
