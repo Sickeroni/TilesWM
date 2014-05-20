@@ -102,6 +102,7 @@ void X11ContainerContainer::deleteEmptyChildren()
 //     _widget->map();
 }
 
+#if 0
 void X11ContainerContainer::setFocus()
 {
     if (activeChild())
@@ -111,3 +112,4 @@ void X11ContainerContainer::setFocus()
                        RevertToNone, CurrentTime);
     redrawAll();
 }
+#endif

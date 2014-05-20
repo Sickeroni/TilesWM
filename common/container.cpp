@@ -65,9 +65,9 @@ void Container::rotateOrientation()
         _root_orientation = VERTICAL;
 }
 
-bool Container::hasFocus()
+bool Container::isActive()
 {
-    if (_parent && (_parent->hasFocus() && (_parent->activeChild() == this)))
+    if (_parent && (_parent->isActive() && (_parent->activeChild() == this)))
         return true;
     else if (_parent) {
         return false;
@@ -79,7 +79,7 @@ bool Container::isMinimized()
 {
     if (workspace()->maximized()) {
         if (parent()) {
-            if (parent()->hasFocus() && parent()->activeChild() == this)
+            if (parent()->isActive() && parent()->activeChild() == this)
                 return false;
             else
                 return true;

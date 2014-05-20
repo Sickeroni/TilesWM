@@ -44,7 +44,7 @@ void Theme::drawContainerContainer(ContainerContainer *container, Canvas *canvas
 
         canvas->drawFrame(frame_rect, frame_color);
 
-        if (c->hasFocus()) {
+        if (c->isActive()) {
             Rect focus_rect = frame_rect;
             focus_rect.x += 1;
             focus_rect.y += 1;

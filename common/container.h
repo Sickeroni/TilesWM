@@ -54,7 +54,6 @@ public:
     void enableFixedSize(bool enable);
 
     virtual int numElements() = 0;
-    virtual void setFocus() = 0;
     virtual ClientContainer *activeClientContainer() = 0;
     virtual void layout() = 0;
 //     virtual void layoutClients();
@@ -95,8 +94,6 @@ public:
     bool isClientContainer() { return _type == CLIENT; }
 
     ContainerContainer *parent() { return _parent; }
-
-    bool hasFocus();
 
 //     void makeActive(); //FIXME change to makeActiveAndFocus() ?
 

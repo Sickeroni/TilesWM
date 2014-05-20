@@ -474,14 +474,14 @@ int ContainerContainer::hierarchyDepth()
 }
 #endif
 
-#if 0
+
 void ContainerContainer::redrawAll()
 {
     redraw();
-    for (Container *c = _children.first(); c; c = c->next())
-        c->redrawAll();
+    for(int i = 0; i < numElements(); i++)
+        child(i)->redrawAll();
 }
-#endif
+
 
 // void ContainerContainer::incAvailableSpacePortion(Container *child, int pixels)
 // {

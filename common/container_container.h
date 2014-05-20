@@ -21,7 +21,7 @@ public:
 
 
     virtual ClientContainer *activeClientContainer();
-    virtual void setFocus();
+//     virtual void setFocus();
 //     virtual void addClient(Client *c);
     virtual void layout();
 //     virtual void layoutClients();
