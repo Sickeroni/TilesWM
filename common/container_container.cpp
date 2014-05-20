@@ -16,7 +16,7 @@
 
 
 ContainerContainer::ContainerContainer(ContainerContainer *parent) : Container(CONTAINER, parent),
-    _active_child(0),
+//     _active_child(0),
     _dirty(true),
     _reserved_space(0)
 {
@@ -27,6 +27,7 @@ ContainerContainer::~ContainerContainer()
     clear();
 }
 
+#if 0
 void ContainerContainer::clear()
 {
     for (Container *c = _children.first(); c; ) {
@@ -35,14 +36,18 @@ void ContainerContainer::clear()
         deleteChild(delete_this);
     }
 }
+#endif
 
+#if 0
 void ContainerContainer::setFocus()
 {
     if (_active_child)
         _active_child->setFocus();
     redrawAll();
 }
+#endif
 
+#if 0
 void ContainerContainer::handleMaximizedChanged()
 {
     for (Container *c = _children.first(); c; c = c->next())
@@ -54,6 +59,7 @@ void ContainerContainer::handleActiveChanged()
     if (_active_child)
         _active_child->handleActiveChanged();
 }
+#endif
 
 void ContainerContainer::handleSizeHintsChanged(Container *child)
 {
@@ -63,6 +69,7 @@ void ContainerContainer::handleSizeHintsChanged(Container *child)
         layout();
 }
 
+#if 0
 void ContainerContainer::setActiveChild(Container *child)
 {
     assert(child->parent() == this);
@@ -97,7 +104,9 @@ void ContainerContainer::setActiveChild(Container *child)
 
     redrawAll();
 }
+#endif
 
+#if 0
 void ContainerContainer::focusPrevChild()
 {
     if (_active_child && _active_child->prev())
@@ -109,6 +118,7 @@ void ContainerContainer::focusNextChild()
     if (_active_child && _active_child->next())
         setActiveChild(_active_child->next());
 }
+#endif
 
 ClientContainer *ContainerContainer::activeClientContainer()
 {
@@ -137,6 +147,7 @@ inline void ContainerContainer::getClientRect(Rect &rect)
              _rect.w - (_frame_width * 2), _rect.h - _title_height - (_frame_width * 2));
 }
 
+#if 0
 int ContainerContainer::minWidthInt()
 {
     int width = 0;
@@ -200,12 +211,14 @@ int ContainerContainer::maxHeightInt()
 {
     return 0;
 }
+#endif
 
 void ContainerContainer::draw(Canvas *canvas)
 {
     Theme::drawContainerContainer(this, canvas);
 }
 
+#if 0
 int ContainerContainer::calcAvailableSpace()
 {
     //FIXME duplicated in layout()
@@ -222,6 +235,7 @@ int ContainerContainer::calcAvailableSpace()
 
     return available_space;
 }
+#endif
 
 void ContainerContainer::layout()
 {
@@ -247,6 +261,7 @@ ClientContainer *ContainerContainer::addNewClientContainer(bool prepend)
 }
 #endif
 
+#if 0
 void ContainerContainer::prependChild(Container *container)
 {
 //FIXME
@@ -297,6 +312,7 @@ void ContainerContainer::replaceChild(Container *old_container, Container *new_c
 
     layout();
 }
+#endif
 
 void ContainerContainer::setDirty(bool set)
 {
@@ -309,7 +325,7 @@ void ContainerContainer::setDirty(bool set)
             _parent->updateDirtyStatus();
     }
 }
-
+#if 0
 void ContainerContainer::updateDirtyStatus()
 {
     //FIXME a bit ugly
@@ -328,7 +344,8 @@ void ContainerContainer::updateDirtyStatus()
     }
     setDirty(dirty);
 }
-
+#endif
+#if 0
 void ContainerContainer::deleteEmptyChildren()
 {
 
@@ -409,7 +426,9 @@ void ContainerContainer::deleteEmptyChildren()
 
     layout();
 }
+#endif
 
+#if 0
 void ContainerContainer::deleteChild(Container *child)
 {
     if (child == _active_child) {
@@ -422,6 +441,7 @@ void ContainerContainer::deleteChild(Container *child)
 
     delete child;
 }
+#endif
 
 #if 0
 ClientContainer *ContainerContainer::splitChild(Container *child, bool prepend_new_sibling)
@@ -462,12 +482,14 @@ int ContainerContainer::hierarchyDepth()
         return 0;
 }
 
+#if 0
 void ContainerContainer::redrawAll()
 {
     redraw();
     for (Container *c = _children.first(); c; c = c->next())
         c->redrawAll();
 }
+#endif
 
 // void ContainerContainer::incAvailableSpacePortion(Container *child, int pixels)
 // {

@@ -38,7 +38,7 @@ void Layout::layoutContainer(ContainerContainer *container)
     };
 
 
-    const int num_children = container->numChildren();
+    const int num_children = container->numElements();
     const bool is_horizontal = container->isHorizontal();
 
     if (!container->width() || !container->height() || !num_children)

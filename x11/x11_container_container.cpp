@@ -70,7 +70,7 @@ void X11ContainerContainer::reparent(ContainerContainer *p)
 void X11ContainerContainer::deleteEmptyChildren()
 {
 //     _widget->unmap();
-    ContainerContainer::deleteEmptyChildren();
+//     ContainerContainer::deleteEmptyChildren(); //FIXME
 //     _widget->map();
 }
 

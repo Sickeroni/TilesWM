@@ -15,19 +15,19 @@ public:
 
 
     virtual void redraw() = 0;
-    virtual int numElements() { return _children.count(); }
+    virtual int numElements();
     virtual ClientContainer *activeClientContainer();
     virtual void setFocus();
 //     virtual void addClient(Client *c);
     virtual void layout();
 //     virtual void layoutClients();
-    virtual bool isEmpty() { return _children.isEmpty(); }
+    virtual bool isEmpty();
     virtual void redrawAll();
-    virtual void deleteEmptyChildren();
+//     virtual void deleteEmptyChildren();
     virtual void handleMaximizedChanged();
     virtual void handleActiveChanged();
 
-    Container *activeChild() { return _active_child; }
+    Container *activeChild();
     void focusPrevChild();
     void focusNextChild();
     void setDirty(bool set);
@@ -40,7 +40,6 @@ public:
 //     void decAvailableSpacePortion(Container *child, int pixels);
 
     void getClientRect(Rect &rect);
-    int numChildren();
     Container *child(int index);
 
     static const int _child_frame_width = 10;
@@ -66,10 +65,10 @@ protected:
 private:
     void updateDirtyStatus();
     void deleteChild(Container *child);
-    int calcAvailableSpace();
+//     int calcAvailableSpace();
 
-    List<Container> _children;
-    Container *_active_child;
+//     List<Container> _children;
+//     Container *_active_child;
     bool _dirty; // is this container unused or are there unused child containers ?
     double _reserved_space;
 

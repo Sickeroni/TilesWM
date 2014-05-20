@@ -31,7 +31,7 @@ void Theme::drawContainerContainer(ContainerContainer *container, Canvas *canvas
                      title_rect,
                      container->isActive() ?  Colors::CONTAINER_FOCUS : Colors::CONTAINER_BORDER);
 
-    for (int i = 0; i < container->numChildren(); i++) {
+    for (int i = 0; i < container->numElements(); i++) {
         Container *c = container->child(i);
         Rect frame_rect = c->rect();
         frame_rect.x -= 5;
