@@ -1,2 +1,2 @@
-CXXFLAGS += -Wfatal-errors -pedantic -Wall -Wuninitialized -O0 -g -Werror
+CXXFLAGS += -Wfatal-errors -pedantic -Wall -Wuninitialized -O0 -g -w
 BUILD_DIR := build
