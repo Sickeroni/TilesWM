@@ -19,7 +19,6 @@
 ClientContainer::ClientContainer(ContainerContainer *parent) : Container(CLIENT, parent),
 //     _extra_space(0),
 //     _custom_size_active(false),
-    _mode(TABBED),
     _active_client(0)
 {
 }
@@ -63,7 +62,7 @@ void ClientContainer::setActiveClient(Client *client)
     if (_active_client)
         _active_client->raise();
 
-    if (_active_client && !_active_client->hasFocus() && hasFocus())
+    if (_active_client && !_active_client->hasFocus() && isActive())
         _active_client->setFocus();
 
     parent()->handleSizeHintsChanged(this);
@@ -192,9 +191,6 @@ void ClientContainer::handleClientUnmap(Client *client)
 
 void ClientContainer::handleClientAboutToBeMapped(Client *client)
 {
-    if (_mode == STACKED)
-        layoutStacked(client);
-    redraw();
 }
 
 void ClientContainer::handleClientFocusChange(Client *client)
@@ -323,109 +319,10 @@ void ClientContainer::draw(Canvas *canvas)
         else
             drawVerticalTabs(canvas);
     } else {
-        switch(_mode) {
-        case TABBED:
-            drawTabbar(canvas);
-            break;
-        case STACKED:
-            drawStacked(canvas);
-            break;
-        }
+        drawTabbar(canvas);
     }
 }
 
-void ClientContainer::drawStacked(Canvas *canvas)
-{
-    Rect bg_rect = _rect;
-    bg_rect.setPos(0, 0);
-    canvas->erase(bg_rect);
-
-    Rect tabbar_rect;
-    getTabbbarRect(tabbar_rect);
-    int tabbar_height = tabbar_rect.h;
-
-
-    std::stringstream title;
-
-    if (activeClient())
-        title << "Active client: " << activeClient()->name();
-    else
-        title << "No active client";
-
-
-    int mapped_clients = numMappedClients();
-
-    title<<"  |  Clients: "<<_clients.count()<<"  |  Mapped: "<<mapped_clients;
-
-    canvas->drawText(title.str().c_str(), tabbar_rect, 0xFFFFFF);
-
-    Rect client_rect;
-    getClientRect(client_rect);
-
-    if (!client_rect.w || !client_rect.h)
-        return;
-
-//     std::cout<<"mapped_clients: "<<mapped_clients<<"\n";
-
-    if (!mapped_clients)
-        return;
-
-    int cell_width = 0, cell_height = 0;
-
-    if (isHorizontal()) {
-        cell_width = client_rect.w / mapped_clients;
-        cell_height = client_rect.h;
-    } else {
-        cell_width = client_rect.w;
-        cell_height = client_rect.h / mapped_clients;
-    }
-
-//     std::cout<<"cell_width: "<<cell_width<<"\n";
-//     std::cout<<"cell_height: "<<cell_height<<"\n";
-//     std::cout<<"=================================\n";
-
-    Rect rect;
-    rect.setSize(cell_width, cell_height);
-
-    static const int gap = 5;
-
-    rect.w -= 2 * gap;
-    rect.h -= 2 * gap;
-
-    int i = 0;
-    for(Client *c = _clients.first(); c; c = c->next()) {
-        if (!c->isMapped())
-            continue;
-
-        if (isHorizontal()) {
-            rect.x = i * cell_width + _frame_width;
-            rect.y = _frame_width + tabbar_height;
-        } else {
-            rect.x = _frame_width;
-            rect.y = (i * cell_height) + _frame_width + tabbar_height;
-        }
-
-        rect.x += gap;
-        rect.y += gap;
-
-        if (c->hasFocus()) {
-            Rect focus_rect;
-            focus_rect.set(rect.x+2, rect.y+2, rect.w-4, rect.h-4);
-            canvas->drawFrame(focus_rect, 0xFF8080);
-        }
-
-//         localToGlobal(x, y);
-//         std::cout<<"x: "<<rect.x<<" y: "<<rect.y<<'\n';
-
-        if (activeClient() == c) {
-            canvas->drawFrame(rect, 0x0);
-        } else {
-//             canvas->drawFrame(rect, 0x0);
-        }
-
-        i++;
-   }
-}
 
 void ClientContainer::drawTab(Client *client, const Rect &rect, bool minimized, bool vertical, Canvas *canvas)
 {
@@ -435,7 +332,7 @@ void ClientContainer::drawTab(Client *client, const Rect &rect, bool minimized, 
     if (client->hasFocus()) {
         bg = Colors::TAB_FOCUSED;
         fg = Colors::TAB_FOCUSED_TEXT;
-    } else if (hasFocus() && activeClient() == client) {
+    } else if (isActive() && activeClient() == client) {
         bg = Colors::TAB_ACTIVE;
         fg = Colors::TAB_ACTIVE_TEXT;
     } else if (activeClient() == client) {
@@ -538,14 +435,13 @@ void ClientContainer::drawTabbar(Canvas *canvas)
 void ClientContainer::layout()
 {
     if (!isMinimized()) {
-        switch(_mode) {
-        case TABBED:
-            layoutTabbed();
-            break;
-        case STACKED:
-            layoutStacked(0);
-            break;
-        }
+        Rect client_rect;
+        getClientRect(client_rect);
+
+        if (activeClient())
+            activeClient()->raise();
+        for(Client *c = _clients.first(); c; c = c->next())
+            c->setRect(client_rect);
     }
     redraw();
 }
@@ -592,103 +488,6 @@ void ClientContainer::getClientRect(Rect &rect)
     rect.w = width() - (2 * _frame_width);
     rect.h = height() - ((2 * _frame_width) + tabbar_height + gap);
 }
-
-void ClientContainer::layoutTabbed()
-{
-    Rect client_rect;
-    getClientRect(client_rect);
-
-    if (activeClient())
-        activeClient()->raise();
-    for(Client *c = _clients.first(); c; c = c->next())
-        c->setRect(client_rect);
-}
-
-void ClientContainer::getClientSize(int &w, int &h)
-{
-    //FIXME - this works only for stacked layout
-
-    const int cell_border = 12; //FIXME
-
-    getStackCellSize(numMappedClients(), w, h);
-
-    w -= 2 * cell_border;
-    h -= 2 * cell_border;
-
-}
-
-void ClientContainer::getStackCellSize(int num_cells, int &w, int &h)
-{
-    Rect client_rect;
-    getClientRect(client_rect);
-
-    if (!client_rect.w || !client_rect.h)
-        return;
-
-//     std::cout<<"mapped_clients: "<<mapped_clients<<"\n";
-
-    if (!num_cells)
-        num_cells = 1;
-
-    int cell_width = 0, cell_height = 0;
-
-    if (isHorizontal()) {
-        cell_width = client_rect.w / num_cells;
-        cell_height = client_rect.h;
-    } else {
-        cell_width = client_rect.w;
-        cell_height = client_rect.h / num_cells;
-    }
-
-    w = cell_width;
-    h = cell_height;
-
-}
-
-void ClientContainer::layoutStacked(Client *about_to_be_mapped)
-{
-    debug;
-
-    const int cell_border = 12; //FIXME
-    int tabbar_height = calcTabbarHeight();
-
-    int num_cells = numMappedClients();
-    if (about_to_be_mapped)
-        num_cells++;
-
-    int cell_width, cell_height;
-    getStackCellSize(num_cells, cell_width, cell_height);
-
-    Rect rect;
-    rect.setSize(cell_width, cell_height);
-
-    rect.w -= 2 * cell_border;
-    rect.h -= 2 * cell_border;
-
-    int i = 0;
-    for(Client *c = _clients.first(); c; c = c->next()) {
-        if (!c->isMapped() && c != about_to_be_mapped)
-            continue;
-
-        if (isHorizontal()) {
-            rect.x = (i * cell_width) + _frame_width;
-            rect.y = _frame_width + tabbar_height;
-        } else {
-            rect.x = _frame_width;
-            rect.y = (i * cell_height) + _frame_width + tabbar_height;
-        }
-
-        rect.x += cell_border;
-        rect.y += cell_border;
-
-//         std::cout<<"x: "<<rect.x<<" y: "<<rect.y<<'\n';
-
-        c->setRect(rect);
-
-        i++;
-   }
-}
-
 
 #if 0
 void ClientContainer::focusSibling(Direction where)

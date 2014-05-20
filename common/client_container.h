@@ -32,8 +32,6 @@ public:
 //         removeClientInt(c, false);
     }
 
-    void getClientSize(int &w, int &h);
-
     void focusPrevClient();
     void focusNextClient();
 
@@ -82,8 +80,6 @@ protected:
     List<Client> _clients;
 
 private:
-    enum Mode { TABBED, STACKED };
-
     static const int _vertical_tabbar_width = 70;
     static const int _frame_width = Metrics::CLIENT_CONTAINER_FRAME_MARGIN;
     static const int _tab_inner_margin = 5;
@@ -92,13 +88,9 @@ private:
 
     int numMappedClients();
     void getTabSize(int &tab_width, int &tab_height);
-    void getStackCellSize(int num_cells, int &w, int &h);
-    void layoutTabbed();
-    void layoutStacked(Client *about_to_be_mapped);
     void drawTabbar(Canvas *canvas);
     void drawVerticalTabs(Canvas *canvas);
     void drawTab(Client *client, const Rect &rect, bool minimized, bool vertical, Canvas *canvas);
-    void drawStacked(Canvas *canvas);
 //     void removeClientInt(Client *c, bool moving_to_new_container);
     void unfocusActiveClient();
 
@@ -106,7 +98,6 @@ private:
     // configurable by user
 //     int _extra_space;
 //     bool _custom_size_active;
-    Mode _mode;
     Client *_active_client;
 };
 
