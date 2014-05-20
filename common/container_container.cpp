@@ -6,6 +6,7 @@
 #include "workspace.h"
 #include "common.h"
 #include "layout.h"
+#include "theme.h"
 
 #include <sstream>
 
@@ -202,54 +203,7 @@ int ContainerContainer::maxHeightInt()
 
 void ContainerContainer::draw(Canvas *canvas)
 {
-    Rect bg_rect = _rect;
-    bg_rect.setPos(0, 0);
-    canvas->erase(bg_rect);
-
-    Rect title_rect(_frame_width - 2, _frame_width - 2,
-                    width() - 4 - (2 * _frame_width), _title_height);
-
-    std::stringstream title;
-
-    if (isHorizontal())
-        title<<"H";
-    else
-        title<<"V";
-
-    if (isFixedSize())
-        title<<"  - ";
-    else
-        title<<" <->";
-
-    canvas->drawText(title.str().c_str(),
-                     title_rect,
-                     hasFocus() ?  Colors::CONTAINER_FOCUS : Colors::CONTAINER_BORDER);
-
-    for (Container *c = _children.first(); c; c = c->next()) {
-        Rect frame_rect = c->rect();
-        frame_rect.x -= 5;
-        frame_rect.y -= 5;
-        frame_rect.w += 10;
-        frame_rect.h += 10;
-
-        uint32 frame_color = c->isClientContainer() ? Colors::CLIENT_CONTAINER_BORDER:
-                                                      Colors::CONTAINER_BORDER;
-
-        canvas->drawFrame(frame_rect, frame_color);
-
-        if (c->hasFocus()) {
-            Rect focus_rect = frame_rect;
-            focus_rect.x += 1;
-            focus_rect.y += 1;
-            focus_rect.w -= 2;
-            focus_rect.h -= 2;
-
-            uint32 color = c->isClientContainer() ? Colors::CLIENT_CONTAINER_FOCUS :
-                                                    Colors::CONTAINER_FOCUS;
-
-            canvas->drawFrame(focus_rect, color);
-        }
-    }
+    Theme::drawContainerContainer(this, canvas);
 }
 
 int ContainerContainer::calcAvailableSpace()

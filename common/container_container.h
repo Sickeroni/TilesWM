@@ -44,6 +44,8 @@ public:
     Container *child(int index);
 
     static const int _child_frame_width = 10;
+    static const int _title_height = 10;
+    static const int _frame_width = 10;
 
 protected:
 //     virtual ClientContainer *createClientContainer() = 0;
@@ -71,8 +73,6 @@ private:
     bool _dirty; // is this container unused or are there unused child containers ?
     double _reserved_space;
 
-    static const int _title_height = 10;
-    static const int _frame_width = 10;
     static const int _max_hierarchy_depth = 1;
 };
 
