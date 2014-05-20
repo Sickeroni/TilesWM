@@ -1,6 +1,7 @@
 #include "x11_application.h"
 
 #include "x11_container_container.h"
+#include "x11_client_container.h"
 #include "x11_client.h"
 #include "x11_widget.h"
 #include "x11_default_key_bindings.h"
@@ -471,6 +472,11 @@ void X11Application::runProgram(const char *path)
 X11ContainerContainer *X11Application::activeRootContainer()
 {
     return static_cast<X11ContainerContainer*>(activeWorkspace()->rootContainer());
+}
+
+X11ClientContainer *X11Application::activeClientContainer()
+{
+    return static_cast<X11ClientContainer*>(activeRootContainer()->activeClientContainer());
 }
 
 Atom X11Application::atom(const char *name)

@@ -116,6 +116,7 @@ ClientContainer *ContainerContainer::activeClientContainer()
         return 0;
 }
 
+#if 0
 void ContainerContainer::addClient(Client *c)
 {
     if(activeChild())
@@ -126,6 +127,7 @@ void ContainerContainer::addClient(Client *c)
         client_container->addClient(c);
     }
 }
+#endif
 
 inline void ContainerContainer::getClientRect(Rect &rect)
 {
@@ -471,6 +473,7 @@ void ContainerContainer::layout()
    redraw();
 }
 
+#if 0
 ClientContainer *ContainerContainer::addNewClientContainer(bool prepend)
 {
     debug;
@@ -486,6 +489,7 @@ ClientContainer *ContainerContainer::addNewClientContainer(bool prepend)
 
     return client_container;
 }
+#endif
 
 void ContainerContainer::prependChild(Container *container)
 {
@@ -663,6 +667,7 @@ void ContainerContainer::deleteChild(Container *child)
     delete child;
 }
 
+#if 0
 ClientContainer *ContainerContainer::splitChild(Container *child, bool prepend_new_sibling)
 {
     if (hierarchyDepth() >= _max_hierarchy_depth)
@@ -691,6 +696,7 @@ ClientContainer *ContainerContainer::splitChild(Container *child, bool prepend_n
 
     return new_sibling;
 }
+#endif
 
 int ContainerContainer::hierarchyDepth()
 {

@@ -37,9 +37,9 @@ public:
 
     X11ServerWidget *widget() { return _widget; }
 
-protected:
-    virtual ContainerContainer *createContainerContainer();
-    virtual ClientContainer *createClientContainer();
+// protected:
+//     virtual ContainerContainer *createContainerContainer();
+//     virtual ClientContainer *createClientContainer();
 
 private:
     X11ContainerContainer(Workspace *workspace, X11ContainerContainer *parent);

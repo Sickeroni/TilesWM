@@ -27,6 +27,7 @@ struct X11DefaultKeyBindings::Actions
         Container::rotateOrientation();
         rootContainer()->layout();
     }
+#if 0
     static void focusLeft()
     {
         clientContainer()->focusSibling(Container::WEST);
@@ -43,6 +44,7 @@ struct X11DefaultKeyBindings::Actions
     {
         clientContainer()->focusSibling(Container::SOUTH);
     }
+#endif
     static void runTerminal()
     {
         X11Application::runProgram("/usr/bin/xterm");
@@ -51,6 +53,8 @@ struct X11DefaultKeyBindings::Actions
     {
         rootContainer()->redrawAll();
     }
+
+#if 0
     static void focusPrevClient()
     {
         clientContainer()->focusPrevClient();
@@ -91,6 +95,8 @@ struct X11DefaultKeyBindings::Actions
         //rootContainer()->widget()->map(); //HACK
         rootContainer()->setFocus(); //HACK
     }
+    
+#endif
     static void deleteEmptyContainers()
     {
         rootContainer()->deleteEmptyChildren();
@@ -162,11 +168,13 @@ struct X11DefaultKeyBindings::Actions
         }
     }
 
+#if 0
     //HACK
     static void addNewClientContainer()
     {
         rootContainer()->addNewClientContainer(false);
     }
+#endif
 };
 
 
@@ -174,18 +182,18 @@ X11DefaultKeyBindings::X11DefaultKeyBindings()
 {
     createShortcut("l", Mod1Mask, &Actions::layout);
     createShortcut("r", Mod1Mask, &Actions::rotate);
-    createShortcut("KP_Left", Mod1Mask, &Actions::focusLeft);
-    createShortcut("KP_Right", Mod1Mask, &Actions::focusRight);
-    createShortcut("KP_Up", Mod1Mask, &Actions::focusUp);
-    createShortcut("KP_Down", Mod1Mask, &Actions::focusDown);
+//     createShortcut("KP_Left", Mod1Mask, &Actions::focusLeft);
+//     createShortcut("KP_Right", Mod1Mask, &Actions::focusRight);
+//     createShortcut("KP_Up", Mod1Mask, &Actions::focusUp);
+//     createShortcut("KP_Down", Mod1Mask, &Actions::focusDown);
     createShortcut("t", Mod1Mask, &Actions::runTerminal);
     createShortcut("d", Mod1Mask, &Actions::redraw);
-    createShortcut("comma", Mod1Mask, &Actions::focusPrevClient);
-    createShortcut("period", Mod1Mask, &Actions::focusNextClient);
-    createShortcut("KP_Left", Mod1Mask | ShiftMask, &Actions::moveClientLeft);
-    createShortcut("KP_Right", Mod1Mask | ShiftMask, &Actions::moveClientRight);
-    createShortcut("KP_Up", Mod1Mask | ShiftMask, &Actions::moveClientUp);
-    createShortcut("KP_Down", Mod1Mask | ShiftMask, &Actions::moveClientDown);
+//     createShortcut("comma", Mod1Mask, &Actions::focusPrevClient);
+//     createShortcut("period", Mod1Mask, &Actions::focusNextClient);
+//     createShortcut("KP_Left", Mod1Mask | ShiftMask, &Actions::moveClientLeft);
+//     createShortcut("KP_Right", Mod1Mask | ShiftMask, &Actions::moveClientRight);
+//     createShortcut("KP_Up", Mod1Mask | ShiftMask, &Actions::moveClientUp);
+//     createShortcut("KP_Down", Mod1Mask | ShiftMask, &Actions::moveClientDown);
     createShortcut("c", Mod1Mask, &Actions::deleteEmptyContainers);
     createShortcut("F2", Mod1Mask, &Actions::runProgram);
 //     createShortcut("Return", Mod1Mask, &Actions::toggleMaximize);
@@ -201,5 +209,5 @@ X11DefaultKeyBindings::X11DefaultKeyBindings()
 
 
     //HACK
-    createShortcut("n", Mod1Mask, &Actions::addNewClientContainer);
+//     createShortcut("n", Mod1Mask, &Actions::addNewClientContainer);
 }

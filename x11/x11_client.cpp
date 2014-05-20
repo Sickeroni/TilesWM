@@ -439,8 +439,10 @@ void X11Client::mapInt()
 
         _widget->reparent(_frame, client_rect.x, client_rect.y);
 
-        if (!container() && !isDialog() && !_is_modal)
-            X11Application::activeRootContainer()->addClient(this);
+        if (!container() && !isDialog() && !_is_modal) {
+            assert(X11Application::activeClientContainer());
+            X11Application::activeClientContainer()->addClient(this);
+        }
 
         assert(isFloating() || container());
 

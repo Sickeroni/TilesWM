@@ -686,6 +686,7 @@ void ClientContainer::layoutStacked(Client *about_to_be_mapped)
 }
 
 
+#if 0
 void ClientContainer::focusSibling(Direction where)
 {
     ContainerContainer *parent = 0;
@@ -702,7 +703,6 @@ void ClientContainer::focusSibling(Direction where)
     }
 }
 
-#if 0
 void ClientContainer::createSibling(Direction where)
 {
     std::cout<<"ClientContainer::createSibling()\n";
@@ -714,6 +714,7 @@ void ClientContainer::createSibling(Direction where)
 }
 #endif
 
+#if 0
 ClientContainer *ClientContainer::createSiblingFor(Container *container, bool prepend_new_sibling)
 {
     ClientContainer *new_sibling = 0;
@@ -723,7 +724,8 @@ ClientContainer *ClientContainer::createSiblingFor(Container *container, bool pr
 
     return new_sibling;
 }
-
+#endif
+#if 0
 ClientContainer *ClientContainer::getOrCreateSiblingFor(Container *container, bool get_prev)
 {
     if (!get_prev && container->next())
@@ -801,6 +803,7 @@ void ClientContainer::moveClientToOther(Client *client, Direction dir)
 //         root->redrawAll();
     }
 }
+#endif
 
 int ClientContainer::numMappedClients()
 {

@@ -44,12 +44,12 @@ public:
     void handleClientSizeHintChanged(Client *client);
 
 //     void createSibling(Direction where);
-    void focusSibling(Direction where);
+//     void focusSibling(Direction where);
 
-    void moveClient(Direction where) {
-        if (activeClient())
-            moveClientToOther(activeClient(), where);
-    }
+//     void moveClient(Direction where) {
+//         if (activeClient())
+//             moveClientToOther(activeClient(), where);
+//     }
 
 
 
@@ -69,10 +69,10 @@ protected:
 
     void draw(Canvas *canvas);
 //     ClientContainer *splitContainer(Container *container, bool prepend_new_sibling);
-    ClientContainer *createSiblingFor(Container *container, bool prepend_new_sibling);
-    ClientContainer *getOrCreateSiblingFor(Container *container, bool get_prev);
-    ClientContainer *getSibling(bool get_prev);
-    void moveClientToOther(Client *client, Direction dir);
+//     ClientContainer *createSiblingFor(Container *container, bool prepend_new_sibling);
+//     ClientContainer *getOrCreateSiblingFor(Container *container, bool get_prev);
+//     ClientContainer *getSibling(bool get_prev);
+//     void moveClientToOther(Client *client, Direction dir);
     void clear();
     void getTabbbarRect(Rect &rect);
     void getClientRect(Rect &rect);

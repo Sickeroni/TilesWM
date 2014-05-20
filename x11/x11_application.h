@@ -10,6 +10,7 @@
 
 class X11ContainerContainer;
 class X11ShortcutSet;
+class X11ClientContainer;
 class Workspace;
 
 class X11Application
@@ -19,6 +20,7 @@ public:
     static Display *dpy()  { return self()->_dpy; }
     static Window root()  { return self()->_root; }
     static X11ContainerContainer *activeRootContainer();
+    static X11ClientContainer *activeClientContainer();
     static Workspace *activeWorkspace() { return self()->_workspace; }
     static void runProgram(const char *path);
 

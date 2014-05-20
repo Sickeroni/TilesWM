@@ -18,7 +18,7 @@ public:
     virtual int numElements() { return _children.count(); }
     virtual ClientContainer *activeClientContainer();
     virtual void setFocus();
-    virtual void addClient(Client *c);
+//     virtual void addClient(Client *c);
     virtual void layout();
 //     virtual void layoutClients();
     virtual bool isEmpty() { return _children.isEmpty(); }
@@ -32,8 +32,8 @@ public:
     void focusNextChild();
     void setDirty(bool set);
     void draw(Canvas *canvas);
-    ClientContainer *addNewClientContainer(bool prepend);
-    ClientContainer *splitChild(Container *child, bool prepend_new_sibling);
+//     ClientContainer *addNewClientContainer(bool prepend);
+//     ClientContainer *splitChild(Container *child, bool prepend_new_sibling);
     void setActiveChild(Container *child);
     void handleSizeHintsChanged(Container *child);
 //     void incAvailableSpacePortion(Container *child, int pixels);
@@ -41,8 +41,8 @@ public:
 
 
 protected:
-    virtual ClientContainer *createClientContainer() = 0;
-    virtual ContainerContainer *createContainerContainer() = 0;
+//     virtual ClientContainer *createClientContainer() = 0;
+//     virtual ContainerContainer *createContainerContainer() = 0;
     virtual int minWidthInt();
     virtual int maxWidthInt();
     virtual int minHeightInt();
