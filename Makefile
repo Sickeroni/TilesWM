@@ -2,6 +2,7 @@ include make_conf
 
 
 LIBCOMMON_SRCS := \
+layout \
 workspace \
 container \
 container_container \

@@ -105,6 +105,7 @@ public:
     Workspace *workspace() { return _workspace; }
     bool isAncestorOf(Container *container);
     bool isMinimized();
+    bool isActive();
 
 
 protected:
