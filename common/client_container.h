@@ -19,7 +19,7 @@ public:
     virtual int numElements() = 0;
     virtual bool isEmpty() = 0;
     virtual Client *child(int index) = 0;
-    virtual int indexOfChild(Client *child) = 0;
+    virtual int indexOfChild(const Client *child) = 0;
     virtual int activeChildIndex() = 0;
     // doesn't set focus to the client !
     virtual void setActiveChild(int index) = 0;
@@ -48,7 +48,7 @@ public:
 //     void setCustomSizeActive(bool active);
 
 protected:
-    ClientContainer(ContainerContainer *parent);
+    ClientContainer();
 
 private:
 //     void removeClientInt(Client *c, bool moving_to_new_container);

@@ -72,9 +72,6 @@ void ClientContainerLayout::layoutContents()
         Rect client_rect;
         Theme::getClientContainerClientRect(_container, client_rect);
 
-        if (_container->activeClient())
-            _container->activeClient()->raise(); //FIXME the container should do this when setting the active client
-
         //FIXME only resize active client ?
             //problem with that: on X11 the other clients are visible too
             //maybe the backend should defer setting the size until the client becomes visible (possibly in case of wayland)

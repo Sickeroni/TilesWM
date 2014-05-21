@@ -16,16 +16,17 @@
 using namespace X11Global;
 
 
-X11ClientContainer::X11ClientContainer(X11ContainerContainer *parent) : ClientContainer(parent),
+X11ClientContainer::X11ClientContainer() :
+    ClientContainer(),
     _active_child_index(-1),
-    _widget(X11ServerWidget::create(parent->widget(),
+    _widget(X11ServerWidget::create(0,
                                     Colors::CLIENT_CONTAINER,
                                     this, ButtonPressMask | ExposureMask)),
-    _minimized_widget(X11ServerWidget::create(parent->widget(),
+    _minimized_widget(X11ServerWidget::create(0,
                                               Colors::CLIENT_CONTAINER,
-                                              this, ButtonPressMask | ExposureMask))
+                                              this, ButtonPressMask | ExposureMask)),
+    _is_mapped(false)
 {
-    _widget->map();
 }
 
 X11ClientContainer::~X11ClientContainer()
@@ -42,8 +43,54 @@ void X11ClientContainer::clear()
     _active_child_index = -1;
 
     for (int i = 0; i < _children.size(); i++)
-        delete _children[i];
+        _children[i]->setContainer(0);
     _children.clear();
+}
+
+#if 0
+void X11ClientContainer::removeClientInt(Client *c, bool moving_to_new_container)
+{
+    debug;
+
+    if (c == _active_client)
+        unfocusActiveClient();
+
+    _clients.remove(c);
+
+    printvar(_clients.count());
+
+    if (!moving_to_new_container)
+        c->setContainer(0);
+
+    if (c->isMapped())
+        getLayout()->layoutContents();
+    else
+        redraw();
+
+//FIXME
+#if 0
+    if (isEmpty() && _parent)
+        _parent->setDirty(true);
+#endif
+}
+#endif
+
+void X11ClientContainer::setActiveChild(int index)
+{
+//     if (client)
+//         std::cout<<"ClientContainer::setActiveClient(): \""<<client->name()<<"\"\n";
+//     else
+//         std::cout<<"ClientContainer::setActiveClient(): 0\n";
+
+    assert(index < _children.size());
+    assert(0 > index || _children[index]->isMapped());
+
+    _active_child_index = index;
+
+    if (activeClient())
+        activeClient()->raise();
+
+    parent()->handleSizeHintsChanged(this);
 }
 
 int X11ClientContainer::indexOfChild(const Client *child)
@@ -70,7 +117,15 @@ int X11ClientContainer::addClient(X11Client *client)
 
     printvar(_children.size());
 
+    getLayout()->layoutContents();
+
     return _children.size() - 1;
+}
+
+void X11ClientContainer::setMapped(bool mapped)
+{
+    _is_mapped = mapped;
+    applyMapState();
 }
 
 void X11ClientContainer::setRect(const Rect &rect)
@@ -84,12 +139,15 @@ void X11ClientContainer::redraw()
     Theme::drawClientContainer(this, currentWidget()->canvas());
 }
 
+
 void X11ClientContainer::reparent(ContainerContainer *p)
 {
-    ClientContainer::reparent(p);
+    assert(!_workspace);
+    _parent = p;
     _widget->reparent(static_cast<X11ContainerContainer*>(p)->widget());
     _minimized_widget->reparent(static_cast<X11ContainerContainer*>(p)->widget());
 }
+
 
 #if 0
 void X11ClientContainer::setFocus()
@@ -103,15 +161,23 @@ void X11ClientContainer::setFocus()
 }
 #endif
 
+void X11ClientContainer::applyMapState()
+{
+    if (!_is_mapped) {
+        _widget->unmap();
+        _minimized_widget->unmap();
+    } else if (isMinimized()) {
+        _widget->unmap();
+        _minimized_widget->map();
+    } else {
+        _minimized_widget->unmap();
+        _widget->map();
+    }
+}
+
 void X11ClientContainer::handleButtonPress(const XButtonEvent &ev)
 {
-    debug;
-//FIXME
-#if 0
-    if (activeClient())
-        makeActive();
     handleMouseClick(ev.x_root, ev.y_root);
-#endif
 }
 
 void X11ClientContainer::handleClientMap(X11Client *client)
@@ -126,18 +192,12 @@ void X11ClientContainer::handleClientMap(X11Client *client)
 
 void X11ClientContainer::handleActiveChanged()
 {
-    if (isMinimized()) {
-        _widget->unmap();
-        _minimized_widget->map();
-    } else {
-        _minimized_widget->unmap();
-        _widget->map();
-    }
+    applyMapState();
 }
 
 void X11ClientContainer::handleMaximizedChanged()
 {
-    handleActiveChanged();
+    applyMapState();
 }
 
 int X11ClientContainer::maxTextHeight()

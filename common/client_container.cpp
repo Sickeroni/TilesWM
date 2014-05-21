@@ -18,7 +18,7 @@
 #include <assert.h>
 
 
-ClientContainer::ClientContainer(ContainerContainer *parent) : Container(CLIENT, parent),
+ClientContainer::ClientContainer() : Container(CLIENT),
 //     _extra_space(0),
 //     _custom_size_active(false),
     _layout(new ClientContainerLayout(this))
@@ -48,40 +48,6 @@ void ClientContainer::clear()
 }
 #endif
 
-#if 0
-Client *ClientContainer::activeClient()
-{
-    if (_active_client) {
-//         std::cout<<"active client: \""<<_active_client->name()<<"\"\n";
-        assert(_active_client->isMapped());
-        return _active_client;
-    } else
-        return 0;
-}
-#endif
-
-#if 0
-void ClientContainer::setActiveClient(Client *client)
-{
-//     if (client)
-//         std::cout<<"ClientContainer::setActiveClient(): \""<<client->name()<<"\"\n";
-//     else
-//         std::cout<<"ClientContainer::setActiveClient(): 0\n";
-
-    assert(!client || client->isMapped());
-
-    _active_client = client;
-
-    if (_active_client)
-        _active_client->raise();
-
-    if (_active_client && !_active_client->hasFocus() && isActive())
-        _active_client->setFocus();
-
-    parent()->handleSizeHintsChanged(this);
-}
-#endif
-
 void ClientContainer::handleMouseClick(int global_x, int global_y)
 {
     //FIXME move this to mouse handler class
@@ -101,6 +67,9 @@ void ClientContainer::handleMouseClick(int global_x, int global_y)
     if (-1 < clicked_tab_index) {
         setActiveChild(clicked_tab_index);
         child(clicked_tab_index)->setFocus();
+
+        assert(0);
+//         makeActive(); //FIXME
     }
 }
 
@@ -196,33 +165,6 @@ void ClientContainer::unfocusActiveClient()
 }
 #endif
 
-#if 0
-void ClientContainer::removeClientInt(Client *c, bool moving_to_new_container)
-{
-    debug;
-
-    if (c == _active_client)
-        unfocusActiveClient();
-
-    _clients.remove(c);
-
-    printvar(_clients.count());
-
-    if (!moving_to_new_container)
-        c->setContainer(0);
-
-    if (c->isMapped())
-        getLayout()->layoutContents();
-    else
-        redraw();
-
-//FIXME
-#if 0
-    if (isEmpty() && _parent)
-        _parent->setDirty(true);
-#endif
-}
-#endif
 
 #if 0
 int ClientContainer::numMappedClients()

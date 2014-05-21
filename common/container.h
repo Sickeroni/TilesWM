@@ -61,7 +61,8 @@ public:
     virtual void handleMaximizedChanged() = 0;
     virtual void handleActiveChanged() = 0;
     virtual ContainerLayout *getLayout() = 0;
-
+    virtual void setMapped(bool mapped) = 0;
+    virtual void reparent(ContainerContainer *p) = 0;
 
 
 //     int minWidth();
@@ -73,9 +74,6 @@ public:
     int fixedHeight() { return isMinimized() ? 0 : _fixed_height; }
     void setFixedHeight(int height);
 
-    virtual void reparent(ContainerContainer *p) {
-        _parent = p;
-    }
     virtual void setRect(const Rect &rect);
 
     int x() { return _rect.x; }
@@ -99,11 +97,12 @@ public:
 
     ContainerContainer *root();
 
-    Workspace *workspace() { return _workspace; }
+    Workspace *workspace();
     bool isAncestorOf(Container *container);
     bool isMinimized();
     bool isActive();
 
+    void setWorkspace(Workspace *workspace);
 
 protected:
 //     virtual int minWidthInt() = 0;
@@ -111,21 +110,20 @@ protected:
 //     virtual int minHeightInt() = 0;
 //     virtual int maxHeightInt() = 0;
 
-    Container(Type type, ContainerContainer *parent);
+    Container(Type type);
 
     void localToGlobal(int &x, int &y);
     void globalToLocal(int &x, int &y);
-    void setWorkspace(Workspace *workspace);
 
     static Container *_root;
     static Orientation _root_orientation;
 
     ContainerContainer *_parent;
+    Workspace *_workspace;
     Rect _rect;
 
 private:
     const Type _type;
-    Workspace *_workspace;
     int _fixed_width;
     int _fixed_height;
     bool _is_fixed_size;

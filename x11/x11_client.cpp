@@ -975,7 +975,7 @@ bool X11Client::handleEvent(const XEvent &ev)
                     container->setActiveChild(index);
                     abort();
 //                     container->makeActive(); //FIXME
-                    client->setFocus();
+//                     client->setFocus();
                 }
                 break;
             case ConfigureRequest:

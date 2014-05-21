@@ -219,8 +219,9 @@ bool X11Application::init()
     Rect root_container_rect;
     root_container_rect.set(0, 0, root_attr.width, root_attr.height);
 
-    _workspace->setRootContainer(X11ContainerContainer::create(_workspace));
 
+    _workspace->setRootContainer(new X11ContainerContainer());
+    activeRootContainer()->setWorkspace(_workspace);
     activeRootContainer()->setRect(root_container_rect);
 
 //    activeRootContainer()->addNewClientContainer(false); //FIXME HACK
@@ -476,6 +477,11 @@ X11ContainerContainer *X11Application::activeRootContainer()
 
 X11ClientContainer *X11Application::activeClientContainer()
 {
+    if (!activeRootContainer()->activeClientContainer()) {
+        X11ClientContainer *c = new X11ClientContainer();
+        int index = activeRootContainer()->addChild(c);
+        activeRootContainer()->setActiveChild(index);
+    }
     return static_cast<X11ClientContainer*>(activeRootContainer()->activeClientContainer());
 }
 

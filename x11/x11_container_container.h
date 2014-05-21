@@ -21,16 +21,16 @@ class X11ContainerContainer : public ContainerContainer, public X11ServerWidget:
 #endif
 
 public:
-    static X11ContainerContainer *create(Workspace *workspace);
-
+    X11ContainerContainer();
     virtual ~X11ContainerContainer();
 
-    
+
+    virtual void setMapped(bool mapped);
     virtual void redraw();
     virtual int numElements() { return _children.size(); }
     virtual Container *child(int index) { return _children[index]; }
     virtual bool isEmpty() { return _children.empty(); }
-    virtual void setActiveChild(int index);
+
     virtual int activeChildIndex() { return _active_child_index; }
 
 
@@ -45,6 +45,10 @@ public:
     virtual void deleteEmptyChildren();
 //     virtual void setFocus();
 
+    // returns index of added child
+    int addChild(Container *container);
+    void setActiveChild(int index);
+
     X11ServerWidget *widget() { return _widget; }
     
 
@@ -53,7 +57,6 @@ public:
 //     virtual ClientContainer *createClientContainer();
 
 private:
-    X11ContainerContainer(Workspace *workspace, X11ContainerContainer *parent);
     void clear();
     void deleteChild(Container *child);
 

@@ -16,22 +16,14 @@
 using namespace X11Global;
 
 
-X11ContainerContainer *X11ContainerContainer::create(Workspace *workspace)
-{
-    return new X11ContainerContainer(workspace, 0);
-}
-
-
-X11ContainerContainer::X11ContainerContainer(Workspace *workspace, X11ContainerContainer *parent) :
-    ContainerContainer(parent),
+X11ContainerContainer::X11ContainerContainer() :
+    ContainerContainer(),
     _active_child_index(-1),
 //     _active_child(0),
-    _widget(X11ServerWidget::create(parent ? parent->widget() : 0,
+    _widget(X11ServerWidget::create(0,
                                     Colors::CONTAINER,
                                     this, ExposureMask))
 {
-    setWorkspace(workspace);
-    _widget->map();
 }
 
 X11ContainerContainer::~X11ContainerContainer()
@@ -40,7 +32,6 @@ X11ContainerContainer::~X11ContainerContainer()
     delete _widget;
     _widget = 0;
 }
-
 
 void X11ContainerContainer::clear()
 {
@@ -51,10 +42,24 @@ void X11ContainerContainer::clear()
     _children.clear();
 }
 
+int X11ContainerContainer::addChild(Container *container)
+{
+    assert(!container->parent());
+
+    container->reparent(this);
+
+    _children.push_back(container);
+    printvar(_children.size());
+
+    container->setMapped(true);
+
+    getLayout()->layoutContents();
+
+    return _children.size() - 1;
+}
+
 void X11ContainerContainer::setActiveChild(int index)
 {
-    //FIXME caller should set focus to client if desired
-
     assert(index < _children.size());
 
     if (_active_child_index == index)
@@ -90,6 +95,13 @@ void X11ContainerContainer::deleteChild(Container *child)
 }
 #endif
 
+void X11ContainerContainer::setMapped(bool mapped)
+{
+    if (mapped)
+        _widget->map();
+    else
+        _widget->unmap();
+}
 
 void X11ContainerContainer::setRect(const Rect &rect)
 {
@@ -118,7 +130,8 @@ void X11ContainerContainer::redraw()
 
 void X11ContainerContainer::reparent(ContainerContainer *p)
 {
-    ContainerContainer::reparent(p);
+    assert(!_workspace);
+    _parent = p;
     _widget->reparent(static_cast<X11ContainerContainer*>(p)->widget());
 }
 

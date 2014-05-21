@@ -17,20 +17,23 @@ class X11Client;
 class X11ClientContainer : public ClientContainer, public X11ServerWidget::EventHandler
 {
 public:
-    X11ClientContainer(X11ContainerContainer *parent);
+    X11ClientContainer();
     virtual ~X11ClientContainer();
 
 //     virtual void setFocus();
+    virtual void setMapped(bool mapped);
     virtual void setRect(const Rect &rect);
-    virtual void redraw();
     virtual void reparent(ContainerContainer *p);
     virtual void handleMaximizedChanged();
     virtual void handleActiveChanged() ;
-    virtual int maxTextHeight();
     virtual int numElements() { return _children.size(); }
+    virtual bool isEmpty() { return _children.empty(); }
     virtual Client *child(int index) { return _children[index]; }
     virtual int indexOfChild(const Client *child);
     virtual int activeChildIndex() { return _active_child_index; }
+    virtual void setActiveChild(int index);
+    virtual int maxTextHeight();
+    virtual void redraw();
 
     // X11ServerWidget::EventHandler implementaion
     virtual void handleExpose() {
@@ -50,10 +53,12 @@ private:
     X11ServerWidget *currentWidget() {
         return isMinimized() ? _minimized_widget : _widget;
     }
+    void applyMapState();
 
     std::vector<X11Client*> _children;
     int _active_child_index;
     X11ServerWidget *_widget, *_minimized_widget;
+    bool _is_mapped;
 };
 
 #endif // __X11_CLIENT_CONTAINER_H__

@@ -39,7 +39,7 @@ public:
     }
 
 protected:
-    ContainerContainer(ContainerContainer *parent);
+    ContainerContainer();
 
 private:
     void updateDirtyStatus();

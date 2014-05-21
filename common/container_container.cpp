@@ -16,7 +16,7 @@
 #include <stdlib.h>
 
 
-ContainerContainer::ContainerContainer(ContainerContainer *parent) : Container(CONTAINER, parent),
+ContainerContainer::ContainerContainer() : Container(CONTAINER),
 //     _dirty(true)
 //     _reserved_space(0)
     _layout(new ContainerContainerLayout(this))

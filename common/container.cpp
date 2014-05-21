@@ -13,16 +13,14 @@ Container::Orientation Container::_root_orientation = HORIZONTAL;
 
 
 
-Container::Container(Type type, ContainerContainer *parent) :
-    _parent(parent),
-    _type(type),
+Container::Container(Type type) :
+    _parent(0),
     _workspace(0),
-    _fixed_width(0),
+    _type(type),
+     _fixed_width(0),
     _fixed_height(0),
     _is_fixed_size(false)
 {
-    if (parent)
-        _workspace = parent->workspace();
 }
 
 void Container::localToGlobal(int &x, int &y)
@@ -110,7 +108,17 @@ bool Container::isAncestorOf(Container *container)
 
 void Container::setWorkspace(Workspace *workspace)
 {
+    assert(!_parent);
     _workspace = workspace;
+}
+
+Workspace *Container::workspace()
+{
+    if (_parent) {
+        assert(!_workspace);
+        return _parent->workspace();
+    } else
+        return _workspace;
 }
 
 // int Container::minWidth()
