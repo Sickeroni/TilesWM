@@ -63,43 +63,6 @@ void ContainerContainer::handleSizeHintsChanged(Container *child)
         getLayout()->layoutContents();
 }
 
-#if 0
-void ContainerContainer::setActiveChild(Container *child)
-{
-    assert(child->parent() == this);
-
-    if (_active_child == child)
-        return;
-
-    Container *old_active = _active_child;
-    _active_child = child;
-
-    old_active->handleActiveChanged();
-    _active_child->handleActiveChanged();
-
-    if (workspace()->maximized() && hasFocus())
-        layout();
-
-#if 0
-    if (old_active)
-        old_active->handleActiveChanged();
-    if (_active_child)
-        _active_child->handleActiveChanged();
-
-    if (workspace()->maximized() && hasFocus()) {
-        _active_child->handleMaximizedChanged();
-        _active_child = child;
-        _active_child->handleMaximizedChanged();
-        layout();
-    } else
-        _active_child = child;
-#endif
-    _active_child->setFocus(); //FIXME
-
-    redrawAll();
-}
-#endif
-
 ClientContainer *ContainerContainer::activeClientContainer()
 {
     if (Container *active = activeChild()) {

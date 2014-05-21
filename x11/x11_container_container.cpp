@@ -5,8 +5,10 @@
 #include "x11_canvas.h"
 #include "x11_application.h"
 #include "x11_global.h"
+#include "container_layout.h"
 #include "theme.h"
 #include "colors.h"
+#include "workspace.h"
 
 #include <stdlib.h>
 
@@ -47,6 +49,29 @@ void X11ContainerContainer::clear()
     for (int i = 0; i < _children.size(); i++)
         delete _children[i];
     _children.clear();
+}
+
+void X11ContainerContainer::setActiveChild(int index)
+{
+    //FIXME caller should set focus to client if desired
+
+    assert(index < _children.size());
+
+    if (_active_child_index == index)
+        return;
+
+    if (index < _children.size()) {
+        if (-1 < _active_child_index)
+            _children[_active_child_index]->handleActiveChanged();
+
+        _active_child_index = index;
+
+        if (-1 < _active_child_index)
+            _children[_active_child_index]->handleActiveChanged();
+
+        if (workspace()->maximized() && isActive())
+            getLayout()->layoutContents();
+    }
 }
 
 #if 0
