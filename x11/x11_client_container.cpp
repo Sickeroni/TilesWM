@@ -75,6 +75,15 @@ void X11ClientContainer::removeClientInt(Client *c, bool moving_to_new_container
 }
 #endif
 
+int X11ClientContainer::indexOfChild(const Client *child)
+{
+    for(int i = 0; i < _children.size(); i++) {
+        if (child == _children[i])
+            return i;
+    }
+    return -1;
+}
+
 void X11ClientContainer::setActiveChild(int index)
 {
 //     if (client)
@@ -91,15 +100,6 @@ void X11ClientContainer::setActiveChild(int index)
         activeClient()->raise();
 
     parent()->handleSizeHintsChanged(this);
-}
-
-int X11ClientContainer::indexOfChild(const Client *child)
-{
-    for(int i = 0; i < _children.size(); i++) {
-        if (child == _children[i])
-            return i;
-    }
-    return -1;
 }
 
 int X11ClientContainer::addClient(X11Client *client)
@@ -120,6 +120,27 @@ int X11ClientContainer::addClient(X11Client *client)
     getLayout()->layoutContents();
 
     return _children.size() - 1;
+}
+
+void X11ClientContainer::removeClient(X11Client *client)
+{
+    int index = indexOfChild(client);
+    assert(-1 < index);
+
+    client->setContainer(0);
+
+    _children.erase(_children.begin() + index);
+
+    if (_children.size() && (-1 < _active_child_index)) {
+        if (_active_child_index > (_children.size() - 1))
+            _active_child_index = (_children.size() - 1);
+    } else
+        _active_child_index = -1;
+
+    if (activeClient())
+        activeClient()->raise();
+
+    getLayout()->layoutContents();
 }
 
 void X11ClientContainer::setMapped(bool mapped)

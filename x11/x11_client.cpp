@@ -95,6 +95,7 @@ X11Client::X11Client() : Client(false),
 
 X11Client::~X11Client()
 {
+    assert(!container());
     debug;
     delete _icon;
     _icon = 0;
@@ -439,10 +440,14 @@ void X11Client::mapInt()
         calcClientRect(_frame->rect(), client_rect);
 
         _widget->reparent(_frame, client_rect.x, client_rect.y);
+        
+        assert(!container());
 
-        if (!container() && !isDialog() && !_is_modal) {
+        if (!isDialog() && !_is_modal) {
             assert(X11Application::activeClientContainer());
             X11Application::activeClientContainer()->addClient(this);
+        } else {
+            //FIXME add to workspace
         }
 
         assert(isFloating() || container());
@@ -506,7 +511,9 @@ void X11Client::unmapInt()
         _is_mapped = false;
 
         if (container())
-            container()->removeClient(this);
+            static_cast<X11ClientContainer*>(container())->removeClient(this);
+        else if(workspace())
+            assert(0);
     }
 }
 
@@ -958,7 +965,9 @@ bool X11Client::handleEvent(const XEvent &ev)
                 _frame_wid_index.erase(client->_frame->wid());
                 _wid_index.erase(wid);
                 if (client->container())
-                    client->container()->removeClient(client);
+                    static_cast<X11ClientContainer*>(client->container())->removeClient(client);
+                else if (client->workspace())
+                    assert(0);
                 delete client;
                 client = 0;
                 break;
@@ -1020,18 +1029,21 @@ bool X11Client::handleEvent(const XEvent &ev)
                         client->refreshWindowType();
                         printvar(client->isDialog());
                         if (was_dialog != client->isDialog()) {
-                            if (client->isMapped())
-                                abort(); //FIXME
-                            if (client->isDialog()) {
-                                if (client->container()) {
-                                    client->container()->removeClient(client);
-                                    //FIXME TODO place frame
+                            // ignore changes for mapped clients - bad luck for them
+                            if (!client->isMapped()) {
+#if 0
+                                if (client->isDialog()) {
+                                    if (client->container()) {
+                                        static_cast<X11ClientContainer*>(client->container())->removeClient(client);
+                                        //FIXME TODO place frame
+                                    }
+                                } else {
+                                    //FIXME insert into active container or something
+                                    abort();
                                 }
-                            } else {
-                                //FIXME insert into active container or something
-                                abort();
-                            }
-
+#endif
+                            } else
+                                debug<<"WARNING: client changed _NET_WM_WINDOW_TYPE while mapped.";
                         }
                     } else if (ev.xproperty.atom == ATOM(_NET_WM_ICON)) {
                         client->refreshIcon();

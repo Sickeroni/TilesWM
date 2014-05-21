@@ -44,6 +44,7 @@ public:
     void clear();
     // returns the index of the added client
     int addClient(X11Client *client);
+    void removeClient(X11Client *client);
 
     X11ServerWidget *widget() { return _widget; }
 

@@ -30,9 +30,9 @@ public:
     virtual int numElements() { return _children.size(); }
     virtual Container *child(int index) { return _children[index]; }
     virtual bool isEmpty() { return _children.empty(); }
-
     virtual int activeChildIndex() { return _active_child_index; }
-
+    virtual int indexOfChild(const Container *child);
+    virtual void setActiveChild(int index);
 
     // X11ServerWidget::EventHandler implementaion
     virtual void handleExpose() {
@@ -47,7 +47,6 @@ public:
 
     // returns index of added child
     int addChild(Container *container);
-    void setActiveChild(int index);
 
     X11ServerWidget *widget() { return _widget; }
     

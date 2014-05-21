@@ -12,6 +12,7 @@
 class ClientContainer;
 class Icon;
 class Canvas;
+class Workspace;
 
 
 class Client
@@ -34,6 +35,7 @@ public:
     virtual void setContainer(ClientContainer *c);
 
     ClientContainer *container() { return _container; }
+    Workspace *workspace() { return 0; }
     bool isMapped() { return _is_mapped; }
     bool hasFocus() { return _has_focus; }
     const std::string &name() { return _name; }

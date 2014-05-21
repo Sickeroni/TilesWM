@@ -66,10 +66,10 @@ void ClientContainer::handleMouseClick(int global_x, int global_y)
 
     if (-1 < clicked_tab_index) {
         setActiveChild(clicked_tab_index);
-        child(clicked_tab_index)->setFocus();
+//         child(clicked_tab_index)->setFocus(); //FIXME focus model
 
-        assert(0);
-//         makeActive(); //FIXME
+//         assert(0);
+        makeActive();
     }
 }
 

@@ -33,6 +33,15 @@ X11ContainerContainer::~X11ContainerContainer()
     _widget = 0;
 }
 
+int X11ContainerContainer::indexOfChild(const Container *child)
+{
+    for (int i = 0; i < _children.size(); i++) {
+        if (child == _children[i])
+            return i;
+    }
+    return -1;
+}
+
 void X11ContainerContainer::clear()
 {
     _active_child_index = -1;

@@ -87,12 +87,12 @@ bool Container::isMinimized()
         return false;
 }
 
-#if 0
+#if 1
 void Container::makeActive()
 {
     if (_parent) {
         _parent->makeActive();
-        _parent->setActiveChild(this);
+        _parent->setActiveChild(_parent->indexOfChild(this));
     }
 }
 #endif

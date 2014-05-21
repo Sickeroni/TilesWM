@@ -34,10 +34,6 @@ public:
         return activeChildIndex() > -1 ? child(activeChildIndex()) : 0;
     }
 
-    void removeClient(Client *c) {
-        assert(false);
-    }
-
     void handleMouseClick(int global_x, int global_y);
     void handleClientUnmap(Client *client);
     void handleClientFocusChange(Client *client);

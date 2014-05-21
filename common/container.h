@@ -93,7 +93,7 @@ public:
 
     ContainerContainer *parent() { return _parent; }
 
-//     void makeActive(); //FIXME change to makeActiveAndFocus() ?
+    void makeActive();
 
     ContainerContainer *root();
 

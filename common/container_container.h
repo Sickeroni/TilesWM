@@ -18,6 +18,8 @@ public:
     virtual int numElements() = 0;
     virtual Container *child(int index) = 0;
     virtual int activeChildIndex() = 0;
+    virtual void setActiveChild(int index) = 0;
+    virtual int indexOfChild(const Container *child) = 0;
     virtual bool isEmpty() = 0;
 
 
