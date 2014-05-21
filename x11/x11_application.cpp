@@ -223,6 +223,7 @@ bool X11Application::init()
     _workspace->setRootContainer(new X11ContainerContainer());
     activeRootContainer()->setWorkspace(_workspace);
     activeRootContainer()->setRect(root_container_rect);
+    activeRootContainer()->setMapped(true);
 
 //    activeRootContainer()->addNewClientContainer(false); //FIXME HACK
 //    _activeRootContainer->addNewClientContainer(false); //FIXME HACK
@@ -230,6 +231,10 @@ bool X11Application::init()
     X11Client::init();
 
     _shortcuts = new X11DefaultKeyBindings();
+
+
+    // set focus to the roor window initially
+    XSetInputFocus(dpy(), X11Application::root(), RevertToNone, CurrentTime);
 
 //     XFlush(_dpy);
     XSync(_dpy, false);

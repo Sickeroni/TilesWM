@@ -109,20 +109,6 @@ void X11ContainerContainer::setRect(const Rect &rect)
     ContainerContainer::setRect(rect);
 }
 
-#if 0
-ClientContainer *X11ContainerContainer::createClientContainer()
-{
-    X11ClientContainer *client_container = new X11ClientContainer(this);
-    return client_container;
-}
-
-ContainerContainer *X11ContainerContainer::createContainerContainer()
-{
-    X11ContainerContainer *container = new X11ContainerContainer(workspace(), this);
-    return container;
-}
-#endif
-
 void X11ContainerContainer::redraw()
 {
     Theme::drawContainerContainer(this, _widget->canvas());

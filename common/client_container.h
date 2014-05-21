@@ -35,7 +35,7 @@ public:
     }
 
     void removeClient(Client *c) {
-        abort();
+        assert(false);
     }
 
     void handleMouseClick(int global_x, int global_y);

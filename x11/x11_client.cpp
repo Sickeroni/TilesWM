@@ -969,14 +969,16 @@ bool X11Client::handleEvent(const XEvent &ev)
                 break;
             case MapRequest:
                 client->map();
+#if 0
                 if (ClientContainer *container =  client->container()) {
                     int index = client->container()->indexOfChild(client);
                     assert(index > -1);
                     container->setActiveChild(index);
-                    abort();
+                    assert(false);
 //                     container->makeActive(); //FIXME
 //                     client->setFocus();
                 }
+#endif
                 break;
             case ConfigureRequest:
                 client->handleConfigureRequest(ev.xconfigurerequest);
