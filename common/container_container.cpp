@@ -94,20 +94,6 @@ void ContainerContainer::setActiveChild(Container *child)
 }
 #endif
 
-#if 0
-void ContainerContainer::focusPrevChild()
-{
-    if (_active_child && _active_child->prev())
-        setActiveChild(_active_child->prev());
-}
-
-void ContainerContainer::focusNextChild()
-{
-    if (_active_child && _active_child->next())
-        setActiveChild(_active_child->next());
-}
-#endif
-
 ClientContainer *ContainerContainer::activeClientContainer()
 {
     if (Container *active = activeChild()) {
@@ -115,19 +101,6 @@ ClientContainer *ContainerContainer::activeClientContainer()
     } else
         return 0;
 }
-
-#if 0
-void ContainerContainer::addClient(Client *c)
-{
-    if(activeChild())
-        activeChild()->addClient(c);
-    else {
-        ClientContainer *client_container = createClientContainer();
-        appendChild(client_container);
-        client_container->addClient(c);
-    }
-}
-#endif
 
 inline void ContainerContainer::getClientRect(Rect &rect)
 {
@@ -231,76 +204,6 @@ void ContainerContainer::layout()
     redraw();
 }
 
-#if 0
-ClientContainer *ContainerContainer::addNewClientContainer(bool prepend)
-{
-    debug;
-    ClientContainer *client_container = createClientContainer();
-    if (prepend)
-        prependChild(client_container);
-    else
-        appendChild(client_container);
-
-    _active_child = client_container;
-
-    layout();
-
-    return client_container;
-}
-#endif
-
-#if 0
-void ContainerContainer::prependChild(Container *container)
-{
-//FIXME
-//     if (!container->isUnlinked())
-//         abort();
-
-    _children.prepend(container);
-
-    if (!_active_child)
-        _active_child = container;
-
-    layout();
-}
-
-void ContainerContainer::appendChild(Container *container)
-{
-    printvar(_children.count());
-
-//FIXME
-//     if (!container->isUnlinked())
-//         abort();
-
-    _children.append(container);
-
-    printvar(_children.count());
-
-    if (!_active_child)
-        _active_child = container;
-
-    if (parent())
-        parent()->handleSizeHintsChanged(this);
-
-    layout();
-}
-
-void ContainerContainer::replaceChild(Container *old_container, Container *new_container)
-{
-//FIXME
-//     if (!new_container->isUnlinked())
-//         abort();
-
-    _children.replace(old_container, new_container);
-
-    if (_active_child == old_container)
-        _active_child = new_container;
-
-//     updateDirtyStatus();
-
-    layout();
-}
-#endif
 
 #if 0
 void ContainerContainer::setDirty(bool set)
@@ -430,37 +333,6 @@ void ContainerContainer::deleteChild(Container *child)
     _children.remove(child);
 
     delete child;
-}
-#endif
-
-#if 0
-ClientContainer *ContainerContainer::splitChild(Container *child, bool prepend_new_sibling)
-{
-    if (hierarchyDepth() >= _max_hierarchy_depth)
-        return 0;
-
-    // create new parent
-    ContainerContainer *new_parent = createContainerContainer();
-
-    replaceChild(child, new_parent); // unlinks container
-
-    child->reparent(new_parent);
-    new_parent->appendChild(child);
-
-    ClientContainer *new_sibling = new_parent->createClientContainer();
-
-    // add this + new child container to new parent
-    if (prepend_new_sibling)
-        new_parent->prependChild(new_sibling);
-    else
-        new_parent->appendChild(new_sibling);
-
-    _active_child = new_parent;
-    new_parent->_active_child = new_sibling;
-
-    layout();
-
-    return new_sibling;
 }
 #endif
 

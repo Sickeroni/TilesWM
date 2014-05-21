@@ -259,7 +259,7 @@ void ClientContainer::unfocusActiveClient()
     redraw();
 }
 
-#if 0
+#if 1
 void ClientContainer::addClient(Client *c)
 {
     debug;
@@ -286,7 +286,7 @@ void ClientContainer::addClient(Client *c)
 }
 #endif
 
-#if 0
+#if 1
 void ClientContainer::removeClientInt(Client *c, bool moving_to_new_container)
 {
     debug;
@@ -306,8 +306,11 @@ void ClientContainer::removeClientInt(Client *c, bool moving_to_new_container)
     else
         redraw();
 
+//FIXME
+#if 0
     if (isEmpty() && _parent)
         _parent->setDirty(true);
+#endif
 }
 #endif
 
@@ -488,125 +491,6 @@ void ClientContainer::getClientRect(Rect &rect)
     rect.w = width() - (2 * _frame_width);
     rect.h = height() - ((2 * _frame_width) + tabbar_height + gap);
 }
-
-#if 0
-void ClientContainer::focusSibling(Direction where)
-{
-    ContainerContainer *parent = 0;
-    if (orientationOfDirection(where) == _parent->orientation())
-        parent = _parent;
-    else
-        parent = _parent->parent();
-
-    if (parent) {
-        if (isForwardDirection(where))
-            parent->focusNextChild();
-        else
-            parent->focusPrevChild();
-    }
-}
-
-void ClientContainer::createSibling(Direction where)
-{
-    std::cout<<"ClientContainer::createSibling()\n";
-    bool prepend = !isForwardDirection(where);
-    if (orientationOfDirection(where) == _parent->orientation()) {
-        _parent->addNewClientContainer(prepend);
-    } else
-        _parent->splitChild(this, prepend);
-}
-#endif
-
-#if 0
-ClientContainer *ClientContainer::createSiblingFor(Container *container, bool prepend_new_sibling)
-{
-    ClientContainer *new_sibling = 0;
-
-    if (container->parent())
-        new_sibling = container->parent()->addNewClientContainer(prepend_new_sibling);
-
-    return new_sibling;
-}
-#endif
-#if 0
-ClientContainer *ClientContainer::getOrCreateSiblingFor(Container *container, bool get_prev)
-{
-    if (!get_prev && container->next())
-        return container->next()->activeClientContainer();
-    else if (get_prev && container->prev())
-        return container->prev()->activeClientContainer();
-    else
-        return createSiblingFor(container, get_prev);
-}
-
-ClientContainer *ClientContainer::getSibling(bool get_prev)
-{
-    if (get_prev && prev())
-        return prev()->activeClientContainer();
-    else if (!get_prev && next())
-        return next()->activeClientContainer();
-    else
-        return 0;
-}
-
-void ClientContainer::moveClientToOther(Client *client, Direction dir)
-{
-    if (workspace()->maximized())
-        return;
-
-    if (client->container() != this)
-        abort();
-
-    if (!client->isMapped()) //FIXME is this ok ?
-        return;
-
-    bool backward = !isForwardDirection(dir);
-
-    ClientContainer *target = 0;
-
-    if (_parent) {
-        if (orientationOfDirection(dir) == _parent->orientation()) { // easy case
-            if (numMappedClients() > 1) // only create new direct sibling if container doesn't become empty
-                target = getOrCreateSiblingFor(this, backward);
-            else
-                target = getSibling(backward);
-        }
-
-        else { // difficult case:
-                 // if client container becomes empty -> use use sibling of parent container;
-                 // else: 1. replace this with new parent container; 2. add this and new client container to parent created in step 1
-
-            if (numMappedClients() <= 1) // cant't split - use use sibling of parent container
-                target = getOrCreateSiblingFor(_parent, backward);
-            else { // split this
-//                 target = splitContainer(this, backward);
-                target = _parent->splitChild(this, backward);
-
-                if (!target) { // split failed - maximum hierarchy depth exceeded ?
-                    target = getOrCreateSiblingFor(_parent, backward);
-                }
-            }
-        }
-    } else {
-        abort();
-    }
-
-    if (target) {
-        target->addClient(client);
-        target->setActiveClient(client);
-        target->makeActive();
-        client->setFocus();
-//         target->setFocus();
-//         ContainerContainer *root = 0;
-//         for (ContainerContainer *c = target->parent(); c; c = c->parent()) {
-//             root = c;
-//         }
-
-//         root->setFocus();
-//         root->redrawAll();
-    }
-}
-#endif
 
 int ClientContainer::numMappedClients()
 {

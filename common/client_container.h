@@ -91,7 +91,7 @@ private:
     void drawTabbar(Canvas *canvas);
     void drawVerticalTabs(Canvas *canvas);
     void drawTab(Client *client, const Rect &rect, bool minimized, bool vertical, Canvas *canvas);
-//     void removeClientInt(Client *c, bool moving_to_new_container);
+    void removeClientInt(Client *c, bool moving_to_new_container);
     void unfocusActiveClient();
 
     // this value is addet to the client-specified minimum size
