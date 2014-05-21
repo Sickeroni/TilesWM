@@ -1,12 +1,87 @@
-#if 0
-#include "layout.h"
+#include "container_container_layout.h"
 
-#include "container_container.h"
-#include "workspace.h"
 #include "theme.h"
+#include "container_container.h"
 #include "common.h"
+#include "workspace.h"
 
-void Layout::layoutContainer(ContainerContainer *container)
+ContainerContainerLayout::ContainerContainerLayout(ContainerContainer *container) :
+    _container(container)
+{
+}
+
+int ContainerContainerLayout::minWidth()
+{
+    const Theme::ContainerContainerSizes &sizes = Theme::containerContainerSizes();
+
+    int width = 0;
+    if (_container->isHorizontal()) {
+        for (int i = 0; i < _container->numElements(); i++)
+            width += _container->child(i)->getLayout()->minWidth() + (2 * sizes.child_frame_width);
+    } else {
+        for (int i = 0; i < _container->numElements(); i++) {
+            int w = _container->child(i)->getLayout()->minWidth();
+            if (w > width)
+                width = w;
+        }
+        width += (2 * sizes.child_frame_width);
+    }
+
+    width += 2 * sizes.frame_width;
+
+    return width;
+}
+
+int ContainerContainerLayout::minHeight()
+{
+    const Theme::ContainerContainerSizes &sizes = Theme::containerContainerSizes();
+
+    int height = 0;
+    if (_container->isHorizontal()) {
+        for (int i = 0; i < _container->numElements(); i++) {
+            int h = _container->child(i)->getLayout()->minHeight();
+            if (h > height)
+                height = h;
+        }
+        height += (2 * sizes.child_frame_width);
+    } else {
+        for (int i = 0; i < _container->numElements(); i++)
+            height += _container->child(i)->getLayout()->minHeight() + (2 * sizes.child_frame_width);
+    }
+
+    height += sizes.title_height + (2 * sizes.frame_width);
+
+    return height;
+}
+
+int ContainerContainerLayout::maxWidth()
+{
+    const Theme::ContainerContainerSizes &sizes = Theme::containerContainerSizes();
+
+    int max_width = 0;
+    if (_container->isHorizontal()) {
+        abort();
+    } else {
+        for(int i = 0; i < _container->numElements(); i++) {
+            if (int w = _container->child(i)->getLayout()->maxWidth()) {
+                if (w > max_width)
+                    max_width = w;
+            } else { // at least one child has unlimited maximum width
+                max_width = 0; // unlimited width
+                break;
+            }
+        }
+    }
+    return max_width;
+}
+
+int ContainerContainerLayout::maxHeight()
+{
+    //FIXME
+    return 0;
+}
+
+void ContainerContainerLayout::layoutContents()
 {
     static const bool respect_size_hints = true;
 
@@ -44,14 +119,14 @@ void Layout::layoutContainer(ContainerContainer *container)
     };
 
 
-    const int num_children = container->numElements();
-    const bool is_horizontal = container->isHorizontal();
+    const int num_children = _container->numElements();
+    const bool is_horizontal = _container->isHorizontal();
 
-    if (!container->width() || !container->height() || !num_children)
+    if (!_container->width() || !_container->height() || !num_children)
         return;
 
     Rect client_rect;
-    Theme::getContainerContainerClientRect(container->rect(), client_rect);
+    Theme::getContainerContainerClientRect(_container->rect(), client_rect);
 
     if (!client_rect.w || !client_rect.h)
         return;
@@ -68,25 +143,25 @@ void Layout::layoutContainer(ContainerContainer *container)
     // initialize layout items
     {
         for (int i = 0 ; i < num_children; i++) {
-            Container *c = container->child(i);
+            Container *c = _container->child(i);
 
             int min_size, max_size;
             if (!respect_size_hints) // FIXME move this flag to Container and test against in it Container::minSize()/maxSize()
                 min_size = max_size = 0;
             else if (is_horizontal) {
-                min_size = c->minWidth();
-                max_size = c->maxWidth();
+                min_size = c->getLayout()->minWidth();
+                max_size = c->getLayout()->maxWidth();
             } else {
-                min_size = c->minHeight();
-                max_size = c->maxHeight();
+                min_size = c->getLayout()->minHeight();
+                max_size = c->getLayout()->maxHeight();
             }
 
             if (c->isFixedSize()) {
                 //FIXME - make sure min_size <= c->[maxWidth()|maxHeight()]
                 if (is_horizontal) {
-                    min_size = c->minWidth() + c->fixedWidth();
+                    min_size = c->getLayout()->minWidth() + c->fixedWidth();
                 } else {
-                    min_size = c->minHeight() + c->fixedHeight();
+                    min_size = c->getLayout()->minHeight() + c->fixedHeight();
                 }
                 max_size = min_size;
             }
@@ -112,7 +187,7 @@ void Layout::layoutContainer(ContainerContainer *container)
     if (available_space < 0) // BAAD - children won't fit
         available_space = 0;
 
-    if (!(container->workspace()->maximized())) {
+    if (!(_container->workspace()->maximized())) {
         // distribute remaining available space
         debug<<"distributing remaining available space ...";
         while (available_space && num_growable_items) {
@@ -184,8 +259,8 @@ void Layout::layoutContainer(ContainerContainer *container)
 
         debug<<"child"<<i<<"final size:"<<size;
 
-        if (container->workspace()->maximized() && container->isActive()) {
-            if (container->activeChild() == c)
+        if (_container->workspace()->maximized() && _container->isActive()) {
+            if (_container->activeChild() == c)
                 size += available_space;
         }
 
@@ -210,9 +285,8 @@ void Layout::layoutContainer(ContainerContainer *container)
         debug<<"child"<<i<<"final width:"<<new_rect.w;
 
         c->setRect(new_rect);
-        c->layout();
+        c->getLayout()->layoutContents();
    }
 
    delete[] layout_items;
 }
-#endif

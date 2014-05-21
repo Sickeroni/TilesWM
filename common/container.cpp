@@ -113,25 +113,25 @@ void Container::setWorkspace(Workspace *workspace)
     _workspace = workspace;
 }
 
-int Container::minWidth()
-{
-    return minWidthInt();
-}
-
-int Container::maxWidth()
-{
-    return maxWidthInt();
-}
-
-int Container::minHeight()
-{
-    return minHeightInt();
-}
-
-int Container::maxHeight()
-{
-    return maxHeightInt();
-}
+// int Container::minWidth()
+// {
+//     return minWidthInt();
+// }
+// 
+// int Container::maxWidth()
+// {
+//     return maxWidthInt();
+// }
+// 
+// int Container::minHeight()
+// {
+//     return minHeightInt();
+// }
+// 
+// int Container::maxHeight()
+// {
+//     return maxHeightInt();
+// }
 
 void Container::setFixedWidth(int width)
 {

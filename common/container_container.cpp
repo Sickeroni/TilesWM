@@ -1,6 +1,7 @@
 #include "container_container.h"
 
 #include "client_container.h"
+#include "container_container_layout.h"
 #include "canvas.h"
 #include "colors.h"
 #include "workspace.h"
@@ -54,7 +55,7 @@ void ContainerContainer::handleSizeHintsChanged(Container *child)
     if (parent())
         parent()->handleSizeHintsChanged(this);
     else
-        layout();
+        getLayout()->layoutContents();
 }
 
 #if 0
@@ -192,11 +193,13 @@ int ContainerContainer::calcAvailableSpace()
 }
 #endif
 
+#if 0
 void ContainerContainer::layout()
 {
     Layout::layoutContainer(this);
     redraw();
 }
+#endif
 
 
 #if 0

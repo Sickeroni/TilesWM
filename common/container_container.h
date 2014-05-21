@@ -23,7 +23,7 @@ public:
     virtual ClientContainer *activeClientContainer();
 //     virtual void setFocus();
 //     virtual void addClient(Client *c);
-    virtual void layout();
+//     virtual void layout();
 //     virtual void layoutClients();
     virtual void redrawAll();
 //     virtual void deleteEmptyChildren();
@@ -45,10 +45,10 @@ protected:
 //     void clear() = 0;
 //     virtual ClientContainer *createClientContainer() = 0;
 //     virtual ContainerContainer *createContainerContainer() = 0;
-    virtual int minWidthInt();
-    virtual int maxWidthInt();
-    virtual int minHeightInt();
-    virtual int maxHeightInt();
+//     virtual int minWidthInt();
+//     virtual int maxWidthInt();
+//     virtual int minHeightInt();
+//     virtual int maxHeightInt();
     
     
 

@@ -8,7 +8,7 @@ class Client;
 class ContainerContainer;
 class ClientContainer;
 class Workspace;
-
+class ContainerLayout;
 
 class Container : public List<Container>::Item
 {
@@ -55,19 +55,20 @@ public:
 
     virtual int numElements() = 0;
     virtual ClientContainer *activeClientContainer() = 0;
-    virtual void layout() = 0;
+//     virtual void layout() = 0;
 //     virtual void layoutClients();
     virtual bool isEmpty() = 0;
     virtual void redrawAll() = 0;
     virtual void handleMaximizedChanged() = 0;
     virtual void handleActiveChanged() = 0;
+    virtual ContainerLayout *getLayout() = 0;
 
 
 
-    int minWidth();
-    int maxWidth();
-    int minHeight();
-    int maxHeight();
+//     int minWidth();
+//     int maxWidth();
+//     int minHeight();
+//     int maxHeight();
     int fixedWidth() { return isMinimized() ? 0 : _fixed_width; }
     void setFixedWidth(int width);
     int fixedHeight() { return isMinimized() ? 0 : _fixed_height; }
@@ -106,10 +107,10 @@ public:
 
 
 protected:
-    virtual int minWidthInt() = 0;
-    virtual int maxWidthInt() = 0;
-    virtual int minHeightInt() = 0;
-    virtual int maxHeightInt() = 0;
+//     virtual int minWidthInt() = 0;
+//     virtual int maxWidthInt() = 0;
+//     virtual int minHeightInt() = 0;
+//     virtual int maxHeightInt() = 0;
 
     Container(Type type, ContainerContainer *parent);
 

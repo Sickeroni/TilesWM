@@ -4,6 +4,7 @@
 
 #include "client.h"
 #include "container_container.h"
+#include "container_layout.h"
 #include "canvas.h"
 #include "workspace.h"
 #include "icon.h"
@@ -179,14 +180,14 @@ void ClientContainer::handleClientMap(Client *client)
 {
     if (!_active_client)
         setActiveClient(client);
-    layout();
+    getLayout()->layoutContents();
 }
 
 void ClientContainer::handleClientUnmap(Client *client)
 {
     if (client == _active_client)
         unfocusActiveClient();
-    layout();
+    getLayout()->layoutContents();
 }
 
 void ClientContainer::handleClientAboutToBeMapped(Client *client)
@@ -204,7 +205,7 @@ void ClientContainer::handleClientSizeHintChanged(Client *client)
 {
     if (activeClient() == client)
         parent()->handleSizeHintsChanged(this);
-    layout();
+    getLayout()->layoutContents();
 }
 
 void ClientContainer::focusPrevClient()
@@ -280,7 +281,7 @@ void ClientContainer::addClient(Client *c)
         setActiveClient(c);
 
     if (c->isMapped())
-        layout();
+        getLayout()->layoutContents();
     else
         redraw();
 }
@@ -302,7 +303,7 @@ void ClientContainer::removeClientInt(Client *c, bool moving_to_new_container)
         c->setContainer(0);
 
     if (c->isMapped())
-        layout();
+        getLayout()->layoutContents();
     else
         redraw();
 
@@ -435,6 +436,7 @@ void ClientContainer::drawTabbar(Canvas *canvas)
     }
 }
 
+#if 0
 void ClientContainer::layout()
 {
     if (!isMinimized()) {
@@ -448,6 +450,7 @@ void ClientContainer::layout()
     }
     redraw();
 }
+#endif
 
 int ClientContainer::calcTabbarHeight()
 {

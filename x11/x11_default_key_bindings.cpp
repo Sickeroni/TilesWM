@@ -4,6 +4,7 @@
 #include "x11_container_container.h"
 #include "client_container.h"
 #include "workspace.h"
+#include "container_layout.h"
 #include "common.h"
 
 
@@ -20,12 +21,12 @@ struct X11DefaultKeyBindings::Actions
 
     static void layout()
     {
-        rootContainer()->layout();
+        rootContainer()->getLayout()->layoutContents();
     }
     static void rotate()
     {
         Container::rotateOrientation();
-        rootContainer()->layout();
+        rootContainer()->getLayout()->layoutContents();
     }
 #if 0
     static void focusLeft()

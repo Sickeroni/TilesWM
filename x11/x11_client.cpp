@@ -8,6 +8,7 @@
 #include "x11_canvas.h"
 #include "x11_icon.h"
 #include "x11_global.h"
+#include "container_layout.h"
 #include "colors.h"
 #include "common.h"
 
@@ -986,7 +987,7 @@ bool X11Client::handleEvent(const XEvent &ev)
                 case XA_WM_NORMAL_HINTS:
                     client->refreshSizeHints();
                     if (client->container())
-                        client->container()->layout();
+                        client->container()->getLayout()->layoutContents();
                     break;
                 case XA_WM_NAME:
                     client->refreshName();
@@ -1030,7 +1031,7 @@ bool X11Client::handleEvent(const XEvent &ev)
                     } else if (ev.xproperty.atom == ATOM(_NET_WM_ICON)) {
                         client->refreshIcon();
                         if (client->container())
-                            client->container()->layout(); //FIXME use handleClientIconChanged()
+                            client->container()->getLayout()->layoutContents(); //FIXME use handleClientIconChanged()
                     }
                 }
                 break;

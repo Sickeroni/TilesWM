@@ -18,7 +18,7 @@ namespace Theme
     const ContainerContainerSizes &containerContainerSizes();
     void drawContainerContainer(ContainerContainer *container, Canvas *canvas);
 
-    void getContainerContainerClientRect(const Rect &container_rect, Rect &client_rect)
+    inline void getContainerContainerClientRect(const Rect &container_rect, Rect &client_rect)
     {
         const ContainerContainerSizes &sizes = containerContainerSizes();
 

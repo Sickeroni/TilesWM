@@ -1,6 +1,7 @@
 #include "workspace.h"
 
 #include "container_container.h"
+#include "container_layout.h"
 
 Workspace::Workspace() :
     _root_container(0),
@@ -17,5 +18,5 @@ void Workspace::setMaximized(bool enable)
 {
     _maximized = enable;
     _root_container->handleMaximizedChanged();
-    _root_container->layout();
+    _root_container->getLayout()->layoutContents();
 }

@@ -32,6 +32,7 @@ public:
     virtual Container *child(int index) { return _children[index]; }
     virtual bool isEmpty() { return _children.empty(); }
     virtual void setActiveChild(Container *child);
+    virtual ContainerLayout *getLayout();
 
 
     // X11ServerWidget::EventHandler implementaion

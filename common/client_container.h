@@ -19,7 +19,7 @@ public:
     virtual int numElements() { return _clients.count(); }
     virtual ClientContainer *activeClientContainer() { return this; }
     virtual void addClient(Client *c);
-    virtual void layout();
+//     virtual void layout();
 //     virtual void layoutClients;
     virtual bool isEmpty() { return _clients.isEmpty(); }
     virtual void redrawAll();

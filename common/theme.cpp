@@ -21,7 +21,6 @@ const ContainerContainerSizes &containerContainerSizes()
     return sizes;
 }
 
-
 void drawContainerContainer(ContainerContainer *container, Canvas *canvas)
 {
     const ContainerContainerSizes &sizes = containerContainerSizes();
