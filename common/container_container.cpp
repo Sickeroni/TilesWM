@@ -102,12 +102,6 @@ ClientContainer *ContainerContainer::activeClientContainer()
         return 0;
 }
 
-inline void ContainerContainer::getClientRect(Rect &rect)
-{
-    rect.set(_frame_width, _frame_width + _title_height,
-             _rect.w - (_frame_width * 2), _rect.h - _title_height - (_frame_width * 2));
-}
-
 #if 0
 int ContainerContainer::minWidthInt()
 {

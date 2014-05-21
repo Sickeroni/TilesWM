@@ -6,14 +6,32 @@
 
 #include <sstream>
 
-void Theme::drawContainerContainer(ContainerContainer *container, Canvas *canvas)
+
+namespace Theme {
+
+
+const ContainerContainerSizes &containerContainerSizes()
 {
+    static ContainerContainerSizes sizes = {
+        .child_frame_width = 10,
+        .title_height = 10,
+        .frame_width = 10
+    };
+
+    return sizes;
+}
+
+
+void drawContainerContainer(ContainerContainer *container, Canvas *canvas)
+{
+    const ContainerContainerSizes &sizes = containerContainerSizes();
+
     Rect bg_rect = container->rect();
     bg_rect.setPos(0, 0);
     canvas->erase(bg_rect);
 
-    Rect title_rect(ContainerContainer::_frame_width - 2, ContainerContainer::_frame_width - 2,
-                    container->width() - 4 - (2 * ContainerContainer::_frame_width), ContainerContainer::_title_height);
+    Rect title_rect(sizes.frame_width - 2, sizes.frame_width - 2,
+                    container->width() - 4 - (2 * sizes.frame_width), sizes.title_height);
 
     std::stringstream title;
 
@@ -58,3 +76,6 @@ void Theme::drawContainerContainer(ContainerContainer *container, Canvas *canvas
         }
     }
 }
+
+
+} // namespace Theme

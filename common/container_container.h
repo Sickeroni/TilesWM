@@ -41,12 +41,6 @@ public:
 //     void incAvailableSpacePortion(Container *child, int pixels);
 //     void decAvailableSpacePortion(Container *child, int pixels);
 
-    void getClientRect(Rect &rect);
-
-    static const int _child_frame_width = 10;
-    static const int _title_height = 10;
-    static const int _frame_width = 10;
-
 protected:
 //     void clear() = 0;
 //     virtual ClientContainer *createClientContainer() = 0;

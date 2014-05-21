@@ -2,15 +2,20 @@
 
 #include "container_container.h"
 #include "workspace.h"
+#include "theme.h"
 #include "common.h"
 
 void Layout::layoutContainer(ContainerContainer *container)
 {
     static const bool respect_size_hints = true;
 
+    const Theme::ContainerContainerSizes &sizes = Theme::containerContainerSizes();
+
     struct LayoutItem
     {
         void init(Container *c, int min, int max) {
+            const Theme::ContainerContainerSizes &sizes = Theme::containerContainerSizes();
+
             container = c;
             min_size = min;
             max_size = max;
@@ -18,9 +23,9 @@ void Layout::layoutContainer(ContainerContainer *container)
             if (max_size && max_size < min_size) // normalize
                 max_size = min_size;
 
-            min_size += (2 * ContainerContainer::_child_frame_width); //FIXME
+            min_size += (2 * sizes.child_frame_width);
             if (max_size)
-                max_size += (2 * ContainerContainer::_child_frame_width);
+                max_size += (2 * sizes.child_frame_width);
 
             size = min_size;
 
@@ -45,7 +50,7 @@ void Layout::layoutContainer(ContainerContainer *container)
         return;
 
     Rect client_rect;
-    container->getClientRect(client_rect);
+    Theme::getContainerContainerClientRect(container->rect(), client_rect);
 
     if (!client_rect.w || !client_rect.h)
         return;
@@ -196,10 +201,10 @@ void Layout::layoutContainer(ContainerContainer *container)
         }
 
         Rect new_rect = child_rect;
-        new_rect.x += ContainerContainer::_child_frame_width;
-        new_rect.y += ContainerContainer::_child_frame_width;
-        new_rect.w -= (2 * ContainerContainer::_child_frame_width);
-        new_rect.h -= (2 * ContainerContainer::_child_frame_width);
+        new_rect.x += sizes.child_frame_width;
+        new_rect.y += sizes.child_frame_width;
+        new_rect.w -= (2 * sizes.child_frame_width);
+        new_rect.h -= (2 * sizes.child_frame_width);
 
         debug<<"child"<<i<<"final width:"<<new_rect.w;
 
