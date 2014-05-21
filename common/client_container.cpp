@@ -30,6 +30,7 @@ ClientContainer::~ClientContainer()
     clear();
 }
 
+#if 0
 void ClientContainer::clear()
 {
     for (Client *c = _clients.first(); c; ) {
@@ -39,7 +40,9 @@ void ClientContainer::clear()
         remove_this->setContainer(0);
     }
 }
+#endif
 
+#if 0
 Client *ClientContainer::activeClient()
 {
     if (_active_client) {
@@ -49,7 +52,9 @@ Client *ClientContainer::activeClient()
     } else
         return 0;
 }
+#endif
 
+#if 0
 void ClientContainer::setActiveClient(Client *client)
 {
 //     if (client)
@@ -69,6 +74,7 @@ void ClientContainer::setActiveClient(Client *client)
 
     parent()->handleSizeHintsChanged(this);
 }
+#endif
 
 void ClientContainer::handleMouseClick(int global_x, int global_y)
 {
@@ -106,6 +112,7 @@ void ClientContainer::handleMouseClick(int global_x, int global_y)
 //     _custom_size_active = active;
 // }
 
+#if 0
 void ClientContainer::handleClientMap(Client *client)
 {
     if (!_active_client)
@@ -130,14 +137,18 @@ void ClientContainer::handleClientFocusChange(Client *client)
         setActiveClient(client);
     redraw();
 }
+#endif
 
+#if 0
 void ClientContainer::handleClientSizeHintChanged(Client *client)
 {
     if (activeClient() == client)
         parent()->handleSizeHintsChanged(this);
     getLayout()->layoutContents();
 }
+#endif
 
+#if 0
 void ClientContainer::focusPrevClient()
 {
     if (_active_client) {
@@ -189,8 +200,9 @@ void ClientContainer::unfocusActiveClient()
 
     redraw();
 }
+#endif
 
-#if 1
+#if 0
 void ClientContainer::addClient(Client *c)
 {
     debug;
@@ -217,7 +229,7 @@ void ClientContainer::addClient(Client *c)
 }
 #endif
 
-#if 1
+#if 0
 void ClientContainer::removeClientInt(Client *c, bool moving_to_new_container)
 {
     debug;
@@ -264,6 +276,7 @@ void ClientContainer::getClientRect(Rect &rect)
 }
 #endif
 
+#if 0
 int ClientContainer::numMappedClients()
 {
     int mapped_clients = 0;
@@ -273,6 +286,7 @@ int ClientContainer::numMappedClients()
     }
     return mapped_clients;
 }
+#endif
 
 void ClientContainer::redrawAll()
 {

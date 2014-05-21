@@ -16,12 +16,12 @@ public:
 
     virtual void redraw() = 0;
 
-    virtual int numElements() { return _clients.count(); }
+    virtual int numElements() = 0;
     virtual ClientContainer *activeClientContainer() { return this; }
     virtual void addClient(Client *c);
 //     virtual void layout();
 //     virtual void layoutClients;
-    virtual bool isEmpty() { return _clients.isEmpty(); }
+    virtual bool isEmpty() = 0;
     virtual void redrawAll();
 
     virtual Client *child(int index) = 0;
@@ -47,16 +47,6 @@ public:
     void handleClientFocusChange(Client *client);
     void handleClientSizeHintChanged(Client *client);
 
-//     void createSibling(Direction where);
-//     void focusSibling(Direction where);
-
-//     void moveClient(Direction where) {
-//         if (activeClient())
-//             moveClientToOther(activeClient(), where);
-//     }
-
-
-
 //     void incCustomSize()
 //     void decCustomSize();
 //     void setCustomSizeActive(bool active);
@@ -65,20 +55,7 @@ protected:
     ClientContainer(ContainerContainer *parent);
 
     void draw(Canvas *canvas);
-//     ClientContainer *splitContainer(Container *container, bool prepend_new_sibling);
-//     ClientContainer *createSiblingFor(Container *container, bool prepend_new_sibling);
-//     ClientContainer *getOrCreateSiblingFor(Container *container, bool get_prev);
-//     ClientContainer *getSibling(bool get_prev);
-//     void moveClientToOther(Client *client, Direction dir);
     void clear();
-
-#if 0    
-    void getTabbbarRect(Rect &rect);
-    void getClientRect(Rect &rect);
-    int calcTabbarHeight();
-#endif
-
-    List<Client> _clients;
 
 private:
     int numMappedClients();
