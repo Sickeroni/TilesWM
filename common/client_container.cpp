@@ -72,6 +72,8 @@ void ClientContainer::setActiveClient(Client *client)
 
 void ClientContainer::handleMouseClick(int global_x, int global_y)
 {
+    //FIXME move this to mouse handler class
+
     printvar(global_x);
     printvar(global_y);
 
@@ -81,32 +83,13 @@ void ClientContainer::handleMouseClick(int global_x, int global_y)
 
     printvar(local_x);
     printvar(local_y);
-#if 0
-    Rect tabbar_rect;
-    getTabbbarRect(tabbar_rect);
 
-    printvar(tabbar_rect.y);
-    printvar(tabbar_rect.h);
+    int clicked_tab_index = Theme::getTabAt(local_x, local_y, this);
 
-    if (tabbar_rect.isPointInside(local_x, local_y)) {
-//         std::cout<<"inside tabbar.\n";
-        int tab_width, tab_height;
-        getTabSize(tab_width, tab_height);
-
-        int i = 0;
-        for(Client *c = _clients.first(); c; c = c->next()) {
-            Rect tab_rect(tabbar_rect.x + (i * (tab_width + _tab_gap)),
-                          tabbar_rect.y, tab_width, tab_height);
-
-            if (tab_rect.isPointInside(local_x, local_y)) {
-                setActiveClient(c);
-                break;
-            }
-
-            i++;
-        }
+    if (-1 < clicked_tab_index) {
+        setActiveChild(clicked_tab_index);
+        child(clicked_tab_index)->setFocus();
     }
-#endif
 }
 
 

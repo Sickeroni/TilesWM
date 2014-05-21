@@ -7,6 +7,7 @@
 #include "canvas.h"
 #include "colors.h"
 #include "metrics.h"
+#include "common.h"
 
 #include <sstream>
 
@@ -24,13 +25,13 @@ struct ClientContainerSizesInternal
 };
 
 
-ContainerContainerSizes _containerContainerSizes = {
+const ContainerContainerSizes _containerContainerSizes = {
     .child_frame_width = 10,
     .title_height = 10,
     .frame_width = 10
 };
 
-ClientContainerSizesInternal _clientContainerSizesInternal = {
+const ClientContainerSizesInternal _clientContainerSizesInternal = {
     .frame_width = Metrics::CLIENT_CONTAINER_FRAME_MARGIN,
     .vertical_tabbar_width = 70,
     .tab_inner_margin = 5,
@@ -38,7 +39,7 @@ ClientContainerSizesInternal _clientContainerSizesInternal = {
     .status_bar_width = 30
 };
 
-ClientContainerSizes _clientContainerSizes = {
+const ClientContainerSizes _clientContainerSizes = {
     .min_contents_width = _clientContainerSizesInternal.vertical_tabbar_width,
     .frame_width = _clientContainerSizesInternal.frame_width
 };
@@ -264,6 +265,32 @@ void drawClientContainer(ClientContainer *container, Canvas *canvas)
     } else {
         drawTabbar(container, canvas);
     }
+}
+
+int getTabAt(int x, int y, ClientContainer *container)
+{
+    Rect tabbar_rect;
+    getTabbbarRect(container, tabbar_rect);
+
+    printvar(tabbar_rect.y);
+    printvar(tabbar_rect.h);
+
+    if (tabbar_rect.isPointInside(x, y)) {
+//         std::cout<<"inside tabbar.\n";
+        int tab_width, tab_height;
+        getTabSize(container, tab_width, tab_height);
+
+        for(int i = 0; i < container->numElements(); i++) {
+            Rect tab_rect(tabbar_rect.x + (i * (tab_width + _clientContainerSizesInternal.tab_gap)),
+                          tabbar_rect.y, tab_width, tab_height);
+
+            if (tab_rect.isPointInside(x, y)) {
+                return i;
+            }
+        }
+    }
+
+    return -1;
 }
 
 

@@ -25,6 +25,8 @@ public:
     virtual void redrawAll();
 
     virtual Client *child(int index) = 0;
+    // doesn't set focus to the client !
+    virtual void setActiveChild(int index) = 0;
     virtual int maxTextHeight() = 0;
 
     Client *activeClient();
