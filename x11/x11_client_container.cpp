@@ -7,6 +7,7 @@
 #include "x11_global.h"
 #include "x11_application.h"
 #include "workspace.h"
+#include "theme.h"
 #include "colors.h"
 #include "common.h"
 
@@ -43,7 +44,7 @@ void X11ClientContainer::setRect(const Rect &rect)
 
 void X11ClientContainer::redraw()
 {
-    draw(currentWidget()->canvas());
+    Theme::drawClientContainer(this, currentWidget()->canvas());
 }
 
 void X11ClientContainer::reparent(ContainerContainer *p)
@@ -53,6 +54,7 @@ void X11ClientContainer::reparent(ContainerContainer *p)
     _minimized_widget->reparent(static_cast<X11ContainerContainer*>(p)->widget());
 }
 
+#if 0
 void X11ClientContainer::setFocus()
 {
     if (activeClient() && activeClient()->isMapped())
@@ -62,6 +64,7 @@ void X11ClientContainer::setFocus()
                        RevertToNone, CurrentTime);
     redraw();
 }
+#endif
 
 void X11ClientContainer::handleButtonPress(const XButtonEvent &ev)
 {

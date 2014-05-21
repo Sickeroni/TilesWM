@@ -28,10 +28,10 @@ public:
     
     virtual void redraw();
     virtual int numElements() { return _children.size(); }
-    virtual Container *activeChild();
     virtual Container *child(int index) { return _children[index]; }
     virtual bool isEmpty() { return _children.empty(); }
-    virtual void setActiveChild(Container *child);
+    virtual void setActiveChild(int index);
+    virtual int activeChildIndex();
     virtual ContainerLayout *getLayout();
 
 

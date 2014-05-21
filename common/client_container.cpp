@@ -18,10 +18,9 @@
 #include <assert.h>
 
 
-ClientContainer::ClientContainer(ContainerContainer *parent) : Container(CLIENT, parent),
+ClientContainer::ClientContainer(ContainerContainer *parent) : Container(CLIENT, parent)
 //     _extra_space(0),
 //     _custom_size_active(false),
-    _active_client(0)
 {
 }
 
@@ -256,11 +255,6 @@ void ClientContainer::removeClientInt(Client *c, bool moving_to_new_container)
 #endif
 }
 #endif
-
-void ClientContainer::draw(Canvas *canvas)
-{
-    Theme::drawClientContainer(this, canvas);
-}
 
 #if 0
 void ClientContainer::getClientRect(Rect &rect)

@@ -5,6 +5,7 @@
 #include "x11_canvas.h"
 #include "x11_application.h"
 #include "x11_global.h"
+#include "theme.h"
 #include "colors.h"
 
 #include <stdlib.h>
@@ -86,7 +87,7 @@ ContainerContainer *X11ContainerContainer::createContainerContainer()
 
 void X11ContainerContainer::redraw()
 {
-    draw(_widget->canvas());
+    Theme::drawContainerContainer(this, _widget->canvas());
 }
 
 void X11ContainerContainer::reparent(ContainerContainer *p)

@@ -19,26 +19,23 @@ public:
     virtual int numElements() = 0;
     virtual ClientContainer *activeClientContainer() { return this; }
     virtual void addClient(Client *c);
-//     virtual void layout();
-//     virtual void layoutClients;
     virtual bool isEmpty() = 0;
     virtual void redrawAll();
 
     virtual Client *child(int index) = 0;
+    virtual int indexOfChild(Client *child) = 0;
+    virtual int activeChildIndex() = 0;
     // doesn't set focus to the client !
     virtual void setActiveChild(int index) = 0;
     virtual int maxTextHeight() = 0;
 
-    Client *activeClient();
-    void setActiveClient(Client *client);
+    Client *activeClient() {
+        return activeChildIndex() > -1 ? child(activeChildIndex()) : 0;
+    }
 
     void removeClient(Client *c) {
         abort();
-//         removeClientInt(c, false);
     }
-
-    void focusPrevClient();
-    void focusNextClient();
 
     void handleMouseClick(int global_x, int global_y);
     void handleClientMap(Client *client);
@@ -54,23 +51,16 @@ public:
 protected:
     ClientContainer(ContainerContainer *parent);
 
-    void draw(Canvas *canvas);
     void clear();
 
 private:
-    int numMappedClients();
-    void getTabSize(int &tab_width, int &tab_height);
-    void drawTabbar(Canvas *canvas);
-    void drawVerticalTabs(Canvas *canvas);
-    void drawTab(Client *client, const Rect &rect, bool minimized, bool vertical, Canvas *canvas);
-    void removeClientInt(Client *c, bool moving_to_new_container);
-    void unfocusActiveClient();
+//     void removeClientInt(Client *c, bool moving_to_new_container);
+//     void unfocusActiveClient();
 
     // this value is addet to the client-specified minimum size
     // configurable by user
 //     int _extra_space;
 //     bool _custom_size_active;
-    Client *_active_client;
 };
 
 #endif // __CLIENT_CONTAINER_H__

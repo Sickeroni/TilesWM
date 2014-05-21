@@ -16,9 +16,9 @@
 #include <stdlib.h>
 
 
-ContainerContainer::ContainerContainer(ContainerContainer *parent) : Container(CONTAINER, parent),
-    _dirty(true),
-    _reserved_space(0)
+ContainerContainer::ContainerContainer(ContainerContainer *parent) : Container(CONTAINER, parent)
+//     _dirty(true)
+//     _reserved_space(0)
 {
 }
 
@@ -36,19 +36,17 @@ void ContainerContainer::setFocus()
 }
 #endif
 
-#if 0
 void ContainerContainer::handleMaximizedChanged()
 {
-    for (Container *c = _children.first(); c; c = c->next())
-        c->handleMaximizedChanged();
+    for (int i = 0; i < numElements(); i++)
+        child(i)->handleMaximizedChanged();
 }
 
 void ContainerContainer::handleActiveChanged()
 {
-    if (_active_child)
-        _active_child->handleActiveChanged();
+    if (activeChild())
+        activeChild()->handleActiveChanged();
 }
-#endif
 
 void ContainerContainer::handleSizeHintsChanged(Container *child)
 {
@@ -101,11 +99,6 @@ ClientContainer *ContainerContainer::activeClientContainer()
         return active->activeClientContainer();
     } else
         return 0;
-}
-
-void ContainerContainer::draw(Canvas *canvas)
-{
-    Theme::drawContainerContainer(this, canvas);
 }
 
 #if 0
