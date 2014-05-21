@@ -293,5 +293,18 @@ int getTabAt(int x, int y, ClientContainer *container)
     return -1;
 }
 
+void getClientContainerClientRect(ClientContainer *container,  Rect &client_rect)
+{
+    const ClientContainerSizesInternal &sizes = _clientContainerSizesInternal;
+    int tabbar_height = calcTabbarHeight(container);
+
+    static const int gap = 2; //FIXME
+
+    client_rect.x = sizes.frame_width;
+    client_rect.y = sizes.frame_width + tabbar_height + gap;
+    client_rect.w = container->width() - (2 * sizes.frame_width);
+    client_rect.h = container->height() - ((2 * sizes.frame_width) + tabbar_height + gap);
+}
+
 
 } // namespace Theme

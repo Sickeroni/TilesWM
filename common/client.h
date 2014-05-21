@@ -2,8 +2,6 @@
 #define __CLIENT_H__
 
 
-#include "list.h"
-
 #include "rect.h"
 
 #include <map>
@@ -16,7 +14,7 @@ class Icon;
 class Canvas;
 
 
-class Client : public List<Client>::Item
+class Client
 {
 public:
 //     static void startup();

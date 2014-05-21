@@ -4,6 +4,7 @@
 #include "container.h"
 
 #include "metrics.h"
+#include "common.h"
 
 
 class Canvas;
@@ -15,22 +16,19 @@ class ClientContainer : public Container
 public:
     virtual ~ClientContainer();
 
-    virtual void redraw() = 0;
-
     virtual int numElements() = 0;
-    virtual ClientContainer *activeClientContainer() { return this; }
-    virtual void addClient(Client *c);
     virtual bool isEmpty() = 0;
-    virtual void redrawAll();
-
     virtual Client *child(int index) = 0;
     virtual int indexOfChild(Client *child) = 0;
     virtual int activeChildIndex() = 0;
     // doesn't set focus to the client !
     virtual void setActiveChild(int index) = 0;
     virtual int maxTextHeight() = 0;
+    virtual void redraw() = 0;
 
+    virtual void redrawAll();
     virtual ContainerLayout *getLayout();
+    virtual ClientContainer *activeClientContainer() { return this; }
 
     Client *activeClient() {
         return activeChildIndex() > -1 ? child(activeChildIndex()) : 0;

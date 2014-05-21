@@ -29,7 +29,7 @@ public:
     virtual int maxTextHeight();
     virtual int numElements() { return _children.size(); }
     virtual Client *child(int index) { return _children[index]; }
-    virtual int indexOfChild(Client *child);
+    virtual int indexOfChild(const Client *child);
     virtual int activeChildIndex() { return _active_child_index; }
 
     // X11ServerWidget::EventHandler implementaion
@@ -38,9 +38,11 @@ public:
     }
     virtual void handleButtonPress(const XButtonEvent &ev);
 
-    X11ServerWidget *widget() { return _widget; }
-
     void clear();
+    // returns the index of the added client
+    int addClient(X11Client *client);
+
+    X11ServerWidget *widget() { return _widget; }
 
 private:
     X11ServerWidget *currentWidget() {

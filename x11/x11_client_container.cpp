@@ -45,6 +45,32 @@ void X11ClientContainer::clear()
     _children.clear();
 }
 
+int X11ClientContainer::indexOfChild(const Client *child)
+{
+    for(int i = 0; i < _children.size(); i++) {
+        if (child == _children[i])
+            return i;
+    }
+    return -1;
+}
+
+int X11ClientContainer::addClient(X11Client *client)
+{
+    debug;
+    assert(!client->container());
+
+    client->setContainer(this);
+
+    // make sure the active client stays on top of the stacking order
+    if (activeClient())
+        activeClient()->raise();
+
+    _children.push_back(client);
+
+    printvar(_children.size());
+
+    return _children.size() - 1;
+}
 
 void X11ClientContainer::setRect(const Rect &rect)
 {

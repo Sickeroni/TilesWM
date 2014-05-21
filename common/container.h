@@ -1,7 +1,6 @@
 #ifndef __CONTAINER_H__
 #define __CONTAINER_H__
 
-#include "list.h"
 #include "rect.h"
 
 class Client;
@@ -10,7 +9,7 @@ class ClientContainer;
 class Workspace;
 class ContainerLayout;
 
-class Container : public List<Container>::Item
+class Container
 {
 public:
     enum Type {

@@ -70,7 +70,7 @@ void ClientContainerLayout::layoutContents()
 {
     if (!_container->isMinimized()) {
         Rect client_rect;
-        Theme::getClientContainerClientRect(_container->rect(), client_rect);
+        Theme::getClientContainerClientRect(_container, client_rect);
 
         if (_container->activeClient())
             _container->activeClient()->raise(); //FIXME the container should do this when setting the active client

@@ -209,33 +209,6 @@ void ClientContainer::unfocusActiveClient()
 #endif
 
 #if 0
-void ClientContainer::addClient(Client *c)
-{
-    debug;
-
-    if (ClientContainer *old_container = c->container()) {
-        //FIXME  - TODO: unmap before and remap client after move
-        debug<<"removing from old container ...";
-        old_container->removeClientInt(c, true);
-    }
-
-    c->setContainer(this);
-
-    _clients.append(c);
-
-    printvar(_clients.count());
-
-    if (c->isMapped() && !_active_client)
-        setActiveClient(c);
-
-    if (c->isMapped())
-        getLayout()->layoutContents();
-    else
-        redraw();
-}
-#endif
-
-#if 0
 void ClientContainer::removeClientInt(Client *c, bool moving_to_new_container)
 {
     debug;
@@ -260,20 +233,6 @@ void ClientContainer::removeClientInt(Client *c, bool moving_to_new_container)
     if (isEmpty() && _parent)
         _parent->setDirty(true);
 #endif
-}
-#endif
-
-#if 0
-void ClientContainer::getClientRect(Rect &rect)
-{
-    int tabbar_height = calcTabbarHeight();
-
-    static const int gap = 2;
-
-    rect.x = _frame_width;
-    rect.y = _frame_width + tabbar_height + gap;
-    rect.w = width() - (2 * _frame_width);
-    rect.h = height() - ((2 * _frame_width) + tabbar_height + gap);
 }
 #endif
 

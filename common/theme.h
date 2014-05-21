@@ -35,7 +35,7 @@ namespace Theme
                  container_rect.w - (sizes.frame_width * 2), container_rect.h - sizes.title_height - (sizes.frame_width * 2));
     }
 
-    void getClientContainerClientRect(const Rect &container_rect, Rect &client_rect);
+    void getClientContainerClientRect(ClientContainer *container, Rect &client_rect);
     int calcTabbarHeight(ClientContainer *container);
     int calcVerticalTabbarHeight(ClientContainer *container);
     int getTabAt(int x, int y, ClientContainer *container);
