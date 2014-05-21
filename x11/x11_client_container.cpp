@@ -6,6 +6,7 @@
 #include "x11_canvas.h"
 #include "x11_global.h"
 #include "x11_application.h"
+#include "container_layout.h"
 #include "workspace.h"
 #include "theme.h"
 #include "colors.h"
@@ -111,6 +112,16 @@ void X11ClientContainer::handleButtonPress(const XButtonEvent &ev)
         makeActive();
     handleMouseClick(ev.x_root, ev.y_root);
 #endif
+}
+
+void X11ClientContainer::handleClientMap(X11Client *client)
+{
+    if (!activeClient()) {
+        int index = indexOfChild(client);
+        assert(-1 < index);
+        setActiveChild(index);
+    }
+    getLayout()->layoutContents();
 }
 
 void X11ClientContainer::handleActiveChanged()

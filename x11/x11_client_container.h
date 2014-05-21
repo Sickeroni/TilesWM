@@ -44,6 +44,8 @@ public:
 
     X11ServerWidget *widget() { return _widget; }
 
+    void handleClientMap(X11Client *client);
+
 private:
     X11ServerWidget *currentWidget() {
         return isMinimized() ? _minimized_widget : _widget;

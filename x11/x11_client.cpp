@@ -447,10 +447,6 @@ void X11Client::mapInt()
 
         assert(isFloating() || container());
 
-        // notify container before mapping, to avoid visual glitches
-        if (container())
-            container()->handleClientAboutToBeMapped(this);
-
         const uint32 state[2] = {
             STATE_NORMAL, None
         };
@@ -464,7 +460,7 @@ void X11Client::mapInt()
         _is_mapped = true;
 
         if (container())
-            container()->handleClientMap(this);
+            static_cast<X11ClientContainer*>(container())->handleClientMap(this);
         else
             setFocus();
     }
@@ -690,6 +686,11 @@ void X11Client::refreshFocusState()
             focus_changed = true;
             _has_focus = true;
         } // else: no change
+    }
+
+    if (container() && _has_focus) {
+        assert(container()->isActive());
+        assert(container()->activeClient() == this);
     }
 
     if (!focus_return) { // we lost focus and no other window is currently focused

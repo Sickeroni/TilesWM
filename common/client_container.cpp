@@ -119,12 +119,6 @@ void ClientContainer::handleMouseClick(int global_x, int global_y)
 // }
 
 #if 0
-void ClientContainer::handleClientMap(Client *client)
-{
-    if (!_active_client)
-        setActiveClient(client);
-    getLayout()->layoutContents();
-}
 
 void ClientContainer::handleClientUnmap(Client *client)
 {
@@ -133,26 +127,20 @@ void ClientContainer::handleClientUnmap(Client *client)
     getLayout()->layoutContents();
 }
 
-void ClientContainer::handleClientAboutToBeMapped(Client *client)
-{
-}
+
+#endif
 
 void ClientContainer::handleClientFocusChange(Client *client)
 {
-    if (client->hasFocus())
-        setActiveClient(client);
     redraw();
 }
-#endif
 
-#if 0
 void ClientContainer::handleClientSizeHintChanged(Client *client)
 {
     if (activeClient() == client)
         parent()->handleSizeHintsChanged(this);
     getLayout()->layoutContents();
 }
-#endif
 
 #if 0
 void ClientContainer::focusPrevClient()

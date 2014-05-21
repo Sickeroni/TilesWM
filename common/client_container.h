@@ -39,9 +39,7 @@ public:
     }
 
     void handleMouseClick(int global_x, int global_y);
-    void handleClientMap(Client *client);
     void handleClientUnmap(Client *client);
-    void handleClientAboutToBeMapped(Client *client);
     void handleClientFocusChange(Client *client);
     void handleClientSizeHintChanged(Client *client);
 
