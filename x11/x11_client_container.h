@@ -25,6 +25,8 @@ public:
     virtual void handleActiveChanged() ;
     virtual int maxTextHeight();
 
+    virtual Client *child(int index);
+
     // X11ServerWidget::EventHandler implementaion
     virtual void handleExpose() {
         redraw();

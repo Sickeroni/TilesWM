@@ -289,4 +289,6 @@ void ContainerContainerLayout::layoutContents()
    }
 
    delete[] layout_items;
+
+   _container->redraw();
 }

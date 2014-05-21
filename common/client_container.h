@@ -24,6 +24,9 @@ public:
     virtual bool isEmpty() { return _clients.isEmpty(); }
     virtual void redrawAll();
 
+    virtual Client *child(int index) = 0;
+    virtual int maxTextHeight() = 0;
+
     Client *activeClient();
     void setActiveClient(Client *client);
 
@@ -57,14 +60,7 @@ public:
 //     void setCustomSizeActive(bool active);
 
 protected:
-    virtual int minWidthInt();
-    virtual int maxWidthInt();
-    virtual int minHeightInt();
-    virtual int maxHeightInt();
-
     ClientContainer(ContainerContainer *parent);
-
-    virtual int maxTextHeight() = 0;
 
     void draw(Canvas *canvas);
 //     ClientContainer *splitContainer(Container *container, bool prepend_new_sibling);
@@ -73,19 +69,16 @@ protected:
 //     ClientContainer *getSibling(bool get_prev);
 //     void moveClientToOther(Client *client, Direction dir);
     void clear();
+
+#if 0    
     void getTabbbarRect(Rect &rect);
     void getClientRect(Rect &rect);
     int calcTabbarHeight();
+#endif
 
     List<Client> _clients;
 
 private:
-    static const int _vertical_tabbar_width = 70;
-    static const int _frame_width = Metrics::CLIENT_CONTAINER_FRAME_MARGIN;
-    static const int _tab_inner_margin = 5;
-    static const int _tab_gap = 2;
-    static const int _status_bar_width = 30;
-
     int numMappedClients();
     void getTabSize(int &tab_width, int &tab_height);
     void drawTabbar(Canvas *canvas);
