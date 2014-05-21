@@ -30,6 +30,7 @@ public:
     virtual int numElements() { return _children.size(); }
     virtual Client *child(int index) { return _children[index]; }
     virtual int indexOfChild(Client *child);
+    virtual int activeChildIndex() { return _active_child_index; }
 
     // X11ServerWidget::EventHandler implementaion
     virtual void handleExpose() {
@@ -39,12 +40,15 @@ public:
 
     X11ServerWidget *widget() { return _widget; }
 
+    void clear();
+
 private:
     X11ServerWidget *currentWidget() {
         return isMinimized() ? _minimized_widget : _widget;
     }
 
     std::vector<X11Client*> _children;
+    int _active_child_index;
     X11ServerWidget *_widget, *_minimized_widget;
 };
 

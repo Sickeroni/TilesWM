@@ -7,6 +7,7 @@
 
 
 class Canvas;
+class ClientContainerLayout;
 
 
 class ClientContainer : public Container
@@ -28,6 +29,8 @@ public:
     // doesn't set focus to the client !
     virtual void setActiveChild(int index) = 0;
     virtual int maxTextHeight() = 0;
+
+    virtual ContainerLayout *getLayout();
 
     Client *activeClient() {
         return activeChildIndex() > -1 ? child(activeChildIndex()) : 0;
@@ -51,8 +54,6 @@ public:
 protected:
     ClientContainer(ContainerContainer *parent);
 
-    void clear();
-
 private:
 //     void removeClientInt(Client *c, bool moving_to_new_container);
 //     void unfocusActiveClient();
@@ -61,6 +62,7 @@ private:
     // configurable by user
 //     int _extra_space;
 //     bool _custom_size_active;
+    ClientContainerLayout *_layout;
 };
 
 #endif // __CLIENT_CONTAINER_H__

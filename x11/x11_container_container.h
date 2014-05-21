@@ -31,8 +31,7 @@ public:
     virtual Container *child(int index) { return _children[index]; }
     virtual bool isEmpty() { return _children.empty(); }
     virtual void setActiveChild(int index);
-    virtual int activeChildIndex();
-    virtual ContainerLayout *getLayout();
+    virtual int activeChildIndex() { return _active_child_index; }
 
 
     // X11ServerWidget::EventHandler implementaion
@@ -59,7 +58,7 @@ private:
     void deleteChild(Container *child);
 
     std::vector<Container*> _children;
-//     Container *_active_child;
+    int _active_child_index;
     X11ServerWidget *_widget;
 };
 

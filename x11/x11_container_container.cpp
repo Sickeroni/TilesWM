@@ -22,6 +22,7 @@ X11ContainerContainer *X11ContainerContainer::create(Workspace *workspace)
 
 X11ContainerContainer::X11ContainerContainer(Workspace *workspace, X11ContainerContainer *parent) :
     ContainerContainer(parent),
+    _active_child_index(-1),
 //     _active_child(0),
     _widget(X11ServerWidget::create(parent ? parent->widget() : 0,
                                     Colors::CONTAINER,
@@ -41,7 +42,7 @@ X11ContainerContainer::~X11ContainerContainer()
 
 void X11ContainerContainer::clear()
 {
-//     _active_child = 0;
+    _active_child_index = -1;
 
     for (int i = 0; i < _children.size(); i++)
         delete _children[i];

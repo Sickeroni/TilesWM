@@ -15,8 +15,8 @@
 using namespace X11Global;
 
 
-X11ClientContainer::X11ClientContainer(X11ContainerContainer *parent) :
-    ClientContainer(parent),
+X11ClientContainer::X11ClientContainer(X11ContainerContainer *parent) : ClientContainer(parent),
+    _active_child_index(-1),
     _widget(X11ServerWidget::create(parent->widget(),
                                     Colors::CLIENT_CONTAINER,
                                     this, ButtonPressMask | ExposureMask)),
@@ -35,6 +35,16 @@ X11ClientContainer::~X11ClientContainer()
     delete _widget;
     _widget = 0;
 }
+
+void X11ClientContainer::clear()
+{
+    _active_child_index = -1;
+
+    for (int i = 0; i < _children.size(); i++)
+        delete _children[i];
+    _children.clear();
+}
+
 
 void X11ClientContainer::setRect(const Rect &rect)
 {

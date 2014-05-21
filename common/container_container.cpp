@@ -16,16 +16,23 @@
 #include <stdlib.h>
 
 
-ContainerContainer::ContainerContainer(ContainerContainer *parent) : Container(CONTAINER, parent)
+ContainerContainer::ContainerContainer(ContainerContainer *parent) : Container(CONTAINER, parent),
 //     _dirty(true)
 //     _reserved_space(0)
+    _layout(new ContainerContainerLayout(this))
 {
 }
 
 ContainerContainer::~ContainerContainer()
 {
+    delete _layout;
+    _layout = 0;
 }
 
+ContainerLayout *ContainerContainer::getLayout()
+{
+    return _layout;
+}
 
 #if 0
 void ContainerContainer::setFocus()

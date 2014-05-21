@@ -4,7 +4,7 @@
 
 #include "client.h"
 #include "container_container.h"
-#include "container_layout.h"
+#include "client_container_layout.h"
 #include "canvas.h"
 #include "workspace.h"
 #include "icon.h"
@@ -18,15 +18,22 @@
 #include <assert.h>
 
 
-ClientContainer::ClientContainer(ContainerContainer *parent) : Container(CLIENT, parent)
+ClientContainer::ClientContainer(ContainerContainer *parent) : Container(CLIENT, parent),
 //     _extra_space(0),
 //     _custom_size_active(false),
+    _layout(new ClientContainerLayout(this))
 {
 }
 
 ClientContainer::~ClientContainer()
 {
-    clear();
+    delete _layout;
+    _layout = 0;
+}
+
+ContainerLayout *ClientContainer::getLayout()
+{
+    return _layout;
 }
 
 #if 0

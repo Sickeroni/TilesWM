@@ -6,6 +6,7 @@
 
 class ClientContainer;
 class Canvas;
+class ContainerContainerLayout;
 
 
 class ContainerContainer : public Container
@@ -20,6 +21,7 @@ public:
     virtual bool isEmpty() = 0;
 
 
+    virtual ContainerLayout *getLayout();
     virtual ClientContainer *activeClientContainer();
     virtual void redrawAll();
 //     virtual void deleteEmptyChildren();
@@ -46,6 +48,8 @@ private:
 
 //     bool _dirty; // is this container unused or are there unused child containers ?
 //     double _reserved_space;
+
+    ContainerContainerLayout *_layout;
 
     static const int _max_hierarchy_depth = 1;
 };
