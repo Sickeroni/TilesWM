@@ -11,6 +11,7 @@
 class X11ContainerContainer;
 class X11ShortcutSet;
 class X11ClientContainer;
+class X11Client;
 class Workspace;
 
 class X11Application
@@ -22,6 +23,7 @@ public:
     static X11ContainerContainer *activeRootContainer();
     static X11ClientContainer *activeClientContainer();
     static Workspace *activeWorkspace() { return self()->_workspace; }
+    static X11Client *activeClient();
     static void runProgram(const char *path);
 
     static const char *eventTypeToString(size_t id);

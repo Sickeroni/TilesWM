@@ -432,7 +432,7 @@ void X11Client::mapInt()
     if (isOverrideRedirect()) {
         _widget->map();
         _is_mapped = true;
-        setFocus();
+//         setFocus(); //FIXME focus model
     } else {
         XAddToSaveSet(dpy(), _widget->wid());
 
@@ -440,7 +440,7 @@ void X11Client::mapInt()
         calcClientRect(_frame->rect(), client_rect);
 
         _widget->reparent(_frame, client_rect.x, client_rect.y);
-        
+
         assert(!container());
 
         if (!isDialog() && !_is_modal) {
@@ -466,8 +466,8 @@ void X11Client::mapInt()
 
         if (container())
             static_cast<X11ClientContainer*>(container())->handleClientMap(this);
-        else
-            setFocus();
+//         else
+//             setFocus(); //FIXME focus model
     }
 }
 
@@ -695,23 +695,17 @@ void X11Client::refreshFocusState()
         } // else: no change
     }
 
-    if (container() && _has_focus) {
-        assert(container()->isActive());
-        assert(container()->activeClient() == this);
+    if (_has_focus && (X11Application::activeClient() != this)) {
+        // client grabbed focus when it wasn't active - bad boy
+        // give focus back to active client
+        if (X11Application::activeClient())
+            X11Application::activeClient()->setFocus();
+        else
+            XSetInputFocus(dpy(), X11Application::root(), RevertToNone, CurrentTime);
     }
 
-    if (!focus_return) { // we lost focus and no other window is currently focused
+    if (!focus_return) // we lost focus and no other window is currently focused
         XSetInputFocus(dpy(), X11Application::root(), RevertToNone, CurrentTime);
-#if 0
-        if (container()) 
-            // a tiled window lost focus
-            // don't give focus to active container - otherwise the window would be focused again
-            // give focus to root window - otherwise we wouldn't receive grabbed key events anymore
-            XSetInputFocus(dpy(), X11Application::root(), RevertToNone, CurrentTime);
-        else // a floating window lost focus - give focus to active container
-            X11Application::activeRootContainer()->setFocus();
-#endif
-    }
 
     if (focus_changed && container())
         container()->handleClientFocusChange(this);
@@ -855,10 +849,12 @@ void X11Client::handleButtonPress(const XButtonEvent &ev)
 {
     assert(!_dragged);
 
-    setFocus();
-    raise();
-    if (ev.button == 1)
-        startDrag(ev.x_root, ev.y_root);
+    if (!container()) {
+    //     setFocus(); //FIXME focus model
+        raise();
+        if (ev.button == 1)
+            startDrag(ev.x_root, ev.y_root);
+    }
 }
 
 void X11Client::drawFrame()
