@@ -278,15 +278,6 @@ void X11Application::eventLoop()
     cout<<"event loop started.\n";
     cout<<"------------------------------\n";
 
-    
-//     XWindowAttributes attr;
-
-    /* we use this to save the pointer's state at the beginning of the
-     * move/resize.
-     */
-//     XButtonEvent start;
-
-
     int x11_fd = ConnectionNumber(_dpy);
 
     timeval timeout_spec;
@@ -319,12 +310,6 @@ void X11Application::eventLoop()
 //         if (Container::root()->isContainerContainer())
 //             static_cast<ContainerContainer*>(Container::root())->deleteEmptyChildren();
 
-
-
-        /* this is the most basic way of looping through X events; you can be
-         * more flexible by using XPending(), or ConnectionNumber() along with
-         * select() (or poll() or whatever floats your boat).
-         */
         XNextEvent(_dpy, &ev);
 
         if (ev.type == KeyPress && X11Shortcut::handleKeyPress(ev.xkey)) {
@@ -335,94 +320,6 @@ void X11Application::eventLoop()
             // NO-OP
         }
 
-
-        /* this is our keybinding for raising windows.  as i saw someone
-         * mention on the ratpoison wiki, it is pretty stupid; however, i
-         * wanted to fit some sort of keyboard binding in here somewhere, and
-         * this was the best fit for it.
-         *
-         * i was a little confused about .window vs. .subwindow for a while,
-         * but a little RTFMing took care of that.  our passive grabs above
-         * grabbed on the root window, so since we're only interested in events
-         * for its child windows, we look at .subwindow.  when subwindow ==
-         * None, that means that the window the event happened in was the same
-         * window that was grabbed on -- in this case, the root window.
-         */
-
-//         else if(ev.type == KeyPress && ev.xkey.subwindow != None)
-//             XRaiseWindow(_dpy, ev.xkey.subwindow);
-#if 0
-        else if(ev.type == ButtonPress && ev.xbutton.subwindow != None)
-        {
-            /* now we take command of the pointer, looking for motion and
-             * button release events.
-             */
-            XGrabPointer(_dpy, ev.xbutton.subwindow, True,
-                    PointerMotionMask|ButtonReleaseMask, GrabModeAsync,
-                    GrabModeAsync, None, None, CurrentTime);
-
-            /* we "remember" the position of the pointer at the beginning of
-             * our move/resize, and the size/position of the window.  that way,
-             * when the pointer moves, we can compare it to our initial data
-             * and move/resize accordingly.
-             */
-            XGetWindowAttributes(_dpy, ev.xbutton.subwindow, &attr);
-            start = ev.xbutton;
-        }
-#endif
-        /* the only way we'd receive a motion notify event is if we already did
-         * a pointer grab and we're in move/resize mode, so we assume that. */
-#if 0
-        else if(ev.type == MotionNotify)
-        {
-            int xdiff, ydiff;
-
-            /* here we "compress" motion notify events.  if there are 10 of
-             * them waiting, it makes no sense to look at any of them but the
-             * most recent.  in some cases -- if the window is really big or
-             * things are just acting slowly in general -- failing to do this
-             * can result in a lot of "drag lag."
-             *
-             * for window managers with things like desktop switching, it can
-             * also be useful to compress EnterNotify events, so that you don't
-             * get "focus flicker" as windows shuffle around underneath the
-             * pointer.
-             */
-            while(XCheckTypedEvent(_dpy, MotionNotify, &ev));
-
-            /* now we use the stuff we saved at the beginning of the
-             * move/resize and compare it to the pointer's current position to
-             * determine what the window's new size or position should be.
-             *
-             * if the initial button press was button 1, then we're moving.
-             * otherwise it was 3 and we're resizing.
-             *
-             * we also make sure not to go negative with the window's
-             * dimensions, resulting in "wrapping" which will make our window
-             * something ridiculous like 65000 pixels wide (often accompanied
-             * by lots of swapping and slowdown).
-             *
-             * even worse is if we get "lucky" and hit a width or height of
-             * exactly zero, triggering an X error.  so we specify a minimum
-             * width/height of 1 pixel.
-             */
-            xdiff = ev.xbutton.x_root - start.x_root;
-            ydiff = ev.xbutton.y_root - start.y_root;
-            XMoveResizeWindow(_dpy, ev.xmotion.window,
-                attr.x + (start.button==1 ? xdiff : 0),
-                attr.y + (start.button==1 ? ydiff : 0),
-                MAX(1, attr.width + (start.button==3 ? xdiff : 0)),
-                MAX(1, attr.height + (start.button==3 ? ydiff : 0)));
-        }
-#endif
-        /* like motion notifies, the only way we'll receive a button release is
-         * during a move/resize, due to our pointer grab.  this ends the
-         * move/resize.
-         */
-#if 0
-        else if(ev.type == ButtonRelease)
-            XUngrabPointer(_dpy, CurrentTime);
-#endif
 #if 1
         else {
 //             cout<<"unhandled event: "<<eventTypeToString(ev.type)<<'\n';
