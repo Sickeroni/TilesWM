@@ -134,11 +134,16 @@ void X11ContainerContainer::redraw()
     Theme::drawContainerContainer(this, _widget->canvas());
 }
 
-void X11ContainerContainer::reparent(ContainerContainer *p)
+void X11ContainerContainer::reparent(X11ContainerContainer *p)
 {
     assert(!_workspace);
+
     _parent = p;
-    _widget->reparent(static_cast<X11ContainerContainer*>(p)->widget());
+
+    X11ServerWidget *parent_widget = 0;
+    if (p)
+        parent_widget = p->widget();
+    _widget->reparent(parent_widget);
 }
 
 void X11ContainerContainer::deleteEmptyChildren()

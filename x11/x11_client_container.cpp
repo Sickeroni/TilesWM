@@ -161,12 +161,17 @@ void X11ClientContainer::redraw()
 }
 
 
-void X11ClientContainer::reparent(ContainerContainer *p)
+void X11ClientContainer::reparent(X11ContainerContainer *p)
 {
     assert(!_workspace);
+
     _parent = p;
-    _widget->reparent(static_cast<X11ContainerContainer*>(p)->widget());
-    _minimized_widget->reparent(static_cast<X11ContainerContainer*>(p)->widget());
+
+    X11ServerWidget *parent_widget = 0;
+    if (p)
+        parent_widget = p->widget();
+    _widget->reparent(parent_widget);
+    _minimized_widget->reparent(parent_widget);
 }
 
 

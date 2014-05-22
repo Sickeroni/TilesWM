@@ -39,7 +39,7 @@ void Container::globalToLocal(int &x, int &y)
     if (_parent)
         _parent->globalToLocal(x, y);
     else if (workspace())
-        assert(0);
+        workspace()->globalToLocal(x, y);
     x -= _rect.x;
     y -= _rect.y;
 }
@@ -69,12 +69,15 @@ void Container::rotateOrientation()
 
 bool Container::isActive()
 {
-    if (_parent && (_parent->isActive() && (_parent->activeChild() == this)))
-        return true;
-    else if (_parent) {
-        return false;
+    if (workspace()->isActive() && (workspace()->activeLayer() == Workspace::LAYER_TILED)) {
+        if (_parent && (_parent->isActive() && (_parent->activeChild() == this)))
+            return true;
+        else if (_parent)
+            return false;
+        else
+            return true;
     } else
-        return true;
+        return false;
 }
 
 bool Container::isMinimized()
@@ -91,15 +94,15 @@ bool Container::isMinimized()
         return false;
 }
 
-#if 1
 void Container::makeActive()
 {
+    workspace()->makeActive();
+    workspace()->setActiveLayer(Workspace::LAYER_TILED);
     if (_parent) {
         _parent->makeActive();
         _parent->setActiveChild(_parent->indexOfChild(this));
     }
 }
-#endif
 
 bool Container::isAncestorOf(Container *container)
 {

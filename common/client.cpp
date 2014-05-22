@@ -51,8 +51,6 @@ Client::Client(bool is_mapped) :
 
 Client::~Client()
 {
-    debug;
-    assert(!container());
 }
 
 void Client::drawFrame(Canvas *canvas)

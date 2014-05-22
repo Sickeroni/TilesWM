@@ -1,20 +1,50 @@
 #ifndef __WORKSPACE_H__
 #define __WORKSPACE_H__
 
+#include "monitor.h"
+#include "rect.h"
+
 class ContainerContainer;
 class ClientContainer;
+class Client;
 
 class Workspace
 {
 public:
-    Workspace();
+    enum Layer
+    {
+        LAYER_FLOATING,
+        LAYER_TILED
+    };
 
+    Workspace();
+    ~Workspace();
+
+    Monitor *monitor() { return _monitor; }
     ContainerContainer *rootContainer() { return _root_container; }
-    void setRootContainer(ContainerContainer *container);
     bool maximized() { return _maximized; }
     void setMaximized(bool enable);
+    Layer activeLayer() { return LAYER_TILED; } // HACK
+    void setActiveLayer(Layer layer) {
+        //FIXME
+    }
+    bool makeActive();
+    bool isMapped();
+    Client *activeClient(); // active client in the floating layer
+    void layoutContents();
+    void setRect(Rect rect);
+
+    bool isActive() {
+        return monitor() && monitor()->isActive();
+    }
+    void setMonitor(Monitor *monitor) {
+        _monitor = monitor;
+    }
+    void globalToLocal(int &x, int &y);
 
 private:
+    Rect _rect;
+    Monitor *_monitor;
     //ContainerContainer *_dock
     ContainerContainer *_root_container;
     bool _maximized;

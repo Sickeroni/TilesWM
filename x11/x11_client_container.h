@@ -23,7 +23,6 @@ public:
 //     virtual void setFocus();
     virtual void setMapped(bool mapped);
     virtual void setRect(const Rect &rect);
-    virtual void reparent(ContainerContainer *p);
     virtual void handleMaximizedChanged();
     virtual void handleActiveChanged() ;
     virtual int numElements() { return _children.size(); }
@@ -41,6 +40,7 @@ public:
     }
     virtual void handleButtonPress(const XButtonEvent &ev);
 
+    void reparent(X11ContainerContainer *p);
     void clear();
     // returns the index of the added client
     int addClient(X11Client *client);

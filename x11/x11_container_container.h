@@ -41,10 +41,10 @@ public:
 
 
     virtual void setRect(const Rect &rect);
-    virtual void reparent(ContainerContainer *p);
     virtual void deleteEmptyChildren();
 //     virtual void setFocus();
 
+    void reparent(X11ContainerContainer *p);
     // returns index of added child
     int addChild(Container *container);
 

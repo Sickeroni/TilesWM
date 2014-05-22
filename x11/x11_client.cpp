@@ -96,7 +96,7 @@ X11Client::X11Client() : Client(false),
 
 X11Client::~X11Client()
 {
-    assert(!container());
+    assert(!_container);
     debug;
     delete _icon;
     _icon = 0;
@@ -168,6 +168,11 @@ void X11Client::setRect(const Rect &rect)
     _widget->setRect(r);
 }
 
+ClientContainer *X11Client::container()
+{
+    return _container;
+}
+
 void X11Client::setContainer(X11ClientContainer *container)
 {
     debug;
@@ -178,7 +183,7 @@ void X11Client::setContainer(X11ClientContainer *container)
 
     X11ServerWidget *new_parent_widget = 0;
     if (container)
-        new_parent_widget = static_cast<X11ClientContainer*>(container)->widget();
+        new_parent_widget = container->widget();
 
     printvar(new_parent_widget);
     _frame->reparent(new_parent_widget);

@@ -10,7 +10,9 @@ workspace \
 container \
 container_container \
 client_container \
-client
+client \
+monitor \
+application
 
 TTMWM_X11_SRCS := \
 x11_icon \

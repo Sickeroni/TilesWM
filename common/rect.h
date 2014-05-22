@@ -10,7 +10,9 @@ struct Rect
     Rect(int x, int y, int w, int h) {
         set(x, y, w, h);
     }
-    Rect& operator=(const Rect &other);
+    Rect& operator=(const Rect &other) {
+        set(other);
+    }
 
     void set(const Rect &other) {
         this->x = other.x; this->y = other.y; this->w = other.w; this->h = other.h;

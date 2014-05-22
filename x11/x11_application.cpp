@@ -7,6 +7,7 @@
 #include "x11_default_key_bindings.h"
 
 #include "workspace.h"
+#include "monitor.h"
 #include "client_container.h"
 #include "common.h"
 
@@ -154,11 +155,16 @@ X11Application::X11Application() :
     _shortcuts(0),
     _num_server_grabs(0),
     _quit_requested(false),
-    _workspace(0)
+    _monitor(0)
 {
     if (_self)
         abort();
     _self = this;
+}
+
+X11Application::~X11Application()
+{
+    _self = 0;
 }
 
 void X11Application::quit(int signum)
@@ -214,16 +220,9 @@ bool X11Application::init()
 
     XSync(_dpy, false);
 
-    _workspace = new Workspace();
 
-    Rect root_container_rect;
-    root_container_rect.set(0, 0, root_attr.width, root_attr.height);
-
-
-    _workspace->setRootContainer(new X11ContainerContainer());
-    activeRootContainer()->setWorkspace(_workspace);
-    activeRootContainer()->setRect(root_container_rect);
-    activeRootContainer()->setMapped(true);
+    _monitor = new Monitor();
+    _monitor->setSize(root_attr.width, root_attr.height);
 
 //    activeRootContainer()->addNewClientContainer(false); //FIXME HACK
 //    _activeRootContainer->addNewClientContainer(false); //FIXME HACK
@@ -372,6 +371,16 @@ void X11Application::runProgram(const char *path)
         cerr<<"ERROR: running "<<path<<": Can't fork.";
 }
 
+Monitor *X11Application::activeMonitor()
+{
+    return _monitor;
+}
+
+Workspace *X11Application::activeWorkspace()
+{
+    return self()->activeMonitor()->workspace();
+}
+
 X11ContainerContainer *X11Application::activeRootContainer()
 {
     return static_cast<X11ContainerContainer*>(activeWorkspace()->rootContainer());
@@ -385,6 +394,36 @@ X11ClientContainer *X11Application::activeClientContainer()
         activeRootContainer()->setActiveChild(index);
     }
     return static_cast<X11ClientContainer*>(activeRootContainer()->activeClientContainer());
+}
+
+void X11Application::setActiveMonitor(Monitor *monitor)
+{
+    //FIXME
+}
+
+Workspace *X11Application::createWorkspace()
+{
+    Workspace *w = new Workspace();
+    _workspaces.push_back(w);
+    return w;
+}
+
+ContainerContainer *X11Application::createContainerContainer()
+{
+    return new X11ContainerContainer();
+}
+
+ClientContainer *X11Application::createClientContainer()
+{
+    return new X11ClientContainer();
+}
+
+X11Client *X11Application::activeClient()
+{
+    if (activeWorkspace()->activeLayer() == Workspace::LAYER_TILED)
+        return static_cast<X11Client*>(activeClientContainer()->activeClient());
+    else
+        return static_cast<X11Client*>(activeWorkspace()->activeClient());
 }
 
 Atom X11Application::atom(const char *name)
