@@ -13,6 +13,7 @@
 
 
 class ClientContainer;
+class X11ClientContainer;
 class X11ClientWidget;
 class Icon;
 class X11Icon;
@@ -30,9 +31,9 @@ public:
 
     virtual void setFocus();
     virtual void setRect(const Rect &rect);
-    virtual void setContainer(ClientContainer *container);
     virtual void raise();
     virtual Icon *icon();
+    virtual ClientContainer *container();
 
     // X11ServerWidget::EventHandler implementation
     virtual void handleExpose();
@@ -40,6 +41,7 @@ public:
 
     void map();
     void unmap();
+    void setContainer(X11ClientContainer *container);
 
 protected:
     virtual const Rect &frameRect() { return _frame->rect(); }
@@ -102,6 +104,7 @@ private:
     X11Icon *_icon;
     WindowType _window_type;
     bool _is_modal;
+    X11ClientContainer *_container;
 };
 
 #endif // __X11_CLIENT_H__

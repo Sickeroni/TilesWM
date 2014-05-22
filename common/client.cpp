@@ -45,19 +45,14 @@ Client::Client(bool is_mapped) :
     _min_width(0),
     _min_height(0),
     _max_width(0),
-    _max_height(0),
-    _container(0)
+    _max_height(0)
 {
 }
 
 Client::~Client()
 {
     debug;
-    assert(!_container);
-}
-void Client::setContainer(ClientContainer *c)
-{
-    _container = c;
+    assert(!container());
 }
 
 void Client::drawFrame(Canvas *canvas)

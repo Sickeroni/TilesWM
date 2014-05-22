@@ -55,7 +55,18 @@ int X11ContainerContainer::addChild(Container *container)
 {
     assert(!container->parent());
 
-    container->reparent(this);
+    switch(container->type())
+    {
+        case CONTAINER:
+            static_cast<X11ContainerContainer*>(container)->reparent(this);
+            break;
+        case CLIENT:
+            static_cast<X11ClientContainer*>(container)->reparent(this);
+            break;
+        default:
+            assert(0);
+            abort();
+    }
 
     _children.push_back(container);
     printvar(_children.size());

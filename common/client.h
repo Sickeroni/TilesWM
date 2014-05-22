@@ -31,10 +31,8 @@ public:
     virtual void setFocus() = 0;
     virtual void raise() = 0;
     virtual Icon *icon() = 0;
+    virtual ClientContainer *container() = 0;
 
-    virtual void setContainer(ClientContainer *c);
-
-    ClientContainer *container() { return _container; }
     Workspace *workspace() { return 0; }
     bool isMapped() { return _is_mapped; }
     bool hasFocus() { return _has_focus; }
@@ -74,7 +72,7 @@ private:
 
 //     Window _window;
 //     Widget *_widget;
-    ClientContainer *_container;
+//     ClientContainer *_container;
 //     Display *_dpy;
 };
 

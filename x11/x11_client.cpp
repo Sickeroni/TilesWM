@@ -89,7 +89,8 @@ X11Client::X11Client() : Client(false),
     _frame(0),
     _icon(0),
     _window_type(NORMAL),
-    _is_modal(false)
+    _is_modal(false),
+    _container(0)
 {
 }
 
@@ -167,13 +168,13 @@ void X11Client::setRect(const Rect &rect)
     _widget->setRect(r);
 }
 
-void X11Client::setContainer(ClientContainer *container)
+void X11Client::setContainer(X11ClientContainer *container)
 {
     debug;
 
     assert(!isOverrideRedirect());
 
-    Client::setContainer(container);
+    _container = container;
 
     X11ServerWidget *new_parent_widget = 0;
     if (container)

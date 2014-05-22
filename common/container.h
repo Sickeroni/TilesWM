@@ -62,7 +62,6 @@ public:
     virtual void handleActiveChanged() = 0;
     virtual ContainerLayout *getLayout() = 0;
     virtual void setMapped(bool mapped) = 0;
-    virtual void reparent(ContainerContainer *p) = 0;
 
 
 //     int minWidth();

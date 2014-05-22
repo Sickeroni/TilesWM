@@ -30,12 +30,16 @@ void Container::localToGlobal(int &x, int &y)
 
     if (_parent)
         _parent->localToGlobal(x, y);
+    else if (workspace())
+        assert(0);
 }
 
 void Container::globalToLocal(int &x, int &y)
 {
     if (_parent)
         _parent->globalToLocal(x, y);
+    else if (workspace())
+        assert(0);
     x -= _rect.x;
     y -= _rect.y;
 }
