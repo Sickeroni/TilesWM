@@ -9,6 +9,7 @@
 #include "x11_icon.h"
 #include "x11_global.h"
 #include "container_layout.h"
+#include "workspace.h"
 #include "colors.h"
 #include "common.h"
 
@@ -189,6 +190,13 @@ void X11Client::setContainer(X11ClientContainer *container)
     _frame->reparent(new_parent_widget);
 }
 
+void X11Client::makeActive()
+{
+    if (container())
+        container()->makeActive();
+    else if (workspace())
+        workspace()->makeActive();
+}
 
 void X11Client::init()
 {
@@ -701,13 +709,20 @@ void X11Client::refreshFocusState()
         } // else: no change
     }
 
+
+
     if (_has_focus && (X11Application::activeClient() != this)) {
+    // disable the following block as it may lead to the client repeatedly grabbing focus
+#if 0
         // client grabbed focus when it wasn't active - bad boy
         // give focus back to active client
         if (X11Application::activeClient())
             X11Application::activeClient()->setFocus();
         else
             XSetInputFocus(dpy(), X11Application::root(), RevertToNone, CurrentTime);
+#else
+        makeActive();
+#endif
     }
 
     if (!focus_return) // we lost focus and no other window is currently focused
@@ -856,7 +871,7 @@ void X11Client::handleButtonPress(const XButtonEvent &ev)
     assert(!_dragged);
 
     if (!container()) {
-    //     setFocus(); //FIXME focus model
+        setFocus();
         raise();
         if (ev.button == 1)
             startDrag(ev.x_root, ev.y_root);

@@ -91,6 +91,7 @@ private:
         return _is_modal || isDialog() || isOverrideRedirect();
     }
     void startDrag(int x, int y);
+    void makeActive();
 
     // TODO - use hash
     static std::map<Window, X11Client*> _wid_index;
