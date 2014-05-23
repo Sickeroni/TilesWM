@@ -35,6 +35,7 @@ public:
     static Workspace *activeWorkspace();
     static ClientContainer *activeClientContainer();
     static void tileClient(Client *client);
+    static void runProgram(const char *path);
 
 protected:
     Application();

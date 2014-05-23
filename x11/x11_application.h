@@ -45,7 +45,6 @@ public:
     static Workspace *activeWorkspace();
     static X11Client *activeClient();
     static void unfocusActiveClient(); //FIXME implement
-    static void runProgram(const char *path);
 
     static const char *eventTypeToString(size_t id);
     static const char *errorCodeToString(size_t error_code);

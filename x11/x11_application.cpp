@@ -294,7 +294,7 @@ void X11Application::eventLoop()
             timeout_spec.tv_usec = 0;
             timeout_spec.tv_sec = 2;
 
-            select(x11_fd+1, &x11_fd_set, 0, 0, &timeout_spec);
+            select(x11_fd + 1, &x11_fd_set, 0, 0, &timeout_spec);
 
             if (_quit_requested)
                 return;
@@ -346,25 +346,6 @@ void X11Application::ungrabServer()
 
     if (!_num_server_grabs)
         XUngrabServer(_dpy);
-}
-
-void X11Application::runProgram(const char *path)
-{
-    char *const args[] = {
-        const_cast<char*>(path),
-        0
-    };
-
-    pid_t pid = fork();
-
-    if (pid > 0) {
-        waitpid(pid, 0, WNOHANG);
-    } else if (pid == 0) {
-        execv(path, args);
-        perror ("ERROR: Can't execute program: ");
-        exit(1);
-    } else
-        cerr<<"ERROR: running "<<path<<": Can't fork.";
 }
 
 Monitor *X11Application::activeMonitor()

@@ -22,34 +22,7 @@ public:
         VERTICAL = 1
     };
 
-    enum Direction {
-        WEST,
-        EAST,
-        NORTH,
-        SOUTH
-    };
-
-
-//FIXME these enumarations don't belong here
-
-    static Orientation orientationOfDirection(Direction dir) {
-        if (dir == WEST || dir == EAST)
-            return HORIZONTAL;
-        else
-            return VERTICAL;
-    }
-
-    static void rotateOrientation();
-
-    static bool isForwardDirection(Direction dir) {
-        return (dir == EAST || dir == SOUTH);
-    }
-
     virtual ~Container() {}
-
-
-    bool isFixedSize() { return _is_fixed_size; }
-    void enableFixedSize(bool enable);
 
     virtual int numElements() = 0;
     virtual ClientContainer *activeClientContainer() = 0;
@@ -60,23 +33,24 @@ public:
     virtual ContainerLayout *getLayout() = 0;
     virtual void setMapped(bool mapped) = 0;
 
+    virtual void setRect(const Rect &rect);
 
+    bool isFixedSize() { return _is_fixed_size; }
+    void enableFixedSize(bool enable);
     int fixedWidth() { return isMinimized() ? 0 : _fixed_width; }
     void setFixedWidth(int width);
     int fixedHeight() { return isMinimized() ? 0 : _fixed_height; }
     void setFixedHeight(int height);
-
-    virtual void setRect(const Rect &rect);
 
     int x() { return _rect.x; }
     int y() { return _rect.y; }
     int width() { return _rect.w; }
     int height() { return _rect.h; }
     const Rect &rect() { return _rect; }
-
     bool isHorizontal() {
         return orientation() == HORIZONTAL;
     }
+
     Orientation orientation();
 
     Type type() { return _type; }
@@ -95,6 +69,8 @@ public:
     bool isActive();
 
     void setWorkspace(Workspace *workspace);
+
+    static void rotateOrientation();
 
 protected:
     Container(Type type);

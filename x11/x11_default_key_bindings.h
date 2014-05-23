@@ -7,8 +7,6 @@
 
 class X11DefaultKeyBindings : public X11ShortcutSet
 {
-    class Actions;
-
 public:
     X11DefaultKeyBindings();
 };
