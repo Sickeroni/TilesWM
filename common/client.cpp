@@ -9,34 +9,6 @@
 
 #include <stdio.h>
 
-#if 0
-
-
-
-void Client::mapNotify(Window window)
-{
-    std::map<Window, Client*>::iterator it = _client_from_window.find(window);
-    if (it != _client_from_window.end()) {
-        Client *c = it->second;
-        c->_is_mapped = true;
-        c->container()->layout();
-    }
-}
-
-void Client::unmapNotify(Window window)
-{
-    std::map<Window, Client*>::iterator it = _client_from_window.find(window);
-    if (it != _client_from_window.end()) {
-        Client *c = it->second;
-        c->_is_mapped = false;
-        c->container()->layout();
-    }
-}
-
-#endif
-
-/////////////////////////////////////////////////
-
 
 Client::Client(bool is_mapped) :
     _is_mapped(is_mapped),

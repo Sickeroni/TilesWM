@@ -11,9 +11,6 @@
 class X11ContainerContainer;
 class X11Client;
 
-
-//FIXME catch expose events
-
 class X11ClientContainer : public ClientContainer, public X11ServerWidget::EventHandler
 {
 public:

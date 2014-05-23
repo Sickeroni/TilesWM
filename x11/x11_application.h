@@ -9,8 +9,6 @@
 #include <map>
 #include <vector>
 
-#if 1
-
 class X11ContainerContainer;
 class X11ShortcutSet;
 class X11ClientContainer;
@@ -45,7 +43,6 @@ public:
     static X11ClientContainer *activeClientContainer();
     static Workspace *activeWorkspace();
     static X11Client *activeClient();
-    static void unfocusActiveClient(); //FIXME implement
 
     static const char *eventTypeToString(size_t id);
     static const char *errorCodeToString(size_t error_code);
@@ -66,8 +63,5 @@ private:
 };
 
 #define ATOM(name) (X11Application::self()->atom(#name))
-
-
-#endif
 
 #endif // __X11_APPLICATION_H__

@@ -47,33 +47,6 @@ void X11ClientContainer::clear()
     _children.clear();
 }
 
-#if 0
-void X11ClientContainer::removeClientInt(Client *c, bool moving_to_new_container)
-{
-    debug;
-
-    if (c == _active_client)
-        unfocusActiveClient();
-
-    _clients.remove(c);
-
-    printvar(_clients.count());
-
-    if (!moving_to_new_container)
-        c->setContainer(0);
-
-    if (c->isMapped())
-        getLayout()->layoutContents();
-    else
-        redraw();
-
-//FIXME
-#if 0
-    if (isEmpty() && _parent)
-        _parent->setDirty(true);
-#endif
-}
-#endif
 
 int X11ClientContainer::indexOfChild(const Client *child)
 {
@@ -180,19 +153,6 @@ void X11ClientContainer::reparent(X11ContainerContainer *p)
     _widget->reparent(parent_widget);
     _minimized_widget->reparent(parent_widget);
 }
-
-
-#if 0
-void X11ClientContainer::setFocus()
-{
-    if (activeClient() && activeClient()->isMapped())
-        activeClient()->setFocus();
-    else // set focus to root
-        XSetInputFocus(dpy(), X11Application::root(),
-                       RevertToNone, CurrentTime);
-    redraw();
-}
-#endif
 
 void X11ClientContainer::applyMapState()
 {

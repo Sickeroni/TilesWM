@@ -17,7 +17,7 @@ int main()
 
     app.eventLoop();
 
-    cout << "returnd from main loop - shutting down ...\n";
+    cout << "returned from main loop - shutting down ...\n";
 
     app.shutdown();
 

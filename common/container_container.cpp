@@ -6,13 +6,9 @@
 #include "colors.h"
 #include "workspace.h"
 #include "common.h"
-#include "layout.h"
 #include "theme.h"
 
 #include <sstream>
-
-#if 1
-
 #include <stdlib.h>
 
 
@@ -104,16 +100,6 @@ void ContainerContainer::deleteEmptyChildren()
 
 
 #if 0
-void ContainerContainer::setFocus()
-{
-    if (_active_child)
-        _active_child->setFocus();
-    redrawAll();
-}
-#endif
-
-
-#if 0
 int ContainerContainer::calcAvailableSpace()
 {
     //FIXME duplicated in layout()
@@ -131,15 +117,6 @@ int ContainerContainer::calcAvailableSpace()
     return available_space;
 }
 #endif
-
-#if 0
-void ContainerContainer::layout()
-{
-    Layout::layoutContainer(this);
-    redraw();
-}
-#endif
-
 
 #if 0
 void ContainerContainer::setDirty(bool set)
@@ -175,21 +152,6 @@ void ContainerContainer::updateDirtyStatus()
 }
 #endif
 
-
-#if 0
-void ContainerContainer::deleteChild(Container *child)
-{
-    if (child == _active_child) {
-        _active_child = child->prev();
-        if (!_active_child)
-            _active_child = child->next();
-    }
-
-    _children.remove(child);
-
-    delete child;
-}
-#endif
 
 
 // void ContainerContainer::incAvailableSpacePortion(Container *child, int pixels)
@@ -235,6 +197,3 @@ void ContainerContainer::deleteChild(Container *child)
 //         layout();
 //     }
 // }
-
-
-#endif

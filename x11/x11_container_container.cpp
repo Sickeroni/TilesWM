@@ -19,7 +19,6 @@ using namespace X11Global;
 X11ContainerContainer::X11ContainerContainer() :
     ContainerContainer(),
     _active_child_index(-1),
-//     _active_child(0),
     _widget(X11ServerWidget::create(0,
                                     Colors::CONTAINER,
                                     this, ExposureMask))
@@ -190,15 +189,3 @@ void X11ContainerContainer::reparent(X11ContainerContainer *p)
         parent_widget = p->widget();
     _widget->reparent(parent_widget);
 }
-
-#if 0
-void X11ContainerContainer::setFocus()
-{
-    if (activeChild())
-        activeChild()->setFocus();
-    else // set focus to root
-        XSetInputFocus(dpy(), X11Application::root(),
-                       RevertToNone, CurrentTime);
-    redrawAll();
-}
-#endif

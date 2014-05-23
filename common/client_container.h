@@ -50,9 +50,6 @@ protected:
     ClientContainer();
 
 private:
-//     void removeClientInt(Client *c, bool moving_to_new_container);
-//     void unfocusActiveClient();
-
     // this value is addet to the client-specified minimum size
     // configurable by user
 //     int _extra_space;
