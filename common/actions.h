@@ -7,6 +7,8 @@ namespace Actions
     void moveClientRight();
     void moveClientUp();
     void moveClientDown();
+
+    void deleteEmptyContainers();
 }
 
 #endif

@@ -25,13 +25,14 @@ public:
     virtual int addChild(Container *child) = 0;
     // inserts child at insert_pos
     virtual void insertChild(Container *child, int insert_pos) = 0;
-    // de-parents and returns the old child at index
+    // de-parents and returns the child at index
     virtual Container *replaceChild(int index, Container *new_child) = 0;
+    virtual Container *removeChild(int index) = 0;
 
     virtual ContainerLayout *getLayout();
     virtual ClientContainer *activeClientContainer();
     virtual void redrawAll();
-//     virtual void deleteEmptyChildren();
+    virtual void deleteEmptyChildren();
     virtual void handleMaximizedChanged();
     virtual void handleActiveChanged();
 
@@ -50,7 +51,6 @@ protected:
 
 private:
     void updateDirtyStatus();
-    void deleteChild(Container *child);
 //     int calcAvailableSpace();
 
 //     bool _dirty; // is this container unused or are there unused child containers ?

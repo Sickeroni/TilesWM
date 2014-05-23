@@ -97,11 +97,6 @@ struct X11DefaultKeyBindings::Actions
         //rootContainer()->widget()->map(); //HACK
         rootContainer()->setFocus(); //HACK
     }
-    static void deleteEmptyContainers()
-    {
-        rootContainer()->deleteEmptyChildren();
-        rootContainer()->setFocus(); //HACK
-    }
 #endif
     static void runProgram()
     {
@@ -195,7 +190,7 @@ X11DefaultKeyBindings::X11DefaultKeyBindings()
     createShortcut("KP_Right", Mod1Mask | ShiftMask, &::Actions::moveClientRight);
     createShortcut("KP_Up", Mod1Mask | ShiftMask, &::Actions::moveClientUp);
     createShortcut("KP_Down", Mod1Mask | ShiftMask, &::Actions::moveClientDown);
-//     createShortcut("c", Mod1Mask, &Actions::deleteEmptyContainers);
+    createShortcut("c", Mod1Mask, &::Actions::deleteEmptyContainers);
     createShortcut("F2", Mod1Mask, &Actions::runProgram);
 //     createShortcut("Return", Mod1Mask, &Actions::toggleMaximize);
 

@@ -11,15 +11,6 @@ class Workspace;
 
 class X11ContainerContainer : public ContainerContainer, public X11ServerWidget::EventHandler
 {
-#if 0
-    ContainerContainer *createContainerContainer()
-    {
-        ContainerContainer *c = new ContainerContainer(this);
-        X11ServerWidget *w = new X11ServerWidget(_widget);
-    };
-
-#endif
-
 public:
     X11ContainerContainer();
     virtual ~X11ContainerContainer();
@@ -36,6 +27,7 @@ public:
     virtual int addChild(Container *child);
     virtual void insertChild(Container *child, int insert_pos);
     virtual Container *replaceChild(int index, Container *new_child);
+    virtual Container *removeChild(int index);
 
     // X11ServerWidget::EventHandler implementaion
     virtual void handleExpose() {
@@ -44,21 +36,14 @@ public:
 
 
     virtual void setRect(const Rect &rect);
-    virtual void deleteEmptyChildren();
 //     virtual void setFocus();
 
     void reparent(X11ContainerContainer *p);
 
     X11ServerWidget *widget() { return _widget; }
-    
-
-// protected:
-//     virtual ContainerContainer *createContainerContainer();
-//     virtual ClientContainer *createClientContainer();
 
 private:
     void clear();
-//     void deleteChild(Container *child);
 
     // helper
     static void reparentContainer(Container *container, X11ContainerContainer *parent);

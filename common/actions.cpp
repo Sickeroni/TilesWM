@@ -192,6 +192,11 @@ void moveClientDown()
 //     rootContainer()->setFocus(); //HACK
 }
 
+void deleteEmptyContainers()
+{
+    Application::activeWorkspace()->rootContainer()->deleteEmptyChildren();
+}
+
 
 } // namespace Actions
 

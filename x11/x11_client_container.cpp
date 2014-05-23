@@ -115,7 +115,6 @@ void X11ClientContainer::setActiveChild(int index)
 
 int X11ClientContainer::addClient(X11Client *client)
 {
-    debug;
     assert(!client->container());
 
     client->setContainer(this);
@@ -136,17 +135,14 @@ int X11ClientContainer::addClient(X11Client *client)
 void X11ClientContainer::removeClient(X11Client *client)
 {
     int index = indexOfChild(client);
-    assert(-1 < index);
+    assert(index >= 0);
 
     client->setContainer(0);
 
     _children.erase(_children.begin() + index);
 
-    if (_children.size() && (-1 < _active_child_index)) {
-        if (_active_child_index > (_children.size() - 1))
-            _active_child_index = (_children.size() - 1);
-    } else
-        _active_child_index = -1;
+    if (_active_child_index >= _children.size())
+        _active_child_index = _children.size() -1;
 
     if (activeClient())
         activeClient()->raise();

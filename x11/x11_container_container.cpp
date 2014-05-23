@@ -104,15 +104,37 @@ Container *X11ContainerContainer::replaceChild(int index, Container *new_child)
     assert(!new_child->parent());
     assert(index < _children.size());
 
-    _children[index]->setMapped(false);
+    Container *old_child = _children[index];
 
-    reparentContainer(_children[index], 0);
+    old_child->setMapped(false);
+
+    reparentContainer(old_child, 0);
     reparentContainer(new_child, this);
 
     _children[index] = new_child;
     new_child->setMapped(true);
 
     getLayout()->layoutContents();
+
+    return old_child;
+}
+
+Container *X11ContainerContainer::removeChild(int index)
+{
+    assert(index < _children.size());
+
+    Container *child = _children[index];
+
+    child->setMapped(false);
+
+    reparentContainer(child, 0);
+
+    _children.erase(_children.begin() + index);
+
+    if (_active_child_index >= _children.size())
+        _active_child_index = _children.size() -1;
+
+    return child;
 }
 
 void X11ContainerContainer::setActiveChild(int index)
@@ -135,22 +157,6 @@ void X11ContainerContainer::setActiveChild(int index)
             getLayout()->layoutContents();
     }
 }
-
-#if 0
-void X11ContainerContainer::deleteChild(Container *child)
-{
-    if (child == _active_child)
-        _active_child = 0;
-
-    _children.remove(child);
-
-    delete child;
-
-    //FIXME should this be done here or by the caller ?
-    if (!_active_child && _children.size())
-        _active_child = _children[0]:
-}
-#endif
 
 void X11ContainerContainer::setMapped(bool mapped)
 {
@@ -181,13 +187,6 @@ void X11ContainerContainer::reparent(X11ContainerContainer *p)
     if (p)
         parent_widget = p->widget();
     _widget->reparent(parent_widget);
-}
-
-void X11ContainerContainer::deleteEmptyChildren()
-{
-//     _widget->unmap();
-//     ContainerContainer::deleteEmptyChildren(); //FIXME
-//     _widget->map();
 }
 
 #if 0

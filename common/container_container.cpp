@@ -132,88 +132,7 @@ void ContainerContainer::updateDirtyStatus()
     setDirty(dirty);
 }
 #endif
-#if 0
-void ContainerContainer::deleteEmptyChildren()
-{
 
-//     if (!_dirty)
-//         return;
-
-    // 1st pass: recurse
-    for (Container *child = _children.first(); child; child = child->next()) {
-        if (child->isContainerContainer())
-            static_cast<ContainerContainer*>(child)->deleteEmptyChildren();
-    }
-
-    // 2nd pass: dissolve child containers with only one child
-    for (Container *child = _children.first(); child; ) {
-        ContainerContainer *dissolve_this = 0;
-
-        if (child->isContainerContainer() && (child->numElements() == 1))
-            dissolve_this = static_cast<ContainerContainer*>(child);
-
-        child = child->next();
-
-        if (dissolve_this) {
-            Container *c = dissolve_this->_children.first();
-            dissolve_this->_active_child = 0;
-            dissolve_this->_children.remove(c);
-
-            c->reparent(this);
-
-            _children.replace(dissolve_this, c);
-
-            if (dissolve_this == _active_child)
-                _active_child = c;
-
-            delete dissolve_this;
-            dissolve_this = 0;
-        }
-    }
-
-    // 3rd pass: delete all empty children
-    for (Container *child = _children.first(); child; ) {
-        Container *delete_this = 0;
-
-        if (child->isEmpty())
-            delete_this = child;
-
-        child = child->next();
-
-        if (delete_this)
-            deleteChild(delete_this);
-    }
-
-#if 0
-    if (_children.count() == 1 && _children.first()->isContainerContainer()) {
-        //FIXME add function dissolveChild()
-
-        // reparent child containers
-        ContainerContainer *child = static_cast<ContainerContainer*>(_children.first());
-
-        _children.remove(child);
-        _active_child = child->_active_child;
-        child->_active_child = 0;
-
-        Container *c = child->_children.first();
-        while (c) {
-            Container *reparent_this = c;
-            c = c->next();
-
-            child->_children.remove(reparent_this);
-            reparent_this->reparent(this);
-            _children.append(reparent_this);
-        }
-
-        delete child;
-    }
-#endif
-
-    _dirty = isEmpty();
-
-    layout();
-}
-#endif
 
 #if 0
 void ContainerContainer::deleteChild(Container *child)
@@ -247,6 +166,42 @@ void ContainerContainer::redrawAll()
     for(int i = 0; i < numElements(); i++)
         child(i)->redrawAll();
 }
+
+
+
+void ContainerContainer::deleteEmptyChildren()
+{
+//     if (!_dirty)
+//         return;
+
+    // 1st pass: recurse
+    for (int i = 0; i < numElements(); i++) {
+        if (child(i)->isContainerContainer())
+            static_cast<ContainerContainer*>(child(i))->deleteEmptyChildren();
+    }
+
+    // 2nd pass: dissolve child containers with only one child
+    for (int i = 0; i < numElements(); i++) {
+        if (child(i)->isContainerContainer() && (child(i)->numElements() == 1)) {
+            Container *c =  static_cast<ContainerContainer*>(child(i))->removeChild(0);
+
+            delete replaceChild(i, c);
+        }
+    }
+
+    // 3rd pass: delete all empty children
+    for (int i = 0; i < numElements(); ) {
+        if (child(i)->isEmpty())
+            delete removeChild(i);
+        else
+            i++;
+    }
+
+//     _dirty = isEmpty();
+
+    getLayout()->layoutContents();
+}
+
 
 
 // void ContainerContainer::incAvailableSpacePortion(Container *child, int pixels)
