@@ -1,3 +1,202 @@
+#include "actions.h"
+
+#include "client_container.h"
+#include "container_container.h"
+#include "client.h"
+#include "workspace.h"
+#include "application.h"
+#include "common.h"
+
+namespace Actions
+{
+
+
+Container::Orientation orientationOfDirection(Container::Direction dir)
+{
+    if (dir == Container::WEST || dir == Container::EAST)
+        return Container::HORIZONTAL;
+    else
+        return Container::VERTICAL;
+}
+
+bool isForwardDirection(Container::Direction dir)
+{
+    return (dir == Container::EAST || dir == Container::SOUTH);
+}
+
+int hierarchyDepth(Container *container)
+{
+    if (container->parent())
+        return hierarchyDepth(container->parent()) + 1;
+    else
+        return 0;
+}
+
+ClientContainer *createSibling(Container *container, bool prepend)
+{
+    ClientContainer *new_sibling = 0;
+    ContainerContainer *parent = container->parent();
+
+    if (parent) {
+        new_sibling = Application::self()->createClientContainer();
+        int insert_pos = parent->indexOfChild(container);
+        if (!prepend)
+            insert_pos++;
+        parent->insertChild(new_sibling, insert_pos);
+        parent->setActiveChild(insert_pos);
+    }
+
+    return new_sibling;
+}
+
+ClientContainer *getSibling(Container *container, bool get_prev, bool create_new_if_not_existing)
+{
+    ContainerContainer *parent = container->parent();
+    if (!parent)
+        return 0;
+
+    int index = parent->indexOfChild(container);
+
+    if (get_prev && (index > 0))
+        return parent->child(index - 1)->activeClientContainer();
+    else if (!get_prev && ((index + 1) < parent->numElements()))
+        return parent->child(index + 1)->activeClientContainer();
+    else if (create_new_if_not_existing)
+        return createSibling(container, get_prev);
+    else
+        return 0;
+}
+
+// return: the newly created sibling
+ClientContainer *splitContainer(ClientContainer *container, bool prepend)
+{
+    static const int max_hierarchy_depth = 1;
+
+    ContainerContainer *parent = container->parent();
+
+    if (hierarchyDepth(parent) >= max_hierarchy_depth)
+        return 0;
+
+    ContainerContainer *new_parent = Application::self()->createContainerContainer();
+
+    parent->replaceChild(parent->indexOfChild(container), new_parent); // de-parents container
+
+    ClientContainer *new_sibling = Application::self()->createClientContainer();
+
+    // add this + new child container to new parent
+    if (prepend) {
+        new_parent->addChild(new_sibling);
+        new_parent->addChild(container);
+    } else {
+        new_parent->addChild(container);
+        new_parent->addChild(new_sibling);
+    }
+
+    new_parent->setActiveChild(new_parent->indexOfChild(new_sibling));
+
+    return new_sibling;
+}
+
+void moveClient(Container::Direction direction)
+{
+
+    ClientContainer *container = Application::activeClientContainer();
+    if (!container)
+        return;
+
+    assert(container->workspace() == Application::activeWorkspace());
+    assert(container->parent());
+
+    Client *client = container->activeClient();
+    if (!client)
+        return;
+
+    assert(client->container() == container);
+
+    if (container->workspace()->maximized())
+        return;
+
+    if (!client->isMapped()) //FIXME is this ok ?
+        return;
+
+    bool backward = !isForwardDirection(direction);
+
+    ClientContainer *target = 0;
+
+    if (container->parent()) {
+        if (orientationOfDirection(direction) == container->parent()->orientation()) { // easy case
+            if (container->numElements() > 1) // only create new direct sibling if container doesn't become empty
+                target = getSibling(container, backward, true);
+            else
+                target = getSibling(container, backward, false);
+        }
+
+        else { // difficult case:
+                 // if client container becomes empty -> use sibling of parent container;
+                 // else: 1. replace this with new parent container; 2. add this and new client container to parent created in step 1
+
+            if (container->numElements() <= 1) // cant't split - use sibling of parent container
+                target = getSibling(container->parent(), backward, true);
+            else { // split this
+                target = splitContainer(container, backward);
+
+                if (!target) { // split failed - maximum hierarchy depth exceeded ?
+                    target = getSibling(container->parent(), backward, true);
+                }
+            }
+        }
+    }
+
+    if (target) {
+        container->removeChild(client);
+        int index = target->addChild(client);
+        target->setActiveChild(index);
+        target->makeActive();
+        client->setFocus();
+    }
+}
+
+void moveClientLeft()
+{
+    //rootContainer()->widget()->unmap(); //HACK
+    moveClient(Container::WEST);
+//         rootContainer()->deleteEmptyChildren();
+    //rootContainer()->widget()->map(); //HACK
+//     rootContainer()->setFocus(); //HACK
+}
+
+void moveClientRight()
+{
+    //rootContainer()->widget()->unmap(); //HACK
+    moveClient(Container::EAST);
+//         rootContainer()->deleteEmptyChildren();
+    //rootContainer()->widget()->map(); //HACK
+//     rootContainer()->setFocus(); //HACK
+}
+
+void moveClientUp()
+{
+    //rootContainer()->widget()->unmap(); //HACK
+    moveClient(Container::NORTH);
+//         rootContainer()->deleteEmptyChildren();
+    //rootContainer()->widget()->map(); //HACK
+//     rootContainer()->setFocus(); //HACK
+}
+
+void moveClientDown()
+{
+    //rootContainer()->widget()->unmap(); //HACK
+    moveClient(Container::SOUTH);
+//         rootContainer()->deleteEmptyChildren();
+    //rootContainer()->widget()->map(); //HACK
+//     rootContainer()->setFocus(); //HACK
+}
+
+
+} // namespace Actions
+
+
+#if 0
 ClientContainer *ClientContainer::getOrCreateSiblingFor(Container *container, bool get_prev)
 {
     if (!get_prev && container->next())
@@ -221,4 +420,4 @@ void ContainerContainer::focusNextChild()
     if (_active_child && _active_child->next())
         setActiveChild(_active_child->next());
 }
-
+#endif

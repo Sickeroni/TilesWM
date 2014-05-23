@@ -5,6 +5,7 @@
 #include "workspace.h"
 #include "client_container.h"
 #include "container_container.h"
+#include "application.h"
 
 #include <stdlib.h>
 
@@ -69,7 +70,7 @@ void Container::rotateOrientation()
 
 bool Container::isActive()
 {
-    if (workspace()->isActive() && (workspace()->activeLayer() == Workspace::LAYER_TILED)) {
+    if (workspace()->isActive() && (Application::self()->activeLayer() == Application::LAYER_TILED)) {
         if (_parent && (_parent->isActive() && (_parent->activeChild() == this)))
             return true;
         else if (_parent)
@@ -97,11 +98,11 @@ bool Container::isMinimized()
 void Container::makeActive()
 {
     workspace()->makeActive();
-    workspace()->setActiveLayer(Workspace::LAYER_TILED);
     if (_parent) {
         _parent->makeActive();
         _parent->setActiveChild(_parent->indexOfChild(this));
     }
+    Application::self()->setActiveLayer(Application::LAYER_TILED);
 }
 
 bool Container::isAncestorOf(Container *container)

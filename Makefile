@@ -12,7 +12,8 @@ container_container \
 client_container \
 client \
 monitor \
-application
+application \
+actions
 
 TTMWM_X11_SRCS := \
 x11_icon \

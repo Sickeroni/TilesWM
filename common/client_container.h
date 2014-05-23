@@ -25,6 +25,9 @@ public:
     virtual void setActiveChild(int index) = 0;
     virtual int maxTextHeight() = 0;
     virtual void redraw() = 0;
+    // return: index of added client
+    virtual int addChild(Client *client) = 0;
+    virtual void removeChild(Client *client) = 0;
 
     virtual void redrawAll();
     virtual ContainerLayout *getLayout();

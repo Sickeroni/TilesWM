@@ -4,11 +4,18 @@
 class Workspace;
 class ContainerContainer;
 class ClientContainer;
+class Client;
 class Monitor;
 
 class Application
 {
 public:
+    enum Layer
+    {
+        LAYER_FLOATING,
+        LAYER_TILED
+    };
+
     ~Application();
 
     virtual Monitor *activeMonitor() = 0;
@@ -17,7 +24,17 @@ public:
     virtual ClientContainer *createClientContainer() = 0;
     virtual void setActiveMonitor(Monitor *monitor) = 0;
 
+    Layer activeLayer() { return LAYER_TILED; } // HACK
+    void setActiveLayer(Layer layer) {
+        //FIXME
+    }
+
     static Application *self() { return _self; }
+
+    // helper functions
+    static Workspace *activeWorkspace();
+    static ClientContainer *activeClientContainer();
+    static void tileClient(Client *client);
 
 protected:
     Application();

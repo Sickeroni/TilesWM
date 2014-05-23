@@ -11,12 +11,6 @@ class Client;
 class Workspace
 {
 public:
-    enum Layer
-    {
-        LAYER_FLOATING,
-        LAYER_TILED
-    };
-
     Workspace();
     ~Workspace();
 
@@ -24,10 +18,6 @@ public:
     ContainerContainer *rootContainer() { return _root_container; }
     bool maximized() { return _maximized; }
     void setMaximized(bool enable);
-    Layer activeLayer() { return LAYER_TILED; } // HACK
-    void setActiveLayer(Layer layer) {
-        //FIXME
-    }
     bool makeActive();
     bool isMapped();
     Client *activeClient(); // active client in the floating layer

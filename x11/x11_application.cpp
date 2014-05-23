@@ -101,7 +101,7 @@ const char *X11Application::eventTypeToString(size_t type)
         "GravityNotify",
         "ResizeRequest",
         "CirculateNotify",
-        "CirculateRequest",
+        "   CirculateRequest",
         "PropertyNotify",
         "SelectionClear",
         "SelectionRequest",
@@ -224,15 +224,11 @@ bool X11Application::init()
     _monitor = new Monitor();
     _monitor->setSize(root_attr.width, root_attr.height);
 
-//    activeRootContainer()->addNewClientContainer(false); //FIXME HACK
-//    _activeRootContainer->addNewClientContainer(false); //FIXME HACK
-
     X11Client::init();
 
     _shortcuts = new X11DefaultKeyBindings();
 
-
-    // set focus to the roor window initially
+    // set focus to the root window initially
     XSetInputFocus(dpy(), X11Application::root(), RevertToNone, CurrentTime);
 
 //     XFlush(_dpy);
@@ -383,17 +379,15 @@ Workspace *X11Application::activeWorkspace()
 
 X11ContainerContainer *X11Application::activeRootContainer()
 {
-    return static_cast<X11ContainerContainer*>(activeWorkspace()->rootContainer());
+    if (self()->activeLayer() == LAYER_TILED)
+        return static_cast<X11ContainerContainer*>(activeWorkspace()->rootContainer());
+    else
+        return 0;
 }
 
 X11ClientContainer *X11Application::activeClientContainer()
 {
-    if (!activeRootContainer()->activeClientContainer()) {
-        X11ClientContainer *c = new X11ClientContainer();
-        int index = activeRootContainer()->addChild(c);
-        activeRootContainer()->setActiveChild(index);
-    }
-    return static_cast<X11ClientContainer*>(activeRootContainer()->activeClientContainer());
+    return static_cast<X11ClientContainer*>(Application::activeClientContainer());
 }
 
 void X11Application::setActiveMonitor(Monitor *monitor)
@@ -420,7 +414,7 @@ ClientContainer *X11Application::createClientContainer()
 
 X11Client *X11Application::activeClient()
 {
-    if (activeWorkspace()->activeLayer() == Workspace::LAYER_TILED)
+    if (activeClientContainer())
         return static_cast<X11Client*>(activeClientContainer()->activeClient());
     else
         return static_cast<X11Client*>(activeWorkspace()->activeClient());

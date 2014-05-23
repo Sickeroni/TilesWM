@@ -5,6 +5,7 @@
 #include "client_container.h"
 #include "workspace.h"
 #include "container_layout.h"
+#include "actions.h"
 #include "common.h"
 
 
@@ -190,10 +191,10 @@ X11DefaultKeyBindings::X11DefaultKeyBindings()
     createShortcut("d", Mod1Mask, &Actions::redraw);
 //     createShortcut("comma", Mod1Mask, &Actions::focusPrevClient);
 //     createShortcut("period", Mod1Mask, &Actions::focusNextClient);
-//     createShortcut("KP_Left", Mod1Mask | ShiftMask, &Actions::moveClientLeft);
-//     createShortcut("KP_Right", Mod1Mask | ShiftMask, &Actions::moveClientRight);
-//     createShortcut("KP_Up", Mod1Mask | ShiftMask, &Actions::moveClientUp);
-//     createShortcut("KP_Down", Mod1Mask | ShiftMask, &Actions::moveClientDown);
+    createShortcut("KP_Left", Mod1Mask | ShiftMask, &::Actions::moveClientLeft);
+    createShortcut("KP_Right", Mod1Mask | ShiftMask, &::Actions::moveClientRight);
+    createShortcut("KP_Up", Mod1Mask | ShiftMask, &::Actions::moveClientUp);
+    createShortcut("KP_Down", Mod1Mask | ShiftMask, &::Actions::moveClientDown);
 //     createShortcut("c", Mod1Mask, &Actions::deleteEmptyContainers);
     createShortcut("F2", Mod1Mask, &Actions::runProgram);
 //     createShortcut("Return", Mod1Mask, &Actions::toggleMaximize);

@@ -21,7 +21,12 @@ public:
     virtual void setActiveChild(int index) = 0;
     virtual int indexOfChild(const Container *child) = 0;
     virtual bool isEmpty() = 0;
-
+    // ret: index of added child
+    virtual int addChild(Container *child) = 0;
+    // inserts child at insert_pos
+    virtual void insertChild(Container *child, int insert_pos) = 0;
+    // de-parents and returns the old child at index
+    virtual Container *replaceChild(int index, Container *new_child) = 0;
 
     virtual ContainerLayout *getLayout();
     virtual ClientContainer *activeClientContainer();
@@ -37,7 +42,7 @@ public:
 //     void decAvailableSpacePortion(Container *child, int pixels);
 
     Container *activeChild() {
-        return activeChildIndex() > -1 ? child(activeChildIndex()) : 0;
+        return activeChildIndex() >= 0 ? child(activeChildIndex()) : 0;
     }
 
 protected:
@@ -52,8 +57,6 @@ private:
 //     double _reserved_space;
 
     ContainerContainerLayout *_layout;
-
-    static const int _max_hierarchy_depth = 1;
 };
 
 

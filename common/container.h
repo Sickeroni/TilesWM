@@ -29,9 +29,8 @@ public:
         SOUTH
     };
 
-//     enum MaxDimension {
-//         MAX_DIMENSION = 8
-//     };
+
+//FIXME these enumarations don't belong here
 
     static Orientation orientationOfDirection(Direction dir) {
         if (dir == WEST || dir == EAST)
@@ -54,8 +53,6 @@ public:
 
     virtual int numElements() = 0;
     virtual ClientContainer *activeClientContainer() = 0;
-//     virtual void layout() = 0;
-//     virtual void layoutClients();
     virtual bool isEmpty() = 0;
     virtual void redrawAll() = 0;
     virtual void handleMaximizedChanged() = 0;
@@ -64,10 +61,6 @@ public:
     virtual void setMapped(bool mapped) = 0;
 
 
-//     int minWidth();
-//     int maxWidth();
-//     int minHeight();
-//     int maxHeight();
     int fixedWidth() { return isMinimized() ? 0 : _fixed_width; }
     void setFixedWidth(int width);
     int fixedHeight() { return isMinimized() ? 0 : _fixed_height; }
@@ -104,11 +97,6 @@ public:
     void setWorkspace(Workspace *workspace);
 
 protected:
-//     virtual int minWidthInt() = 0;
-//     virtual int maxWidthInt() = 0;
-//     virtual int minHeightInt() = 0;
-//     virtual int maxHeightInt() = 0;
-
     Container(Type type);
 
     void localToGlobal(int &x, int &y);

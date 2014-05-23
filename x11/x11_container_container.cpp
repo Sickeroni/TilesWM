@@ -39,7 +39,8 @@ int X11ContainerContainer::indexOfChild(const Container *child)
         if (child == _children[i])
             return i;
     }
-    return -1;
+    assert(false);
+    abort();
 }
 
 void X11ContainerContainer::clear()
@@ -51,22 +52,27 @@ void X11ContainerContainer::clear()
     _children.clear();
 }
 
-int X11ContainerContainer::addChild(Container *container)
+void X11ContainerContainer::reparentContainer(Container *container, X11ContainerContainer *parent)
 {
-    assert(!container->parent());
-
     switch(container->type())
     {
         case CONTAINER:
-            static_cast<X11ContainerContainer*>(container)->reparent(this);
+            static_cast<X11ContainerContainer*>(container)->reparent(parent);
             break;
         case CLIENT:
-            static_cast<X11ClientContainer*>(container)->reparent(this);
+            static_cast<X11ClientContainer*>(container)->reparent(parent);
             break;
         default:
             assert(0);
             abort();
     }
+}
+
+int X11ContainerContainer::addChild(Container *container)
+{
+    assert(!container->parent());
+
+    reparentContainer(container, this);
 
     _children.push_back(container);
     printvar(_children.size());
@@ -76,6 +82,37 @@ int X11ContainerContainer::addChild(Container *container)
     getLayout()->layoutContents();
 
     return _children.size() - 1;
+}
+
+void X11ContainerContainer::insertChild(Container *container, int insert_pos)
+{
+    assert(!container->parent());
+
+    reparentContainer(container, this);
+
+    assert(insert_pos <= _children.size());
+    _children.insert(_children.begin() + insert_pos, container);
+
+    container->setMapped(true);
+
+    getLayout()->layoutContents();
+}
+
+//FIXME use size_t !!!
+Container *X11ContainerContainer::replaceChild(int index, Container *new_child)
+{
+    assert(!new_child->parent());
+    assert(index < _children.size());
+
+    _children[index]->setMapped(false);
+
+    reparentContainer(_children[index], 0);
+    reparentContainer(new_child, this);
+
+    _children[index] = new_child;
+    new_child->setMapped(true);
+
+    getLayout()->layoutContents();
 }
 
 void X11ContainerContainer::setActiveChild(int index)

@@ -33,6 +33,9 @@ public:
     virtual int activeChildIndex() { return _active_child_index; }
     virtual int indexOfChild(const Container *child);
     virtual void setActiveChild(int index);
+    virtual int addChild(Container *child);
+    virtual void insertChild(Container *child, int insert_pos);
+    virtual Container *replaceChild(int index, Container *new_child);
 
     // X11ServerWidget::EventHandler implementaion
     virtual void handleExpose() {
@@ -45,8 +48,6 @@ public:
 //     virtual void setFocus();
 
     void reparent(X11ContainerContainer *p);
-    // returns index of added child
-    int addChild(Container *container);
 
     X11ServerWidget *widget() { return _widget; }
     
@@ -57,7 +58,10 @@ public:
 
 private:
     void clear();
-    void deleteChild(Container *child);
+//     void deleteChild(Container *child);
+
+    // helper
+    static void reparentContainer(Container *container, X11ContainerContainer *parent);
 
     std::vector<Container*> _children;
     int _active_child_index;

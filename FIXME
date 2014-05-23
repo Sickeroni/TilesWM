@@ -1,0 +1,22 @@
+use and check against INVALID_INDEX enum value
+  indexOfChild()
+  ...
+
+remove comparision with -1
+    use >= 0 instead pf > -1
+    
+    
+class AbstractClientContainer
+{
+public:
+    enum Type {
+        WORKSPACE,
+        CONTAINER
+    };
+    
+    virtual void removeChild(Client *child) = 0;
+};
+
+remove Client::_workspace
+
+Client::_container -> AbstractClientContainer

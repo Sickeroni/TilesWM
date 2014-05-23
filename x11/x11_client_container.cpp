@@ -81,7 +81,18 @@ int X11ClientContainer::indexOfChild(const Client *child)
         if (child == _children[i])
             return i;
     }
-    return -1;
+    assert(false);
+    abort();
+}
+
+int X11ClientContainer::addChild(Client *client)
+{
+    return addClient(static_cast<X11Client*>(client));
+}
+
+void X11ClientContainer::removeChild(Client *client)
+{
+    removeClient(static_cast<X11Client*>(client));
 }
 
 void X11ClientContainer::setActiveChild(int index)

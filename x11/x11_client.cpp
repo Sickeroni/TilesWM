@@ -185,6 +185,7 @@ void X11Client::setContainer(X11ClientContainer *container)
     X11ServerWidget *new_parent_widget = 0;
     if (container)
         new_parent_widget = container->widget();
+    //FIXME else new_parent_widget = some_unmapped_dummy_widget;
 
     printvar(new_parent_widget);
     _frame->reparent(new_parent_widget);
@@ -347,6 +348,8 @@ void X11Client::create(Window wid)
             _wid_index.insert(std::pair<Window, X11Client*>(wid, client));
             _frame_wid_index.insert(std::pair<Window, X11Client*>(client->_frame->wid(), client));
 
+            //FIXME reparent to unmapped dummy window
+
             if (is_mapped)
                 client->map();
         }
@@ -457,9 +460,9 @@ void X11Client::mapInt()
 
         assert(!container());
 
+        //FIXME use Application::manageClient(this)
         if (!isDialog() && !_is_modal) {
-            assert(X11Application::activeClientContainer());
-            X11Application::activeClientContainer()->addClient(this);
+            Application::tileClient(this);
         } else {
             //FIXME add to workspace
         }
@@ -524,6 +527,7 @@ void X11Client::unmapInt()
 
         _is_mapped = false;
 
+        //FIXME use Application::unmanageClient(this)
         if (container())
             static_cast<X11ClientContainer*>(container())->removeClient(this);
         else if(workspace())
@@ -981,6 +985,7 @@ bool X11Client::handleEvent(const XEvent &ev)
                     cancelDrag();
                 _frame_wid_index.erase(client->_frame->wid());
                 _wid_index.erase(wid);
+                //FIXME use Application::unmanageClient()
                 if (client->container())
                     static_cast<X11ClientContainer*>(client->container())->removeClient(client);
                 else if (client->workspace())

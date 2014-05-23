@@ -33,6 +33,8 @@ public:
     virtual void setActiveChild(int index);
     virtual int maxTextHeight();
     virtual void redraw();
+    virtual int addChild(Client *client);
+    virtual void removeChild(Client *client);
 
     // X11ServerWidget::EventHandler implementaion
     virtual void handleExpose() {
