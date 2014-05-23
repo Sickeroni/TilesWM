@@ -28,7 +28,6 @@ public:
     virtual ~Client();
 
     virtual void setRect(const Rect &rect) = 0;
-    virtual void setFocus() = 0;
     virtual void raise() = 0;
     virtual Icon *icon() = 0;
     virtual ClientContainer *container() = 0;

@@ -177,4 +177,12 @@ void Container::enableFixedSize(bool enable)
     redrawAll();
 }
 
+Client *Container::activeClient()
+{
+    if (activeClientContainer())
+        return activeClientContainer()->activeClient();
+    else
+        return 0;
+}
+
 #endif

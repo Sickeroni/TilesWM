@@ -42,6 +42,8 @@ public:
     int fixedHeight() { return isMinimized() ? 0 : _fixed_height; }
     void setFixedHeight(int height);
 
+    Client *activeClient();
+
     int x() { return _rect.x; }
     int y() { return _rect.y; }
     int width() { return _rect.w; }

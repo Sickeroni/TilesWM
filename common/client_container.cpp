@@ -10,6 +10,7 @@
 #include "icon.h"
 #include "colors.h"
 #include "theme.h"
+#include "application.h"
 #include "common.h"
 
 #include <sstream>
@@ -67,7 +68,7 @@ void ClientContainer::handleMouseClick(int global_x, int global_y)
     if (-1 < clicked_tab_index) {
         setActiveChild(clicked_tab_index);
         makeActive();
-        child(clicked_tab_index)->setFocus();
+        Application::self()->setFocus(child(clicked_tab_index));
     }
 }
 

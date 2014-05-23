@@ -29,6 +29,7 @@ public:
     virtual ContainerContainer *createContainerContainer();
     virtual ClientContainer *createClientContainer();
     virtual void setActiveMonitor(Monitor *monitor);
+    virtual void setFocus(Client *client);
 
     bool init();
     void shutdown();

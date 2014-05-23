@@ -29,7 +29,6 @@ public:
 
     virtual ~X11Client();
 
-    virtual void setFocus();
     virtual void setRect(const Rect &rect);
     virtual void raise();
     virtual Icon *icon();
@@ -39,6 +38,7 @@ public:
     virtual void handleExpose();
     virtual void handleButtonPress(const XButtonEvent &ev);
 
+    void setFocus();
     void map();
     void unmap();
     void setContainer(X11ClientContainer *container);

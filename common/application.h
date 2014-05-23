@@ -23,6 +23,7 @@ public:
     virtual ContainerContainer *createContainerContainer() = 0;
     virtual ClientContainer *createClientContainer() = 0;
     virtual void setActiveMonitor(Monitor *monitor) = 0;
+    virtual void setFocus(Client *client) = 0;
 
     Layer activeLayer() { return LAYER_TILED; } // HACK
     void setActiveLayer(Layer layer) {

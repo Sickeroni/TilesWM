@@ -161,7 +161,7 @@ void moveClient(Direction direction)
         int index = target->addChild(client);
         target->setActiveChild(index);
         target->makeActive();
-        client->setFocus();
+        Application::self()->setFocus(client);
     }
 }
 
@@ -191,8 +191,10 @@ void focusPrevChild(ContainerContainer *container)
         int new_index = container->activeChildIndex() - 1;
         if (new_index >= 0) {
             container->setActiveChild(new_index);
-            if (container->activeClientContainer() && container->activeClientContainer()->activeClient())
-                container->activeClientContainer()->activeClient()->setFocus();
+            if (container->activeClient())
+                Application::self()->setFocus(container->activeClient());
+            else
+                Application::self()->setFocus(0);
         }
     }
 }
@@ -203,8 +205,10 @@ void focusNextChild(ContainerContainer *container)
         int new_index = container->activeChildIndex() + 1;
         if (new_index < container->numElements()) {
             container->setActiveChild(new_index);
-            if (container->activeClientContainer() && container->activeClientContainer()->activeClient())
-                container->activeClientContainer()->activeClient()->setFocus();
+            if (container->activeClient())
+                Application::self()->setFocus(container->activeClient());
+            else
+                Application::self()->setFocus(0);
         }
     }
 }

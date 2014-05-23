@@ -229,7 +229,7 @@ bool X11Application::init()
     _shortcuts = new X11DefaultKeyBindings();
 
     // set focus to the root window initially
-    XSetInputFocus(dpy(), X11Application::root(), RevertToNone, CurrentTime);
+    setFocus(0);
 
 //     XFlush(_dpy);
     XSync(_dpy, false);
@@ -254,7 +254,7 @@ void X11Application::shutdown()
 
     XChangeWindowAttributes(_dpy, _root, CWEventMask, &new_root_attr); // clears event mask
 
-    XSetInputFocus(_dpy, _root, RevertToNone, CurrentTime);
+    setFocus(0);
 
     XSync(_dpy, false);
 
@@ -399,6 +399,14 @@ X11Client *X11Application::activeClient()
         return static_cast<X11Client*>(activeClientContainer()->activeClient());
     else
         return static_cast<X11Client*>(activeWorkspace()->activeClient());
+}
+
+void X11Application::setFocus(Client *client)
+{
+    if (client)
+        static_cast<X11Client*>(client)->setFocus();
+    else
+        XSetInputFocus(dpy(), X11Application::root(), RevertToNone, CurrentTime);
 }
 
 Atom X11Application::atom(const char *name)
