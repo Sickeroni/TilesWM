@@ -55,49 +55,6 @@ struct X11DefaultKeyBindings::Actions
     {
         rootContainer()->redrawAll();
     }
-
-#if 0
-    static void focusPrevClient()
-    {
-        clientContainer()->focusPrevClient();
-    }
-    static void focusNextClient()
-    {
-        clientContainer()->focusNextClient();
-    }
-    static void moveClientLeft()
-    {
-        //rootContainer()->widget()->unmap(); //HACK
-        clientContainer()->moveClient(Container::WEST);
-//         rootContainer()->deleteEmptyChildren();
-        //rootContainer()->widget()->map(); //HACK
-        rootContainer()->setFocus(); //HACK
-    }
-    static void moveClientRight()
-    {
-        //rootContainer()->widget()->unmap(); //HACK
-        clientContainer()->moveClient(Container::EAST);
-//         rootContainer()->deleteEmptyChildren();
-        //rootContainer()->widget()->map(); //HACK
-        rootContainer()->setFocus(); //HACK
-    }
-    static void moveClientUp()
-    {
-        //rootContainer()->widget()->unmap(); //HACK
-        clientContainer()->moveClient(Container::NORTH);
-//         rootContainer()->deleteEmptyChildren();
-        //rootContainer()->widget()->map(); //HACK
-        rootContainer()->setFocus(); //HACK
-    }
-    static void moveClientDown()
-    {
-        //rootContainer()->widget()->unmap(); //HACK
-        clientContainer()->moveClient(Container::SOUTH);
-//         rootContainer()->deleteEmptyChildren();
-        //rootContainer()->widget()->map(); //HACK
-        rootContainer()->setFocus(); //HACK
-    }
-#endif
     static void runProgram()
     {
         X11Application::runProgram("/usr/bin/gmrun");
