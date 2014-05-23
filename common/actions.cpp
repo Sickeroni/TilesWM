@@ -257,10 +257,32 @@ void focusDown()
 
 void focusPrevClient()
 {
+    ClientContainer *container = Application::activeClientContainer();
+    if(container) {
+        int index = container->activeChildIndex();
+        if (index != INVALID_INDEX) {
+            index--;
+            if (index >= 0) {
+                container->setActiveChild(index);
+                Application::self()->setFocus(container->child(index));
+            }
+        }
+    }
 }
 
 void focusNextClient()
 {
+    ClientContainer *container = Application::activeClientContainer();
+    if(container) {
+        int index = container->activeChildIndex();
+        if (index != INVALID_INDEX) {
+            index++;
+            if (index < container->numElements()) {
+                container->setActiveChild(index);
+                Application::self()->setFocus(container->child(index));
+            }
+        }
+    }
 }
 
 void deleteEmptyContainers()
