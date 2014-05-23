@@ -11,6 +11,7 @@
 #include "container_layout.h"
 #include "workspace.h"
 #include "colors.h"
+#include "theme.h"
 #include "common.h"
 
 #include <X11/Xutil.h>
@@ -322,7 +323,7 @@ void X11Client::create(Window wid)
                                                      ExposureMask | ButtonPressMask | SubstructureNotifyMask | SubstructureRedirectMask);
 
             Rect frame_rect;
-            client->calcFrameRect(rect, frame_rect);
+            Theme::calcClientFrameRect(client, rect, frame_rect);
             if (frame_rect.y < 0) //FIXME make sure it's inside client area of screen (screen area minus panels)
                 frame_rect.y = 0;
 #if 0
@@ -454,7 +455,7 @@ void X11Client::mapInt()
         XAddToSaveSet(dpy(), _widget->wid());
 
         Rect client_rect;
-        calcClientRect(_frame->rect(), client_rect);
+        Theme::calcClientClientRect(this, _frame->rect(), client_rect);
 
         _widget->reparent(_frame, client_rect.x, client_rect.y);
 
@@ -570,7 +571,7 @@ void X11Client::handleConfigureRequest(const XConfigureRequestEvent &ev)
 
             // new frame rect based on requested client rect
             Rect frame_rect;
-            calcFrameRect(client_rect, frame_rect);
+            Theme::calcClientFrameRect(this, client_rect, frame_rect);
 
             frame_rect.setPos(client_rect.x, client_rect.y);
 
@@ -581,7 +582,7 @@ void X11Client::handleConfigureRequest(const XConfigureRequestEvent &ev)
 
             if (isMapped()) {
                 // the client rect needs to be positioned in respect to the frame rect
-                calcClientRect(frame_rect, client_rect);
+                Theme::calcClientFrameRect(this, frame_rect, client_rect);
                 changes.x = client_rect.x;
                 changes.y = client_rect.y;
 
@@ -885,7 +886,7 @@ void X11Client::handleButtonPress(const XButtonEvent &ev)
 
 void X11Client::drawFrame()
 {
-    Client::drawFrame(_frame->canvas());
+    Theme::drawClientFrame(this, _frame->canvas());
 }
 
 int X11Client::maxTextHeight()
