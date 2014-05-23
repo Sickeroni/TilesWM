@@ -34,15 +34,6 @@ ContainerLayout *ContainerContainer::getLayout()
     return _layout;
 }
 
-#if 0
-void ContainerContainer::setFocus()
-{
-    if (_active_child)
-        _active_child->setFocus();
-    redrawAll();
-}
-#endif
-
 void ContainerContainer::handleMaximizedChanged()
 {
     for (int i = 0; i < numElements(); i++)
@@ -70,6 +61,57 @@ ClientContainer *ContainerContainer::activeClientContainer()
     } else
         return 0;
 }
+
+void ContainerContainer::redrawAll()
+{
+    redraw();
+    for(int i = 0; i < numElements(); i++)
+        child(i)->redrawAll();
+}
+
+void ContainerContainer::deleteEmptyChildren()
+{
+//     if (!_dirty)
+//         return;
+
+    // 1st pass: recurse
+    for (int i = 0; i < numElements(); i++) {
+        if (child(i)->isContainerContainer())
+            static_cast<ContainerContainer*>(child(i))->deleteEmptyChildren();
+    }
+
+    // 2nd pass: dissolve child containers with only one child
+    for (int i = 0; i < numElements(); i++) {
+        if (child(i)->isContainerContainer() && (child(i)->numElements() == 1)) {
+            Container *c =  static_cast<ContainerContainer*>(child(i))->removeChild(0);
+
+            delete replaceChild(i, c);
+        }
+    }
+
+    // 3rd pass: delete all empty children
+    for (int i = 0; i < numElements(); ) {
+        if (child(i)->isEmpty())
+            delete removeChild(i);
+        else
+            i++;
+    }
+
+//     _dirty = isEmpty();
+
+    getLayout()->layoutContents();
+}
+
+
+#if 0
+void ContainerContainer::setFocus()
+{
+    if (_active_child)
+        _active_child->setFocus();
+    redrawAll();
+}
+#endif
+
 
 #if 0
 int ContainerContainer::calcAvailableSpace()
@@ -148,60 +190,6 @@ void ContainerContainer::deleteChild(Container *child)
     delete child;
 }
 #endif
-
-#if 0
-int ContainerContainer::hierarchyDepth()
-{
-    if (_parent)
-        return _parent->hierarchyDepth() + 1;
-    else
-        return 0;
-}
-#endif
-
-
-void ContainerContainer::redrawAll()
-{
-    redraw();
-    for(int i = 0; i < numElements(); i++)
-        child(i)->redrawAll();
-}
-
-
-
-void ContainerContainer::deleteEmptyChildren()
-{
-//     if (!_dirty)
-//         return;
-
-    // 1st pass: recurse
-    for (int i = 0; i < numElements(); i++) {
-        if (child(i)->isContainerContainer())
-            static_cast<ContainerContainer*>(child(i))->deleteEmptyChildren();
-    }
-
-    // 2nd pass: dissolve child containers with only one child
-    for (int i = 0; i < numElements(); i++) {
-        if (child(i)->isContainerContainer() && (child(i)->numElements() == 1)) {
-            Container *c =  static_cast<ContainerContainer*>(child(i))->removeChild(0);
-
-            delete replaceChild(i, c);
-        }
-    }
-
-    // 3rd pass: delete all empty children
-    for (int i = 0; i < numElements(); ) {
-        if (child(i)->isEmpty())
-            delete removeChild(i);
-        else
-            i++;
-    }
-
-//     _dirty = isEmpty();
-
-    getLayout()->layoutContents();
-}
-
 
 
 // void ContainerContainer::incAvailableSpacePortion(Container *child, int pixels)
