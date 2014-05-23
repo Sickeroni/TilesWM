@@ -12,4 +12,8 @@ using std::cout;
 using std::cerr;
 using std::endl;
 
+enum {
+    INVALID_INDEX = -1
+};
+
 #endif // __COMMON_H__

@@ -141,21 +141,23 @@ void X11ContainerContainer::setActiveChild(int index)
 {
     assert(index < _children.size());
 
-    if (_active_child_index == index)
+    if (index == _active_child_index)
         return;
 
     if (index < _children.size()) {
-        if (-1 < _active_child_index)
+        if (_active_child_index != INVALID_INDEX)
             _children[_active_child_index]->handleActiveChanged();
 
         _active_child_index = index;
 
-        if (-1 < _active_child_index)
+        if (_active_child_index != INVALID_INDEX)
             _children[_active_child_index]->handleActiveChanged();
 
         if (workspace()->maximized() && isActive())
             getLayout()->layoutContents();
     }
+
+    redraw();
 }
 
 void X11ContainerContainer::setMapped(bool mapped)

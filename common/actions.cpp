@@ -185,20 +185,70 @@ void moveClientDown()
     moveClient(DOWN);
 }
 
+void focusPrevChild(ContainerContainer *container)
+{
+    if (container->activeChildIndex() != INVALID_INDEX) {
+        int new_index = container->activeChildIndex() - 1;
+        if (new_index >= 0) {
+            container->setActiveChild(new_index);
+            if (container->activeClientContainer() && container->activeClientContainer()->activeClient())
+                container->activeClientContainer()->activeClient()->setFocus();
+        }
+    }
+}
+
+void focusNextChild(ContainerContainer *container)
+{
+    if (container->activeChildIndex() != INVALID_INDEX) {
+        int new_index = container->activeChildIndex() + 1;
+        if (new_index < container->numElements()) {
+            container->setActiveChild(new_index);
+            if (container->activeClientContainer() && container->activeClientContainer()->activeClient())
+                container->activeClientContainer()->activeClient()->setFocus();
+        }
+    }
+}
+
+void focusSibling(Direction where)
+{
+    debug;
+
+    ClientContainer *container = Application::activeClientContainer();
+    if (!container)
+        return;
+
+    ContainerContainer *parent = 0;
+    if (orientationOfDirection(where) == container->parent()->orientation())
+        parent = container->parent();
+    else
+        parent = container->parent()->parent();
+
+    if (parent) {
+        if (isForwardDirection(where))
+            focusNextChild(parent);
+        else
+            focusPrevChild(parent);
+    }
+}
+
 void focusLeft()
 {
+    focusSibling(LEFT);
 }
 
 void focusRight()
 {
+    focusSibling(RIGHT);
 }
 
 void focusUp()
 {
+    focusSibling(UP);
 }
 
 void focusDown()
 {
+    focusSibling(DOWN);
 }
 
 void focusPrevClient()
@@ -310,35 +360,3 @@ void rotate()
 
 
 } // namespace Actions
-
-
-#if 0
-
-void ClientContainer::focusSibling(Direction where)
-{
-    ContainerContainer *parent = 0;
-    if (orientationOfDirection(where) == _parent->orientation())
-        parent = _parent;
-    else
-        parent = _parent->parent();
-
-    if (parent) {
-        if (isForwardDirection(where))
-            parent->focusNextChild();
-        else
-            parent->focusPrevChild();
-    }
-}
-
-void ContainerContainer::focusPrevChild()
-{
-    if (_active_child && _active_child->prev())
-        setActiveChild(_active_child->prev());
-}
-
-void ContainerContainer::focusNextChild()
-{
-    if (_active_child && _active_child->next())
-        setActiveChild(_active_child->next());
-}
-#endif

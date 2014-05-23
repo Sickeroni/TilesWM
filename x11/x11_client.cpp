@@ -725,6 +725,7 @@ void X11Client::refreshFocusState()
         else
             XSetInputFocus(dpy(), X11Application::root(), RevertToNone, CurrentTime);
 #else
+        debug<<"client has focus, but is not active - activating.";
         makeActive();
 #endif
     }
