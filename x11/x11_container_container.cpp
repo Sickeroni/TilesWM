@@ -34,7 +34,7 @@ X11ContainerContainer::~X11ContainerContainer()
 
 int X11ContainerContainer::indexOfChild(const Container *child)
 {
-    for (int i = 0; i < _children.size(); i++) {
+    for (int i = 0; i < numElements(); i++) {
         if (child == _children[i])
             return i;
     }
@@ -46,7 +46,7 @@ void X11ContainerContainer::clear()
 {
     _active_child_index = -1;
 
-    for (int i = 0; i < _children.size(); i++)
+    for (int i = 0; i < numElements(); i++)
         delete _children[i];
     _children.clear();
 }
@@ -74,13 +74,13 @@ int X11ContainerContainer::addChild(Container *container)
     reparentContainer(container, this);
 
     _children.push_back(container);
-    printvar(_children.size());
+    printvar(numElements());
 
     container->setMapped(true);
 
     getLayout()->layoutContents();
 
-    return _children.size() - 1;
+    return numElements() - 1;
 }
 
 void X11ContainerContainer::insertChild(Container *container, int insert_pos)
@@ -89,7 +89,7 @@ void X11ContainerContainer::insertChild(Container *container, int insert_pos)
 
     reparentContainer(container, this);
 
-    assert(insert_pos <= _children.size());
+    assert(insert_pos <= numElements());
     _children.insert(_children.begin() + insert_pos, container);
 
     container->setMapped(true);
@@ -97,11 +97,10 @@ void X11ContainerContainer::insertChild(Container *container, int insert_pos)
     getLayout()->layoutContents();
 }
 
-//FIXME use size_t !!!
 Container *X11ContainerContainer::replaceChild(int index, Container *new_child)
 {
     assert(!new_child->parent());
-    assert(index < _children.size());
+    assert(index < numElements());
 
     Container *old_child = _children[index];
 
@@ -120,7 +119,7 @@ Container *X11ContainerContainer::replaceChild(int index, Container *new_child)
 
 Container *X11ContainerContainer::removeChild(int index)
 {
-    assert(index < _children.size());
+    assert(index < numElements());
 
     Container *child = _children[index];
 
@@ -130,20 +129,20 @@ Container *X11ContainerContainer::removeChild(int index)
 
     _children.erase(_children.begin() + index);
 
-    if (_active_child_index >= _children.size())
-        _active_child_index = _children.size() -1;
+    if (_active_child_index >= numElements())
+        _active_child_index = numElements() -1;
 
     return child;
 }
 
 void X11ContainerContainer::setActiveChild(int index)
 {
-    assert(index < _children.size());
+    assert(index < numElements());
 
     if (index == _active_child_index)
         return;
 
-    if (index < _children.size()) {
+    if (index < numElements()) {
         if (_active_child_index != INVALID_INDEX)
             _children[_active_child_index]->handleActiveChanged();
 

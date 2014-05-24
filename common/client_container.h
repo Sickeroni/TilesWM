@@ -16,9 +16,7 @@ class ClientContainer : public Container
 public:
     virtual ~ClientContainer();
 
-    virtual int numElements() = 0;
-    virtual bool isEmpty() = 0;
-    virtual Client *child(int index) = 0;
+    virtual Client *child(size_t index) = 0;
     virtual int indexOfChild(const Client *child) = 0;
     virtual int activeChildIndex() = 0;
     // doesn't set focus to the client !
@@ -34,7 +32,7 @@ public:
     virtual ClientContainer *activeClientContainer() { return this; }
 
     Client *activeClient() {
-        return activeChildIndex() > -1 ? child(activeChildIndex()) : 0;
+        return activeChildIndex() >= 0 ? child(activeChildIndex()) : 0;
     }
 
     void handleMouseClick(int global_x, int global_y);

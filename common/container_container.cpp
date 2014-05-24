@@ -32,7 +32,7 @@ ContainerLayout *ContainerContainer::getLayout()
 
 void ContainerContainer::handleMaximizedChanged()
 {
-    for (int i = 0; i < numElements(); i++)
+    for(int i = 0; i < numElements(); i++)
         child(i)->handleMaximizedChanged();
 }
 

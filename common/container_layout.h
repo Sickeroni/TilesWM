@@ -4,6 +4,8 @@
 class ContainerLayout
 {
 public:
+    virtual ~ContainerLayout() {}
+
     virtual int minWidth() = 0;
     virtual int maxWidth() = 0;
     virtual int minHeight() = 0;

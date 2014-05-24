@@ -12,6 +12,7 @@ struct Rect
     }
     Rect& operator=(const Rect &other) {
         set(other);
+        return *this;
     }
 
     void set(const Rect &other) {

@@ -56,8 +56,6 @@ int ContainerContainerLayout::minHeight()
 
 int ContainerContainerLayout::maxWidth()
 {
-    const Theme::ContainerContainerSizes &sizes = Theme::containerContainerSizes();
-
     int max_width = 0;
     if (_container->isHorizontal()) {
         abort();

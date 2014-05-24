@@ -42,7 +42,7 @@ void X11ClientContainer::clear()
 {
     _active_child_index = -1;
 
-    for (int i = 0; i < _children.size(); i++)
+    for (int i = 0; i < numElements(); i++)
         _children[i]->setContainer(0);
     _children.clear();
 }
@@ -50,7 +50,7 @@ void X11ClientContainer::clear()
 
 int X11ClientContainer::indexOfChild(const Client *child)
 {
-    for(int i = 0; i < _children.size(); i++) {
+    for(int i = 0; i < numElements(); i++) {
         if (child == _children[i])
             return i;
     }
@@ -75,7 +75,7 @@ void X11ClientContainer::setActiveChild(int index)
 //     else
 //         std::cout<<"ClientContainer::setActiveClient(): 0\n";
 
-    assert(index < _children.size());
+    assert(index < numElements());
     assert(0 > index || _children[index]->isMapped());
 
     _active_child_index = index;
@@ -98,11 +98,11 @@ int X11ClientContainer::addClient(X11Client *client)
 
     _children.push_back(client);
 
-    printvar(_children.size());
+    printvar(numElements());
 
     getLayout()->layoutContents();
 
-    return _children.size() - 1;
+    return numElements() - 1;
 }
 
 void X11ClientContainer::removeClient(X11Client *client)
@@ -114,8 +114,8 @@ void X11ClientContainer::removeClient(X11Client *client)
 
     _children.erase(_children.begin() + index);
 
-    if (_active_child_index >= _children.size())
-        _active_child_index = _children.size() -1;
+    if (_active_child_index >= numElements())
+        _active_child_index = numElements() -1;
 
     if (activeClient())
         activeClient()->raise();

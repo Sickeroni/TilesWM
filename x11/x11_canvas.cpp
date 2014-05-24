@@ -58,8 +58,10 @@ void X11Canvas::drawText(const std::string &text, const Rect &rect, uint32 color
     assert(_font_info);
 
     XRectangle x_rect = {
-        rect.x, rect.y,
-        rect.w, rect.h
+        static_cast<short>(rect.x),
+        static_cast<short>(rect.y),
+        static_cast<unsigned short>(rect.w),
+        static_cast<unsigned short>(rect.h)
     };
 
     XSetClipRectangles(dpy(), _gc,
@@ -72,7 +74,7 @@ void X11Canvas::drawText(const std::string &text, const Rect &rect, uint32 color
 
     XTextItem text_item = {
         const_cast<char*>(text.c_str()),
-        text.length(),
+        static_cast<int>(text.length()),
         0,
         None
     };

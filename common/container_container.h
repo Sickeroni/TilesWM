@@ -14,13 +14,10 @@ class ContainerContainer : public Container
 public:
     virtual ~ContainerContainer();
 
-    virtual void redraw() = 0;
-    virtual int numElements() = 0;
     virtual Container *child(int index) = 0;
     virtual int activeChildIndex() = 0;
     virtual void setActiveChild(int index) = 0;
     virtual int indexOfChild(const Container *child) = 0;
-    virtual bool isEmpty() = 0;
     // ret: index of added child
     virtual int addChild(Container *child) = 0;
     // inserts child at insert_pos
@@ -28,6 +25,7 @@ public:
     // de-parents and returns the child at index
     virtual Container *replaceChild(int index, Container *new_child) = 0;
     virtual Container *removeChild(int index) = 0;
+    virtual void redraw() = 0;
 
     virtual ContainerLayout *getLayout();
     virtual ClientContainer *activeClientContainer();
