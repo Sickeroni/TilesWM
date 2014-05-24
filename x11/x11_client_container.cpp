@@ -70,6 +70,7 @@ void X11ClientContainer::removeChild(Client *client)
 
 void X11ClientContainer::setActiveChild(int index)
 {
+    printvar(index);
 //     if (client)
 //         std::cout<<"ClientContainer::setActiveClient(): \""<<client->name()<<"\"\n";
 //     else

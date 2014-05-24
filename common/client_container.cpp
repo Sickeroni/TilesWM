@@ -51,7 +51,7 @@ void ClientContainer::handleMouseClick(int global_x, int global_y)
 
     int clicked_tab_index = Theme::getTabAt(local_x, local_y, this);
 
-    if (-1 < clicked_tab_index) {
+    if (clicked_tab_index != INVALID_INDEX) {
         setActiveChild(clicked_tab_index);
         makeActive();
         Application::self()->setFocus(child(clicked_tab_index));

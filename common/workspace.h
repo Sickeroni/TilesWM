@@ -16,7 +16,7 @@ public:
 
     Monitor *monitor() { return _monitor; }
     ContainerContainer *rootContainer() { return _root_container; }
-    bool maximized() { return _maximized; }
+    bool maximized() { return _maximized; } //FIXME -> isMaximized()
     void setMaximized(bool enable);
     bool makeActive();
     bool isMapped();
