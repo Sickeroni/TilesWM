@@ -300,11 +300,6 @@ void runProgram()
     Application::runProgram("/usr/bin/gmrun");
 }
 
-void redraw()
-{
-    Application::activeWorkspace()->rootContainer()->redrawAll();
-}
-
 void toggleMaximize()
 {
     debug;
@@ -373,15 +368,22 @@ void decHeight()
     changeSize(false, -100);
 }
 
-void layout()
-{
-    Application::activeWorkspace()->rootContainer()->getLayout()->layoutContents();
-}
-
 void rotate()
 {
     Container::rotateOrientation();
     Application::activeWorkspace()->rootContainer()->getLayout()->layoutContents();
+}
+
+void layout()
+{
+    debug;
+    Application::activeWorkspace()->rootContainer()->getLayout()->layoutContents();
+}
+
+void redraw()
+{
+    debug;
+    Application::activeWorkspace()->rootContainer()->redrawAll();
 }
 
 
