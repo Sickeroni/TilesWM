@@ -16,18 +16,18 @@ class X11Client;
 class Workspace;
 class Monitor;
 
-class X11Application : public Application
+class X11Application final : public Application
 {
 public:
     X11Application();
     ~X11Application();
 
-    virtual Monitor *activeMonitor();
-    virtual Workspace *createWorkspace();
-    virtual ContainerContainer *createContainerContainer();
-    virtual ClientContainer *createClientContainer();
-    virtual void setActiveMonitor(Monitor *monitor);
-    virtual void setFocus(Client *client);
+    virtual Monitor *activeMonitor() override;
+    virtual Workspace *createWorkspace() override;
+    virtual ContainerContainer *createContainerContainer() override;
+    virtual ClientContainer *createClientContainer() override;
+    virtual void setActiveMonitor(Monitor *monitor) override;
+    virtual void setFocus(Client *client) override;
 
     bool init();
     void shutdown();

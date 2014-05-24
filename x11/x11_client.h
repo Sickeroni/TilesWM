@@ -21,7 +21,7 @@ class X11Icon;
 
 //FIXME TODO - set border width via XConfigureWindow
 
-class X11Client : public Client, public X11ServerWidget::EventHandler
+class X11Client final : public Client, public X11ServerWidget::EventHandler
 {
 public:
     static void init();
@@ -29,26 +29,24 @@ public:
 
     virtual ~X11Client();
 
-    virtual void setRect(const Rect &rect);
-    virtual void raise();
-    virtual Icon *icon();
-    virtual ClientContainer *container();
+    virtual void setRect(const Rect &rect) override;
+    virtual void raise() override;
+    virtual Icon *icon() override;
+    virtual ClientContainer *container() override;
+    virtual const Rect &frameRect()  override { return _frame->rect(); }
+    virtual bool hasDecoration() override {
+        return isDialog() || _is_modal;
+    }
+    virtual int maxTextHeight() override;
 
     // X11ServerWidget::EventHandler implementation
-    virtual void handleExpose();
-    virtual void handleButtonPress(const XButtonEvent &ev);
+    virtual void handleExpose() override;
+    virtual void handleButtonPress(const XButtonEvent &ev) override;
 
     void setFocus();
     void map();
     void unmap();
     void setContainer(X11ClientContainer *container);
-
-protected:
-    virtual const Rect &frameRect() { return _frame->rect(); }
-    virtual bool hasDecoration() {
-        return isDialog() || _is_modal;
-    }
-    virtual int maxTextHeight();
 
 private:
     class CriticalSection;

@@ -27,9 +27,9 @@ public:
     virtual int addChild(Client *client) = 0;
     virtual void removeChild(Client *client) = 0;
 
-    virtual void redrawAll();
-    virtual ContainerLayout *getLayout();
-    virtual ClientContainer *activeClientContainer() { return this; }
+    virtual void redrawAll() final;
+    virtual ContainerLayout *getLayout() final;
+    virtual ClientContainer *activeClientContainer() final { return this; }
 
     Client *activeClient() {
         return activeChildIndex() >= 0 ? child(activeChildIndex()) : 0;

@@ -194,12 +194,8 @@ void drawTab(ClientContainer *container, Client *client, const Rect &rect, bool 
         canvas->drawText(client->className(), text_rect, fg);
         text_rect.y += (container->maxTextHeight() + sizes.tab_inner_margin);
         canvas->drawText(name, text_rect, fg);
-    } else {
-        const std::string text = (container->isMinimized() && !client->iconName().empty()) ?
-                                            client->iconName() : client->name();
-
+    } else
         canvas->drawText(client->title(), text_rect, fg);
-    }
 }
 
 void drawTabbar(ClientContainer *container, Canvas *canvas)
@@ -322,11 +318,11 @@ void drawClientFrame(Client *client, Canvas *canvas)
     border_rect.set(frame_rect.x+1, frame_rect.y+1, frame_rect.w-2, frame_rect.h-2);
     canvas->drawFrame(border_rect, frame_color);
 
-
-    //FIXME duplicated in calcFrameMargins() / drawTab()
-    int frame_margin = Metrics::CLIENT_INNER_FRAME_MARGIN;
-    int titlebar_height = 0;
     if (client->hasDecoration()) {
+        //FIXME duplicated in calcFrameMargins() / drawTab()
+        int frame_margin = Metrics::CLIENT_INNER_FRAME_MARGIN;
+        int titlebar_height = 0;
+
         frame_margin += Metrics::CLIENT_DECORATION_MARGIN;
         titlebar_height +=
             (client->maxTextHeight() + (2 * Metrics::CLIENT_TITLEBAR_INNER_MARGIN));

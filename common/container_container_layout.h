@@ -5,16 +5,16 @@
 
 class ContainerContainer;
 
-class ContainerContainerLayout : public ContainerLayout
+class ContainerContainerLayout final : public ContainerLayout
 {
 public:
     ContainerContainerLayout(ContainerContainer *container);
 
-    virtual int minWidth();
-    virtual int maxWidth();
-    virtual int minHeight();
-    virtual int maxHeight();
-    virtual void layoutContents();
+    virtual int minWidth() override;
+    virtual int maxWidth() override;
+    virtual int minHeight() override;
+    virtual int maxHeight() override;
+    virtual void layoutContents() override;
 
 private:
     ContainerContainer *_container;

@@ -10,7 +10,7 @@
 class X11Widget;
 
 
-class X11Icon : public Icon
+class X11Icon final : public Icon
 {
 public:
     X11Icon(int width, int height, X11Widget *parent);

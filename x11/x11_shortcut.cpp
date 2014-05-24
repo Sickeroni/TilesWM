@@ -45,7 +45,7 @@ X11Shortcut::~X11Shortcut()
             list.erase(it);
             break;
         }
-        it++;
+        ++it;
     }
 }
 

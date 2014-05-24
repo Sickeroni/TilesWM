@@ -11,7 +11,7 @@ class X11ClientWidget : public X11Widget
 {
 public:
     X11ClientWidget(Window wid, X11Client *client, bool is_mapped, const Rect &rect);
-    virtual ~X11ClientWidget();
+    ~X11ClientWidget();
 
 //     virtual bool validate();
 

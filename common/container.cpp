@@ -57,7 +57,7 @@ Container::Orientation Container::orientation()
 
 void Container::setRect(const Rect &rect)
 {
-    _rect.set(rect.x, rect.y, rect.w, rect.h);
+    _rect.set(rect);
 }
 
 void Container::rotateOrientation()

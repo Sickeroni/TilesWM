@@ -27,14 +27,14 @@ public:
     virtual Container *removeChild(int index) = 0;
     virtual void redraw() = 0;
 
-    virtual ContainerLayout *getLayout();
-    virtual ClientContainer *activeClientContainer();
-    virtual void redrawAll();
-    virtual void deleteEmptyChildren();
-    virtual void handleMaximizedChanged();
-    virtual void handleActiveChanged();
+    virtual ContainerLayout *getLayout() final;
+    virtual ClientContainer *activeClientContainer() final;
+    virtual void redrawAll() final;
+    virtual void handleMaximizedChanged() final;
+    virtual void handleActiveChanged() final;
 
-    void setDirty(bool set);
+//     void setDirty(bool set);
+    void deleteEmptyChildren();
 
     void handleSizeHintsChanged(Container *child);
 //     void incAvailableSpacePortion(Container *child, int pixels);

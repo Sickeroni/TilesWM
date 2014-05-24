@@ -11,32 +11,32 @@
 class X11ContainerContainer;
 class X11Client;
 
-class X11ClientContainer : public ClientContainer, public X11ServerWidget::EventHandler
+class X11ClientContainer final : public ClientContainer, public X11ServerWidget::EventHandler
 {
 public:
     X11ClientContainer();
-    virtual ~X11ClientContainer();
+    ~X11ClientContainer();
 
-    virtual void setMapped(bool mapped);
-    virtual void setRect(const Rect &rect);
-    virtual void handleMaximizedChanged();
-    virtual void handleActiveChanged() ;
-    virtual int numElements() { return _children.size(); }
-    virtual bool isEmpty() { return _children.empty(); }
+    virtual void setMapped(bool mapped) override;
+    virtual void setRect(const Rect &rect) override;
+    virtual void handleMaximizedChanged() override;
+    virtual void handleActiveChanged() override;
+    virtual int numElements() override { return _children.size(); }
+    virtual bool isEmpty() override { return _children.empty(); }
     virtual Client *child(size_t index) { return _children[index]; }
-    virtual int indexOfChild(const Client *child);
-    virtual int activeChildIndex() { return _active_child_index; }
-    virtual void setActiveChild(int index);
-    virtual int maxTextHeight();
-    virtual void redraw();
-    virtual int addChild(Client *client);
-    virtual void removeChild(Client *client);
+    virtual int indexOfChild(const Client *child) override;
+    virtual int activeChildIndex() override { return _active_child_index; }
+    virtual void setActiveChild(int index) override;
+    virtual int maxTextHeight() override;
+    virtual void redraw() override;
+    virtual int addChild(Client *client) override;
+    virtual void removeChild(Client *client) override;
 
     // X11ServerWidget::EventHandler implementaion
-    virtual void handleExpose() {
+    virtual void handleExpose() override {
         redraw();
     }
-    virtual void handleButtonPress(const XButtonEvent &ev);
+    virtual void handleButtonPress(const XButtonEvent &ev) override;
 
     void reparent(X11ContainerContainer *p);
     void clear();
