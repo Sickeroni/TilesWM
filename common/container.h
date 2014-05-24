@@ -52,6 +52,9 @@ public:
     bool isHorizontal() {
         return orientation() == HORIZONTAL;
     }
+    bool isVertical() {
+        return orientation() == VERTICAL;
+    }
 
     Orientation orientation();
 

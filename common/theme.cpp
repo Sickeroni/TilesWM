@@ -125,7 +125,7 @@ void getTabbbarRect(ClientContainer *container, Rect &rect)
 {
     const ClientContainerSizesInternal &sizes = _clientContainerSizesInternal;
 
-    if (container->isMinimized()) {
+    if (container->isMinimized() && container->isVertical()) {
         int tabbar_x = sizes.frame_width;
         int tabbar_y = sizes.frame_width;
         int tabbar_w = container->rect().w - (2 * sizes.frame_width);
@@ -156,6 +156,70 @@ void getTabSize(ClientContainer *container, int &tab_width, int &tab_height)
         tab_width = 0;
         tab_height = 0;
     }
+}
+
+void getHorizontalTabRect(
+        const int tab_width,
+        const int tab_height,
+        const Rect &tabbar_rect,
+        const int index,
+        Rect &rect)
+{
+    const ClientContainerSizesInternal &sizes = _clientContainerSizesInternal;
+
+    rect.set(
+        tabbar_rect.x + (index * (tab_width + sizes.tab_gap)),
+        tabbar_rect.y,
+        tab_width,
+        tab_height);
+}
+
+void getVerticalTabRect(
+        const Rect &tabbar_rect,
+        const int index,
+        Rect &rect)
+{
+    const ClientContainerSizesInternal &sizes = _clientContainerSizesInternal;
+
+    rect.set(
+        sizes.frame_width,
+        sizes.frame_width + (index * (sizes.vertical_tabbar_width + sizes.tab_gap)),
+        sizes.vertical_tabbar_width,
+        sizes.vertical_tabbar_width);
+}
+
+int getTabAt(int x, int y, ClientContainer *container)
+{
+    Rect tabbar_rect;
+    getTabbbarRect(container, tabbar_rect);
+
+    printvar(tabbar_rect.y);
+    printvar(tabbar_rect.h);
+
+    if (tabbar_rect.isPointInside(x, y)) {
+        if (container->isMinimized() && container->isVertical()) {
+            for(int i = 0; i < container->numElements(); i++) {
+                Rect tab_rect;
+                getVerticalTabRect(tabbar_rect, i, tab_rect);
+
+                if (tab_rect.isPointInside(x, y))
+                    return i;
+            }
+        } else {
+            int tab_width, tab_height;
+            getTabSize(container, tab_width, tab_height);
+
+            for(int i = 0; i < container->numElements(); i++) {
+                Rect tab_rect;
+                getHorizontalTabRect(tab_width, tab_height, tabbar_rect, i, tab_rect);
+
+                if (tab_rect.isPointInside(x, y))
+                    return i;
+            }
+        }
+    }
+
+    return INVALID_INDEX;
 }
 
 void drawTab(ClientContainer *container, Client *client, const Rect &rect, bool vertical, Canvas *canvas)
@@ -238,41 +302,11 @@ void drawTabbar(ClientContainer *container, Canvas *canvas)
     getTabSize(container, tab_width, tab_height);
 
     for(int i = 0; i < container->numElements(); i++) {
-        Rect tab_rect(tabbar_rect.x + (i * (tab_width + sizes.tab_gap)),
-                      tabbar_rect.y, tab_width, tab_height);
+        Rect tab_rect;
+        getHorizontalTabRect(tab_width, tab_height, tabbar_rect, i, tab_rect);
 
         drawTab(container, container->child(i), tab_rect, false, canvas);
     }
-}
-
-void getHorizontalTabRect(
-        const int tab_width,
-        const int tab_height,
-        const Rect &tabbar_rect,
-        const int index,
-        Rect &rect)
-{
-    const ClientContainerSizesInternal &sizes = _clientContainerSizesInternal;
-
-    rect.set(
-        tabbar_rect.x + (index * (tab_width + sizes.tab_gap)),
-        tabbar_rect.y,
-        tab_width,
-        tab_height);
-}
-
-void getVerticalTabRect(
-        const Rect &tabbar_rect,
-        const int index,
-        Rect &rect)
-{
-    const ClientContainerSizesInternal &sizes = _clientContainerSizesInternal;
-
-    rect.set(
-        sizes.frame_width,
-        sizes.frame_width + (index * (sizes.vertical_tabbar_width + sizes.tab_gap)),
-        sizes.vertical_tabbar_width,
-        sizes.vertical_tabbar_width);
 }
 
 void drawVerticalTabs(ClientContainer *container, Canvas *canvas)
@@ -294,53 +328,10 @@ void drawVerticalTabs(ClientContainer *container, Canvas *canvas)
 
 void drawClientContainer(ClientContainer *container, Canvas *canvas)
 {
-    if (container->isMinimized()) {
-        if (container->isHorizontal())
-            drawTabbar(container, canvas);
-        else
-            drawVerticalTabs(container, canvas);
-    } else {
+    if (container->isMinimized() && container->isVertical())
+        drawVerticalTabs(container, canvas);
+    else
         drawTabbar(container, canvas);
-    }
-}
-
-int getTabAt(int x, int y, ClientContainer *container)
-{
-    Rect tabbar_rect;
-    getTabbbarRect(container, tabbar_rect);
-
-    printvar(tabbar_rect.y);
-    printvar(tabbar_rect.h);
-
-    if (container->isMinimized()) {
-        for(int i = 0; i < container->numElements(); i++) {
-            Rect tab_rect;
-            getVerticalTabRect(tabbar_rect, i, tab_rect);
-
-            if (tab_rect.isPointInside(x, y))
-                return i;
-        }
-
-        return INVALID_INDEX;
-    }
-
-    if (tabbar_rect.isPointInside(x, y)) {
-//         std::cout<<"inside tabbar.\n";
-        int tab_width, tab_height;
-        getTabSize(container, tab_width, tab_height);
-
-        for(int i = 0; i < container->numElements(); i++) {
-            Rect tab_rect(tabbar_rect.x + (i * (tab_width + _clientContainerSizesInternal.tab_gap)),
-                          tabbar_rect.y,
-                          tab_width,
-                          tab_height);
-
-            if (tab_rect.isPointInside(x, y))
-                return i;
-        }
-    }
-
-    return INVALID_INDEX;
 }
 
 void getClientContainerClientRect(ClientContainer *container,  Rect &client_rect)
