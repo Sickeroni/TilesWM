@@ -143,10 +143,14 @@ void X11ContainerContainer::setActiveChild(int index)
         return;
 
     if (index < numElements()) {
+        Container *old_active = 0;
         if (_active_child_index != INVALID_INDEX)
-            _children[_active_child_index]->handleActiveChanged();
+            old_active = _children[_active_child_index];
 
         _active_child_index = index;
+
+        if (old_active)
+            old_active->handleActiveChanged();
 
         if (_active_child_index != INVALID_INDEX)
             _children[_active_child_index]->handleActiveChanged();
