@@ -24,7 +24,7 @@ int ClientContainerLayout::maxWidth()
     const Theme::ClientContainerSizes &sizes = Theme::clientContainerSizes();
     int min_width = minWidth();
 
-    if (_container->activeClient() && !_container->isMinimized()) {
+    if (_container->activeClient()) {
 //         if (!isFixedSize()) {
             if (_container->activeClient()->maxWidth()) {
                 int max_width = (2 * sizes.frame_width) + _container->activeClient()->maxWidth();

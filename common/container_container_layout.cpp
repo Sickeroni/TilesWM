@@ -185,7 +185,7 @@ void ContainerContainerLayout::layoutContents()
     if (available_space < 0) // BAAD - children won't fit
         available_space = 0;
 
-    if (!(_container->workspace()->maximized())) {
+    if (!_container->isMaximized()) {
         // distribute remaining available space
 //         debug<<"distributing remaining available space ...";
         while (available_space && num_growable_items) {

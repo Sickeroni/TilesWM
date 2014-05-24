@@ -95,6 +95,11 @@ bool Container::isMinimized()
         return false;
 }
 
+bool Container::isMaximized()
+{
+    return workspace()->maximized() && !isMinimized();
+}
+
 void Container::makeActive()
 {
     workspace()->makeActive();

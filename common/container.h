@@ -71,6 +71,7 @@ public:
     Workspace *workspace();
     bool isAncestorOf(Container *container);
     bool isMinimized();
+    bool isMaximized();
     bool isActive();
 
     void setWorkspace(Workspace *workspace);
