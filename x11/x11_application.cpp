@@ -4,7 +4,7 @@
 #include "x11_client_container.h"
 #include "x11_client.h"
 #include "x11_widget.h"
-#include "x11_default_key_bindings.h"
+#include "x11_shortcut_set.h"
 
 #include "workspace.h"
 #include "monitor.h"
@@ -152,7 +152,6 @@ const char *X11Application::errorCodeToString(size_t error_code)
 X11Application::X11Application() :
     _dpy(0),
     _root(0),
-    _shortcuts(0),
     _num_server_grabs(0),
     _quit_requested(false),
     _monitor(0)
@@ -220,13 +219,12 @@ bool X11Application::init()
 
     XSync(_dpy, false);
 
+    initShortcuts();
 
     _monitor = new Monitor();
     _monitor->setSize(root_attr.width, root_attr.height);
 
     X11Client::init();
-
-    _shortcuts = new X11DefaultKeyBindings();
 
     // set focus to the root window initially
     setFocus(0);
@@ -246,8 +244,6 @@ void X11Application::shutdown()
     grabServer();
 
     //FIXME delete root container
-    delete _shortcuts;
-    _shortcuts = 0;
 
     XSetWindowAttributes new_root_attr;
     memset(&new_root_attr, 0, sizeof(XSetWindowAttributes));
@@ -391,6 +387,11 @@ ContainerContainer *X11Application::createContainerContainer()
 ClientContainer *X11Application::createClientContainer()
 {
     return new X11ClientContainer();
+}
+
+ShortcutSet *X11Application::createShortcutSet()
+{
+    return new X11ShortcutSet();
 }
 
 X11Client *X11Application::activeClient()

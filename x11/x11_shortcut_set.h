@@ -1,19 +1,22 @@
 #ifndef __X11_SHORTCUT_SET_H__
 #define __X11_SHORTCUT_SET_H__
 
+
+#include "shortcut_set.h"
 #include "x11_shortcut.h"
 
 
-class X11ShortcutSet
+class X11ShortcutSet final : public ShortcutSet
 {
-    std::vector<X11Shortcut*> _shortcuts;
-
-protected:
-    void createShortcut(const char *key_sym, X11Shortcut::ModMask mod_mask,
-                        X11Shortcut::HandlerFunc handler_func);
+    X11Shortcut::List _shortcuts;
 
 public:
-    virtual ~X11ShortcutSet();
+    ~X11ShortcutSet();
+
+    virtual void createShortcut(const char *key_sym, X11Shortcut::ModMask mod_mask,
+                                HandlerFunc handler_func) override;
+
+    const X11Shortcut::List &shortcuts() { return _shortcuts; }
 };
 
 

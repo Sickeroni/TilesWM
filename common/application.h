@@ -6,6 +6,7 @@ class ContainerContainer;
 class ClientContainer;
 class Client;
 class Monitor;
+class ShortcutSet;
 
 class Application
 {
@@ -29,6 +30,7 @@ public:
     void setActiveLayer(Layer layer) {
         //FIXME
     }
+    ShortcutSet *mainShortcuts() { return _main_shortcuts; }
 
     static Application *self() { return _self; }
 
@@ -40,6 +42,12 @@ public:
 
 protected:
     Application();
+
+    virtual ShortcutSet *createShortcutSet() = 0;
+
+    void initShortcuts();
+
+    ShortcutSet *_main_shortcuts = 0;
 
     static Application *_self;
 };

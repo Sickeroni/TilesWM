@@ -10,7 +10,6 @@
 #include <vector>
 
 class X11ContainerContainer;
-class X11ShortcutSet;
 class X11ClientContainer;
 class X11Client;
 class Workspace;
@@ -47,6 +46,10 @@ public:
     static const char *eventTypeToString(size_t id);
     static const char *errorCodeToString(size_t error_code);
 
+protected:
+    virtual ShortcutSet *createShortcutSet() override;
+
+
 private:
     static void quit(int signum);
 
@@ -54,7 +57,6 @@ private:
 
     Display *_dpy;
     Window _root;
-    X11ShortcutSet *_shortcuts;
     int _num_server_grabs;
     volatile bool _quit_requested;
     Monitor *_monitor;

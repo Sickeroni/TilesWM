@@ -7,6 +7,7 @@
 class ContainerContainer;
 class ClientContainer;
 class Client;
+class Mode;
 
 class Workspace
 {
@@ -31,6 +32,7 @@ public:
         _monitor = monitor;
     }
     void globalToLocal(int &x, int &y);
+    Mode *mode();
 
 private:
     Rect _rect;

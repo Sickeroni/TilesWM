@@ -1,32 +1,34 @@
 #ifndef __X11_SHORTCUT_H__
 #define __X11_SHORTCUT_H__
 
+#include "shortcut_set.h"
+
 #include <X11/Xlib.h>
 
-#include <vector>
-#include <map>
-
+#include <list>
 
 class X11Shortcut
 {
 public:
-    typedef std::vector<X11Shortcut*> ShortcutList;
-    typedef std::map<KeySym, ShortcutList> KeySymMapping;
     typedef unsigned int ModMask;
-    typedef void (*HandlerFunc)();
+    typedef std::list<X11Shortcut*> List;
 
-    X11Shortcut(const char *key_sym, ModMask mod_mask, HandlerFunc handler_func);
+    X11Shortcut(const char *key_sym_str, ModMask mod_mask, ShortcutSet::HandlerFunc handler_func);
     ~X11Shortcut();
 
     static bool handleKeyPress(const XKeyEvent &ev);
 
 private:
-    KeySym _key_sym;
-    ModMask _mod_mask;
-    HandlerFunc _handler_func;
+    struct KeyGrab;
+    typedef std::list<KeyGrab*> KeyGrabList;
 
+    static const X11Shortcut *findInList(const KeyGrab *grab, const List &list);
+    static KeyGrab *findKeyGrab(KeySym key_sym, ModMask mod_mask);
 
-    static KeySymMapping _key_sym_index;
+    KeyGrab *_key_grab = 0;
+    ShortcutSet::HandlerFunc _handler_func = 0;
+
+    static KeyGrabList _key_grabs;
 };
 
 

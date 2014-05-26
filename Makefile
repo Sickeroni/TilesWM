@@ -25,7 +25,6 @@ x11_client_widget \
 x11_client \
 x11_shortcut \
 x11_shortcut_set \
-x11_default_key_bindings \
 x11_application \
 x11_global \
 main
