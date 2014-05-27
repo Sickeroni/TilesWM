@@ -270,7 +270,6 @@ void X11Application::shutdown()
     _dpy = 0;
 }
 
-#if 1
 void X11Application::eventLoop()
 {
     cout<<"------------------------------\n";
@@ -286,7 +285,6 @@ void X11Application::eventLoop()
     for( ; ; )
     {
 //         XFlush(_dpy);
-
         if (_quit_requested)
             return;
 
@@ -304,33 +302,23 @@ void X11Application::eventLoop()
                 return;
         }
 
-
-        //FIXME UGLY
-//         if (Container::root()->isContainerContainer())
-//             static_cast<ContainerContainer*>(Container::root())->deleteEmptyChildren();
-
         XNextEvent(_dpy, &ev);
 
         if (ev.type == KeyPress && X11Shortcut::handleKeyPress(ev.xkey)) {
             // NO-OP
         }
-
         else if (ev.xany.window && X11Widget::handleEvent(ev)) {
             // NO-OP
         }
-
-#if 1
         else {
 //             cout<<"unhandled event: "<<eventTypeToString(ev.type)<<'\n';
         }
-#endif
 
         XSync(_dpy, false);
 
 //         XUngrabServer(_dpy);
     }
 }
-#endif
 
 void X11Application::grabServer()
 {
