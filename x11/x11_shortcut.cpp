@@ -22,7 +22,7 @@ struct X11Shortcut::KeyGrab
 
     KeySym key_sym;
     X11Shortcut::ModMask mod_mask;
-    int ref_count = 1;
+    int ref_count = 0;
 };
 
 
@@ -48,14 +48,16 @@ X11Shortcut::X11Shortcut(const char *key_sym_str, ModMask mod_mask, ShortcutSet:
 {
     KeySym key_sym = XStringToKeysym(key_sym_str);
 
-    KeyGrab *grab = findKeyGrab(key_sym, mod_mask);
+    _key_grab = findKeyGrab(key_sym, mod_mask);
 
-    if (!grab) {
-        grab = new KeyGrab(key_sym, mod_mask);
-        _key_grabs.push_back(grab);
+    if (!_key_grab) {
+        _key_grab = new KeyGrab(key_sym, mod_mask);
+        _key_grabs.push_back(_key_grab);
     }
 
-    _key_grab = grab;
+    _key_grab->ref_count++;
+
+    assert(_key_grab->ref_count > 0);
 }
 
 X11Shortcut::~X11Shortcut()
@@ -63,6 +65,8 @@ X11Shortcut::~X11Shortcut()
     assert(_key_grab->ref_count > 0);
 
     _key_grab->ref_count--;
+
+    assert(_key_grab->ref_count >= 0);
 
     if (_key_grab->ref_count == 0) {
         _key_grabs.remove(_key_grab);
@@ -110,19 +114,19 @@ bool X11Shortcut::handleKeyPress(const XKeyEvent &ev)
             X11ShortcutSet *main_shortcuts = 
                 static_cast<X11ShortcutSet*>(Application::self()->mainShortcuts());
 
-//             X11ShortcutSet *active_mode_shortcuts = 
-//                 static_cast<X11ShortcutSet*>(Application::activeWorkspace()->mode()->shortcuts());
+            X11ShortcutSet *active_mode_shortcuts = 
+                static_cast<X11ShortcutSet*>(Application::activeWorkspace()->mode()->shortcuts());
 
             const X11Shortcut *shortcut = findInList(key_grab, main_shortcuts->shortcuts());
             if (shortcut) {
                 shortcut->_handler_func();
                 return true;
             } else {
-//                 shortcut = findInList(key_grab, active_mode_shortcuts->shortcuts());
-//                 if (shortcut) {
-//                     shortcut->_handler_func();
-//                     return true;
-//                 }
+                shortcut = findInList(key_grab, active_mode_shortcuts->shortcuts());
+                if (shortcut) {
+                    shortcut->_handler_func();
+                    return true;
+                }
             }
         }
     }

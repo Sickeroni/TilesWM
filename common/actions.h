@@ -37,6 +37,8 @@ namespace Actions
     void redraw();
     void layout();
     void rotate();
+
+    void quit();
 }
 
 #endif

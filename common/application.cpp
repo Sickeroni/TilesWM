@@ -7,6 +7,7 @@
 #include "shortcut_set.h"
 #include "actions.h"
 #include "client.h"
+#include "mode_default.h"
 #include "common.h"
 
 #include <unistd.h>
@@ -25,7 +26,43 @@ Application::Application()
 
 Application::~Application()
 {
+}
+
+void Application::init()
+{
+    _main_shortcuts = createShortcutSet();
+
+    _main_shortcuts->createShortcut("l", Mod1Mask, &Actions::layout);
+    _main_shortcuts->createShortcut("r", Mod1Mask, &Actions::rotate);
+    _main_shortcuts->createShortcut("KP_Left", Mod1Mask, &Actions::focusLeft);
+    _main_shortcuts->createShortcut("KP_Right", Mod1Mask, &Actions::focusRight);
+    _main_shortcuts->createShortcut("KP_Up", Mod1Mask, &Actions::focusUp);
+    _main_shortcuts->createShortcut("KP_Down", Mod1Mask, &Actions::focusDown);
+    _main_shortcuts->createShortcut("t", Mod1Mask, &Actions::runTerminal);
+    _main_shortcuts->createShortcut("d", Mod1Mask, &Actions::redraw);
+    _main_shortcuts->createShortcut("comma", Mod1Mask, &Actions::focusPrevClient);
+    _main_shortcuts->createShortcut("period", Mod1Mask, &Actions::focusNextClient);
+    _main_shortcuts->createShortcut("F2", Mod1Mask, &Actions::runProgram);
+
+    _main_shortcuts->createShortcut("e", Mod1Mask, &Actions::toggleExpanding);
+    _main_shortcuts->createShortcut("e", ControlMask | Mod1Mask, &Actions::toggleParentExpanding);
+
+    _main_shortcuts->createShortcut("q", Mod1Mask, &Actions::quit);
+
+    _modes.push_back(new ModeDefault());
+
+    for(size_t i = 0; i < _modes.size(); i++)
+        _modes[i]->initShortcuts();
+}
+
+void Application::shutdown()
+{
     _self = 0;
+
+    for(size_t i = 0; i < _modes.size(); i++)
+        delete _modes[i];
+    _modes.clear();
+
     delete _main_shortcuts;
     _main_shortcuts = 0;
 }
@@ -76,35 +113,4 @@ void Application::runProgram(const char *path)
         exit(1);
     } else
         cerr<<"ERROR: running "<<path<<": Can't fork.";
-}
-
-void Application::initShortcuts()
-{
-    _main_shortcuts = createShortcutSet();
-
-    _main_shortcuts->createShortcut("l", Mod1Mask, &Actions::layout);
-    _main_shortcuts->createShortcut("r", Mod1Mask, &Actions::rotate);
-    _main_shortcuts->createShortcut("KP_Left", Mod1Mask, &Actions::focusLeft);
-    _main_shortcuts->createShortcut("KP_Right", Mod1Mask, &Actions::focusRight);
-    _main_shortcuts->createShortcut("KP_Up", Mod1Mask, &Actions::focusUp);
-    _main_shortcuts->createShortcut("KP_Down", Mod1Mask, &Actions::focusDown);
-    _main_shortcuts->createShortcut("t", Mod1Mask, &Actions::runTerminal);
-    _main_shortcuts->createShortcut("d", Mod1Mask, &Actions::redraw);
-    _main_shortcuts->createShortcut("comma", Mod1Mask, &Actions::focusPrevClient);
-    _main_shortcuts->createShortcut("period", Mod1Mask, &Actions::focusNextClient);
-    _main_shortcuts->createShortcut("KP_Left", Mod1Mask | ShiftMask, &Actions::moveClientLeft);
-    _main_shortcuts->createShortcut("KP_Right", Mod1Mask | ShiftMask, &Actions::moveClientRight);
-    _main_shortcuts->createShortcut("KP_Up", Mod1Mask | ShiftMask, &Actions::moveClientUp);
-    _main_shortcuts->createShortcut("KP_Down", Mod1Mask | ShiftMask, &Actions::moveClientDown);
-    _main_shortcuts->createShortcut("c", Mod1Mask, &Actions::deleteEmptyContainers);
-    _main_shortcuts->createShortcut("F2", Mod1Mask, &Actions::runProgram);
-
-    _main_shortcuts->createShortcut("m", Mod1Mask, &Actions::toggleMaximize);
-    _main_shortcuts->createShortcut("e", Mod1Mask, &Actions::toggleExpanding);
-    _main_shortcuts->createShortcut("e", ControlMask | Mod1Mask, &Actions::toggleParentExpanding);
-
-    _main_shortcuts->createShortcut("KP_Right", ControlMask | Mod1Mask, &Actions::incWidth);
-    _main_shortcuts->createShortcut("KP_Left", ControlMask | Mod1Mask, &Actions::decWidth);
-    _main_shortcuts->createShortcut("KP_Down", ControlMask | Mod1Mask, &Actions::incHeight);
-    _main_shortcuts->createShortcut("KP_Up", ControlMask | Mod1Mask, &Actions::decHeight);
 }

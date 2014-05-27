@@ -219,7 +219,7 @@ bool X11Application::init()
 
     XSync(_dpy, false);
 
-    initShortcuts();
+    Application::init();
 
     _monitor = new Monitor();
     _monitor->setSize(root_attr.width, root_attr.height);
@@ -242,6 +242,8 @@ bool X11Application::init()
 void X11Application::shutdown()
 {
     grabServer();
+
+    Application::shutdown();
 
     //FIXME delete root container
 

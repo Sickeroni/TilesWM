@@ -12,7 +12,9 @@ client_container \
 client \
 monitor \
 application \
-actions
+actions \
+mode \
+mode_default
 
 TTMWM_X11_SRCS := \
 x11_icon \

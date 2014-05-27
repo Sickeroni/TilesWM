@@ -4,6 +4,8 @@
 #include "monitor.h"
 #include "rect.h"
 
+#include <cstddef>
+
 class ContainerContainer;
 class ClientContainer;
 class Client;
@@ -33,6 +35,7 @@ public:
     }
     void globalToLocal(int &x, int &y);
     Mode *mode();
+    size_t modeIndex() { return _mode; }
 
 private:
     Rect _rect;
@@ -40,6 +43,7 @@ private:
     //ContainerContainer *_dock
     ContainerContainer *_root_container;
     bool _maximized;
+    size_t _mode = 0;
 };
 
 #endif // __WORKSPACE_H__

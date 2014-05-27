@@ -386,5 +386,9 @@ void redraw()
     Application::activeWorkspace()->rootContainer()->redrawAll();
 }
 
+void quit()
+{
+    Application::self()->requestQuit();
+}
 
 } // namespace Actions

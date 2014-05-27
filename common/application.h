@@ -1,12 +1,16 @@
 #ifndef __APPLICATION_H__
 #define __APPLICATION_H__
 
+#include <vector>
+#include <cstddef>
+
 class Workspace;
 class ContainerContainer;
 class ClientContainer;
 class Client;
 class Monitor;
 class ShortcutSet;
+class Mode;
 
 class Application
 {
@@ -25,12 +29,15 @@ public:
     virtual ClientContainer *createClientContainer() = 0;
     virtual void setActiveMonitor(Monitor *monitor) = 0;
     virtual void setFocus(Client *client) = 0;
+    virtual ShortcutSet *createShortcutSet() = 0;
+    virtual void requestQuit() = 0;
 
     Layer activeLayer() { return LAYER_TILED; } // HACK
     void setActiveLayer(Layer layer) {
         //FIXME
     }
     ShortcutSet *mainShortcuts() { return _main_shortcuts; }
+    Mode *mode(size_t index) { return _modes[index]; }
 
     static Application *self() { return _self; }
 
@@ -43,11 +50,11 @@ public:
 protected:
     Application();
 
-    virtual ShortcutSet *createShortcutSet() = 0;
-
-    void initShortcuts();
+    void init();
+    void shutdown();
 
     ShortcutSet *_main_shortcuts = 0;
+    std::vector<Mode*> _modes;
 
     static Application *_self;
 };

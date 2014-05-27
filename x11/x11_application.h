@@ -27,6 +27,10 @@ public:
     virtual ClientContainer *createClientContainer() override;
     virtual void setActiveMonitor(Monitor *monitor) override;
     virtual void setFocus(Client *client) override;
+    virtual ShortcutSet *createShortcutSet() override;
+    virtual void requestQuit() override {
+        _quit_requested = true;
+    }
 
     bool init();
     void shutdown();
@@ -45,10 +49,6 @@ public:
 
     static const char *eventTypeToString(size_t id);
     static const char *errorCodeToString(size_t error_code);
-
-protected:
-    virtual ShortcutSet *createShortcutSet() override;
-
 
 private:
     static void quit(int signum);

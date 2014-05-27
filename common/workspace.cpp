@@ -59,3 +59,8 @@ void Workspace::globalToLocal(int &x, int &y)
     x -= _rect.x;
     y -= _rect.y;
 }
+
+Mode *Workspace::mode()
+{
+    return Application::self()->mode(_mode);
+}
