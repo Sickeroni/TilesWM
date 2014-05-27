@@ -3,14 +3,19 @@
 #include "container_container.h"
 #include "container_layout.h"
 #include "application.h"
+#include "mode.h"
 #include "common.h"
 
 Workspace::Workspace() :
     _monitor(0),
     _root_container(Application::self()->createContainerContainer()),
-    _maximized(0)
+    _maximized(0),
+    _mode(Application::self()->defaultMode())
 {
     _root_container->setWorkspace(this);
+
+    mode()->activate(this);
+
     _root_container->setMapped(true);
 }
 

@@ -38,6 +38,7 @@ public:
     }
     ShortcutSet *mainShortcuts() { return _main_shortcuts; }
     Mode *mode(size_t index) { return _modes[index]; }
+    size_t defaultMode() { return _default_mode; }
 
     static Application *self() { return _self; }
 
@@ -55,6 +56,7 @@ protected:
 
     ShortcutSet *_main_shortcuts = 0;
     std::vector<Mode*> _modes;
+    size_t _default_mode = 0;
 
     static Application *_self;
 };

@@ -13,8 +13,10 @@ client \
 monitor \
 application \
 actions \
+container_util \
 mode \
-mode_default
+mode_default \
+mode_3panel
 
 TTMWM_X11_SRCS := \
 x11_icon \

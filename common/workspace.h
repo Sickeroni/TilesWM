@@ -39,10 +39,10 @@ public:
 
 private:
     Rect _rect;
-    Monitor *_monitor;
+    Monitor *_monitor = 0;
     //ContainerContainer *_dock
-    ContainerContainer *_root_container;
-    bool _maximized;
+    ContainerContainer *_root_container = 0;
+    bool _maximized = false;
     size_t _mode = 0;
 };
 

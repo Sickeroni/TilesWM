@@ -8,6 +8,7 @@
 #include "actions.h"
 #include "client.h"
 #include "mode_default.h"
+#include "mode_3panel.h"
 #include "common.h"
 
 #include <unistd.h>
@@ -49,10 +50,14 @@ void Application::init()
 
     _main_shortcuts->createShortcut("q", Mod1Mask, &Actions::quit);
 
+    _modes.push_back(new Mode3Panel());
     _modes.push_back(new ModeDefault());
 
     for(size_t i = 0; i < _modes.size(); i++)
         _modes[i]->initShortcuts();
+
+    if (_default_mode >= _modes.size())
+        _default_mode = 0;
 }
 
 void Application::shutdown()
