@@ -9,6 +9,7 @@
 #include "workspace.h"
 #include "monitor.h"
 #include "client_container.h"
+#include "config.h"
 #include "common.h"
 
 #include <sys/select.h>
@@ -179,6 +180,8 @@ void X11Application::quit(int signum)
 
 bool X11Application::init()
 {
+    Config::init();
+
     signal(SIGINT, &quit);
 
 //     XSetErrorHandler(&xErrorHandler);
