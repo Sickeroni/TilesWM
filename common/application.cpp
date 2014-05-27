@@ -14,7 +14,6 @@
 #include <unistd.h>
 #include <sys/wait.h>
 #include <stdio.h>
-#include <X11/Xlib.h> //HACK
 
 Application *Application::_self = 0;
 
@@ -33,19 +32,19 @@ void Application::init()
 {
     _main_shortcuts = createShortcutSet();
 
-    _main_shortcuts->createShortcut("l", Mod1Mask, &Actions::layout);
-    _main_shortcuts->createShortcut("r", Mod1Mask, &Actions::rotate);
-    _main_shortcuts->createShortcut("KP_Left", Mod1Mask, &Actions::focusLeft);
-    _main_shortcuts->createShortcut("KP_Right", Mod1Mask, &Actions::focusRight);
-    _main_shortcuts->createShortcut("KP_Up", Mod1Mask, &Actions::focusUp);
-    _main_shortcuts->createShortcut("KP_Down", Mod1Mask, &Actions::focusDown);
-    _main_shortcuts->createShortcut("t", Mod1Mask, &Actions::runTerminal);
-    _main_shortcuts->createShortcut("d", Mod1Mask, &Actions::redraw);
-    _main_shortcuts->createShortcut("comma", Mod1Mask, &Actions::focusPrevClient);
-    _main_shortcuts->createShortcut("period", Mod1Mask, &Actions::focusNextClient);
-    _main_shortcuts->createShortcut("F2", Mod1Mask, &Actions::runProgram);
-    _main_shortcuts->createShortcut("m", ControlMask, &Actions::changeMode);
-    _main_shortcuts->createShortcut("q", Mod1Mask, &Actions::quit);
+    _main_shortcuts->createShortcut("MOD1+l", &Actions::layout);
+    _main_shortcuts->createShortcut("MOD1+r", &Actions::rotate);
+    _main_shortcuts->createShortcut("MOD1+KP_Left", &Actions::focusLeft);
+    _main_shortcuts->createShortcut("MOD1+KP_Right", Actions::focusRight);
+    _main_shortcuts->createShortcut("MOD1+KP_Up", &Actions::focusUp);
+    _main_shortcuts->createShortcut("MOD1+KP_Down", &Actions::focusDown);
+    _main_shortcuts->createShortcut("MOD1+t", &Actions::runTerminal);
+    _main_shortcuts->createShortcut("MOD1+d", &Actions::redraw);
+    _main_shortcuts->createShortcut("MOD1+comma", &Actions::focusPrevClient);
+    _main_shortcuts->createShortcut("MOD1+period", &Actions::focusNextClient);
+    _main_shortcuts->createShortcut("MOD1+F2", &Actions::runProgram);
+    _main_shortcuts->createShortcut("CTRL+m", &Actions::changeMode);
+    _main_shortcuts->createShortcut("MOD1+q", &Actions::quit);
 
     _modes.push_back(new ModeDefault());
     _modes.push_back(new Mode3Panel());

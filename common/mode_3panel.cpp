@@ -9,8 +9,6 @@
 #include "application.h"
 #include "common.h"
 
-#include <X11/Xlib.h> //HACK
-
 using namespace ContainerUtil;
 
 void Mode3Panel::activate(Workspace *workspace)
@@ -32,18 +30,18 @@ void Mode3Panel::activate(Workspace *workspace)
 
 void Mode3Panel::initShortcuts()
 {
-    shortcuts()->createShortcut("KP_Left", Mod1Mask | ShiftMask, &moveClientLeft);
-    shortcuts()->createShortcut("KP_Right", Mod1Mask | ShiftMask, &moveClientRight);
-    shortcuts()->createShortcut("KP_Up", Mod1Mask | ShiftMask, &moveClientUp);
-    shortcuts()->createShortcut("KP_Down", Mod1Mask | ShiftMask, &moveClientDown);
+    shortcuts()->createShortcut("SHIFT+MOD1+KP_Left", &moveClientLeft);
+    shortcuts()->createShortcut("SHIFT+MOD1+KP_Right", &moveClientRight);
+    shortcuts()->createShortcut("SHIFT+MOD1+KP_Up", &moveClientUp);
+    shortcuts()->createShortcut("SHIFT+MOD1+KP_Down", &moveClientDown);
 
-    shortcuts()->createShortcut("KP_Right", ControlMask | Mod1Mask, &moveHSplitRight);
-    shortcuts()->createShortcut("KP_Left", ControlMask | Mod1Mask, &moveHSplitLeft);
-    shortcuts()->createShortcut("KP_Down", ControlMask | Mod1Mask, &moveVSplitDown);
-    shortcuts()->createShortcut("KP_Up", ControlMask | Mod1Mask, &moveVSplitUp);
+    shortcuts()->createShortcut("CTRL+MOD1+KP_Right", &moveHSplitRight);
+    shortcuts()->createShortcut("CTRL+MOD1+KP_Left", &moveHSplitLeft);
+    shortcuts()->createShortcut("CTRL+MOD1+KP_Down", &moveVSplitDown);
+    shortcuts()->createShortcut("CTRL+MOD1+KP_Up", &moveVSplitUp);
 
-    shortcuts()->createShortcut("e", Mod1Mask, &togglePrimaryExpanding);
-    shortcuts()->createShortcut("e", ControlMask | Mod1Mask, &toggleSecondaryExpanding);
+    shortcuts()->createShortcut("MOD1+e", &togglePrimaryExpanding);
+    shortcuts()->createShortcut("CTRL+MOD1+e", &toggleSecondaryExpanding);
 }
 
 void Mode3Panel::tileClient(Client *client, ContainerContainer *root_container)

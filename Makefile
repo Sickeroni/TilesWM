@@ -2,6 +2,7 @@ include make_conf
 
 
 LIBCOMMON_SRCS := \
+string_util \
 container_container_layout \
 client_container_layout \
 theme \

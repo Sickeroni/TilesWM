@@ -7,8 +7,6 @@
 #include "shortcut_set.h"
 #include "application.h"
 
-#include <X11/Xlib.h> //HACK
-
 using namespace ContainerUtil;
 
 void ModeDefault::activate(Workspace *workspace)
@@ -17,22 +15,22 @@ void ModeDefault::activate(Workspace *workspace)
 
 void ModeDefault::initShortcuts()
 {
-    shortcuts()->createShortcut("KP_Left", Mod1Mask | ShiftMask, &moveClientLeft);
-    shortcuts()->createShortcut("KP_Right", Mod1Mask | ShiftMask, &moveClientRight);
-    shortcuts()->createShortcut("KP_Up", Mod1Mask | ShiftMask, &moveClientUp);
-    shortcuts()->createShortcut("KP_Down", Mod1Mask | ShiftMask, &moveClientDown);
-    shortcuts()->createShortcut("c", Mod1Mask, &deleteEmptyContainers);
+    shortcuts()->createShortcut("SHIFT+MOD1+KP_Left", &moveClientLeft);
+    shortcuts()->createShortcut("SHIFT+MOD1+KP_Right", &moveClientRight);
+    shortcuts()->createShortcut("SHIFT+MOD1+KP_Up", &moveClientUp);
+    shortcuts()->createShortcut("SHIFT+MOD1+KP_Down", moveClientDown);
+    shortcuts()->createShortcut("MOD1+c", &deleteEmptyContainers);
 
-    shortcuts()->createShortcut("e", Mod1Mask, &toggleExpanding);
-    shortcuts()->createShortcut("e", ControlMask | Mod1Mask, &toggleParentExpanding);
+    shortcuts()->createShortcut("MOD1+e", &toggleExpanding);
+    shortcuts()->createShortcut("CTRL+MOD1+e", &toggleParentExpanding);
 
-    shortcuts()->createShortcut("KP_Right", ControlMask | Mod1Mask, &incWidth);
-    shortcuts()->createShortcut("KP_Left", ControlMask | Mod1Mask, &decWidth);
-    shortcuts()->createShortcut("KP_Down", ControlMask | Mod1Mask, &incHeight);
-    shortcuts()->createShortcut("KP_Up", ControlMask | Mod1Mask, &decHeight);
+    shortcuts()->createShortcut("CTRL+MOD1+KP_Right", &incWidth);
+    shortcuts()->createShortcut("CTRL+MOD1+KP_Left", &decWidth);
+    shortcuts()->createShortcut("CTRL+MOD1+KP_Down", &incHeight);
+    shortcuts()->createShortcut("CTRL+MOD1+KP_Up", &decHeight);
 
-    shortcuts()->createShortcut("e", Mod1Mask, &toggleExpanding);
-    shortcuts()->createShortcut("e", ControlMask | Mod1Mask, &toggleParentExpanding);
+    shortcuts()->createShortcut("MOD1+e", &toggleExpanding);
+    shortcuts()->createShortcut("CTRL+MOD1+e", &toggleParentExpanding);
 
 }
 

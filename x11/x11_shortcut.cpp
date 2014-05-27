@@ -42,12 +42,9 @@ X11Shortcut::KeyGrab::~KeyGrab()
                mod_mask, X11Application::root());
 }
 
-
-X11Shortcut::X11Shortcut(const char *key_sym_str, ModMask mod_mask, ShortcutSet::HandlerFunc handler_func) :
+X11Shortcut::X11Shortcut(KeySym key_sym, ModMask mod_mask, ShortcutSet::HandlerFunc handler_func) :
     _handler_func(handler_func)
 {
-    KeySym key_sym = XStringToKeysym(key_sym_str);
-
     _key_grab = findKeyGrab(key_sym, mod_mask);
 
     if (!_key_grab) {

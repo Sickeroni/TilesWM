@@ -5,6 +5,7 @@
 #include "shortcut_set.h"
 #include "x11_shortcut.h"
 
+#include <string>
 
 class X11ShortcutSet final : public ShortcutSet
 {
@@ -13,8 +14,7 @@ class X11ShortcutSet final : public ShortcutSet
 public:
     ~X11ShortcutSet();
 
-    virtual void createShortcut(const char *key_sym, X11Shortcut::ModMask mod_mask,
-                                HandlerFunc handler_func) override;
+    virtual void createShortcut(std::string key_sequence, HandlerFunc handler_func) override;
 
     const X11Shortcut::List &shortcuts() { return _shortcuts; }
 };

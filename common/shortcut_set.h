@@ -1,6 +1,8 @@
 #ifndef __SHORTCUT_SET_H__
 #define __SHORTCUT_SET_H__
 
+#include <string>
+
 class ShortcutSet
 {
 public:
@@ -8,9 +10,8 @@ public:
 
     typedef void (*HandlerFunc)();
 
-    virtual void createShortcut(const char *key_sym, unsigned int mod_mask,
-                                HandlerFunc handler_func) = 0;
-
+    // key_sequence: a backend-specific string based representation of a key sequence
+    virtual void createShortcut(std::string key_sequence, HandlerFunc handler_func) = 0;
 };
 
 #endif

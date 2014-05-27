@@ -6,6 +6,7 @@
 #include <X11/Xlib.h>
 
 #include <list>
+#include <string>
 
 class X11Shortcut
 {
@@ -13,7 +14,7 @@ public:
     typedef unsigned int ModMask;
     typedef std::list<X11Shortcut*> List;
 
-    X11Shortcut(const char *key_sym_str, ModMask mod_mask, ShortcutSet::HandlerFunc handler_func);
+    X11Shortcut(KeySym key_sym, ModMask mod_mask, ShortcutSet::HandlerFunc handler_func);
     ~X11Shortcut();
 
     static bool handleKeyPress(const XKeyEvent &ev);
