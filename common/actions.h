@@ -7,22 +7,6 @@ namespace Actions
     void runProgram();
 
     void toggleMaximize();
-    void toggleExpanding();
-    void toggleParentExpanding();
-
-    void incExtraSpace();
-    void decExtraSpace();
-    void resetExtraSpace();
-
-    void incWidth();
-    void decWidth();
-    void incHeight();
-    void decHeight();
-
-    void moveClientLeft();
-    void moveClientRight();
-    void moveClientUp();
-    void moveClientDown();
 
     void focusPrevClient();
     void focusNextClient();
@@ -31,8 +15,6 @@ namespace Actions
     void focusRight();
     void focusUp();
     void focusDown();
-
-    void deleteEmptyContainers();
 
     void redraw();
     void layout();

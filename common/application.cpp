@@ -44,10 +44,6 @@ void Application::init()
     _main_shortcuts->createShortcut("comma", Mod1Mask, &Actions::focusPrevClient);
     _main_shortcuts->createShortcut("period", Mod1Mask, &Actions::focusNextClient);
     _main_shortcuts->createShortcut("F2", Mod1Mask, &Actions::runProgram);
-
-    _main_shortcuts->createShortcut("e", Mod1Mask, &Actions::toggleExpanding);
-    _main_shortcuts->createShortcut("e", ControlMask | Mod1Mask, &Actions::toggleParentExpanding);
-
     _main_shortcuts->createShortcut("q", Mod1Mask, &Actions::quit);
 
     _modes.push_back(new Mode3Panel());

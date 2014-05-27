@@ -15,85 +15,6 @@ namespace Actions
 {
 
 
-void moveClient(Direction direction)
-{
-
-    ClientContainer *container = Application::activeClientContainer();
-    if (!container)
-        return;
-
-    assert(container->workspace() == Application::activeWorkspace());
-    assert(container->parent());
-
-    Client *client = container->activeClient();
-    if (!client)
-        return;
-
-    assert(client->container() == container);
-
-    if (container->workspace()->maximized()) //FIXME
-        return;
-
-    if (!client->isMapped()) //FIXME is this ok ?
-        return;
-
-    bool backward = !isForwardDirection(direction);
-
-    ClientContainer *target = 0;
-
-    if (container->parent()) {
-        if (orientationOfDirection(direction) == container->parent()->orientation()) { // easy case
-            if (container->numElements() > 1) // only create new direct sibling if container doesn't become empty
-                target = getSibling(container, backward, true);
-            else
-                target = getSibling(container, backward, false);
-        }
-
-        else { // difficult case:
-                 // if client container becomes empty -> use sibling of parent container;
-                 // else: 1. replace this with new parent container; 2. add this and new client container to parent created in step 1
-
-            if (container->numElements() <= 1) // cant't split - use sibling of parent container
-                target = getSibling(container->parent(), backward, true);
-            else { // split this
-                target = splitContainer(container, backward);
-
-                if (!target) { // split failed - maximum hierarchy depth exceeded ?
-                    target = getSibling(container->parent(), backward, true);
-                }
-            }
-        }
-    }
-
-    if (target) {
-        container->removeChild(client);
-        int index = target->addChild(client);
-        target->setActiveChild(index);
-        target->makeActive();
-        Application::self()->setFocus(client);
-    }
-}
-
-void moveClientLeft()
-{
-    moveClient(LEFT);
-}
-
-void moveClientRight()
-{
-    moveClient(RIGHT);
-}
-
-void moveClientUp()
-{
-    moveClient(UP);
-}
-
-void moveClientDown()
-{
-    moveClient(DOWN);
-}
-
 void focusPrevChild(ContainerContainer *container)
 {
     if (container->activeChildIndex() != INVALID_INDEX) {
@@ -194,11 +115,6 @@ void focusNextClient()
     }
 }
 
-void deleteEmptyContainers()
-{
-    Application::activeWorkspace()->rootContainer()->deleteEmptyChildren();
-}
-
 void runTerminal()
 {
     Application::runProgram("/usr/bin/xterm");
@@ -214,67 +130,6 @@ void toggleMaximize()
     debug;
     bool maximized = Application::activeWorkspace()->maximized();
     Application::activeWorkspace()->setMaximized(!maximized);
-}
-
-void toggleExpanding()
-{
-    if (ClientContainer *c = Application::activeClientContainer())
-        c->enableFixedSize(!c->isFixedSize());
-}
-
-void toggleParentExpanding()
-{
-    if (ClientContainer *c = Application::activeClientContainer())
-        c->parent()->enableFixedSize(!c->parent()->isFixedSize());
-}
-
-void incExtraSpace()
-{
-//         Application::activeClientContainer()->parent()->incAvailableSpacePortion(Application::activeClientContainer(), 100);
-}
-
-void decExtraSpace()
-{
-//         Application::activeClientContainer()->parent()->decAvailableSpacePortion(Application::activeClientContainer(), 100);
-//         Application::activeClientContainer()->decCustomSize();
-}
-
-void resetExtraSpace()
-{
-//         Application::activeClientContainer()->setCustomSizeActive(false);
-}
-
-void changeSize(bool horizontal, int delta)
-{
-    if (Container *c = Application::activeClientContainer()) {
-        Container *target = (c->parent()->isHorizontal() == horizontal) ? c : c->parent();
-        if (target->isFixedSize()) {
-            if (horizontal)
-                target->setFixedWidth(target->fixedWidth() + delta);
-            else
-                target->setFixedHeight(target->fixedHeight() + delta);
-        }
-    }
-}
-
-void incWidth()
-{
-    changeSize(true, 100);
-}
-
-void decWidth()
-{
-    changeSize(true, -100);
-}
-
-void incHeight()
-{
-    changeSize(false, 100);
-}
-
-void decHeight()
-{
-    changeSize(false, -100);
 }
 
 void rotate()
@@ -299,5 +154,6 @@ void quit()
 {
     Application::self()->requestQuit();
 }
+
 
 } // namespace Actions
