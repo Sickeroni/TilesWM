@@ -12,7 +12,7 @@ public:
     Mode();
     virtual ~Mode();
 
-    virtual void activate(Workspace *workspace) = 0;
+    virtual void activate(Workspace *workspace) = 0; //FIXME workspace -> ContainerContainer ?
     virtual void initShortcuts() = 0;
     virtual void tileClient(Client *client, ContainerContainer *root_container) = 0;
 

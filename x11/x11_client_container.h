@@ -31,6 +31,7 @@ public:
     virtual void redraw() override;
     virtual int addChild(Client *client) override;
     virtual void removeChild(Client *client) override;
+    virtual void removeChildren(std::vector<Client*> &clients) override;
 
     // X11ServerWidget::EventHandler implementaion
     virtual void handleExpose() override {

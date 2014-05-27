@@ -150,6 +150,17 @@ void redraw()
     Application::activeWorkspace()->rootContainer()->redrawAll();
 }
 
+void changeMode()
+{
+    debug;
+    size_t mode =  Application::activeWorkspace()->modeIndex();
+    mode++;
+    if (mode >= Application::self()->numModes())
+        mode = 0;
+
+    Application::activeWorkspace()->setMode(mode);
+}
+
 void quit()
 {
     Application::self()->requestQuit();

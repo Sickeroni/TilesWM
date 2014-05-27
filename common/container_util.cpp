@@ -80,5 +80,16 @@ ClientContainer *splitContainer(ClientContainer *container, bool prepend)
     return new_sibling;
 }
 
+void emptyContainer(ContainerContainer *container, std::vector<Client*> &clients)
+{
+    while(!container->isEmpty()) {
+        if (container->child(0)->isContainerContainer())
+            emptyContainer(static_cast<ContainerContainer*>(container->child(0)), clients);
+        else
+            static_cast<ClientContainer*>(container->child(0))->removeChildren(clients);
+        delete container->removeChild(0);
+    }
+}
+
 
 } // namespace ContainerUtil

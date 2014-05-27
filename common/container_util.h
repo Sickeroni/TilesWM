@@ -3,6 +3,8 @@
 
 #include "container.h"
 
+#include <vector>
+
 namespace ContainerUtil
 {
     enum Direction {
@@ -27,6 +29,8 @@ namespace ContainerUtil
     ClientContainer *getSibling(Container *container, bool get_prev, bool create_new_if_not_existing);
     // return: the newly created sibling
     ClientContainer *splitContainer(ClientContainer *container, bool prepend);
+    // removes all children and puts the de-parented clients into <clients>
+    void emptyContainer(ContainerContainer *container, std::vector<Client*> &clients);
 }
 
 #endif

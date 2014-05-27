@@ -2,6 +2,7 @@
 
 #include "container_container.h"
 #include "container_layout.h"
+#include "container_util.h"
 #include "application.h"
 #include "mode.h"
 #include "common.h"
@@ -68,4 +69,18 @@ void Workspace::globalToLocal(int &x, int &y)
 Mode *Workspace::mode()
 {
     return Application::self()->mode(_mode);
+}
+
+void Workspace::setMode(size_t index)
+{
+    assert(index < Application::self()->numModes());
+
+    std::vector<Client*> clients;
+    ContainerUtil::emptyContainer(_root_container, clients);
+
+    _mode = index;
+    mode()->activate(this);
+
+    for (size_t i = 0; i < clients.size(); i++)
+        mode()->tileClient(clients[i], _root_container);
 }

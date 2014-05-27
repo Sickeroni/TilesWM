@@ -18,7 +18,7 @@ using namespace X11Global;
 
 X11ClientContainer::X11ClientContainer() :
     ClientContainer(),
-    _active_child_index(-1),
+    _active_child_index(INVALID_INDEX),
     _widget(X11ServerWidget::create(0,
                                     Colors::CLIENT_CONTAINER,
                                     this, ButtonPressMask | ExposureMask)),
@@ -40,7 +40,7 @@ X11ClientContainer::~X11ClientContainer()
 
 void X11ClientContainer::clear()
 {
-    _active_child_index = -1;
+    _active_child_index = INVALID_INDEX;
 
     for (int i = 0; i < numElements(); i++)
         _children[i]->setContainer(0);
@@ -122,6 +122,13 @@ void X11ClientContainer::removeClient(X11Client *client)
         activeClient()->raise();
 
     getLayout()->layoutContents();
+}
+
+void X11ClientContainer::removeChildren(std::vector<Client*> &clients)
+{
+    for(size_t i = 0; i < _children.size(); i++)
+        clients.push_back(_children[i]);
+    clear();
 }
 
 void X11ClientContainer::setMapped(bool mapped)

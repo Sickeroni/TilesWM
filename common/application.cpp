@@ -44,10 +44,11 @@ void Application::init()
     _main_shortcuts->createShortcut("comma", Mod1Mask, &Actions::focusPrevClient);
     _main_shortcuts->createShortcut("period", Mod1Mask, &Actions::focusNextClient);
     _main_shortcuts->createShortcut("F2", Mod1Mask, &Actions::runProgram);
+    _main_shortcuts->createShortcut("m", ControlMask, &Actions::changeMode);
     _main_shortcuts->createShortcut("q", Mod1Mask, &Actions::quit);
 
-    _modes.push_back(new Mode3Panel());
     _modes.push_back(new ModeDefault());
+    _modes.push_back(new Mode3Panel());
 
     for(size_t i = 0; i < _modes.size(); i++)
         _modes[i]->initShortcuts();

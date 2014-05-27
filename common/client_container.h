@@ -6,6 +6,8 @@
 #include "metrics.h"
 #include "common.h"
 
+#include <vector>
+
 
 class Canvas;
 class ClientContainerLayout;
@@ -24,6 +26,8 @@ public:
     // return: index of added client
     virtual int addChild(Client *client) = 0;
     virtual void removeChild(Client *client) = 0;
+    // deparents all children and puts them into <clients>
+    virtual void removeChildren(std::vector<Client*> &clients) = 0;
     virtual int maxTextHeight() = 0;
     virtual void redraw() = 0;
 

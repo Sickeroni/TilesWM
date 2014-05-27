@@ -39,6 +39,7 @@ public:
     ShortcutSet *mainShortcuts() { return _main_shortcuts; }
     Mode *mode(size_t index) { return _modes[index]; }
     size_t defaultMode() { return _default_mode; }
+    size_t numModes() { return _modes.size(); }
 
     static Application *self() { return _self; }
 

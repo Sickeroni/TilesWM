@@ -19,6 +19,7 @@ namespace Actions
     void redraw();
     void layout();
     void rotate();
+    void changeMode();
 
     void quit();
 }

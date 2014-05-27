@@ -18,7 +18,7 @@ using namespace X11Global;
 
 X11ContainerContainer::X11ContainerContainer() :
     ContainerContainer(),
-    _active_child_index(-1),
+    _active_child_index(INVALID_INDEX),
     _widget(X11ServerWidget::create(0,
                                     Colors::CONTAINER,
                                     this, ExposureMask))
@@ -44,7 +44,7 @@ int X11ContainerContainer::indexOfChild(const Container *child)
 
 void X11ContainerContainer::clear()
 {
-    _active_child_index = -1;
+    _active_child_index = INVALID_INDEX;
 
     for (int i = 0; i < numElements(); i++)
         delete _children[i];
