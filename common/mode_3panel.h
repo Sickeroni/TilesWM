@@ -26,6 +26,9 @@ private:
     static void moveClientRight();
     static void moveClientUp();
     static void moveClientDown();
+
+    static void togglePrimaryExpanding();
+    static void toggleSecondaryExpanding();
 };
 
 #endif

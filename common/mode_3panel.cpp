@@ -41,6 +41,9 @@ void Mode3Panel::initShortcuts()
     shortcuts()->createShortcut("KP_Left", ControlMask | Mod1Mask, &moveHSplitLeft);
     shortcuts()->createShortcut("KP_Down", ControlMask | Mod1Mask, &moveVSplitDown);
     shortcuts()->createShortcut("KP_Up", ControlMask | Mod1Mask, &moveVSplitUp);
+
+    shortcuts()->createShortcut("e", Mod1Mask, &togglePrimaryExpanding);
+    shortcuts()->createShortcut("e", ControlMask | Mod1Mask, &toggleSecondaryExpanding);
 }
 
 void Mode3Panel::tileClient(Client *client, ContainerContainer *root_container)
@@ -137,7 +140,7 @@ void Mode3Panel::moveSplitter(bool horizontal, int delta)
     ContainerContainer *root = Application::activeWorkspace()->rootContainer();
 
     if (horizontal && root->isHorizontal()) {
-        if (root->numElements()) {
+        if (!root->isEmpty()) {
             Container *c = root->child(0);
 
             c->setFixedWidth(c->fixedWidth() + delta);
@@ -152,5 +155,26 @@ void Mode3Panel::moveSplitter(bool horizontal, int delta)
                 c->child(0)->setFixedHeight(c->child(0)->fixedHeight() + delta);
             }
         }
+    }
+}
+
+void Mode3Panel::togglePrimaryExpanding()
+{
+    ContainerContainer *root = Application::activeWorkspace()->rootContainer();
+
+    if (!root->isEmpty()) {
+        Container *c = root->child(0);
+        c->enableFixedSize(!c->isFixedSize());
+    }
+}
+
+void Mode3Panel::toggleSecondaryExpanding()
+{
+    ContainerContainer *root = Application::activeWorkspace()->rootContainer();
+
+    if ((root->numElements() == 2) && root->child(1)->isContainerContainer()) {
+        ContainerContainer *c = static_cast<ContainerContainer*>(root->child(1));
+        if (!c->isEmpty())
+            c->child(0)->enableFixedSize(!c->child(0)->isFixedSize());
     }
 }
