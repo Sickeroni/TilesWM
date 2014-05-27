@@ -3,6 +3,8 @@
 
 class Workspace;
 class ShortcutSet;
+class Client;
+class ContainerContainer;
 
 class Mode
 {
@@ -12,6 +14,7 @@ public:
 
     virtual void activate(Workspace *workspace) = 0;
     virtual void initShortcuts() = 0;
+    virtual void tileClient(Client *client, ContainerContainer *root_container) = 0;
 
     ShortcutSet *shortcuts() { return _shortcuts; }
 

@@ -2,7 +2,6 @@
 #define __MODE_3PANEL_H__
 
 #include "mode.h"
-#include "container.h"
 #include "container_util.h"
 
 class ClientContainer;
@@ -12,6 +11,7 @@ class Mode3Panel final : public Mode
 public:
     virtual void activate(Workspace *workspace) override;
     virtual void initShortcuts() override;
+    virtual void tileClient(Client *client, ContainerContainer *root_container) override;
 
 private:
     static void moveClient(ContainerUtil::Direction direction);

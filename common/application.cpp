@@ -86,15 +86,7 @@ void Application::tileClient(Client *client)
     assert(!client->container());
     assert(!client->workspace());
 
-    ContainerContainer *root_container = activeWorkspace()->rootContainer();
-
-    if (!root_container->activeClientContainer()) {
-        ClientContainer *c = self()->createClientContainer();
-        int index = root_container->addChild(c);
-        root_container->setActiveChild(index);
-    }
-
-    root_container->activeClientContainer()->addChild(client);
+    activeWorkspace()->mode()->tileClient(client, activeWorkspace()->rootContainer());
 }
 
 void Application::runProgram(const char *path)

@@ -36,6 +36,17 @@ void ModeDefault::initShortcuts()
 
 }
 
+void ModeDefault::tileClient(Client *client, ContainerContainer *root_container)
+{
+    if (!root_container->activeClientContainer()) {
+        ClientContainer *c = Application::self()->createClientContainer();
+        int index = root_container->addChild(c);
+        root_container->setActiveChild(index);
+    }
+
+    root_container->activeClientContainer()->addChild(client);
+}
+
 void ModeDefault::moveClient(Direction direction)
 {
     ClientContainer *container = Application::activeClientContainer();

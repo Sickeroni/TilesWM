@@ -43,6 +43,13 @@ void Mode3Panel::initShortcuts()
     shortcuts()->createShortcut("KP_Up", ControlMask | Mod1Mask, &moveVSplitUp);
 }
 
+void Mode3Panel::tileClient(Client *client, ContainerContainer *root_container)
+{
+    assert(root_container->activeClientContainer());
+
+    root_container->activeClientContainer()->addChild(client);
+}
+
 void Mode3Panel::moveHSplitRight()
 {
     moveSplitter(true, 100);
