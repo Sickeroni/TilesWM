@@ -30,21 +30,21 @@ Application::~Application()
 
 void Application::init()
 {
-    _main_shortcuts = createShortcutSet();
+    _main_shortcuts = createShortcutSet("main");
 
-    _main_shortcuts->createShortcut("MOD1+l", &Actions::layout);
-    _main_shortcuts->createShortcut("MOD1+r", &Actions::rotate);
-    _main_shortcuts->createShortcut("MOD1+KP_Left", &Actions::focusLeft);
-    _main_shortcuts->createShortcut("MOD1+KP_Right", Actions::focusRight);
-    _main_shortcuts->createShortcut("MOD1+KP_Up", &Actions::focusUp);
-    _main_shortcuts->createShortcut("MOD1+KP_Down", &Actions::focusDown);
-    _main_shortcuts->createShortcut("MOD1+t", &Actions::runTerminal);
-    _main_shortcuts->createShortcut("MOD1+d", &Actions::redraw);
-    _main_shortcuts->createShortcut("MOD1+comma", &Actions::focusPrevClient);
-    _main_shortcuts->createShortcut("MOD1+period", &Actions::focusNextClient);
-    _main_shortcuts->createShortcut("MOD1+F2", &Actions::runProgram);
-    _main_shortcuts->createShortcut("CTRL+m", &Actions::changeMode);
-    _main_shortcuts->createShortcut("MOD1+q", &Actions::quit);
+    _main_shortcuts->createAction("layout", &Actions::layout);
+    _main_shortcuts->createAction("rotate", &Actions::rotate);
+    _main_shortcuts->createAction("focusLeft", &Actions::focusLeft);
+    _main_shortcuts->createAction("focusRight", Actions::focusRight);
+    _main_shortcuts->createAction("focusUp", &Actions::focusUp);
+    _main_shortcuts->createAction("focusDown", &Actions::focusDown);
+    _main_shortcuts->createAction("redraw", &Actions::redraw);
+    _main_shortcuts->createAction("focusPrevClient", &Actions::focusPrevClient);
+    _main_shortcuts->createAction("focusNextClient", &Actions::focusNextClient);
+    _main_shortcuts->createAction("runProgram", &Actions::runProgram);
+    _main_shortcuts->createAction("runTerminal", &Actions::runTerminal);
+    _main_shortcuts->createAction("changeMode", &Actions::changeMode);
+    _main_shortcuts->createAction("quit", &Actions::quit);
 
     _modes.push_back(new ModeDefault());
     _modes.push_back(new Mode3Panel());

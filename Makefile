@@ -2,6 +2,7 @@ include make_conf
 
 
 LIBCOMMON_SRCS := \
+shortcut_set \
 config \
 string_util \
 container_container_layout \
@@ -21,6 +22,7 @@ mode_default \
 mode_3panel
 
 TTMWM_X11_SRCS := \
+default_config_values \
 x11_icon \
 x11_canvas \
 x11_container_container \

@@ -3,6 +3,7 @@
 
 #include <vector>
 #include <cstddef>
+#include <string>
 
 class Workspace;
 class ContainerContainer;
@@ -29,7 +30,7 @@ public:
     virtual ClientContainer *createClientContainer() = 0;
     virtual void setActiveMonitor(Monitor *monitor) = 0;
     virtual void setFocus(Client *client) = 0;
-    virtual ShortcutSet *createShortcutSet() = 0;
+    virtual ShortcutSet *createShortcutSet(std::string name) = 0;
     virtual void requestQuit() = 0;
 
     Layer activeLayer() { return LAYER_TILED; } // HACK

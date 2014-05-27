@@ -27,7 +27,7 @@ public:
     virtual ClientContainer *createClientContainer() override;
     virtual void setActiveMonitor(Monitor *monitor) override;
     virtual void setFocus(Client *client) override;
-    virtual ShortcutSet *createShortcutSet() override;
+    virtual ShortcutSet *createShortcutSet(std::string name) override;
     virtual void requestQuit() override {
         _quit_requested = true;
     }

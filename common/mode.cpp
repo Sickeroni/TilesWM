@@ -3,8 +3,8 @@
 #include "application.h"
 #include "shortcut_set.h"
 
-Mode::Mode() :
-    _shortcuts(Application::self()->createShortcutSet())
+Mode::Mode(std::string name) :
+    _shortcuts(Application::self()->createShortcutSet(name))
 {
 }
 

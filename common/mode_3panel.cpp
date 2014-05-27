@@ -11,6 +11,10 @@
 
 using namespace ContainerUtil;
 
+Mode3Panel::Mode3Panel() : Mode("3panel")
+{
+}
+
 void Mode3Panel::activate(Workspace *workspace)
 {
     ContainerContainer *root = workspace->rootContainer();
@@ -30,18 +34,18 @@ void Mode3Panel::activate(Workspace *workspace)
 
 void Mode3Panel::initShortcuts()
 {
-    shortcuts()->createShortcut("SHIFT+MOD1+KP_Left", &moveClientLeft);
-    shortcuts()->createShortcut("SHIFT+MOD1+KP_Right", &moveClientRight);
-    shortcuts()->createShortcut("SHIFT+MOD1+KP_Up", &moveClientUp);
-    shortcuts()->createShortcut("SHIFT+MOD1+KP_Down", &moveClientDown);
+    shortcuts()->createAction("moveClientLeft", &moveClientLeft);
+    shortcuts()->createAction("moveClientRight", &moveClientRight);
+    shortcuts()->createAction("moveClientUp", &moveClientUp);
+    shortcuts()->createAction("moveClientDown", &moveClientDown);
 
-    shortcuts()->createShortcut("CTRL+MOD1+KP_Right", &moveHSplitRight);
-    shortcuts()->createShortcut("CTRL+MOD1+KP_Left", &moveHSplitLeft);
-    shortcuts()->createShortcut("CTRL+MOD1+KP_Down", &moveVSplitDown);
-    shortcuts()->createShortcut("CTRL+MOD1+KP_Up", &moveVSplitUp);
+    shortcuts()->createAction("moveHSplitRight", &moveHSplitRight);
+    shortcuts()->createAction("moveHSplitLeft", &moveHSplitLeft);
+    shortcuts()->createAction("moveVSplitDown", &moveVSplitDown);
+    shortcuts()->createAction("moveVSplitUp", &moveVSplitUp);
 
-    shortcuts()->createShortcut("MOD1+e", &togglePrimaryExpanding);
-    shortcuts()->createShortcut("CTRL+MOD1+e", &toggleSecondaryExpanding);
+    shortcuts()->createAction("togglePrimaryExpanding", &togglePrimaryExpanding);
+    shortcuts()->createAction("toggleSecondaryExpanding", &toggleSecondaryExpanding);
 }
 
 void Mode3Panel::tileClient(Client *client, ContainerContainer *root_container)

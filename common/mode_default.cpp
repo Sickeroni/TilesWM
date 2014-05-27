@@ -9,28 +9,30 @@
 
 using namespace ContainerUtil;
 
+ModeDefault::ModeDefault() : Mode("default")
+{
+}
+
+
 void ModeDefault::activate(Workspace *workspace)
 {
 }
 
 void ModeDefault::initShortcuts()
 {
-    shortcuts()->createShortcut("SHIFT+MOD1+KP_Left", &moveClientLeft);
-    shortcuts()->createShortcut("SHIFT+MOD1+KP_Right", &moveClientRight);
-    shortcuts()->createShortcut("SHIFT+MOD1+KP_Up", &moveClientUp);
-    shortcuts()->createShortcut("SHIFT+MOD1+KP_Down", moveClientDown);
-    shortcuts()->createShortcut("MOD1+c", &deleteEmptyContainers);
+    shortcuts()->createAction("moveClientLeft", &moveClientLeft);
+    shortcuts()->createAction("moveClientRight", &moveClientRight);
+    shortcuts()->createAction("moveClientUp", &moveClientUp);
+    shortcuts()->createAction("moveClientDown", &moveClientDown);
+    shortcuts()->createAction("deleteEmptyContainers", &deleteEmptyContainers);
 
-    shortcuts()->createShortcut("MOD1+e", &toggleExpanding);
-    shortcuts()->createShortcut("CTRL+MOD1+e", &toggleParentExpanding);
+    shortcuts()->createAction("toggleExpanding", &toggleExpanding);
+    shortcuts()->createAction("toggleParentExpanding", &toggleParentExpanding);
 
-    shortcuts()->createShortcut("CTRL+MOD1+KP_Right", &incWidth);
-    shortcuts()->createShortcut("CTRL+MOD1+KP_Left", &decWidth);
-    shortcuts()->createShortcut("CTRL+MOD1+KP_Down", &incHeight);
-    shortcuts()->createShortcut("CTRL+MOD1+KP_Up", &decHeight);
-
-    shortcuts()->createShortcut("MOD1+e", &toggleExpanding);
-    shortcuts()->createShortcut("CTRL+MOD1+e", &toggleParentExpanding);
+    shortcuts()->createAction("incWidth", &incWidth);
+    shortcuts()->createAction("incWidth", &decWidth);
+    shortcuts()->createAction("incWidth", &incHeight);
+    shortcuts()->createAction("incWidth", &decHeight);
 
 }
 

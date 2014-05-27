@@ -7,6 +7,8 @@
 class ModeDefault final : public Mode
 {
 public:
+    ModeDefault();
+
     virtual void activate(Workspace *workspace) override;
     virtual void initShortcuts() override;
     virtual void tileClient(Client *client, ContainerContainer *root_container) override;

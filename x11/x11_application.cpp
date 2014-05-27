@@ -5,6 +5,7 @@
 #include "x11_client.h"
 #include "x11_widget.h"
 #include "x11_shortcut_set.h"
+#include "default_config_values.h"
 
 #include "workspace.h"
 #include "monitor.h"
@@ -181,6 +182,8 @@ void X11Application::quit(int signum)
 bool X11Application::init()
 {
     Config::init();
+
+    setDefaultConfigValues();
 
     signal(SIGINT, &quit);
 
@@ -394,9 +397,9 @@ ClientContainer *X11Application::createClientContainer()
     return new X11ClientContainer();
 }
 
-ShortcutSet *X11Application::createShortcutSet()
+ShortcutSet *X11Application::createShortcutSet(std::string name)
 {
-    return new X11ShortcutSet();
+    return new X11ShortcutSet(name);
 }
 
 X11Client *X11Application::activeClient()

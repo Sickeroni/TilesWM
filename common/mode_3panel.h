@@ -9,6 +9,8 @@ class ClientContainer;
 class Mode3Panel final : public Mode
 {
 public:
+    Mode3Panel();
+
     virtual void activate(Workspace *workspace) override;
     virtual void initShortcuts() override;
     virtual void tileClient(Client *client, ContainerContainer *root_container) override;

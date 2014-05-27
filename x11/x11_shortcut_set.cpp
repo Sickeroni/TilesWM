@@ -3,6 +3,10 @@
 #include "string_util.h"
 #include "common.h"
 
+X11ShortcutSet::X11ShortcutSet(std::string name) : ShortcutSet(name)
+{
+}
+
 X11ShortcutSet::~X11ShortcutSet()
 {
     for(X11Shortcut::List::iterator it = _shortcuts.begin();

@@ -1,6 +1,8 @@
 #ifndef __MODE_H__
 #define __MODE_H__
 
+#include <string>
+
 class Workspace;
 class ShortcutSet;
 class Client;
@@ -9,7 +11,7 @@ class ContainerContainer;
 class Mode
 {
 public:
-    Mode();
+    Mode(std::string name);
     virtual ~Mode();
 
     virtual void activate(Workspace *workspace) = 0; //FIXME workspace -> ContainerContainer ?
