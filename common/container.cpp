@@ -70,7 +70,8 @@ void Container::rotateOrientation()
 
 bool Container::isActive()
 {
-    if (workspace()->isActive() && (Application::self()->activeLayer() == Application::LAYER_TILED)) {
+    if (workspace() && workspace()->isActive() &&
+                (Application::self()->activeLayer() == Application::LAYER_TILED)) {
         if (_parent && (_parent->isActive() && (_parent->activeChild() == this)))
             return true;
         else if (_parent)

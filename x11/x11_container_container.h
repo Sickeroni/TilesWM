@@ -16,7 +16,6 @@ public:
     ~X11ContainerContainer();
 
     virtual void setMapped(bool mapped) override;
-    virtual void redraw() override;
     virtual int numElements() override { return _children.size(); }
     virtual Container *child(int index) override { return _children[index]; }
     virtual bool isEmpty() override { return _children.empty(); }
@@ -28,6 +27,8 @@ public:
     virtual Container *replaceChild(int index, Container *new_child) override;
     virtual Container *removeChild(int index) override;
     virtual void setRect(const Rect &rect) override;
+    virtual int maxTextHeight() const override;
+    virtual void redraw() override;
 
     // X11ServerWidget::EventHandler implementaion
     virtual void handleExpose() override {

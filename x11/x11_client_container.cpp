@@ -138,13 +138,15 @@ void X11ClientContainer::setRect(const Rect &rect)
 
 void X11ClientContainer::redraw()
 {
-    Theme::drawClientContainer(this, currentWidget()->canvas());
+    if (_is_mapped)
+        Theme::drawClientContainer(this, currentWidget()->canvas());
 }
 
 
 void X11ClientContainer::reparent(X11ContainerContainer *p)
 {
     assert(!_workspace);
+    assert(! (_parent && p) );
 
     _parent = p;
 
@@ -157,7 +159,10 @@ void X11ClientContainer::reparent(X11ContainerContainer *p)
 
 void X11ClientContainer::applyMapState()
 {
-    if (!_is_mapped) {
+    printvar(_is_mapped);
+    printvar(_workspace);
+
+    if (!_is_mapped || !workspace()) {
         _widget->unmap();
         _minimized_widget->unmap();
     } else if (isMinimized()) {
@@ -178,7 +183,7 @@ void X11ClientContainer::handleClientMap(X11Client *client)
 {
     if (!activeClient()) {
         int index = indexOfChild(client);
-        assert(-1 < index);
+        assert(index != INVALID_INDEX);
         setActiveChild(index);
     }
     getLayout()->layoutContents();

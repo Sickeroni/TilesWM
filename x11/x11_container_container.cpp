@@ -76,6 +76,7 @@ int X11ContainerContainer::addChild(Container *container)
     _children.push_back(container);
     printvar(numElements());
 
+    container->handleMaximizedChanged();
     container->setMapped(true);
 
     getLayout()->layoutContents();
@@ -92,6 +93,7 @@ void X11ContainerContainer::insertChild(Container *container, int insert_pos)
     assert(insert_pos <= numElements());
     _children.insert(_children.begin() + insert_pos, container);
 
+    container->handleMaximizedChanged();
     container->setMapped(true);
 
     getLayout()->layoutContents();
@@ -105,11 +107,14 @@ Container *X11ContainerContainer::replaceChild(int index, Container *new_child)
     Container *old_child = _children[index];
 
     old_child->setMapped(false);
+    old_child->handleMaximizedChanged();
 
     reparentContainer(old_child, 0);
     reparentContainer(new_child, this);
 
     _children[index] = new_child;
+
+    new_child->handleMaximizedChanged();
     new_child->setMapped(true);
 
     getLayout()->layoutContents();
@@ -123,6 +128,7 @@ Container *X11ContainerContainer::removeChild(int index)
 
     Container *child = _children[index];
 
+    child->handleMaximizedChanged();
     child->setMapped(false);
 
     reparentContainer(child, 0);
@@ -155,7 +161,7 @@ void X11ContainerContainer::setActiveChild(int index)
         if (_active_child_index != INVALID_INDEX)
             _children[_active_child_index]->handleActiveChanged();
 
-        if (workspace()->maximized() && isActive())
+        if (workspace() && workspace()->maximized() && isActive())
             getLayout()->layoutContents();
     }
 
@@ -178,12 +184,14 @@ void X11ContainerContainer::setRect(const Rect &rect)
 
 void X11ContainerContainer::redraw()
 {
-    Theme::drawContainerContainer(this, _widget->canvas());
+    if (_widget->isMapped())
+        Theme::drawContainerContainer(this, _widget->canvas());
 }
 
 void X11ContainerContainer::reparent(X11ContainerContainer *p)
 {
     assert(!_workspace);
+    assert(! (_parent && p) );
 
     _parent = p;
 
@@ -191,4 +199,9 @@ void X11ContainerContainer::reparent(X11ContainerContainer *p)
     if (p)
         parent_widget = p->widget();
     _widget->reparent(parent_widget);
+}
+
+int X11ContainerContainer::maxTextHeight() const
+{
+    return _widget->canvas()->maxTextHeight();
 }

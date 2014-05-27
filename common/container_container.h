@@ -25,6 +25,7 @@ public:
     // de-parents and returns the child at index
     virtual Container *replaceChild(int index, Container *new_child) = 0;
     virtual Container *removeChild(int index) = 0;
+    virtual int maxTextHeight() const = 0;
     virtual void redraw() = 0;
 
     virtual ContainerLayout *getLayout() final;

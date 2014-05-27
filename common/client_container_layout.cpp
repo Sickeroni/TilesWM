@@ -4,6 +4,11 @@
 #include "client.h"
 #include "theme.h"
 
+#include <cmath>
+
+using std::max;
+
+
 ClientContainerLayout::ClientContainerLayout(ClientContainer *container) :
     _container(container)
 {
@@ -63,7 +68,11 @@ int ClientContainerLayout::minHeight()
 int ClientContainerLayout::maxHeight()
 {
     //FIXME
-    return 0;
+
+    if (_container->isEmpty())
+        return 50; //HACK
+    else
+        return 0;
 }
 
 void ClientContainerLayout::layoutContents()
@@ -71,6 +80,9 @@ void ClientContainerLayout::layoutContents()
     if (!_container->isMinimized()) {
         Rect client_rect;
         Theme::getClientContainerClientRect(_container, client_rect);
+
+        client_rect.w = max(10, client_rect.w);
+        client_rect.h = max(10, client_rect.h);
 
         //FIXME only resize active client ?
             //problem with that: on X11 the other clients are visible too

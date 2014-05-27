@@ -49,7 +49,7 @@ int ContainerContainerLayout::minHeight()
             height += _container->child(i)->getLayout()->minHeight() + (2 * sizes.child_frame_width);
     }
 
-    height += sizes.title_height + (2 * sizes.frame_width);
+    height += Theme::calcContainerContainerTitlebarHeight(_container) + (2 * sizes.frame_width);
 
     return height;
 }
@@ -124,7 +124,7 @@ void ContainerContainerLayout::layoutContents()
         return;
 
     Rect client_rect;
-    Theme::getContainerContainerClientRect(_container->rect(), client_rect);
+    Theme::getContainerContainerClientRect(_container, _container->rect(), client_rect);
 
     if (!client_rect.w || !client_rect.h)
         return;

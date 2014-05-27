@@ -2,6 +2,7 @@
 
 #include "container_container.h"
 #include "client_container.h"
+#include "workspace.h"
 #include "client.h"
 #include "icon.h"
 #include "canvas.h"
@@ -10,6 +11,9 @@
 #include "common.h"
 
 #include <sstream>
+#include <cmath>
+
+using std::max;
 
 
 namespace Theme {
@@ -27,7 +31,7 @@ struct ClientContainerSizesInternal
 
 const ContainerContainerSizes _containerContainerSizes = {
     .child_frame_width = 10,
-    .title_height = 10,
+//     .title_height = 10,
     .frame_width = 10
 };
 
@@ -55,17 +59,24 @@ const ClientContainerSizes &clientContainerSizes()
     return _clientContainerSizes;
 }
 
+int calcContainerContainerTitlebarHeight(const ContainerContainer *container)
+{
+    return container->maxTextHeight() + 4; //FIXME
+}
 
 void drawContainerContainer(ContainerContainer *container, Canvas *canvas)
 {
     const ContainerContainerSizes &sizes = _containerContainerSizes;
+    const int title_height = calcContainerContainerTitlebarHeight(container);
 
     Rect bg_rect = container->rect();
     bg_rect.setPos(0, 0);
     canvas->erase(bg_rect);
 
-    Rect title_rect(sizes.frame_width - 2, sizes.frame_width - 2,
-                    container->width() - 4 - (2 * sizes.frame_width), sizes.title_height);
+    Rect title_rect(sizes.frame_width + 2,
+                    sizes.frame_width + 2,
+                    container->width() - 4 - (2 * sizes.frame_width),
+                    title_height);
 
     std::stringstream title;
 
@@ -78,6 +89,13 @@ void drawContainerContainer(ContainerContainer *container, Canvas *canvas)
         title<<"  - ";
     else
         title<<" <->";
+
+    if (container->isMaximized())
+        title<<" +";
+    else if (container->isMinimized())
+        title<<" -";
+
+    title<<" Mode: "<<container->workspace()->modeIndex();
 
     canvas->drawText(title.str().c_str(),
                      title_rect,
@@ -345,6 +363,9 @@ void getClientContainerClientRect(ClientContainer *container,  Rect &client_rect
     client_rect.y = sizes.frame_width + tabbar_height + gap;
     client_rect.w = container->width() - (2 * sizes.frame_width);
     client_rect.h = container->height() - ((2 * sizes.frame_width) + tabbar_height + gap);
+
+    client_rect.w = max(0, client_rect.w);
+    client_rect.h = max(0, client_rect.h);
 }
 
 

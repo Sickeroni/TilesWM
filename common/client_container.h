@@ -21,11 +21,11 @@ public:
     virtual int activeChildIndex() = 0;
     // doesn't set focus to the client !
     virtual void setActiveChild(int index) = 0;
-    virtual int maxTextHeight() = 0;
-    virtual void redraw() = 0;
     // return: index of added client
     virtual int addChild(Client *client) = 0;
     virtual void removeChild(Client *client) = 0;
+    virtual int maxTextHeight() = 0;
+    virtual void redraw() = 0;
 
     virtual void redrawAll() final;
     virtual ContainerLayout *getLayout() final;
