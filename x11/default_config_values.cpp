@@ -4,7 +4,6 @@
 
 void setDefaultConfigValues()
 {
-    Config::setValue("shortcuts.main.layout", "MOD1+q");
     Config::setValue("shortcuts.main.layout", "MOD1+l");
     Config::setValue("shortcuts.main.rotate", "MOD1+r");
     Config::setValue("shortcuts.main.focusLeft", "MOD1+KP_Left");

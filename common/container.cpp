@@ -1,7 +1,5 @@
 #include "container.h"
 
-#if 1
-
 #include "workspace.h"
 #include "client_container.h"
 #include "container_container.h"
@@ -135,26 +133,6 @@ Workspace *Container::workspace()
         return _workspace;
 }
 
-// int Container::minWidth()
-// {
-//     return minWidthInt();
-// }
-// 
-// int Container::maxWidth()
-// {
-//     return maxWidthInt();
-// }
-// 
-// int Container::minHeight()
-// {
-//     return minHeightInt();
-// }
-// 
-// int Container::maxHeight()
-// {
-//     return maxHeightInt();
-// }
-
 void Container::setFixedWidth(int width)
 {
     _fixed_width = width;
@@ -190,5 +168,3 @@ Client *Container::activeClient()
     else
         return 0;
 }
-
-#endif

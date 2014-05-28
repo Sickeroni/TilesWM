@@ -38,8 +38,6 @@ public:
     void deleteEmptyChildren();
 
     void handleSizeHintsChanged(Container *child);
-//     void incAvailableSpacePortion(Container *child, int pixels);
-//     void decAvailableSpacePortion(Container *child, int pixels);
 
     Container *activeChild() {
         return activeChildIndex() >= 0 ? child(activeChildIndex()) : 0;
@@ -50,10 +48,8 @@ protected:
 
 private:
     void updateDirtyStatus();
-//     int calcAvailableSpace();
 
 //     bool _dirty; // is this container unused or are there unused child containers ?
-//     double _reserved_space;
 
     ContainerContainerLayout *_layout;
 };

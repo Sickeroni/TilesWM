@@ -14,7 +14,6 @@
 
 ContainerContainer::ContainerContainer() : Container(CONTAINER),
 //     _dirty(true)
-//     _reserved_space(0)
     _layout(new ContainerContainerLayout(this))
 {
 }
@@ -98,26 +97,6 @@ void ContainerContainer::deleteEmptyChildren()
     getLayout()->layoutContents();
 }
 
-
-#if 0
-int ContainerContainer::calcAvailableSpace()
-{
-    //FIXME duplicated in layout()
-    Rect client_rect;
-    getClientRect(client_rect);
-
-    int available_space = isHorizontal() ? client_rect.w : client_rect.h;
-
-    for(Container *c = _children.first(); c; c = c->next())
-        available_space -= isHorizontal() ? c->minWidth() : c->minHeight();
-
-    if (available_space < 0)
-        available_space = 0;
-
-    return available_space;
-}
-#endif
-
 #if 0
 void ContainerContainer::setDirty(bool set)
 {
@@ -151,49 +130,3 @@ void ContainerContainer::updateDirtyStatus()
     setDirty(dirty);
 }
 #endif
-
-
-
-// void ContainerContainer::incAvailableSpacePortion(Container *child, int pixels)
-// {
-//     printvar(pixels);
-//     if (pixels <= 0)
-//         return;
-//     if (_reserved_space < 1) {
-//         int available_space = calcAvailableSpace();
-//         printvar(available_space);
-//         double portion_delta = static_cast<double>(pixels) / static_cast<double>(available_space);
-//         printvar(portion_delta);
-//         printvar(_reserved_space);
-//         printvar(_reserved_space + portion_delta);
-//         if (_reserved_space + portion_delta > 1)
-//             portion_delta = (1 - _reserved_space);
-//         printvar(portion_delta);
-//         _reserved_space += portion_delta;
-//         printvar(_reserved_space);
-//         child->setAvailableSpacePortion(child->availableSpacePortion() + portion_delta);
-//         layout();
-//     }
-// }
-// 
-// void ContainerContainer::decAvailableSpacePortion(Container *child, int pixels)
-// {
-//     printvar(pixels);
-//     if (pixels <= 0)
-//         return;
-//     if (_reserved_space > 0 && child->availableSpacePortion() > 0) {
-//         int available_space = calcAvailableSpace();
-//         printvar(available_space);
-//         double portion_delta = static_cast<double>(pixels) / static_cast<double>(available_space);
-//         printvar(portion_delta);
-//         printvar(_reserved_space);
-//         printvar(_reserved_space - portion_delta);
-// //         if (_reserved_space - portion_delta < 0)
-// //             portion_delta -= _reserved_space;
-//         printvar(portion_delta);
-//         _reserved_space -= portion_delta;
-//         printvar(_reserved_space);
-//         child->setAvailableSpacePortion(child->availableSpacePortion() - portion_delta);
-//         layout();
-//     }
-// }

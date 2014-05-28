@@ -44,18 +44,10 @@ public:
     void handleClientFocusChange(Client *client);
     void handleClientSizeHintChanged(Client *client);
 
-//     void incCustomSize()
-//     void decCustomSize();
-//     void setCustomSizeActive(bool active);
-
 protected:
     ClientContainer();
 
 private:
-    // this value is addet to the client-specified minimum size
-    // configurable by user
-//     int _extra_space;
-//     bool _custom_size_active;
     ClientContainerLayout *_layout;
 };
 

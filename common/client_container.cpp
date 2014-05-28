@@ -18,8 +18,6 @@
 
 
 ClientContainer::ClientContainer() : Container(CLIENT),
-//     _extra_space(0),
-//     _custom_size_active(false),
     _layout(new ClientContainerLayout(this))
 {
 }
@@ -57,19 +55,6 @@ void ClientContainer::handleMouseClick(int global_x, int global_y)
         Application::self()->setFocus(child(clicked_tab_index));
     }
 }
-
-// void ClientContainer::setExtraSpace(int space)
-// {
-//     _extra_space = space;
-//     if (_extra_space < 0)
-//         _extra_space = 0;
-//     parent()->layout();
-// }
-
-// void ClientContainer::setCustomSizeActive(bool active)
-// {
-//     _custom_size_active = active;
-// }
 
 void ClientContainer::handleClientFocusChange(Client *client)
 {
