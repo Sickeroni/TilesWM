@@ -32,6 +32,7 @@ void Application::init()
 {
     _main_shortcuts = createShortcutSet("main");
 
+    _main_shortcuts->createAction("toggleMaximize", &Actions::toggleMaximize);
     _main_shortcuts->createAction("layout", &Actions::layout);
     _main_shortcuts->createAction("rotate", &Actions::rotate);
     _main_shortcuts->createAction("focusLeft", &Actions::focusLeft);
