@@ -11,18 +11,13 @@ void Config::init()
     _self = new Config();
 }
 
-const std::string &Config::value(const std::string &key)
+const std::string &Config::valueFromMap(const Map &map, const std::string &key)
 {
     static const std::string empty;
 
-    Map::iterator it = self()->_values.find(key);
-    if (it != self()->_values.end())
+    Map::const_iterator it = map.find(key);
+    if (it != map.end())
         return it->second;
     else
         return empty;
-}
-
-void Config::setValue(const std::string &key, const std::string &value)
-{
-    self()->_values[key] = value;
 }

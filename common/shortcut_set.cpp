@@ -5,8 +5,8 @@
 
 void ShortcutSet::createAction(std::string action_name, HandlerFunc handler_func)
 {
-    std::string key = std::string("shortcuts.") + _name + "." + action_name;
-    std::string key_sequence = Config::value(key);
+    std::string config_key = std::string("shortcuts.") + _name + '.' + action_name;
+    std::string key_sequence = Config::value(config_key);
     if (!key_sequence.empty())
         createShortcut(key_sequence, handler_func);
     else

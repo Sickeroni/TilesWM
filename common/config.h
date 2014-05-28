@@ -7,16 +7,24 @@
 class Config
 {
 public:
-    static const std::string &value(const std::string &key);
-    static void setValue(const std::string &key, const std::string &value);
+    static const std::string &value(const std::string &key) {
+        return valueFromMap(self()->_values, key);
+    }
+    static const std::string &defaultValue(const std::string &key) {
+        return valueFromMap(_default_values, key);
+    }
 
     static Config *self() { return _self; }
     static void init();
 
 private:
     typedef std::unordered_map<std::string, std::string> Map;
-    Map _values;
 
+    static const std::string &valueFromMap(const Map &map, const std::string &key);
+
+    Map _values = _default_values;
+
+    static const Map _default_values;
     static Config *_self;
 };
 
