@@ -3,6 +3,7 @@
 #include "actions.h"
 #include "shortcut_set.h"
 #include "container_container.h"
+#include "container_util.h"
 #include "client_container.h"
 #include "client.h"
 #include "workspace.h"
@@ -18,6 +19,10 @@ Mode3Panel::Mode3Panel() : Mode("3panel")
 void Mode3Panel::activate(Workspace *workspace)
 {
     ContainerContainer *root = workspace->rootContainer();
+
+    std::vector<Client*> clients;
+    ContainerUtil::emptyContainer(root, clients);
+
     assert(root->isEmpty());
 
     ContainerContainer *child = Application::self()->createContainerContainer();
@@ -28,8 +33,13 @@ void Mode3Panel::activate(Workspace *workspace)
 
     root->addChild(Application::self()->createClientContainer());
     root->addChild(child);
-
     root->setActiveChild(0);
+
+    for(size_t i = 0; i < clients.size(); i++)
+        tileClient(clients[i], root);
+
+    if (!root->activeClientContainer()->isEmpty())
+        root->activeClientContainer()->setActiveChild(0);
 }
 
 void Mode3Panel::initShortcuts()

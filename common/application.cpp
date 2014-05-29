@@ -108,3 +108,11 @@ void Application::runProgram(const char *path)
     } else
         cerr<<"ERROR: running "<<path<<": Can't fork.";
 }
+
+void Application::focusActiveClient()
+{
+    //FIXME - tiling layer !
+    ClientContainer *container = activeClientContainer();
+    if (container)
+        self()->setFocus(container->activeClient());
+}

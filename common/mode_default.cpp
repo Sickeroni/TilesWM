@@ -16,6 +16,15 @@ ModeDefault::ModeDefault() : Mode("default")
 
 void ModeDefault::activate(Workspace *workspace)
 {
+    ContainerContainer *root = workspace->rootContainer();
+
+    root->deleteEmptyChildren();
+    if (ClientContainer *client_container = root->activeClientContainer()) {
+        if (!client_container->isEmpty()) {
+            if (!client_container->activeClient())
+                client_container->setActiveChild(0);
+        }
+    }
 }
 
 void ModeDefault::initShortcuts()

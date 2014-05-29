@@ -75,12 +75,8 @@ void Workspace::setMode(size_t index)
 {
     assert(index < Application::self()->numModes());
 
-    std::vector<Client*> clients;
-    ContainerUtil::emptyContainer(_root_container, clients);
-
     _mode = index;
     mode()->activate(this);
 
-    for (size_t i = 0; i < clients.size(); i++)
-        mode()->tileClient(clients[i], _root_container);
+    Application::focusActiveClient();
 }

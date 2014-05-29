@@ -49,6 +49,7 @@ public:
     static ClientContainer *activeClientContainer();
     static void tileClient(Client *client);
     static void runProgram(const char *path);
+    static void focusActiveClient();
 
 protected:
     Application();
