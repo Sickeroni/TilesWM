@@ -229,8 +229,8 @@ bool X11Application::init()
 
     X11Client::init();
 
-    // set focus to the root window initially
-    setFocus(0);
+    // set initial focus
+    focusActiveClient();
 
 //     XFlush(_dpy);
     XSync(_dpy, false);

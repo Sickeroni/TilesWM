@@ -484,8 +484,8 @@ void X11Client::mapInt()
 
         if (container())
             static_cast<X11ClientContainer*>(container())->handleClientMap(this);
-//         else
-//             setFocus(); //FIXME focus model
+
+        Application::focusActiveClient();
     }
 }
 
