@@ -21,15 +21,7 @@ public:
     }
 
     template <typename t>
-    DebugStream &operator<<(t &param) {
-        if (num_items)
-            std::cerr << ' ';
-        std::cerr << param;
-        num_items++;
-        return *this;
-    }
-
-    DebugStream &operator<<(int param) {
+    DebugStream &operator<<(t param) {
         if (num_items)
             std::cerr << ' ';
         std::cerr << param;
