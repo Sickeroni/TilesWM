@@ -696,21 +696,20 @@ void X11Client::refreshFocusState()
 {
     CriticalSection sec;
 
-    //FIXME focus_return is a misleading name
-    Window focus_return;
-    int revert_to_return;
-    XGetInputFocus(dpy(), &focus_return, &revert_to_return);
+    Window focus_holder;
+    int revert_to;
+    XGetInputFocus(dpy(), &focus_holder, &revert_to);
 
     bool focus_changed = false;
 
     if (_has_focus) {
-        if (_widget->wid() != focus_return) {
+        if (_widget->wid() != focus_holder) {
             // we lost focus
             focus_changed = true;
             _has_focus = false;
         } // else: no change
     } else {
-        if (_widget->wid() == focus_return) {
+        if (_widget->wid() == focus_holder) {
             // we got focus
             focus_changed = true;
             _has_focus = true;
@@ -719,8 +718,8 @@ void X11Client::refreshFocusState()
 
     if (!_has_focus && focus_changed) {
         debug<<"client"<<this<<"lost focus";
-        if (focus_return) {
-            Client *c = find(focus_return);
+        if (focus_holder) {
+            Client *c = find(focus_holder);
             debug<<"focus moved to client"<<c;
         }
     }
@@ -740,7 +739,7 @@ void X11Client::refreshFocusState()
 #endif
     }
 
-    if (!focus_return) // we lost focus and no other window is currently focused
+    if (!focus_holder) // we lost focus and no other window is currently focused
         XSetInputFocus(dpy(), X11Application::root(), RevertToNone, CurrentTime);
 
     if (focus_changed && container())
