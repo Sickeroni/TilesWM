@@ -45,6 +45,7 @@ void Application::init()
     _main_shortcuts->createAction("runProgram", &Actions::runProgram);
     _main_shortcuts->createAction("runTerminal", &Actions::runTerminal);
     _main_shortcuts->createAction("changeMode", &Actions::changeMode);
+    _main_shortcuts->createAction("focusActiveClient", &focusActiveClient);
     _main_shortcuts->createAction("quit", &Actions::quit);
 
     _modes.push_back(new ModeDefault());
@@ -113,6 +114,9 @@ void Application::focusActiveClient()
 {
     //FIXME - tiling layer !
     ClientContainer *container = activeClientContainer();
-    if (container)
+    printvar(container);
+    if (container) {
+        printvar(container->activeClient());
         self()->setFocus(container->activeClient());
+    }
 }
