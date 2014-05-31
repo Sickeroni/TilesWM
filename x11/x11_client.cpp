@@ -534,6 +534,8 @@ void X11Client::unmapInt()
         else if(workspace())
             assert(0);
     }
+
+    Application::focusActiveClient();
 }
 
 void X11Client::handleConfigureRequest(const XConfigureRequestEvent &ev)
@@ -994,6 +996,7 @@ bool X11Client::handleEvent(const XEvent &ev)
                     assert(0);
                 delete client;
                 client = 0;
+                Application::focusActiveClient();
                 break;
             case UnmapNotify:
                 if (_dragged == client)
