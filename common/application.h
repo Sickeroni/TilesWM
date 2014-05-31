@@ -50,6 +50,7 @@ public:
     static void tileClient(Client *client);
     static void runProgram(const char *path);
     static void focusActiveClient();
+    static Client *activeClient();
 
 protected:
     Application();

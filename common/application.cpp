@@ -46,6 +46,7 @@ void Application::init()
     _main_shortcuts->createAction("runTerminal", &Actions::runTerminal);
     _main_shortcuts->createAction("changeMode", &Actions::changeMode);
     _main_shortcuts->createAction("focusActiveClient", &focusActiveClient);
+    _main_shortcuts->createAction("closeActiveClient", &Actions::closeActiveClient);
     _main_shortcuts->createAction("quit", &Actions::quit);
 
     _modes.push_back(new ModeDefault());
@@ -119,4 +120,16 @@ void Application::focusActiveClient()
         printvar(container->activeClient());
         self()->setFocus(container->activeClient());
     }
+}
+
+Client *Application::activeClient()
+{
+    if (self()->activeLayer() == LAYER_TILED) {
+        if (activeClientContainer())
+            return activeClientContainer()->activeClient();
+        else
+            return 0;
+    } else
+        return activeWorkspace()->activeClient();
+
 }

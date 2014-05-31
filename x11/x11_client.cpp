@@ -902,6 +902,26 @@ int X11Client::maxTextHeight()
     return _frame->canvas()->maxTextHeight();
 }
 
+void X11Client::requestClose()
+{
+    CriticalSection sec;
+
+    XEvent xev;
+    memset(&xev, 0, sizeof(xev));
+
+    xev.type = ClientMessage;
+
+    XClientMessageEvent &ev = xev.xclient;
+
+    ev.type = ClientMessage;
+    ev.window = _widget->wid();
+    ev.message_type = ATOM(WM_PROTOCOLS);
+    ev.format = 32;
+    ev.data.l[0] = ATOM(WM_DELETE_WINDOW);
+
+    XSendEvent(dpy(), _widget->wid(), false, NoEventMask, &xev);
+}
+
 void X11Client::startDrag(int x, int y)
 {
     //FIXME what if the pointer is already grabbed ?

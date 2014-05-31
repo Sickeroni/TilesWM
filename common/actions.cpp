@@ -161,6 +161,13 @@ void changeMode()
     Application::activeWorkspace()->setMode(mode);
 }
 
+void closeActiveClient()
+{
+    Client *c = Application::activeClient();
+    if (c)
+        c->requestClose();
+}
+
 void quit()
 {
     Application::self()->requestQuit();

@@ -23,6 +23,7 @@ public:
     virtual const Rect &frameRect() = 0;
     virtual bool hasDecoration() = 0;
     virtual int maxTextHeight() = 0;
+    virtual void requestClose() = 0;
 
     Workspace *workspace() { return 0; }
     bool isMapped() { return _is_mapped; }

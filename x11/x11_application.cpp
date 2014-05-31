@@ -389,10 +389,7 @@ ShortcutSet *X11Application::createShortcutSet(std::string name)
 
 X11Client *X11Application::activeClient()
 {
-    if (activeClientContainer())
-        return static_cast<X11Client*>(activeClientContainer()->activeClient());
-    else
-        return static_cast<X11Client*>(activeWorkspace()->activeClient());
+    return static_cast<X11Client*>(Application::activeClient());
 }
 
 void X11Application::setFocus(Client *client)

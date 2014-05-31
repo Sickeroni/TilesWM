@@ -17,6 +17,7 @@ const Config::Map Config::_default_values =
     { "shortcuts.main.changeMode", "CTRL+m" },
     { "shortcuts.main.quit", "MOD1+q" },
     { "shortcuts.main.focusActiveClient", "MOD1+f" },
+    { "shortcuts.main.closeActiveClient", "MOD1+x" },
 
     { "shortcuts.default.moveClientLeft", "SHIFT+MOD1+KP_Left" },
     { "shortcuts.default.moveClientRight", "SHIFT+MOD1+KP_Right" },

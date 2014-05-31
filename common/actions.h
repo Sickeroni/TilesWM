@@ -21,6 +21,8 @@ namespace Actions
     void rotate();
     void changeMode();
 
+    void closeActiveClient();
+
     void quit();
 }
 

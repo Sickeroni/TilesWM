@@ -38,6 +38,7 @@ public:
         return isDialog() || _is_modal;
     }
     virtual int maxTextHeight() override;
+    virtual void requestClose() override;
 
     // X11ServerWidget::EventHandler implementation
     virtual void handleExpose() override;
