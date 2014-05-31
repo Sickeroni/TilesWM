@@ -696,6 +696,7 @@ void X11Client::refreshFocusState()
 {
     CriticalSection sec;
 
+    //FIXME focus_return is a misleading name
     Window focus_return;
     int revert_to_return;
     XGetInputFocus(dpy(), &focus_return, &revert_to_return);
@@ -716,7 +717,13 @@ void X11Client::refreshFocusState()
         } // else: no change
     }
 
-
+    if (!_has_focus && focus_changed) {
+        debug<<"client"<<this<<"lost focus";
+        if (focus_return) {
+            Client *c = find(focus_return);
+            debug<<"focus moved to client"<<c;
+        }
+    }
 
     if (_has_focus && (X11Application::activeClient() != this)) {
     // disable the following block as it may lead to the client repeatedly grabbing focus
@@ -985,6 +992,7 @@ bool X11Client::handleEvent(const XEvent &ev)
             case CreateNotify:
                 abort(); // BAD - CreateNotify for already existing client
             case DestroyNotify:
+                debug<<"DestroyNotify";
                 if (_dragged == client)
                     cancelDrag();
                 _frame_wid_index.erase(client->_frame->wid());
