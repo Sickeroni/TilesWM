@@ -21,10 +21,7 @@ void focusPrevChild(ContainerContainer *container)
         int new_index = container->activeChildIndex() - 1;
         if (new_index >= 0) {
             container->setActiveChild(new_index);
-            if (container->activeClient())
-                Application::self()->setFocus(container->activeClient());
-            else
-                Application::self()->setFocus(0);
+            Application::self()->setFocus(container->activeClient());
         }
     }
 }
@@ -35,10 +32,7 @@ void focusNextChild(ContainerContainer *container)
         int new_index = container->activeChildIndex() + 1;
         if (new_index < container->numElements()) {
             container->setActiveChild(new_index);
-            if (container->activeClient())
-                Application::self()->setFocus(container->activeClient());
-            else
-                Application::self()->setFocus(0);
+            Application::self()->setFocus(container->activeClient());
         }
     }
 }
@@ -94,7 +88,7 @@ void focusPrevClient()
             index--;
             if (index >= 0) {
                 container->setActiveChild(index);
-                Application::self()->setFocus(container->child(index));
+                Application::self()->setFocus(container->activeClient());
             }
         }
     }
@@ -109,7 +103,7 @@ void focusNextClient()
             index++;
             if (index < container->numElements()) {
                 container->setActiveChild(index);
-                Application::self()->setFocus(container->child(index));
+                Application::self()->setFocus(container->activeClient());
             }
         }
     }
