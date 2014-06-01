@@ -44,7 +44,7 @@ public:
     virtual void handleExpose() override;
     virtual void handleButtonPress(const XButtonEvent &ev) override;
 
-    void setFocus();
+    bool setFocus();
     void map();
     void unmap();
     void setContainer(X11ClientContainer *container);

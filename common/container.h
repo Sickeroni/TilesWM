@@ -66,8 +66,6 @@ public:
 
     void makeActive();
 
-    ContainerContainer *root();
-
     Workspace *workspace();
     bool isAncestorOf(Container *container);
     bool isMinimized();

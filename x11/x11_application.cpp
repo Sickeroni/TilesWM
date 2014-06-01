@@ -394,9 +394,7 @@ X11Client *X11Application::activeClient()
 
 void X11Application::setFocus(Client *client)
 {
-    if (client)
-        static_cast<X11Client*>(client)->setFocus();
-    else
+    if (! (client && static_cast<X11Client*>(client)->setFocus()) )
         XSetInputFocus(dpy(), X11Application::root(), RevertToNone, CurrentTime);
 }
 

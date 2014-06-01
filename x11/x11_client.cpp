@@ -120,19 +120,24 @@ Icon *X11Client::icon()
     return _icon;
 }
 
-void X11Client::setFocus()
+bool X11Client::setFocus()
 {
     CriticalSection sec;
 
     refreshMapState();
 
-    assert(isMapped());
     assert(isFloating() || static_cast<X11ClientContainer*>(container())->widget()->isMapped());
     assert(isFloating() || static_cast<X11ContainerContainer*>(container()->parent())->widget()->isMapped());
 
-    if (isFloating() || X11Application::activeRootContainer()->widget()->isMapped())
+    //FIXME use isVisible() as condition
+    if (isMapped() && (isFloating() || 
+            static_cast<X11ContainerContainer*>(container()->workspace()->rootContainer())->widget()->isMapped()))
+    {
         XSetInputFocus(dpy(), _widget->wid(),
                        RevertToNone, CurrentTime);
+        return true;
+    } else
+        return false;
 }
 
 void X11Client::raise()
@@ -847,7 +852,7 @@ void X11Client::refreshIcon()
                 unsigned long size = width * height;
 
                 if ((nitems - 2) < size)
-                    debug<<"bad length for _NET_WM_ICON property.";
+                    debug<<"bad size for _NET_WM_ICON property.";
                 else {
                     delete _icon;
                     _icon = new X11Icon(width, height, _frame,
@@ -884,7 +889,7 @@ void X11Client::handleButtonPress(const XButtonEvent &ev)
 {
     assert(!_dragged);
 
-    if (!container()) {
+    if (!container()) { // for tiled clients the container handles this
         setFocus();
         raise();
         if (ev.button == 1)
