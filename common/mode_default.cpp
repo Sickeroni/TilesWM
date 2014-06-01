@@ -39,9 +39,9 @@ void ModeDefault::initShortcuts()
     shortcuts()->createAction("toggleParentExpanding", &toggleParentExpanding);
 
     shortcuts()->createAction("incWidth", &incWidth);
-    shortcuts()->createAction("incWidth", &decWidth);
-    shortcuts()->createAction("incWidth", &incHeight);
-    shortcuts()->createAction("incWidth", &decHeight);
+    shortcuts()->createAction("decWidth", &decWidth);
+    shortcuts()->createAction("incHeight", &incHeight);
+    shortcuts()->createAction("decHeight", &decHeight);
 
 }
 
