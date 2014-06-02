@@ -52,7 +52,7 @@ void ClientContainer::handleMouseClick(int global_x, int global_y)
     if (clicked_tab_index != INVALID_INDEX) {
         setActiveChild(clicked_tab_index);
         makeActive();
-        Application::self()->setFocus(child(clicked_tab_index));
+        Application::self()->setFocus(activeClient());
     }
 }
 
