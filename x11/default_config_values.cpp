@@ -30,6 +30,7 @@ const Config::Map Config::_default_values =
     { "shortcuts.default.decHeight", "CTRL+MOD1+KP_Up" },
     { "shortcuts.default.toggleExpanding", "MOD1+e" },
     { "shortcuts.default.toggleParentExpanding", "CTRL+MOD1+e" },
+    { "shortcuts.default.setFixedSizeToMinimum", "SHIFT+MOD1+m" },
 
     { "shortcuts.3panel.moveClientLeft", "SHIFT+MOD1+KP_Left" },
     { "shortcuts.3panel.moveClientRight", "SHIFT+MOD1+KP_Right" },

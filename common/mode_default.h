@@ -27,6 +27,7 @@ private:
     static void decWidth();
     static void incHeight();
     static void decHeight();
+    static void setFixedSizeToMinimum();
 };
 
 

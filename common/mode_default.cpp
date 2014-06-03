@@ -43,6 +43,7 @@ void ModeDefault::initShortcuts()
     shortcuts()->createAction("incHeight", &incHeight);
     shortcuts()->createAction("decHeight", &decHeight);
 
+    shortcuts()->createAction("setFixedSizeToMinimum", &setFixedSizeToMinimum);
 }
 
 void ModeDefault::tileClient(Client *client, ContainerContainer *root_container)
@@ -182,4 +183,15 @@ void ModeDefault::incHeight()
 void ModeDefault::decHeight()
 {
     changeSize(false, -100);
+}
+
+void ModeDefault::setFixedSizeToMinimum()
+{
+    if (ClientContainer *container = Application::activeClientContainer()) {
+        if (Client *client = container->activeClient()) {
+            container->setFixedWidth(client->minWidth());
+            container->setFixedHeight(client->minHeight());
+            container->enableFixedSize(true);
+        }
+    }
 }
