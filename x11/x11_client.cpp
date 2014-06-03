@@ -1052,8 +1052,6 @@ bool X11Client::handleEvent(const XEvent &ev)
                 switch (ev.xproperty.atom) {
                 case XA_WM_NORMAL_HINTS:
                     client->refreshSizeHints();
-                    if (client->container())
-                        client->container()->getLayout()->layoutContents();
                     break;
                 case XA_WM_NAME:
                     client->refreshName();

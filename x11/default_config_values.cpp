@@ -24,8 +24,6 @@ const Config::Map Config::_default_values =
     { "shortcuts.default.moveClientUp", "SHIFT+MOD1+KP_Up" },
     { "shortcuts.default.moveClientDown", "SHIFT+MOD1+KP_Down" },
     { "shortcuts.default.deleteEmptyContainers", "MOD1+c" },
-    { "shortcuts.default.toggleExpanding", "MOD1+e" },
-    { "shortcuts.default.toggleParentExpanding", "CTRL+MOD1+e" },
     { "shortcuts.default.incWidth", "CTRL+MOD1+KP_Right" },
     { "shortcuts.default.decWidth", "CTRL+MOD1+KP_Left" },
     { "shortcuts.default.incHeight", "CTRL+MOD1+KP_Down" },
