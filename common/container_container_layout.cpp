@@ -157,9 +157,9 @@ void ContainerContainerLayout::layoutContents()
             if (c->isFixedSize()) {
                 //FIXME - make sure min_size <= c->[maxWidth()|maxHeight()]
                 if (is_horizontal) {
-                    min_size = c->getLayout()->minWidth() + c->fixedWidth();
+                    min_size = c->fixedWidth();
                 } else {
-                    min_size = c->getLayout()->minHeight() + c->fixedHeight();
+                    min_size = c->fixedHeight();
                 }
                 max_size = min_size;
             }
