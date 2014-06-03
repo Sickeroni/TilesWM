@@ -7,8 +7,6 @@
 
 class X11ServerWidget;
 
-#if 1
-
 class X11Widget
 {
 public:
@@ -17,8 +15,6 @@ public:
     static bool handleEvent(const XEvent &ev);
 
     virtual ~X11Widget();
-
-//     virtual bool validate() { return !_is_destroyed; }
 
     Type type() { return _type; }
     const Rect &rect() { return _rect; }
@@ -36,17 +32,11 @@ protected:
     X11Widget(Window wid, Type type, bool is_mapped, const Rect &rect);
 
     Rect _rect;
-//     bool _is_destroyed;
     bool _is_mapped;
 
 private:
-    static void handleCreateNotify(const XCreateWindowEvent &ev);
-
     Window _wid;
     Type _type;
 };
-
-#endif
-
 
 #endif // __X11_WIDGET_H__

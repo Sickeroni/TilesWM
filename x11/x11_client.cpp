@@ -466,7 +466,6 @@ void X11Client::mapInt()
 
         assert(!container());
 
-        //FIXME use Application::manageClient(this)
         if (!isDialog() && !_is_modal) {
             Application::tileClient(this);
         } else {

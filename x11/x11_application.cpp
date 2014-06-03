@@ -102,7 +102,7 @@ const char *X11Application::eventTypeToString(size_t type)
         "GravityNotify",
         "ResizeRequest",
         "CirculateNotify",
-        "   CirculateRequest",
+        "CirculateRequest",
         "PropertyNotify",
         "SelectionClear",
         "SelectionRequest",

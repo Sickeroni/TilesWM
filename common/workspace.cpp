@@ -10,7 +10,7 @@
 Workspace::Workspace() :
     _monitor(0),
     _root_container(Application::self()->createContainerContainer()),
-    _maximized(0),
+    _maximized(false),
     _mode(Application::self()->defaultMode())
 {
     _root_container->setWorkspace(this);

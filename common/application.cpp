@@ -113,7 +113,7 @@ void Application::runProgram(const char *path)
 
 void Application::focusActiveClient()
 {
-    //FIXME - tiling layer !
+    //FIXME - floating layer !
     ClientContainer *container = activeClientContainer();
     printvar(container);
     if (container) {

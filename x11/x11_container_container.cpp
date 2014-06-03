@@ -184,7 +184,7 @@ void X11ContainerContainer::setRect(const Rect &rect)
 
 void X11ContainerContainer::redraw()
 {
-    if (_widget->isMapped())
+    if (_widget->isMapped()) //FIXME use isVisible()
         Theme::drawContainerContainer(this, _widget->canvas());
 }
 
