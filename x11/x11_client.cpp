@@ -199,10 +199,14 @@ void X11Client::setContainer(X11ClientContainer *container)
 
 void X11Client::makeActive()
 {
-    if (container())
+    if (container()) {
         container()->makeActive();
-    else if (workspace())
+        container()->setActiveChild(container()->indexOfChild(this));
+    } else if (workspace()) {
+        //FIXME
+        // workspace->setActiveClient(this);
         workspace()->makeActive();
+    }
 }
 
 void X11Client::init()
