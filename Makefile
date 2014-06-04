@@ -2,6 +2,7 @@ include make_conf
 
 
 LIBCOMMON_SRCS := \
+mouse_handler \
 shortcut_set \
 config \
 string_util \

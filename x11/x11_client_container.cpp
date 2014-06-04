@@ -10,6 +10,7 @@
 #include "workspace.h"
 #include "theme.h"
 #include "colors.h"
+#include "mouse_handler.h"
 #include "common.h"
 
 
@@ -183,7 +184,7 @@ void X11ClientContainer::applyMapState()
 
 void X11ClientContainer::handleButtonPress(const XButtonEvent &ev)
 {
-    handleMouseClick(ev.x, ev.y);
+    MouseHandler::handleClientContainerClick(this, ev.x, ev.y);
 }
 
 void X11ClientContainer::handleClientMap(X11Client *client)
