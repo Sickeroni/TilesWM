@@ -152,21 +152,11 @@ void Mode3Panel::moveSplitter(bool horizontal, int delta)
     ContainerContainer *root = Application::activeWorkspace()->rootContainer();
 
     if (horizontal && root->isHorizontal()) {
-        if (!root->isEmpty()) {
-            Container *c = root->child(0);
-
-            c->setFixedWidth(c->fixedWidth() + delta);
-        }
+        Container *c =  root->child(1);
+        c->setFixedWidth(c->fixedWidth() - delta);
     } else if (!horizontal && root->isHorizontal()) {
-        if (root->numElements() == 2) {
-            if (root->child(1)->isContainerContainer() && root->child(1)->numElements()) {
-
-                ContainerContainer *c = static_cast<ContainerContainer*>(root->child(1));
-
-                printvar(c->child(0)->isFixedSize());
-                c->child(0)->setFixedHeight(c->child(0)->fixedHeight() + delta);
-            }
-        }
+        Container *c = root->child(1)->toContainerContainer()->child(1);
+        c->setFixedHeight(c->fixedHeight() - delta);
     }
 }
 
@@ -174,19 +164,15 @@ void Mode3Panel::togglePrimaryExpanding()
 {
     ContainerContainer *root = Application::activeWorkspace()->rootContainer();
 
-    if (!root->isEmpty()) {
-        Container *c = root->child(0);
-        c->enableFixedSize(!c->isFixedSize());
-    }
+
+    Container *c = root->child(1);
+    c->enableFixedSize(!c->isFixedSize());
 }
 
 void Mode3Panel::toggleSecondaryExpanding()
 {
     ContainerContainer *root = Application::activeWorkspace()->rootContainer();
 
-    if ((root->numElements() == 2) && root->child(1)->isContainerContainer()) {
-        ContainerContainer *c = static_cast<ContainerContainer*>(root->child(1));
-        if (!c->isEmpty())
-            c->child(0)->enableFixedSize(!c->child(0)->isFixedSize());
-    }
+    Container *c = root->child(1)->toContainerContainer()->child(1);
+    c->enableFixedSize(!c->isFixedSize());
 }

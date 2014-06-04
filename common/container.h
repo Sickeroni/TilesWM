@@ -24,6 +24,8 @@ public:
 
     virtual ~Container() {}
 
+    virtual ClientContainer *toClientContainer() { return 0; }
+    virtual ContainerContainer *toContainerContainer() { return 0; }
     virtual int numElements() = 0;
     virtual ClientContainer *activeClientContainer() = 0;
     virtual bool isEmpty() = 0;
