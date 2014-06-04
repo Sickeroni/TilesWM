@@ -42,4 +42,6 @@ const Config::Map Config::_default_values =
     { "shortcuts.3panel.moveVSplitUp", "CTRL+MOD1+KP_Up" },
     { "shortcuts.3panel.togglePrimaryExpanding", "MOD1+e" },
     { "shortcuts.3panel.toggleSecondaryExpanding", "CTRL+MOD1+e" },
+    { "shortcuts.3panel.setPrimarySlaveToMinimum", "CTRL+MOD1+m" },
+    { "shortcuts.3panel.setSecondarySlaveToMinimum", "SHIFT+MOD1+m" },
 };

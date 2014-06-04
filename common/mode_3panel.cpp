@@ -56,6 +56,9 @@ void Mode3Panel::initShortcuts()
 
     shortcuts()->createAction("togglePrimaryExpanding", &togglePrimaryExpanding);
     shortcuts()->createAction("toggleSecondaryExpanding", &toggleSecondaryExpanding);
+
+    shortcuts()->createAction("setPrimarySlaveToMinimum", &setPrimarySlaveToMinimum);
+    shortcuts()->createAction("setSecondarySlaveToMinimum", &setSecondarySlaveToMinimum);
 }
 
 void Mode3Panel::tileClient(Client *client, ContainerContainer *root_container)
@@ -175,4 +178,28 @@ void Mode3Panel::toggleSecondaryExpanding()
 
     Container *c = root->child(1)->toContainerContainer()->child(1);
     c->enableFixedSize(!c->isFixedSize());
+}
+
+void Mode3Panel::setPrimarySlaveToMinimum()
+{
+    ContainerContainer *root = Application::activeWorkspace()->rootContainer();
+
+    ContainerContainer *container = root->child(1)->toContainerContainer();
+    if (Client *client = container->child(0)->toClientContainer()->activeClient()) {
+        container->setFixedWidth(client->minWidth());
+        container->setFixedHeight(client->minHeight());
+        container->enableFixedSize(true);
+    }
+}
+
+void Mode3Panel::setSecondarySlaveToMinimum()
+{
+    ContainerContainer *root = Application::activeWorkspace()->rootContainer();
+
+    ClientContainer *container = root->child(1)->toContainerContainer()->child(1)->toClientContainer();
+    if (Client *client = container->activeClient()) {
+        container->setFixedWidth(client->minWidth());
+        container->setFixedHeight(client->minHeight());
+        container->enableFixedSize(true);
+    }
 }

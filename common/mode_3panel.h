@@ -31,6 +31,9 @@ private:
 
     static void togglePrimaryExpanding();
     static void toggleSecondaryExpanding();
+
+    static void setPrimarySlaveToMinimum();
+    static void setSecondarySlaveToMinimum();
 };
 
 #endif
