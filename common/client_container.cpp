@@ -33,21 +33,14 @@ ContainerLayout *ClientContainer::getLayout()
     return _layout;
 }
 
-void ClientContainer::handleMouseClick(int global_x, int global_y)
+void ClientContainer::handleMouseClick(int x, int y)
 {
     //FIXME move this to mouse handler class
 
-    printvar(global_x);
-    printvar(global_y);
+    printvar(x);
+    printvar(y);
 
-    int local_x = global_x;
-    int local_y = global_y;
-    globalToLocal(local_x, local_y);
-
-    printvar(local_x);
-    printvar(local_y);
-
-    int clicked_tab_index = Theme::getTabAt(local_x, local_y, this);
+    int clicked_tab_index = Theme::getTabAt(x, y, this);
 
     if (clicked_tab_index != INVALID_INDEX) {
         setActiveChild(clicked_tab_index);

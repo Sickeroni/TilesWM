@@ -22,27 +22,6 @@ Container::Container(Type type) :
 {
 }
 
-void Container::localToGlobal(int &x, int &y)
-{
-    x += _rect.x;
-    y += _rect.y;
-
-    if (_parent)
-        _parent->localToGlobal(x, y);
-    else if (workspace())
-        assert(0);
-}
-
-void Container::globalToLocal(int &x, int &y)
-{
-    if (_parent)
-        _parent->globalToLocal(x, y);
-    else if (workspace())
-        workspace()->globalToLocal(x, y);
-    x -= _rect.x;
-    y -= _rect.y;
-}
-
 Container::Orientation Container::orientation()
 {
     if (!_parent)

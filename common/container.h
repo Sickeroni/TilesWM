@@ -81,9 +81,6 @@ public:
 protected:
     Container(Type type);
 
-    void localToGlobal(int &x, int &y);
-    void globalToLocal(int &x, int &y);
-
     static Container *_root;
     static Orientation _root_orientation;
 

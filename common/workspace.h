@@ -33,7 +33,6 @@ public:
     void setMonitor(Monitor *monitor) {
         _monitor = monitor;
     }
-    void globalToLocal(int &x, int &y);
     Mode *mode();
     size_t modeIndex() { return _mode; }
     void setMode(size_t index);

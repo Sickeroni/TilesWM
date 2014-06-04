@@ -40,7 +40,7 @@ public:
         return activeChildIndex() >= 0 ? child(activeChildIndex()) : 0;
     }
 
-    void handleMouseClick(int global_x, int global_y);
+    void handleMouseClick(int x, int y);
     void handleClientUnmap(Client *client);
     void handleClientFocusChange(Client *client);
     void handleClientSizeHintChanged(Client *client);

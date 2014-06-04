@@ -183,7 +183,7 @@ void X11ClientContainer::applyMapState()
 
 void X11ClientContainer::handleButtonPress(const XButtonEvent &ev)
 {
-    handleMouseClick(ev.x_root, ev.y_root);
+    handleMouseClick(ev.x, ev.y);
 }
 
 void X11ClientContainer::handleClientMap(X11Client *client)
