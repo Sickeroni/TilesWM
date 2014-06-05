@@ -36,7 +36,6 @@ public:
     virtual void handleActiveChanged() final;
 
 //     void setDirty(bool set);
-    void deleteEmptyChildren();
 
     void handleSizeHintsChanged(Container *child);
 

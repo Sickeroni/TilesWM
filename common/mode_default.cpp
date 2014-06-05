@@ -18,7 +18,7 @@ void ModeDefault::activate(Workspace *workspace)
 {
     ContainerContainer *root = workspace->rootContainer();
 
-    root->deleteEmptyChildren();
+    deleteEmptyChildren(root);
     if (ClientContainer *client_container = root->activeClientContainer()) {
         if (!client_container->isEmpty()) {
             if (!client_container->activeClient())
@@ -137,7 +137,7 @@ void ModeDefault::moveClientDown()
 
 void ModeDefault::deleteEmptyContainers()
 {
-    Application::activeWorkspace()->rootContainer()->deleteEmptyChildren();
+    deleteEmptyChildren(Application::activeWorkspace()->rootContainer());
 }
 
 void ModeDefault::toggleExpanding()

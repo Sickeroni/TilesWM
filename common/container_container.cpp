@@ -64,39 +64,6 @@ void ContainerContainer::redrawAll()
         child(i)->redrawAll();
 }
 
-void ContainerContainer::deleteEmptyChildren()
-{
-//     if (!_dirty)
-//         return;
-
-    // 1st pass: recurse
-    for (int i = 0; i < numElements(); i++) {
-        if (child(i)->isContainerContainer())
-            static_cast<ContainerContainer*>(child(i))->deleteEmptyChildren();
-    }
-
-    // 2nd pass: dissolve child containers with only one child
-    for (int i = 0; i < numElements(); i++) {
-        if (child(i)->isContainerContainer() && (child(i)->numElements() == 1)) {
-            Container *c =  static_cast<ContainerContainer*>(child(i))->removeChild(0);
-
-            delete replaceChild(i, c);
-        }
-    }
-
-    // 3rd pass: delete all empty children
-    for (int i = 0; i < numElements(); ) {
-        if (child(i)->isEmpty())
-            delete removeChild(i);
-        else
-            i++;
-    }
-
-//     _dirty = isEmpty();
-
-    getLayout()->layoutContents();
-}
-
 #if 0
 void ContainerContainer::setDirty(bool set)
 {

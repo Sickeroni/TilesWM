@@ -1,6 +1,7 @@
 #include "container_util.h"
 
 #include "container_container.h"
+#include "container_layout.h"
 #include "client_container.h"
 #include "application.h"
 
@@ -89,6 +90,36 @@ void emptyContainer(ContainerContainer *container, std::vector<Client*> &clients
             static_cast<ClientContainer*>(container->child(0))->removeChildren(clients);
         delete container->removeChild(0);
     }
+}
+
+void deleteEmptyChildren(ContainerContainer *container)
+{
+    for (int i = 0; i < container->numElements(); ) {
+        Container *child = container->child(i);
+
+        if (child->isContainerContainer()) {
+            // recurse
+            deleteEmptyChildren(child->toContainerContainer());
+
+            // dissolve child containers with only one child
+            if (child->numElements() == 1) {
+                Container *c = child->toContainerContainer()->removeChild(0);
+                assert(c->isClientContainer());
+
+                container->replaceChild(i, c);
+                delete child;
+                child = c;
+            }
+        }
+
+        if (child->isEmpty()) {
+            container->removeChild(i);
+            delete child;
+        } else
+            i++;
+    }
+
+    container->getLayout()->layoutContents();
 }
 
 
