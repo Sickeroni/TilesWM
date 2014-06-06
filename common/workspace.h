@@ -3,6 +3,7 @@
 
 #include "monitor.h"
 #include "rect.h"
+#include "container.h"
 
 #include <cstddef>
 
@@ -36,6 +37,8 @@ public:
     Mode *mode();
     size_t modeIndex() { return _mode; }
     void setMode(size_t index);
+    Container::Orientation orientation() { return _orientation; }
+    void rotateOrientation();
 
 private:
     Rect _rect;
@@ -44,6 +47,7 @@ private:
     ContainerContainer *_root_container = 0;
     bool _maximized = false;
     size_t _mode = 0;
+    Container::Orientation _orientation = Container::HORIZONTAL;
 };
 
 #endif // __WORKSPACE_H__

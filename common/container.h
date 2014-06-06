@@ -76,13 +76,8 @@ public:
 
     void setWorkspace(Workspace *workspace);
 
-    static void rotateOrientation();
-
 protected:
     Container(Type type);
-
-    static Container *_root;
-    static Orientation _root_orientation;
 
     ContainerContainer *_parent;
     Workspace *_workspace;

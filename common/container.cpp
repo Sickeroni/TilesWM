@@ -8,10 +8,6 @@
 #include <stdlib.h>
 
 
-Container::Orientation Container::_root_orientation = HORIZONTAL;
-
-
-
 Container::Container(Type type) :
     _parent(0),
     _workspace(0),
@@ -24,9 +20,12 @@ Container::Container(Type type) :
 
 Container::Orientation Container::orientation()
 {
-    if (!_parent)
-        return _root_orientation;
-    else if (_parent->isMinimized())
+    if (!_parent) {
+        if (_workspace)
+            return _workspace->orientation();
+        else
+            return HORIZONTAL;
+    } else if (_parent->isMinimized())
         return _parent->orientation();
     else
         return _parent->isHorizontal() ? VERTICAL : HORIZONTAL;
@@ -35,14 +34,6 @@ Container::Orientation Container::orientation()
 void Container::setRect(const Rect &rect)
 {
     _rect.set(rect);
-}
-
-void Container::rotateOrientation()
-{
-    if (_root_orientation == VERTICAL)
-        _root_orientation = HORIZONTAL;
-    else
-        _root_orientation = VERTICAL;
 }
 
 bool Container::isActive()

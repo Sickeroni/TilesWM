@@ -128,8 +128,7 @@ void toggleMaximize()
 
 void rotate()
 {
-    Container::rotateOrientation();
-    Application::activeWorkspace()->rootContainer()->getLayout()->layoutContents();
+    Application::activeWorkspace()->rotateOrientation();
 }
 
 void layout()

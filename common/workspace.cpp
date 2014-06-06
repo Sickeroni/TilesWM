@@ -74,3 +74,13 @@ void Workspace::setMode(size_t index)
 
     Application::focusActiveClient();
 }
+
+void Workspace::rotateOrientation()
+{
+    if (_orientation == Container::HORIZONTAL)
+        _orientation = Container::VERTICAL;
+    else
+        _orientation = Container::HORIZONTAL;
+
+    _root_container->getLayout()->layoutContents();
+}
