@@ -12,7 +12,7 @@ Container::Container(Type type) :
     _parent(0),
     _workspace(0),
     _type(type),
-     _fixed_width(0),
+    _fixed_width(0),
     _fixed_height(0),
     _is_fixed_size(false)
 {
@@ -108,8 +108,8 @@ void Container::setFixedWidth(int width)
     _fixed_width = width;
     if (_fixed_width < 0)
         _fixed_width = 0;
-	if (parent())
-		parent()->handleSizeHintsChanged(this);
+    if (parent())
+        parent()->handleSizeHintsChanged(this);
 }
 
 void Container::setFixedHeight(int height)
