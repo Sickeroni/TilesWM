@@ -84,12 +84,23 @@ ClientContainer *Application::activeClientContainer()
         return activeWorkspace()->rootContainer()->activeClientContainer();
 }
 
-void Application::tileClient(Client *client)
+void Application::manageClient(Client *client, bool is_floating)
 {
     assert(!client->container());
     assert(!client->workspace());
 
-    activeWorkspace()->mode()->tileClient(client, activeWorkspace()->rootContainer());
+    if (is_floating)
+        activeWorkspace()->addClient(client);
+    else
+        activeWorkspace()->mode()->tileClient(client, activeWorkspace()->rootContainer());
+}
+
+void Application::unmanageClient(Client *client)
+{
+    if (client->container())
+        client->container()->removeChild(client);
+    else if (client->workspace())
+        client->workspace()->removeClient(client);
 }
 
 void Application::runProgram(const char *path)

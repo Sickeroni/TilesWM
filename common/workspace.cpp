@@ -60,6 +60,14 @@ Client *Workspace::activeClient()
     return 0;
 }
 
+void Workspace::addClient(Client *client)
+{
+}
+
+void Workspace::removeClient(Client *client)
+{
+}
+
 Mode *Workspace::mode()
 {
     return Application::self()->mode(_mode);

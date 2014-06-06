@@ -47,7 +47,8 @@ public:
     // helper functions
     static Workspace *activeWorkspace();
     static ClientContainer *activeClientContainer();
-    static void tileClient(Client *client);
+    static void manageClient(Client *client, bool is_floating);
+    static void unmanageClient(Client *client);
     static void runProgram(const char *path);
     static void focusActiveClient();
     static Client *activeClient();

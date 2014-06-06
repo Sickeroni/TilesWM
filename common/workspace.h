@@ -25,6 +25,8 @@ public:
     bool makeActive();
     bool isMapped();
     Client *activeClient(); // active client in the floating layer
+    void addClient(Client *client);
+    void removeClient(Client *client);
     void layoutContents();
     void setRect(Rect rect);
 

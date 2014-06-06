@@ -199,6 +199,8 @@ void X11Client::setContainer(X11ClientContainer *container)
 
 void X11Client::makeActive()
 {
+    //FIXME set active layer
+
     if (container()) {
         container()->makeActive();
         container()->setActiveChild(container()->indexOfChild(this));
@@ -470,11 +472,7 @@ void X11Client::mapInt()
 
         assert(!container());
 
-        if (!isDialog() && !_is_modal) {
-            Application::tileClient(this);
-        } else {
-            //FIXME add to workspace
-        }
+        Application::manageClient(this, isDialog() || _is_modal);
 
         assert(isFloating() || container());
 
@@ -536,11 +534,7 @@ void X11Client::unmapInt()
 
         _is_mapped = false;
 
-        //FIXME use Application::unmanageClient(this)
-        if (container())
-            static_cast<X11ClientContainer*>(container())->removeClient(this);
-        else if(workspace())
-            assert(0);
+        Application::unmanageClient(this);
     }
 
     Application::focusActiveClient();
@@ -1024,11 +1018,7 @@ bool X11Client::handleEvent(const XEvent &ev)
                     cancelDrag();
                 _frame_wid_index.erase(client->_frame->wid());
                 _wid_index.erase(wid);
-                //FIXME use Application::unmanageClient()
-                if (client->container())
-                    static_cast<X11ClientContainer*>(client->container())->removeClient(client);
-                else if (client->workspace())
-                    assert(0);
+                Application::unmanageClient(client);
                 delete client;
                 client = 0;
                 Application::focusActiveClient();
