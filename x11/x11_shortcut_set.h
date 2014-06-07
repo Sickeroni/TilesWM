@@ -15,7 +15,7 @@ public:
 
     virtual void createShortcut(std::string key_sequence, HandlerFunc handler_func) override;
 
-    const X11Shortcut::List &shortcuts() { return _shortcuts; }
+    const X11Shortcut::List &shortcuts() const { return _shortcuts; }
 };
 
 

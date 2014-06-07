@@ -43,21 +43,21 @@ void Mode3Panel::activate(Workspace *workspace)
 
 void Mode3Panel::initShortcuts()
 {
-    shortcuts()->createAction("moveClientLeft", &moveClientLeft);
-    shortcuts()->createAction("moveClientRight", &moveClientRight);
-    shortcuts()->createAction("moveClientUp", &moveClientUp);
-    shortcuts()->createAction("moveClientDown", &moveClientDown);
+    createAction("moveClientLeft", &moveClientLeft);
+    createAction("moveClientRight", &moveClientRight);
+    createAction("moveClientUp", &moveClientUp);
+    createAction("moveClientDown", &moveClientDown);
 
-    shortcuts()->createAction("moveHSplitRight", &moveHSplitRight);
-    shortcuts()->createAction("moveHSplitLeft", &moveHSplitLeft);
-    shortcuts()->createAction("moveVSplitDown", &moveVSplitDown);
-    shortcuts()->createAction("moveVSplitUp", &moveVSplitUp);
+    createAction("moveHSplitRight", &moveHSplitRight);
+    createAction("moveHSplitLeft", &moveHSplitLeft);
+    createAction("moveVSplitDown", &moveVSplitDown);
+    createAction("moveVSplitUp", &moveVSplitUp);
 
-    shortcuts()->createAction("togglePrimaryExpanding", &togglePrimaryExpanding);
-    shortcuts()->createAction("toggleSecondaryExpanding", &toggleSecondaryExpanding);
+    createAction("togglePrimaryExpanding", &togglePrimaryExpanding);
+    createAction("toggleSecondaryExpanding", &toggleSecondaryExpanding);
 
-    shortcuts()->createAction("setPrimarySlaveToMinimum", &setPrimarySlaveToMinimum);
-    shortcuts()->createAction("setSecondarySlaveToMinimum", &setSecondarySlaveToMinimum);
+    createAction("setPrimarySlaveToMinimum", &setPrimarySlaveToMinimum);
+    createAction("setSecondarySlaveToMinimum", &setSecondarySlaveToMinimum);
 }
 
 void Mode3Panel::tileClient(Client *client, ContainerContainer *root_container)

@@ -38,7 +38,7 @@ public:
     void setActiveLayer(Layer layer) {
         //FIXME
     }
-    ShortcutSet *mainShortcuts();
+    const ShortcutSet *mainShortcuts();
     Mode *mode(size_t index) { return _modes[index]; }
     size_t defaultMode() { return _default_mode; }
     size_t numModes() { return _modes.size(); }

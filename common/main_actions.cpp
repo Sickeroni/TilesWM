@@ -14,23 +14,23 @@ using namespace ContainerUtil;
 
 void MainActions::initShortcuts()
 {
-    shortcuts()->createAction("toggleMaximize", &toggleMaximize);
-    shortcuts()->createAction("layout", &layout);
-    shortcuts()->createAction("rotate", &rotate);
-    shortcuts()->createAction("focusLeft", &focusLeft);
-    shortcuts()->createAction("focusRight", &focusRight);
-    shortcuts()->createAction("focusUp", &focusUp);
-    shortcuts()->createAction("focusDown", &focusDown);
-    shortcuts()->createAction("redraw", &redraw);
-    shortcuts()->createAction("focusPrevClient", &focusPrevClient);
-    shortcuts()->createAction("focusNextClient", &focusNextClient);
-    shortcuts()->createAction("runProgram", &runProgram);
-    shortcuts()->createAction("runTerminal", &runTerminal);
-    shortcuts()->createAction("changeMode", &changeMode);
-    shortcuts()->createAction("closeActiveClient", &closeActiveClient);
-    shortcuts()->createAction("quit", &quit);
+    createAction("toggleMaximize", &toggleMaximize);
+    createAction("layout", &layout);
+    createAction("rotate", &rotate);
+    createAction("focusLeft", &focusLeft);
+    createAction("focusRight", &focusRight);
+    createAction("focusUp", &focusUp);
+    createAction("focusDown", &focusDown);
+    createAction("redraw", &redraw);
+    createAction("focusPrevClient", &focusPrevClient);
+    createAction("focusNextClient", &focusNextClient);
+    createAction("runProgram", &runProgram);
+    createAction("runTerminal", &runTerminal);
+    createAction("changeMode", &changeMode);
+    createAction("closeActiveClient", &closeActiveClient);
+    createAction("quit", &quit);
 
-    shortcuts()->createAction("focusActiveClient", &Application::focusActiveClient);
+    createAction("focusActiveClient", &Application::focusActiveClient);
 }
 
 void MainActions::focusPrevChild(ContainerContainer *container)

@@ -29,21 +29,21 @@ void ModeDefault::activate(Workspace *workspace)
 
 void ModeDefault::initShortcuts()
 {
-    shortcuts()->createAction("moveClientLeft", &moveClientLeft);
-    shortcuts()->createAction("moveClientRight", &moveClientRight);
-    shortcuts()->createAction("moveClientUp", &moveClientUp);
-    shortcuts()->createAction("moveClientDown", &moveClientDown);
-    shortcuts()->createAction("deleteEmptyContainers", &deleteEmptyContainers);
+    createAction("moveClientLeft", &moveClientLeft);
+    createAction("moveClientRight", &moveClientRight);
+    createAction("moveClientUp", &moveClientUp);
+    createAction("moveClientDown", &moveClientDown);
+    createAction("deleteEmptyContainers", &deleteEmptyContainers);
 
-    shortcuts()->createAction("toggleExpanding", &toggleExpanding);
-    shortcuts()->createAction("toggleParentExpanding", &toggleParentExpanding);
+    createAction("toggleExpanding", &toggleExpanding);
+    createAction("toggleParentExpanding", &toggleParentExpanding);
 
-    shortcuts()->createAction("incWidth", &incWidth);
-    shortcuts()->createAction("decWidth", &decWidth);
-    shortcuts()->createAction("incHeight", &incHeight);
-    shortcuts()->createAction("decHeight", &decHeight);
+    createAction("incWidth", &incWidth);
+    createAction("decWidth", &decWidth);
+    createAction("incHeight", &incHeight);
+    createAction("decHeight", &decHeight);
 
-    shortcuts()->createAction("setFixedSizeToMinimum", &setFixedSizeToMinimum);
+    createAction("setFixedSizeToMinimum", &setFixedSizeToMinimum);
 }
 
 void ModeDefault::tileClient(Client *client, ContainerContainer *root_container)

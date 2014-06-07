@@ -108,11 +108,11 @@ bool X11Shortcut::handleKeyPress(const XKeyEvent &ev)
     if (key_sym != NoSymbol) {
         KeyGrab *key_grab = findKeyGrab(key_sym, ev.state);
         if (key_grab) {
-            X11ShortcutSet *main_shortcuts = 
-                static_cast<X11ShortcutSet*>(Application::self()->mainShortcuts());
+            const X11ShortcutSet *main_shortcuts = 
+                static_cast<const X11ShortcutSet*>(Application::self()->mainShortcuts());
 
-            X11ShortcutSet *active_mode_shortcuts = 
-                static_cast<X11ShortcutSet*>(Application::activeWorkspace()->mode()->shortcuts());
+            const X11ShortcutSet *active_mode_shortcuts = 
+                static_cast<const X11ShortcutSet*>(Application::activeWorkspace()->mode()->shortcuts());
 
             const X11Shortcut *shortcut = findInList(key_grab, main_shortcuts->shortcuts());
             if (shortcut) {

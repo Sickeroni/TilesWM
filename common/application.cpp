@@ -55,7 +55,7 @@ void Application::shutdown()
     _main_actions = 0;
 }
 
-ShortcutSet *Application::mainShortcuts()
+const ShortcutSet *Application::mainShortcuts()
 {
     return _main_actions->shortcuts();
 }

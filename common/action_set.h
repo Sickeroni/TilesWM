@@ -1,9 +1,9 @@
 #ifndef __ACTION_SET_H__
 #define __ACTION_SET_H__
 
-#include <string>
+#include "shortcut_set.h"
 
-class ShortcutSet;
+#include <string>
 
 class ActionSet
 {
@@ -12,7 +12,13 @@ public:
     virtual ~ActionSet();
 
     virtual void initShortcuts() = 0;
-    ShortcutSet *shortcuts() { return _shortcuts; }
+
+    const ShortcutSet *shortcuts() { return _shortcuts; }
+
+protected:
+    void createAction(std::string action_name, ShortcutSet::HandlerFunc handler_func) {
+        _shortcuts->createAction(action_name, handler_func);
+    }
 
 private:
     ShortcutSet *_shortcuts;
