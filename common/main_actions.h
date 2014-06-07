@@ -14,6 +14,8 @@ public:
     virtual void initShortcuts() override;
 
 private:
+    static void reloadConfig();
+
     static void runTerminal();
     static void runProgram();
 

@@ -7,6 +7,8 @@
 class Config
 {
 public:
+    void reload() {}
+
     static const std::string &value(const std::string &key) {
         return valueFromMap(self()->_values, key);
     }

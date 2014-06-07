@@ -14,6 +14,7 @@ using namespace ContainerUtil;
 
 void MainActions::initShortcuts()
 {
+    createAction("reloadConfig", &reloadConfig);
     createAction("toggleMaximize", &toggleMaximize);
     createAction("layout", &layout);
     createAction("rotate", &rotate);
@@ -182,4 +183,9 @@ void MainActions::closeActiveClient()
 void MainActions::quit()
 {
     Application::self()->requestQuit();
+}
+
+void MainActions::reloadConfig()
+{
+    Application::self()->reloadConfig();
 }

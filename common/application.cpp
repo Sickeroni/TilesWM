@@ -8,6 +8,7 @@
 #include "client.h"
 #include "mode_default.h"
 #include "mode_3panel.h"
+#include "config.h"
 #include "common.h"
 
 #include <unistd.h>
@@ -53,6 +54,18 @@ void Application::shutdown()
 
     delete _main_actions;
     _main_actions = 0;
+}
+
+void Application::reloadConfig()
+{
+    //TODO ConfigChangedListener
+
+    Config::self()->reload();
+
+    _main_actions->reloadShortcuts();
+
+    for(size_t i = 0; i < _modes.size(); i++)
+        _modes[i]->reloadShortcuts();
 }
 
 const ShortcutSet *Application::mainShortcuts()

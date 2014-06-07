@@ -34,6 +34,7 @@ public:
     virtual ShortcutSet *createShortcutSet(std::string name) = 0;
     virtual void requestQuit() = 0;
 
+    void reloadConfig();
     Layer activeLayer() { return LAYER_TILED; } // HACK
     void setActiveLayer(Layer layer) {
         //FIXME
