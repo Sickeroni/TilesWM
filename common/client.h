@@ -16,16 +16,15 @@ class Client
 public:
     virtual ~Client();
 
-    virtual void setRect(const Rect &rect) = 0;
-    virtual void raise() = 0;
     virtual Icon *icon() = 0;
     virtual ClientContainer *container() = 0;
-    virtual const Rect &frameRect() = 0;
-    virtual bool hasDecoration() = 0;
+    virtual const Rect &rect() = 0;
+    virtual void setRect(const Rect &rect) = 0;
     virtual int maxTextHeight() = 0;
     virtual void requestClose() = 0;
 
     Workspace *workspace() { return 0; }
+    bool hasDecoration() { return !container(); }
     bool isMapped() { return _is_mapped; }
     bool hasFocus() { return _has_focus; }
     const std::string &name() { return _name; }

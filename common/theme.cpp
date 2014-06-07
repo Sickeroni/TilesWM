@@ -371,7 +371,7 @@ void getClientContainerClientRect(ClientContainer *container,  Rect &client_rect
 
 void drawClientFrame(Client *client, Canvas *canvas)
 {
-    Rect frame_rect = client->frameRect();
+    Rect frame_rect = client->rect();
     frame_rect.setPos(0, 0);
 
     uint32 frame_color = client->hasFocus() ? Colors::CLIENT_FOCUS : Colors::CLIENT_BORDER;

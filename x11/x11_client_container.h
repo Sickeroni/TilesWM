@@ -27,11 +27,11 @@ public:
     virtual int indexOfChild(const Client *child) override;
     virtual int activeChildIndex() override { return _active_child_index; }
     virtual void setActiveChild(int index) override;
-    virtual int maxTextHeight() override;
-    virtual void redraw() override;
     virtual int addChild(Client *client) override;
     virtual void removeChild(Client *client) override;
     virtual void removeChildren(std::vector<Client*> &clients) override;
+    virtual int maxTextHeight() override;
+    virtual void redraw() override;
 
     // X11ServerWidget::EventHandler implementaion
     virtual void handleExpose() override {

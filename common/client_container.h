@@ -37,7 +37,7 @@ public:
     virtual ClientContainer *activeClientContainer() final { return this; }
 
     Client *activeClient() {
-        return activeChildIndex() >= 0 ? child(activeChildIndex()) : 0;
+        return activeChildIndex() != INVALID_INDEX ? child(activeChildIndex()) : 0;
     }
 
     void handleClientUnmap(Client *client);

@@ -29,14 +29,10 @@ public:
 
     virtual ~X11Client();
 
-    virtual void setRect(const Rect &rect) override;
-    virtual void raise() override;
     virtual Icon *icon() override;
     virtual ClientContainer *container() override;
-    virtual const Rect &frameRect()  override { return _frame->rect(); }
-    virtual bool hasDecoration() override {
-        return isDialog() || _is_modal;
-    }
+    virtual const Rect &rect()  override { return _frame->rect(); }
+    virtual void setRect(const Rect &rect) override;
     virtual int maxTextHeight() override;
     virtual void requestClose() override;
 
@@ -48,6 +44,7 @@ public:
     void map();
     void unmap();
     void setContainer(X11ClientContainer *container);
+    void raise();
 
 private:
     class CriticalSection;

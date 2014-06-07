@@ -83,7 +83,7 @@ void X11ClientContainer::setActiveChild(int index)
     _active_child_index = index;
 
     if (activeClient())
-        activeClient()->raise();
+        static_cast<X11Client*>(activeClient())->raise();
 
     parent()->handleSizeHintsChanged(this);
 }
@@ -96,7 +96,7 @@ int X11ClientContainer::addClient(X11Client *client)
 
     // make sure the active client stays on top of the stacking order
     if (activeClient())
-        activeClient()->raise();
+        static_cast<X11Client*>(activeClient())->raise();
 
     _children.push_back(client);
 
@@ -120,7 +120,7 @@ void X11ClientContainer::removeClient(X11Client *client)
         _active_child_index = numElements() -1;
 
     if (activeClient())
-        activeClient()->raise();
+        static_cast<X11Client*>(activeClient())->raise();
 
     getLayout()->layoutContents();
 }
