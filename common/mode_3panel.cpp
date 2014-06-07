@@ -1,6 +1,5 @@
 #include "mode_3panel.h"
 
-#include "actions.h"
 #include "shortcut_set.h"
 #include "container_container.h"
 #include "container_util.h"

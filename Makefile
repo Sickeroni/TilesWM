@@ -3,6 +3,7 @@ include make_conf
 
 LIBCOMMON_SRCS :=
 LIBCOMMON_SRCS += mouse_handler
+LIBCOMMON_SRCS += action_set
 LIBCOMMON_SRCS += shortcut_set
 LIBCOMMON_SRCS += config
 LIBCOMMON_SRCS += string_util
@@ -16,9 +17,8 @@ LIBCOMMON_SRCS += client_container
 LIBCOMMON_SRCS += client
 LIBCOMMON_SRCS += monitor
 LIBCOMMON_SRCS += application
-LIBCOMMON_SRCS += actions
+LIBCOMMON_SRCS += main_actions
 LIBCOMMON_SRCS += container_util
-LIBCOMMON_SRCS += mode
 LIBCOMMON_SRCS += mode_default
 LIBCOMMON_SRCS += mode_3panel
 

@@ -1,27 +1,19 @@
 #ifndef __MODE_H__
 #define __MODE_H__
 
-#include <string>
+#include "action_set.h"
 
 class Workspace;
-class ShortcutSet;
 class Client;
 class ContainerContainer;
 
-class Mode
+class Mode : public ActionSet
 {
 public:
-    Mode(std::string name);
-    virtual ~Mode();
+    Mode(std::string name) : ActionSet(name) {}
 
     virtual void activate(Workspace *workspace) = 0; //FIXME workspace -> ContainerContainer ?
-    virtual void initShortcuts() = 0;
     virtual void tileClient(Client *client, ContainerContainer *root_container) = 0;
-
-    ShortcutSet *shortcuts() { return _shortcuts; }
-
-private:
-    ShortcutSet *_shortcuts;
 };
 
 #endif

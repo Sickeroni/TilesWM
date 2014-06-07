@@ -4,8 +4,7 @@
 #include "workspace.h"
 #include "client_container.h"
 #include "container_container.h"
-#include "shortcut_set.h"
-#include "actions.h"
+#include "main_actions.h"
 #include "client.h"
 #include "mode_default.h"
 #include "mode_3panel.h"
@@ -30,27 +29,12 @@ Application::~Application()
 
 void Application::init()
 {
-    _main_shortcuts = createShortcutSet("main");
-
-    _main_shortcuts->createAction("toggleMaximize", &Actions::toggleMaximize);
-    _main_shortcuts->createAction("layout", &Actions::layout);
-    _main_shortcuts->createAction("rotate", &Actions::rotate);
-    _main_shortcuts->createAction("focusLeft", &Actions::focusLeft);
-    _main_shortcuts->createAction("focusRight", Actions::focusRight);
-    _main_shortcuts->createAction("focusUp", &Actions::focusUp);
-    _main_shortcuts->createAction("focusDown", &Actions::focusDown);
-    _main_shortcuts->createAction("redraw", &Actions::redraw);
-    _main_shortcuts->createAction("focusPrevClient", &Actions::focusPrevClient);
-    _main_shortcuts->createAction("focusNextClient", &Actions::focusNextClient);
-    _main_shortcuts->createAction("runProgram", &Actions::runProgram);
-    _main_shortcuts->createAction("runTerminal", &Actions::runTerminal);
-    _main_shortcuts->createAction("changeMode", &Actions::changeMode);
-    _main_shortcuts->createAction("focusActiveClient", &focusActiveClient);
-    _main_shortcuts->createAction("closeActiveClient", &Actions::closeActiveClient);
-    _main_shortcuts->createAction("quit", &Actions::quit);
+    _main_actions = new MainActions();
 
     _modes.push_back(new ModeDefault());
     _modes.push_back(new Mode3Panel());
+
+    _main_actions->initShortcuts();
 
     for(size_t i = 0; i < _modes.size(); i++)
         _modes[i]->initShortcuts();
@@ -67,8 +51,13 @@ void Application::shutdown()
         delete _modes[i];
     _modes.clear();
 
-    delete _main_shortcuts;
-    _main_shortcuts = 0;
+    delete _main_actions;
+    _main_actions = 0;
+}
+
+ShortcutSet *Application::mainShortcuts()
+{
+    return _main_actions->shortcuts();
 }
 
 Workspace *Application::activeWorkspace()

@@ -1,14 +1,14 @@
-#include "mode.h"
+#include "action_set.h"
 
-#include "application.h"
 #include "shortcut_set.h"
+#include "application.h"
 
-Mode::Mode(std::string name) :
+ActionSet::ActionSet(std::string name) :
     _shortcuts(Application::self()->createShortcutSet(name))
 {
 }
 
-Mode::~Mode()
+ActionSet::~ActionSet()
 {
     delete _shortcuts;
     _shortcuts = 0;

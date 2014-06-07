@@ -1,4 +1,4 @@
-#include "actions.h"
+#include "main_actions.h"
 
 #include "client_container.h"
 #include "container_container.h"
@@ -7,15 +7,33 @@
 #include "workspace.h"
 #include "application.h"
 #include "container_util.h"
+#include "shortcut_set.h"
 #include "common.h"
 
 using namespace ContainerUtil;
 
-namespace Actions
+void MainActions::initShortcuts()
 {
+    shortcuts()->createAction("toggleMaximize", &toggleMaximize);
+    shortcuts()->createAction("layout", &layout);
+    shortcuts()->createAction("rotate", &rotate);
+    shortcuts()->createAction("focusLeft", &focusLeft);
+    shortcuts()->createAction("focusRight", &focusRight);
+    shortcuts()->createAction("focusUp", &focusUp);
+    shortcuts()->createAction("focusDown", &focusDown);
+    shortcuts()->createAction("redraw", &redraw);
+    shortcuts()->createAction("focusPrevClient", &focusPrevClient);
+    shortcuts()->createAction("focusNextClient", &focusNextClient);
+    shortcuts()->createAction("runProgram", &runProgram);
+    shortcuts()->createAction("runTerminal", &runTerminal);
+    shortcuts()->createAction("changeMode", &changeMode);
+    shortcuts()->createAction("closeActiveClient", &closeActiveClient);
+    shortcuts()->createAction("quit", &quit);
 
+    shortcuts()->createAction("focusActiveClient", &Application::focusActiveClient);
+}
 
-void focusPrevChild(ContainerContainer *container)
+void MainActions::focusPrevChild(ContainerContainer *container)
 {
     if (container->activeChildIndex() != INVALID_INDEX) {
         int new_index = container->activeChildIndex() - 1;
@@ -26,7 +44,7 @@ void focusPrevChild(ContainerContainer *container)
     }
 }
 
-void focusNextChild(ContainerContainer *container)
+void MainActions::focusNextChild(ContainerContainer *container)
 {
     if (container->activeChildIndex() != INVALID_INDEX) {
         int new_index = container->activeChildIndex() + 1;
@@ -37,7 +55,7 @@ void focusNextChild(ContainerContainer *container)
     }
 }
 
-void focusSibling(Direction where)
+void MainActions::focusSibling(Direction where)
 {
     debug;
 
@@ -59,27 +77,27 @@ void focusSibling(Direction where)
     }
 }
 
-void focusLeft()
+void MainActions::focusLeft()
 {
     focusSibling(LEFT);
 }
 
-void focusRight()
+void MainActions::focusRight()
 {
     focusSibling(RIGHT);
 }
 
-void focusUp()
+void MainActions::focusUp()
 {
     focusSibling(UP);
 }
 
-void focusDown()
+void MainActions::focusDown()
 {
     focusSibling(DOWN);
 }
 
-void focusPrevClient()
+void MainActions::focusPrevClient()
 {
     ClientContainer *container = Application::activeClientContainer();
     if(container) {
@@ -94,7 +112,7 @@ void focusPrevClient()
     }
 }
 
-void focusNextClient()
+void MainActions::focusNextClient()
 {
     ClientContainer *container = Application::activeClientContainer();
     if(container) {
@@ -109,41 +127,41 @@ void focusNextClient()
     }
 }
 
-void runTerminal()
+void MainActions::runTerminal()
 {
     Application::runProgram("/usr/bin/xterm");
 }
 
-void runProgram()
+void MainActions::runProgram()
 {
     Application::runProgram("/usr/bin/gmrun");
 }
 
-void toggleMaximize()
+void MainActions::toggleMaximize()
 {
     debug;
     bool maximized = Application::activeWorkspace()->maximized();
     Application::activeWorkspace()->setMaximized(!maximized);
 }
 
-void rotate()
+void MainActions::rotate()
 {
     Application::activeWorkspace()->rotateOrientation();
 }
 
-void layout()
+void MainActions::layout()
 {
     debug;
     Application::activeWorkspace()->rootContainer()->getLayout()->layoutContents();
 }
 
-void redraw()
+void MainActions::redraw()
 {
     debug;
     Application::activeWorkspace()->rootContainer()->redrawAll();
 }
 
-void changeMode()
+void MainActions::changeMode()
 {
     debug;
     size_t mode =  Application::activeWorkspace()->modeIndex();
@@ -154,17 +172,14 @@ void changeMode()
     Application::activeWorkspace()->setMode(mode);
 }
 
-void closeActiveClient()
+void MainActions::closeActiveClient()
 {
     Client *c = Application::activeClient();
     if (c)
         c->requestClose();
 }
 
-void quit()
+void MainActions::quit()
 {
     Application::self()->requestQuit();
 }
-
-
-} // namespace Actions

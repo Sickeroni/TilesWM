@@ -12,6 +12,7 @@ class Client;
 class Monitor;
 class ShortcutSet;
 class Mode;
+class ActionSet;
 
 class Application
 {
@@ -37,7 +38,7 @@ public:
     void setActiveLayer(Layer layer) {
         //FIXME
     }
-    ShortcutSet *mainShortcuts() { return _main_shortcuts; }
+    ShortcutSet *mainShortcuts();
     Mode *mode(size_t index) { return _modes[index]; }
     size_t defaultMode() { return _default_mode; }
     size_t numModes() { return _modes.size(); }
@@ -59,7 +60,7 @@ protected:
     void init();
     void shutdown();
 
-    ShortcutSet *_main_shortcuts = 0;
+    ActionSet *_main_actions = 0;
     std::vector<Mode*> _modes;
     size_t _default_mode = 0;
 
