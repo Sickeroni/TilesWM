@@ -13,3 +13,9 @@ ActionSet::~ActionSet()
     delete _shortcuts;
     _shortcuts = 0;
 }
+
+void ActionSet::reloadShortcuts()
+{
+    _shortcuts->clear();
+    initShortcuts();
+}

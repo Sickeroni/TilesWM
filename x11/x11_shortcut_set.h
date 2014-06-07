@@ -13,9 +13,12 @@ public:
     X11ShortcutSet(std::string name);
     ~X11ShortcutSet();
 
-    virtual void createShortcut(std::string key_sequence, HandlerFunc handler_func) override;
+    virtual void clear() override;
 
     const X11Shortcut::List &shortcuts() const { return _shortcuts; }
+
+private:
+    virtual void createShortcut(std::string key_sequence, HandlerFunc handler_func) override;
 };
 
 

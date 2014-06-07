@@ -14,6 +14,7 @@ public:
     virtual void initShortcuts() = 0;
 
     const ShortcutSet *shortcuts() { return _shortcuts; }
+    void reloadShortcuts();
 
 protected:
     void createAction(std::string action_name, ShortcutSet::HandlerFunc handler_func) {

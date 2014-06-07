@@ -9,6 +9,11 @@ X11ShortcutSet::X11ShortcutSet(std::string name) : ShortcutSet(name)
 
 X11ShortcutSet::~X11ShortcutSet()
 {
+    clear();
+}
+
+void X11ShortcutSet::clear()
+{
     for(X11Shortcut::List::iterator it = _shortcuts.begin();
                 it != _shortcuts.end();
                 it++)

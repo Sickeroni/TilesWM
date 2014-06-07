@@ -11,6 +11,8 @@ public:
 
     typedef void (*HandlerFunc)();
 
+    virtual void clear() = 0;
+
     void createAction(std::string action_name, HandlerFunc handler_func);
 
 private:
