@@ -5,7 +5,7 @@
 #include "x11_client.h"
 #include "x11_widget.h"
 #include "x11_shortcut_set.h"
-#include "x11_graphics_system_x11.h"
+#include "x11_graphics_system.h"
 
 #include "workspace.h"
 #include "monitor.h"
@@ -24,6 +24,8 @@
 #include <stdlib.h>
 #include <stdio.h>
 
+
+X11GraphicsSystem *createX11GraphicsSystem();
 
 
 #if 0
@@ -223,7 +225,7 @@ bool X11Application::init()
 
     XSync(_dpy, false);
 
-    _graphics_system = new X11GraphicsSystemX11();
+    _graphics_system = createX11GraphicsSystem();
 
     Application::init();
 

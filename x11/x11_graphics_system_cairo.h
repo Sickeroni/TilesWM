@@ -1,9 +1,9 @@
-#ifndef __X11_GRAPHICS_SYSTEM_X11_H__
-#define __X11_GRAPHICS_SYSTEM_X11_H__
+#ifndef __X11_GRAPHICS_SYSTEM_CAIRO_H__
+#define __X11_GRAPHICS_SYSTEM_CAIRO_H__
 
 #include "x11_graphics_system.h"
 
-class X11GraphicsSystemX11 final : public X11GraphicsSystem
+class X11GraphicsSystemCairo final : public X11GraphicsSystem
 {
 public:
     virtual Canvas *createCanvas(Drawable drawable, int width, int height) override;

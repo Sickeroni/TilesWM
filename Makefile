@@ -1,5 +1,11 @@
 include make_conf
 
+CXXFLAGS += -I/usr/include/cairomm-1.0
+CXXFLAGS += -I/usr/include/sigc++-2.0
+CXXFLAGS += -I/usr/include/cairo
+CXXFLAGS += -I/usr/include/freetype2
+# workaround debian bug
+CXXFLAGS += -I/usr/lib/x86_64-linux-gnu/sigc++-2.0/include
 
 LIBCOMMON_SRCS :=
 LIBCOMMON_SRCS += mouse_handler
@@ -21,6 +27,7 @@ LIBCOMMON_SRCS += main_actions
 LIBCOMMON_SRCS += container_util
 LIBCOMMON_SRCS += mode_default
 LIBCOMMON_SRCS += mode_3panel
+LIBCOMMON_SRCS += cairo_canvas
 
 TTMWM_X11_SRCS :=
 TTMWM_X11_SRCS += default_config_values
@@ -34,7 +41,6 @@ TTMWM_X11_SRCS += x11_client_widget
 TTMWM_X11_SRCS += x11_client
 TTMWM_X11_SRCS += x11_shortcut
 TTMWM_X11_SRCS += x11_shortcut_set
-TTMWM_X11_SRCS += x11_graphics_system_x11
 TTMWM_X11_SRCS += x11_application
 TTMWM_X11_SRCS += x11_global
 TTMWM_X11_SRCS += main
@@ -45,7 +51,7 @@ TTMWM_X11_OBJS := $(patsubst %,$(BUILD_DIR)/x11/%.o,$(TTMWM_X11_SRCS))
 
 
 .PHONY : all
-all: $(BUILD_DIR)/ttmwm
+all: $(BUILD_DIR)/ttmwm $(BUILD_DIR)/ttmwm-cairo
 
 $(BUILD_DIR)/common:
 	@ mkdir -p $@
@@ -59,10 +65,13 @@ $(BUILD_DIR)/libcommon.a: $(BUILD_DIR)/common $(LIBCOMMON_OBJS)
 	@ ar rcs $@ $(LIBCOMMON_OBJS)
 
 
-$(BUILD_DIR)/ttmwm: $(BUILD_DIR)/libcommon.a $(BUILD_DIR)/x11 $(TTMWM_X11_OBJS) 
+$(BUILD_DIR)/ttmwm: $(BUILD_DIR)/libcommon.a $(BUILD_DIR)/x11 $(TTMWM_X11_OBJS) $(BUILD_DIR)/x11/x11_graphics_system_x11.o
 	@ echo linking $@
-	@ $(CXX) $(CXXFLAGS) -L$(BUILD_DIR) $(TTMWM_X11_OBJS) -lX11 -lcommon -o $@
+	@ $(CXX) $(CXXFLAGS) -L$(BUILD_DIR) $(TTMWM_X11_OBJS) $(BUILD_DIR)/x11/x11_graphics_system_x11.o -lX11 -lcommon -o $@
 
+$(BUILD_DIR)/ttmwm-cairo: $(BUILD_DIR)/libcommon.a $(BUILD_DIR)/x11 $(TTMWM_X11_OBJS) $(BUILD_DIR)/x11/x11_graphics_system_cairo.o
+	@ echo linking $@
+	@ $(CXX) $(CXXFLAGS) -L$(BUILD_DIR) $(TTMWM_X11_OBJS) $(BUILD_DIR)/x11/x11_graphics_system_cairo.o -lX11 -lcairomm-1.0 -lcommon -o $@
 
 # pull in dependency info for *existing* .o files
 # from gnu make manual:

@@ -3,7 +3,12 @@
 #include "x11_canvas.h"
 #include "x11_icon.h"
 
-Canvas *X11GraphicsSystemX11::createCanvas(Drawable drawable)
+X11GraphicsSystem *createX11GraphicsSystem()
+{
+    return new X11GraphicsSystemX11();
+}
+
+Canvas *X11GraphicsSystemX11::createCanvas(Drawable drawable, int width, int height)
 {
     return new X11Canvas(drawable);
 }

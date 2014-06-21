@@ -14,7 +14,7 @@ class X11GraphicsSystem
 public:
     virtual ~X11GraphicsSystem() {}
 
-    virtual Canvas *createCanvas(Drawable drawable) = 0;
+    virtual Canvas *createCanvas(Drawable drawable, int width, int height) = 0;
     virtual Icon *createIcon(int width, int height, X11Widget *parent, const uint32 *argb_data, uint32 bg_color) = 0;
 };
 

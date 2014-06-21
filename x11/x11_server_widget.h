@@ -35,6 +35,7 @@ public:
     }
 
     virtual ~X11ServerWidget();
+    void setRect(const Rect &rect);
 
     Canvas *canvas() { return _canvas; }
 

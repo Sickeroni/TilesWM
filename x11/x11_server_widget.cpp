@@ -19,7 +19,7 @@ std::map<Window, X11ServerWidget*> X11ServerWidget::_wid_index;
 
 
 X11ServerWidget::X11ServerWidget(Window wid, EventHandler *event_handler, const Rect &rect) : X11Widget(wid, SERVER, false, rect),
-    _canvas(X11Application::graphicsSystem()->createCanvas(wid)),
+    _canvas(X11Application::graphicsSystem()->createCanvas(wid, rect.w, rect.h)),
     _event_handler(event_handler)
 {
 }
@@ -110,4 +110,11 @@ bool X11ServerWidget::handleEvent(const XEvent &ev)
             return false;
     } else
         return false;
+}
+
+void X11ServerWidget::setRect(const Rect &rect)
+{
+    X11Widget::setRect(rect);
+    delete _canvas;
+    _canvas = X11Application::graphicsSystem()->createCanvas(wid(), rect.w, rect.h);
 }
