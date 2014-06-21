@@ -19,7 +19,6 @@ public:
     Type type() { return _type; }
     const Rect &rect() { return _rect; }
 
-    void configure(unsigned int value_mask, const XWindowChanges &changes);
     void setRect(const Rect &rect);
     void move(int x, int y);
     bool isMapped() { return _is_mapped; }

@@ -69,3 +69,16 @@ bool X11ClientWidget::refreshMapState()
     }
 
 }
+
+void X11ClientWidget::configure(unsigned int value_mask, const XWindowChanges &changes)
+{
+    if (value_mask & CWX)
+        _rect.x = changes.x;
+    if (value_mask & CWY)
+        _rect.y = changes.y;
+    if (value_mask & CWWidth)
+        _rect.w = changes.width;
+    if (value_mask & CWHeight)
+        _rect.h = changes.height;
+    XConfigureWindow(dpy(), wid(), value_mask, const_cast<XWindowChanges*>(&changes));
+}

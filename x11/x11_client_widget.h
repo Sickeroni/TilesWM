@@ -16,6 +16,7 @@ public:
 //     virtual bool validate();
 
 //     X11Client *client() { return _client; }
+    void configure(unsigned int value_mask, const XWindowChanges &changes);
 
     bool refreshMapState();
 
