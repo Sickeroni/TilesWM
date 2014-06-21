@@ -16,7 +16,6 @@ class ClientContainer;
 class X11ClientContainer;
 class X11ClientWidget;
 class Icon;
-class X11Icon;
 
 
 //FIXME TODO - set border width via XConfigureWindow
@@ -98,7 +97,7 @@ private:
 
     X11ClientWidget *_widget;
     X11ServerWidget *_frame;
-    X11Icon *_icon;
+    Icon *_icon;
     WindowType _window_type;
     bool _is_modal;
     X11ClientContainer *_container;

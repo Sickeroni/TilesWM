@@ -1,9 +1,11 @@
 #include "x11_server_widget.h"
 
+#include "x11_graphics_system.h"
 #include "x11_application.h"
-#include "x11_canvas.h"
 #include "x11_global.h"
 #include "common.h"
+
+#include "canvas.h"
 
 #include <stdlib.h>
 #include <string.h>
@@ -17,7 +19,7 @@ std::map<Window, X11ServerWidget*> X11ServerWidget::_wid_index;
 
 
 X11ServerWidget::X11ServerWidget(Window wid, EventHandler *event_handler, const Rect &rect) : X11Widget(wid, SERVER, false, rect),
-    _canvas(new X11Canvas(wid)),
+    _canvas(X11Application::graphicsSystem()->createCanvas(wid)),
     _event_handler(event_handler)
 {
 }

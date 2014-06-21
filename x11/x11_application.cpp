@@ -5,6 +5,7 @@
 #include "x11_client.h"
 #include "x11_widget.h"
 #include "x11_shortcut_set.h"
+#include "x11_graphics_system_x11.h"
 
 #include "workspace.h"
 #include "monitor.h"
@@ -222,6 +223,8 @@ bool X11Application::init()
 
     XSync(_dpy, false);
 
+    _graphics_system = new X11GraphicsSystemX11();
+
     Application::init();
 
     _monitor = new Monitor();
@@ -256,6 +259,9 @@ void X11Application::shutdown()
     XChangeWindowAttributes(_dpy, _root, CWEventMask, &new_root_attr); // clears event mask
 
     setFocus(0);
+
+    delete _graphics_system;
+    _graphics_system = 0;
 
     XSync(_dpy, false);
 

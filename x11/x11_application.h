@@ -14,6 +14,7 @@ class X11ClientContainer;
 class X11Client;
 class Workspace;
 class Monitor;
+class X11GraphicsSystem;
 
 class X11Application final : public Application
 {
@@ -46,6 +47,7 @@ public:
     static X11ClientContainer *activeClientContainer();
     static Workspace *activeWorkspace();
     static X11Client *activeClient();
+    static X11GraphicsSystem *graphicsSystem() { return self()->_graphics_system; }
 
     static const char *eventTypeToString(size_t id);
     static const char *errorCodeToString(size_t error_code);
@@ -62,6 +64,7 @@ private:
     Monitor *_monitor;
     std::vector<Workspace*>  _workspaces;
     std::map<std::string, Atom> _atoms; // TODO - use hash
+    X11GraphicsSystem *_graphics_system = 0;
 };
 
 #define ATOM(name) (X11Application::self()->atom(#name))

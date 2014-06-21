@@ -7,6 +7,7 @@ public:
     Icon(int width, int height) : _width(width), _height(height) {}
     Icon(const Icon &other);
     Icon &operator=(const Icon &other);
+    virtual ~Icon() {}
 
     int width() { return _width; }
     int height() { return _height; }

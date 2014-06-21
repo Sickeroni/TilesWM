@@ -9,7 +9,7 @@
 #include <map>
 
 
-class X11Canvas;
+class Canvas;
 
 // class X11EventHandler
 // {
@@ -36,14 +36,14 @@ public:
 
     virtual ~X11ServerWidget();
 
-    X11Canvas *canvas() { return _canvas; }
+    Canvas *canvas() { return _canvas; }
 
 private:
     X11ServerWidget(Window wid, EventHandler *event_handler, const Rect &rect);
 
     static X11ServerWidget *find(Window wid);
 
-    X11Canvas *_canvas;
+    Canvas *_canvas;
 //     GC _gc;
     EventHandler *_event_handler;
     static std::map<Window, X11ServerWidget*> _wid_index;

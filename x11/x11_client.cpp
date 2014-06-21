@@ -5,9 +5,10 @@
 #include "x11_server_widget.h"
 #include "x11_application.h"
 #include "x11_container_container.h"
-#include "x11_canvas.h"
-#include "x11_icon.h"
+#include "x11_graphics_system.h"
 #include "x11_global.h"
+#include "icon.h"
+#include "canvas.h"
 #include "container_layout.h"
 #include "workspace.h"
 #include "colors.h"
@@ -852,9 +853,12 @@ void X11Client::refreshIcon()
                     debug<<"bad size for _NET_WM_ICON property.";
                 else {
                     delete _icon;
-                    _icon = new X11Icon(width, height, _frame,
-                                        reinterpret_cast<unsigned long*>(ret) + 2,
-                                        0x999999 /*FIXME - taken form X11ServerWidget */);
+                    _icon = X11Application::graphicsSystem()->createIcon(
+                        width,
+                        height,
+                        _frame,
+                        reinterpret_cast<unsigned long*>(ret) + 2,
+                        0x999999 /*FIXME - taken form X11ServerWidget */);
                 }
             }
         } else
