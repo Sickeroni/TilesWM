@@ -31,10 +31,10 @@ public:
     virtual int maxTextHeight() = 0;
     virtual void redraw() = 0;
 
-    virtual ClientContainer *toClientContainer() final { return this; }
-    virtual void redrawAll() final;
-    virtual ContainerLayout *getLayout() final;
-    virtual ClientContainer *activeClientContainer() final { return this; }
+    virtual ClientContainer *toClientContainer() override final { return this; }
+    virtual void redrawAll() override final;
+    virtual ContainerLayout *getLayout() override final;
+    virtual ClientContainer *activeClientContainer() override final { return this; }
 
     Client *activeClient() {
         return activeChildIndex() != INVALID_INDEX ? child(activeChildIndex()) : 0;

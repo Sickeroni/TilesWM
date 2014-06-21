@@ -28,12 +28,12 @@ public:
     virtual int maxTextHeight() const = 0;
     virtual void redraw() = 0;
 
-    virtual ContainerContainer *toContainerContainer() final { return this; }
-    virtual ContainerLayout *getLayout() final;
-    virtual ClientContainer *activeClientContainer() final;
-    virtual void redrawAll() final;
-    virtual void handleMaximizedChanged() final;
-    virtual void handleActiveChanged() final;
+    virtual ContainerContainer *toContainerContainer() override final { return this; }
+    virtual ContainerLayout *getLayout() override final;
+    virtual ClientContainer *activeClientContainer() override final;
+    virtual void redrawAll() override final;
+    virtual void handleMaximizedChanged() override final;
+    virtual void handleActiveChanged() override final;
 
 //     void setDirty(bool set);
 
