@@ -121,24 +121,39 @@ Icon *X11Client::icon()
     return _icon;
 }
 
-bool X11Client::setFocus()
+void X11Client::setFocus(X11Client *client)
 {
     CriticalSection sec;
 
-    refreshMapState();
+    Window focused_wid = X11Application::root();
 
-    assert(isFloating() || static_cast<X11ClientContainer*>(container())->widget()->isMapped());
-    assert(isFloating() || static_cast<X11ContainerContainer*>(container()->parent())->widget()->isMapped());
+    Window prop[] = { None };
 
-    //FIXME use isVisible() as condition
-    if (isMapped() && (isFloating() || 
-            static_cast<X11ContainerContainer*>(container()->workspace()->rootContainer())->widget()->isMapped()))
-    {
-        XSetInputFocus(dpy(), _widget->wid(),
-                       RevertToNone, CurrentTime);
-        return true;
-    } else
-        return false;
+    if (client) {
+        client->refreshMapState();
+
+        assert(client->isFloating() || static_cast<X11ClientContainer*>(client->container())->widget()->isMapped());
+        assert(client->isFloating() || static_cast<X11ContainerContainer*>(client->container()->parent())->widget()->isMapped());
+
+        //FIXME use isVisible() as condition
+        if (client->isMapped() && (client->isFloating() ||
+                static_cast<X11ContainerContainer*>(client->container()->workspace()->rootContainer())->widget()->isMapped()))
+        {
+            focused_wid = client->_widget->wid();
+            prop[0] = focused_wid;
+        }
+    }
+
+    XSetInputFocus(dpy(), focused_wid, RevertToNone, CurrentTime);
+
+    XChangeProperty(dpy(),
+                    X11Application::root(),
+                    ATOM(_NET_ACTIVE_WINDOW),
+                    XA_WINDOW,
+                    32,
+                    PropModeReplace,
+                    reinterpret_cast<const unsigned char*>(prop),
+                    sizeof(prop) / sizeof(prop[0]));
 }
 
 void X11Client::raise()
@@ -891,7 +906,7 @@ void X11Client::handleButtonPress(const XButtonEvent &ev)
     assert(!_dragged);
 
     if (!container()) { // for tiled clients the container handles this
-        setFocus();
+        setFocus(this);
         raise();
         if (ev.button == 1)
             startDrag(ev.x_root, ev.y_root);

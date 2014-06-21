@@ -400,8 +400,7 @@ X11Client *X11Application::activeClient()
 
 void X11Application::setFocus(Client *client)
 {
-    if (! (client && static_cast<X11Client*>(client)->setFocus()) )
-        XSetInputFocus(dpy(), X11Application::root(), RevertToNone, CurrentTime);
+    X11Client::setFocus(static_cast<X11Client*>(client));
 }
 
 Atom X11Application::atom(const char *name)

@@ -25,6 +25,7 @@ class X11Client final : public Client, public X11ServerWidget::EventHandler
 public:
     static void init();
     static bool handleEvent(const XEvent &ev);
+    static void setFocus(X11Client *client);
 
     virtual ~X11Client();
 
@@ -39,7 +40,6 @@ public:
     virtual void handleExpose() override;
     virtual void handleButtonPress(const XButtonEvent &ev) override;
 
-    bool setFocus();
     void map();
     void unmap();
     void setContainer(X11ClientContainer *container);
