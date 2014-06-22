@@ -38,7 +38,6 @@ void CairoCanvas::erase(const Rect &rect)
     fillRectangle(rect, 0);
 }
 
-
 void CairoCanvas::fillRectangle(const Rect &rect, uint32 color)
 {
     _context->save();
