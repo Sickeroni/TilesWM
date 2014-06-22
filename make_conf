@@ -6,5 +6,8 @@ CXXFLAGS += -Woverloaded-virtual
 CXXFLAGS += -O0
 CXXFLAGS += -g
 CXXFLAGS += -std=c++11
+#CXXFLAGS += -fno-strict-aliasing
+#CXXFLAGS += -fstrict-aliasing
+#CXXFLAGS += -fpermissive
 
 BUILD_DIR := build
