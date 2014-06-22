@@ -51,8 +51,13 @@ LIBCOMMON_OBJS := $(patsubst %,$(BUILD_DIR)/common/%.o,$(LIBCOMMON_SRCS))
 TTMWM_X11_OBJS := $(patsubst %,$(BUILD_DIR)/x11/%.o,$(TTMWM_X11_SRCS))
 
 
+DEFAULT_TARGETS :=
+DEFAULT_TARGETS += $(BUILD_DIR)/ttmwm
+DEFAULT_TARGETS += $(BUILD_DIR)/ttmwm-cairo
+
+
 .PHONY : all
-all: $(BUILD_DIR)/ttmwm $(BUILD_DIR)/ttmwm-cairo
+all: $(DEFAULT_TARGETS)
 
 $(BUILD_DIR)/common:
 	@ mkdir -p $@
