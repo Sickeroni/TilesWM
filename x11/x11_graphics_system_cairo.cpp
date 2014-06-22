@@ -1,6 +1,7 @@
 #include "x11_graphics_system_cairo.h"
 
 #include "cairo_canvas.h"
+#include "cairo_icon.h"
 #include "x11_global.h"
 
 using namespace X11Global;
@@ -26,5 +27,5 @@ Canvas *X11GraphicsSystemCairo::createCanvas(Drawable drawable, int width, int h
 
 Icon *X11GraphicsSystemCairo::createIcon(int width, int height, X11Widget *parent, const unsigned long *argb_data, uint32 bg_color)
 {
-    return  0;
+    return new CairoIcon(argb_data, width, height);
 }

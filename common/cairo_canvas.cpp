@@ -1,5 +1,7 @@
 #include "cairo_canvas.h"
 
+#include "cairo_icon.h"
+
 using namespace Cairo;
 
 inline void rgb32_to_double(uint32 rgb, double &r, double &g, double &b)
@@ -95,6 +97,18 @@ void CairoCanvas::drawText(const std::string &text, const Rect &rect, uint32 col
 
 void CairoCanvas::drawIcon(Icon *icon, int x, int y)
 {
+    _context->save();
+
+    CairoIcon *cairo_icon = static_cast<CairoIcon*>(icon);
+
+    _context->set_source(cairo_icon->surface(), x, y);
+
+    _context->rectangle(x, y, icon->width(), icon->height());
+    _context->clip();
+
+    _context->paint();
+
+    _context->restore();
 }
 
 int CairoCanvas::maxTextHeight()

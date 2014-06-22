@@ -28,6 +28,7 @@ LIBCOMMON_SRCS += container_util
 LIBCOMMON_SRCS += mode_default
 LIBCOMMON_SRCS += mode_3panel
 LIBCOMMON_SRCS += cairo_canvas
+LIBCOMMON_SRCS += cairo_icon
 
 TTMWM_X11_SRCS :=
 TTMWM_X11_SRCS += default_config_values
