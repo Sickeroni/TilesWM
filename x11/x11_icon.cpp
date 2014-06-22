@@ -45,7 +45,7 @@ X11Icon::X11Icon(int width, int height, X11Widget *parent) : Icon(width, height)
 
 
 
-X11Icon::X11Icon(int width, int height, X11Widget *parent, const uint32 *argb_data, uint32 bg_color) : Icon(width, height),
+X11Icon::X11Icon(int width, int height, X11Widget *parent, const unsigned long *argb_data, uint32 bg_color) : Icon(width, height),
     _pixmap(0)
 //     _mask(0)
 {
