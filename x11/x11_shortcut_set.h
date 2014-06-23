@@ -21,14 +21,14 @@ public:
 private:
     struct Shortcut
     {
-        Shortcut(const X11Global::KeySequence &key_sequence, HandlerFunc handler_func) :
-            key_sequence(key_sequence), handler_func(handler_func) {}
+        Shortcut(const X11Global::KeySequence &key_sequence, int id) :
+            key_sequence(key_sequence), id(id) {}
 
         X11Global::KeySequence key_sequence;
-        HandlerFunc handler_func = 0;
+        int id;
     };
 
-    virtual void createShortcut(std::string key_sequence, HandlerFunc handler_func) override;
+    virtual void createShortcut(std::string key_sequence, int id) override;
 
     std::list<Shortcut> _shortcuts;
 };

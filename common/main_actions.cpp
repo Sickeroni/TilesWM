@@ -14,24 +14,90 @@ using namespace ContainerUtil;
 
 void MainActions::initShortcuts()
 {
-    createAction("reloadConfig", &reloadConfig);
-    createAction("toggleMaximize", &toggleMaximize);
-    createAction("layout", &layout);
-    createAction("rotate", &rotate);
-    createAction("focusLeft", &focusLeft);
-    createAction("focusRight", &focusRight);
-    createAction("focusUp", &focusUp);
-    createAction("focusDown", &focusDown);
-    createAction("redraw", &redraw);
-    createAction("focusPrevClient", &focusPrevClient);
-    createAction("focusNextClient", &focusNextClient);
-    createAction("runProgram", &runProgram);
-    createAction("runTerminal", &runTerminal);
-    createAction("changeMode", &changeMode);
-    createAction("closeActiveClient", &closeActiveClient);
-    createAction("quit", &quit);
+    createAction("reloadConfig", ACTION_RELOAD_CONFIG);
+    createAction("toggleMaximize", ACTION_TOGGLE_MAXIMIZE);
+    createAction("layout", ACTION_LAYOUT);
+    createAction("rotate", ACTION_ROTATE);
+    createAction("focusLeft", ACTION_FOCUS_LEFT);
+    createAction("focusRight", ACTION_FOCUS_RIGHT);
+    createAction("focusUp", ACTION_FOCUS_UP);
+    createAction("focusDown", ACTION_FOCUS_DOWN);
+    createAction("redraw", ACTION_REDRAW);
+    createAction("focusPrevClient", ACTION_FOCUS_PREV_CLIENT);
+    createAction("focusNextClient", ACTION_FOCUS_NEXT_CLIENT);
+    createAction("runProgram", ACTION_RUN_PROGRAM);
+    createAction("runTerminal", ACTION_RUN_TERMINAL);
+    createAction("changeMode", ACTION_CHANGE_MODE);
+    createAction("closeActiveClient", ACTION_CLOSE_ACTIVE_CLIENT);
+    createAction("focusActiveClient", ACTION_FOCUS_ACTIVE_CLIENT);
+    createAction("quit", ACTION_QUIT);
+}
 
-    createAction("focusActiveClient", &Application::focusActiveClient);
+void MainActions::handleShortcut(int id)
+{
+    switch(id) {
+        case ACTION_RELOAD_CONFIG:
+            Application::self()->reloadConfig();
+            break;
+        case ACTION_TOGGLE_MAXIMIZE:
+            {
+                bool maximized = Application::activeWorkspace()->maximized();
+                Application::activeWorkspace()->setMaximized(!maximized);
+            }
+            break;
+        case ACTION_LAYOUT:
+            Application::activeWorkspace()->rootContainer()->getLayout()->layoutContents();
+            break;
+        case ACTION_ROTATE:
+            Application::activeWorkspace()->rotateOrientation();
+            break;
+        case ACTION_FOCUS_LEFT:
+            focusSibling(LEFT);
+            break;
+        case ACTION_FOCUS_RIGHT:
+            focusSibling(RIGHT);
+            break;
+        case ACTION_FOCUS_UP:
+            focusSibling(UP);
+            break;
+        case ACTION_FOCUS_DOWN:
+            focusSibling(DOWN);
+            break;
+        case ACTION_REDRAW:
+            Application::activeWorkspace()->rootContainer()->redrawAll();
+            break;
+        case ACTION_FOCUS_NEXT_CLIENT:
+            focusNextClient();
+            break;
+        case ACTION_FOCUS_PREV_CLIENT:
+            focusPrevClient();
+            break;
+        case ACTION_RUN_PROGRAM:
+            Application::runProgram("/usr/bin/gmrun");
+            break;
+        case ACTION_RUN_TERMINAL:
+            Application::runProgram("/usr/bin/xterm");
+            break;
+        case ACTION_CHANGE_MODE:
+            {
+                size_t mode =  Application::activeWorkspace()->modeIndex();
+                mode++;
+                if (mode >= Application::self()->numModes())
+                    mode = 0;
+
+                Application::activeWorkspace()->setMode(mode);
+            }
+            break;
+        case ACTION_CLOSE_ACTIVE_CLIENT:
+            if (Client *c = Application::activeClient())
+                c->requestClose();
+            break;
+        case ACTION_FOCUS_ACTIVE_CLIENT:
+            Application::focusActiveClient();
+        case ACTION_QUIT:
+            Application::self()->requestQuit();
+            break;
+    }
 }
 
 void MainActions::focusPrevChild(ContainerContainer *container)
@@ -78,26 +144,6 @@ void MainActions::focusSibling(Direction where)
     }
 }
 
-void MainActions::focusLeft()
-{
-    focusSibling(LEFT);
-}
-
-void MainActions::focusRight()
-{
-    focusSibling(RIGHT);
-}
-
-void MainActions::focusUp()
-{
-    focusSibling(UP);
-}
-
-void MainActions::focusDown()
-{
-    focusSibling(DOWN);
-}
-
 void MainActions::focusPrevClient()
 {
     ClientContainer *container = Application::activeClientContainer();
@@ -126,66 +172,4 @@ void MainActions::focusNextClient()
             }
         }
     }
-}
-
-void MainActions::runTerminal()
-{
-    Application::runProgram("/usr/bin/xterm");
-}
-
-void MainActions::runProgram()
-{
-    Application::runProgram("/usr/bin/gmrun");
-}
-
-void MainActions::toggleMaximize()
-{
-    debug;
-    bool maximized = Application::activeWorkspace()->maximized();
-    Application::activeWorkspace()->setMaximized(!maximized);
-}
-
-void MainActions::rotate()
-{
-    Application::activeWorkspace()->rotateOrientation();
-}
-
-void MainActions::layout()
-{
-    debug;
-    Application::activeWorkspace()->rootContainer()->getLayout()->layoutContents();
-}
-
-void MainActions::redraw()
-{
-    debug;
-    Application::activeWorkspace()->rootContainer()->redrawAll();
-}
-
-void MainActions::changeMode()
-{
-    debug;
-    size_t mode =  Application::activeWorkspace()->modeIndex();
-    mode++;
-    if (mode >= Application::self()->numModes())
-        mode = 0;
-
-    Application::activeWorkspace()->setMode(mode);
-}
-
-void MainActions::closeActiveClient()
-{
-    Client *c = Application::activeClient();
-    if (c)
-        c->requestClose();
-}
-
-void MainActions::quit()
-{
-    Application::self()->requestQuit();
-}
-
-void MainActions::reloadConfig()
-{
-    Application::self()->reloadConfig();
 }

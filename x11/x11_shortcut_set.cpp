@@ -24,7 +24,7 @@ void X11ShortcutSet::clear()
     _shortcuts.clear();
 }
 
-void X11ShortcutSet::createShortcut(std::string key_sequence_str, HandlerFunc handler_func)
+void X11ShortcutSet::createShortcut(std::string key_sequence_str, int id)
 {
     std::vector<std::string> tokens;
     StringUtil::tokenize(key_sequence_str, '+', tokens);
@@ -53,7 +53,7 @@ void X11ShortcutSet::createShortcut(std::string key_sequence_str, HandlerFunc ha
     if (key_sequence.key_sym == NoSymbol)
         debug<<"missing key symbol in key sequence"<<key_sequence_str;
     else if (X11Application::self()->addKeyGrab(key_sequence))
-        _shortcuts.push_back(Shortcut(key_sequence, handler_func));
+        _shortcuts.push_back(Shortcut(key_sequence, id));
 }
 
 bool X11ShortcutSet::handleKeyPress(const X11Global::KeySequence &key_sequence) const
@@ -63,7 +63,7 @@ bool X11ShortcutSet::handleKeyPress(const X11Global::KeySequence &key_sequence) 
             it++)
     {
         if (it->key_sequence.equals(key_sequence)) {
-            it->handler_func();
+            handler()->handleShortcut(it->id);
             return true;
         }
     }

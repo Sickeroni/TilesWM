@@ -29,21 +29,65 @@ void ModeDefault::activate(Workspace *workspace)
 
 void ModeDefault::initShortcuts()
 {
-    createAction("moveClientLeft", &moveClientLeft);
-    createAction("moveClientRight", &moveClientRight);
-    createAction("moveClientUp", &moveClientUp);
-    createAction("moveClientDown", &moveClientDown);
-    createAction("deleteEmptyContainers", &deleteEmptyContainers);
+    createAction("moveClientLeft", ACTION_MOVE_CLIENT_LEFT);
+    createAction("moveClientRight", ACTION_MOVE_CLIENT_RIGHT);
+    createAction("moveClientUp", ACTION_MOVE_CLIENT_UP);
+    createAction("moveClientDown", ACTION_MOVE_CLIENT_DOWN);
+    createAction("deleteEmptyContainers", ACTION_DELETE_EMPTY_CONTAINERS);
 
-    createAction("toggleExpanding", &toggleExpanding);
-    createAction("toggleParentExpanding", &toggleParentExpanding);
+    createAction("toggleExpanding", ACTION_TOGGLE_EXPANDING);
+    createAction("toggleParentExpanding", ACTION_TOGGLE_PARENT_EXPANDING);
 
-    createAction("incWidth", &incWidth);
-    createAction("decWidth", &decWidth);
-    createAction("incHeight", &incHeight);
-    createAction("decHeight", &decHeight);
+    createAction("incWidth", ACTION_INC_WIDTH);
+    createAction("decWidth", ACTION_DEC_WIDTH);
+    createAction("incHeight", ACTION_INC_HEIGHT);
+    createAction("decHeight", ACTION_DEC_HEIGHT);
 
-    createAction("setFixedSizeToMinimum", &setFixedSizeToMinimum);
+    createAction("setFixedSizeToMinimum", ACTION_SET_FIXED_SIZE_TO_MINIMUM);
+}
+
+void ModeDefault::handleShortcut(int id)
+{
+    switch(id) {
+        case ACTION_MOVE_CLIENT_LEFT:
+            moveClient(LEFT);
+            break;
+        case ACTION_MOVE_CLIENT_RIGHT:
+            moveClient(RIGHT);
+            break;
+        case ACTION_MOVE_CLIENT_UP:
+            moveClient(UP);
+            break;
+        case ACTION_MOVE_CLIENT_DOWN:
+            moveClient(DOWN);
+            break;
+        case ACTION_DELETE_EMPTY_CONTAINERS:
+            deleteEmptyChildren(Application::activeWorkspace()->rootContainer());
+            break;
+        case ACTION_TOGGLE_EXPANDING:
+            if (ClientContainer *c = Application::activeClientContainer())
+                c->enableFixedSize(!c->isFixedSize());
+            break;
+        case ACTION_TOGGLE_PARENT_EXPANDING:
+            if (ClientContainer *c = Application::activeClientContainer())
+                c->parent()->enableFixedSize(!c->parent()->isFixedSize());
+            break;
+        case ACTION_INC_WIDTH:
+            changeSize(true, -100);
+            break;
+        case ACTION_DEC_WIDTH:
+            changeSize(true, 100);
+            break;
+        case ACTION_INC_HEIGHT:
+            changeSize(false, 100);
+            break;
+        case ACTION_DEC_HEIGHT:
+            changeSize(false, -100);
+            break;
+        case ACTION_SET_FIXED_SIZE_TO_MINIMUM:
+            setFixedSizeToMinimum();
+            break;
+    }
 }
 
 void ModeDefault::tileClient(Client *client, ContainerContainer *root_container)
@@ -115,43 +159,6 @@ void ModeDefault::moveClient(Direction direction)
     }
 }
 
-void ModeDefault::moveClientLeft()
-{
-    moveClient(LEFT);
-}
-
-void ModeDefault::moveClientRight()
-{
-    moveClient(RIGHT);
-}
-
-void ModeDefault::moveClientUp()
-{
-    moveClient(UP);
-}
-
-void ModeDefault::moveClientDown()
-{
-    moveClient(DOWN);
-}
-
-void ModeDefault::deleteEmptyContainers()
-{
-    deleteEmptyChildren(Application::activeWorkspace()->rootContainer());
-}
-
-void ModeDefault::toggleExpanding()
-{
-    if (ClientContainer *c = Application::activeClientContainer())
-        c->enableFixedSize(!c->isFixedSize());
-}
-
-void ModeDefault::toggleParentExpanding()
-{
-    if (ClientContainer *c = Application::activeClientContainer())
-        c->parent()->enableFixedSize(!c->parent()->isFixedSize());
-}
-
 void ModeDefault::changeSize(bool horizontal, int delta)
 {
     if (Container *c = Application::activeClientContainer()) {
@@ -163,26 +170,6 @@ void ModeDefault::changeSize(bool horizontal, int delta)
                 target->setFixedHeight(target->fixedHeight() + delta);
         }
     }
-}
-
-void ModeDefault::incWidth()
-{
-    changeSize(true, 100);
-}
-
-void ModeDefault::decWidth()
-{
-    changeSize(true, -100);
-}
-
-void ModeDefault::incHeight()
-{
-    changeSize(false, 100);
-}
-
-void ModeDefault::decHeight()
-{
-    changeSize(false, -100);
 }
 
 void ModeDefault::setFixedSizeToMinimum()

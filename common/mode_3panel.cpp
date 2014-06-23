@@ -43,68 +43,71 @@ void Mode3Panel::activate(Workspace *workspace)
 
 void Mode3Panel::initShortcuts()
 {
-    createAction("moveClientLeft", &moveClientLeft);
-    createAction("moveClientRight", &moveClientRight);
-    createAction("moveClientUp", &moveClientUp);
-    createAction("moveClientDown", &moveClientDown);
+    createAction("moveClientLeft", ACTION_MOVE_CLIENT_LEFT);
+    createAction("moveClientRight", ACTION_MOVE_CLIENT_RIGHT);
+    createAction("moveClientUp", ACTION_MOVE_CLIENT_UP);
+    createAction("moveClientDown", ACTION_MOVE_CLIENT_DOWN);
 
-    createAction("moveHSplitRight", &moveHSplitRight);
-    createAction("moveHSplitLeft", &moveHSplitLeft);
-    createAction("moveVSplitDown", &moveVSplitDown);
-    createAction("moveVSplitUp", &moveVSplitUp);
+    createAction("moveHSplitLeft", ACTION_MOVE_HSPLIT_LEFT);
+    createAction("moveHSplitRight", ACTION_MOVE_HSPLIT_RIGHT);
+    createAction("moveVSplitUp", ACTION_MOVE_HSPLIT_UP);
+    createAction("moveVSplitDown", ACTION_MOVE_HSPLIT_DOWN);
 
-    createAction("togglePrimaryExpanding", &togglePrimaryExpanding);
-    createAction("toggleSecondaryExpanding", &toggleSecondaryExpanding);
+    createAction("togglePrimaryExpanding", ACTION_TOGGLE_PRIMARY_EXPANDING);
+    createAction("toggleSecondaryExpanding", ACTION_TOGGLE_SECONDARY_EXPANDING);
 
-    createAction("setPrimarySlaveToMinimum", &setPrimarySlaveToMinimum);
-    createAction("setSecondarySlaveToMinimum", &setSecondarySlaveToMinimum);
+    createAction("setPrimarySlaveToMinimum", ACTION_SET_PRIMARY_SLAVE_TO_MINIMUM);
+    createAction("setSecondarySlaveToMinimum", ACTION_SET_SECONDARY_SLAVE_TO_MINIMUM);
 }
+
+void Mode3Panel::handleShortcut(int id)
+{
+    switch(id) {
+        case ACTION_MOVE_CLIENT_LEFT:
+            moveClient(LEFT);
+            break;
+        case ACTION_MOVE_CLIENT_RIGHT:
+            moveClient(RIGHT);
+            break;
+        case ACTION_MOVE_CLIENT_UP:
+            moveClient(UP);
+            break;
+        case ACTION_MOVE_CLIENT_DOWN:
+            moveClient(DOWN);
+            break;
+        case ACTION_MOVE_HSPLIT_RIGHT:
+            moveSplitter(true, 100);
+            break;
+        case ACTION_MOVE_HSPLIT_LEFT:
+            moveSplitter(true, -100);
+            break;
+        case ACTION_MOVE_HSPLIT_UP:
+            moveSplitter(false, 100);
+            break;
+        case ACTION_MOVE_HSPLIT_DOWN:
+            moveSplitter(false, -100);
+            break;
+        case ACTION_TOGGLE_PRIMARY_EXPANDING:
+            togglePrimaryExpanding();
+            break;
+        case ACTION_TOGGLE_SECONDARY_EXPANDING:
+            toggleSecondaryExpanding();
+            break;
+        case ACTION_SET_PRIMARY_SLAVE_TO_MINIMUM:
+            setPrimarySlaveToMinimum();
+            break;
+        case ACTION_SET_SECONDARY_SLAVE_TO_MINIMUM:
+            setSecondarySlaveToMinimum();
+            break;
+    }
+}
+
 
 void Mode3Panel::tileClient(Client *client, ContainerContainer *root_container)
 {
     assert(root_container->activeClientContainer());
 
     root_container->activeClientContainer()->addChild(client);
-}
-
-void Mode3Panel::moveHSplitRight()
-{
-    moveSplitter(true, 100);
-}
-
-void Mode3Panel::moveHSplitLeft()
-{
-    moveSplitter(true, -100);
-}
-
-void Mode3Panel::moveVSplitDown()
-{
-    moveSplitter(false, 100);
-}
-
-void Mode3Panel::moveVSplitUp()
-{
-    moveSplitter(false, -100);
-}
-
-void Mode3Panel::moveClientLeft()
-{
-    moveClient(LEFT);
-}
-
-void Mode3Panel::moveClientRight()
-{
-    moveClient(RIGHT);
-}
-
-void Mode3Panel::moveClientUp()
-{
-    moveClient(UP);
-}
-
-void Mode3Panel::moveClientDown()
-{
-    moveClient(DOWN);
 }
 
 void Mode3Panel::moveClient(Direction direction)

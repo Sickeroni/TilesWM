@@ -5,7 +5,7 @@
 
 #include <string>
 
-class ActionSet
+class ActionSet : public ShortcutSet::Handler
 {
 public:
     ActionSet(std::string name);
@@ -17,8 +17,8 @@ public:
     void reloadShortcuts();
 
 protected:
-    void createAction(std::string action_name, ShortcutSet::HandlerFunc handler_func) {
-        _shortcuts->createAction(action_name, handler_func);
+    void createAction(std::string action_name, int id) {
+        _shortcuts->createAction(action_name, id);
     }
 
 private:
