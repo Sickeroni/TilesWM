@@ -10,7 +10,7 @@ CairoIcon::CairoIcon(const unsigned long *argb32_data, int width, int height) : 
     unsigned char *data = surface->get_data();
 
     for(int y = 0; y < height; y++) {
-        uint32 *scanline = reinterpret_cast<uint32*>(data + (y * stride));
+        uint32_t *scanline = reinterpret_cast<uint32_t*>(data + (y * stride));
 
         for (int x = 0; x < width; x++)
             scanline[x] = argb32_data[(y * width) + x];

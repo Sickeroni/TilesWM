@@ -7,7 +7,7 @@ class X11GraphicsSystemCairo final : public X11GraphicsSystem
 {
 public:
     virtual Canvas *createCanvas(Drawable drawable, int width, int height) override;
-    virtual Icon *createIcon(int width, int height, X11Widget *parent, const unsigned long *argb_data, uint32 bg_color) override;
+    virtual Icon *createIcon(int width, int height, X11Widget *parent, const unsigned long *argb_data, uint32_t bg_color) override;
 };
 
 #endif

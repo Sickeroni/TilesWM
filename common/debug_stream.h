@@ -1,10 +1,7 @@
 #ifndef __DEBUG_STREAM_H__
 #define __DEBUG_STREAM_H__
 
-#include "types.h"
-
 #include <iostream>
-
 
 class DebugStream
 {

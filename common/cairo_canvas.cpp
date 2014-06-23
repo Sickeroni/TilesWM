@@ -4,7 +4,7 @@
 
 using namespace Cairo;
 
-inline void rgb32_to_double(uint32 rgb, double &r, double &g, double &b)
+inline void rgb32_to_double(uint32_t rgb, double &r, double &g, double &b)
 {
     r = static_cast<double>((rgb & 0xFF0000) >> 16) / 256.f;
     g = static_cast<double>((rgb & 0x00FF00) >> 8) / 256.f;
@@ -38,7 +38,7 @@ void CairoCanvas::erase(const Rect &rect)
     fillRectangle(rect, 0);
 }
 
-void CairoCanvas::fillRectangle(const Rect &rect, uint32 color)
+void CairoCanvas::fillRectangle(const Rect &rect, uint32_t color)
 {
     _context->save();
 
@@ -53,7 +53,7 @@ void CairoCanvas::fillRectangle(const Rect &rect, uint32 color)
     _context->restore();
 }
 
-void CairoCanvas::drawFrame(const Rect &rect, uint32 color)
+void CairoCanvas::drawFrame(const Rect &rect, uint32_t color)
 {
     _context->save();
 
@@ -74,7 +74,7 @@ void CairoCanvas::drawFrame(const Rect &rect, uint32 color)
     _context->restore();
 }
 
-void CairoCanvas::drawText(const std::string &text, const Rect &rect, uint32 color)
+void CairoCanvas::drawText(const std::string &text, const Rect &rect, uint32_t color)
 {
     _context->save();
 

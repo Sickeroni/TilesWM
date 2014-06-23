@@ -492,7 +492,7 @@ void X11Client::mapInt()
 
         assert(isFloating() || container());
 
-        const uint32 state[2] = {
+        const uint32_t state[2] = {
             STATE_NORMAL, None
         };
 

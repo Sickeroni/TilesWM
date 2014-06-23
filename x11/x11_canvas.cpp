@@ -3,11 +3,6 @@
 #include "x11_global.h"
 #include "x11_icon.h"
 
-#include <string.h>
-#include <stdlib.h>
-#include <assert.h>
-
-
 using namespace X11Global;
 
 
@@ -44,7 +39,7 @@ void X11Canvas::erase(const Rect &rect)
     XClearArea(dpy(), _drawable, rect.x, rect.y, rect.w, rect.h, false);
 }
 
-void X11Canvas::drawFrame(const Rect &rect, uint32 color)
+void X11Canvas::drawFrame(const Rect &rect, uint32_t color)
 {
     XSetForeground(dpy(), _gc, color);
     // the width and height parameters of XDrawRectangle()
@@ -53,7 +48,7 @@ void X11Canvas::drawFrame(const Rect &rect, uint32 color)
                    rect.x, rect.y, rect.w - 1, rect.h - 1);
 }
 
-void X11Canvas::drawText(const std::string &text, const Rect &rect, uint32 color)
+void X11Canvas::drawText(const std::string &text, const Rect &rect, uint32_t color)
 {
     assert(_font_info);
 
@@ -86,13 +81,13 @@ void X11Canvas::drawText(const std::string &text, const Rect &rect, uint32 color
     XSetClipMask(dpy(), _gc, None);
 }
 
-void X11Canvas::fillRectangle(const Rect &rect, uint32 color)
+void X11Canvas::fillRectangle(const Rect &rect, uint32_t color)
 {
     XSetForeground(dpy(), _gc, color);
     XFillRectangle(dpy(), _drawable, _gc, rect.x, rect.y, rect.w, rect.h);
 }
 
-void X11Canvas::drawLine(int x1, int y1, int x2, int y2, uint32 color)
+void X11Canvas::drawLine(int x1, int y1, int x2, int y2, uint32_t color)
 {
     XSetForeground(dpy(), _gc, color);
     XDrawLine(dpy(), _drawable, _gc, x1, y1, x2, y2);

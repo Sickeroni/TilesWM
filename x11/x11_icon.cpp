@@ -8,10 +8,6 @@
 
 #include <X11/Xutil.h>
 
-#include <string.h>
-#include <stdlib.h>
-#include <assert.h>
-
 
 using namespace X11Global;
 
@@ -45,7 +41,7 @@ X11Icon::X11Icon(int width, int height, X11Widget *parent) : Icon(width, height)
 
 
 
-X11Icon::X11Icon(int width, int height, X11Widget *parent, const unsigned long *argb_data, uint32 bg_color) : Icon(width, height),
+X11Icon::X11Icon(int width, int height, X11Widget *parent, const unsigned long *argb_data, uint32_t bg_color) : Icon(width, height),
     _pixmap(0)
 //     _mask(0)
 {
@@ -65,7 +61,7 @@ X11Icon::X11Icon(int width, int height, X11Widget *parent, const unsigned long *
 
         for(int y = 0; y< height; y++) {
             for(int x = 0; x < width; x++) {
-                uint32 pixel = argb_data[(y * width) + x];
+                uint32_t pixel = argb_data[(y * width) + x];
 
                 unsigned int alpha = (pixel & 0xFF000000) >> 24;
                 unsigned int red_in = (pixel & 0xFF0000) >> 16;

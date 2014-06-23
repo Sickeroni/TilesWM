@@ -1,16 +1,17 @@
 #ifndef __COMMON_H__
 #define __COMMON_H__
 
-#include "types.h"
 #include "debug_stream.h"
 
+#include <cstdint>
 #include <iostream>
-#include <assert.h>
-#include <stdlib.h>
+#include <cassert>
+#include <cstdlib>
 
 using std::cout;
 using std::cerr;
 using std::endl;
+using std::uint32_t;
 
 enum {
     INVALID_INDEX = -1

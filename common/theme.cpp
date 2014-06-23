@@ -109,7 +109,7 @@ void drawContainerContainer(ContainerContainer *container, Canvas *canvas)
         frame_rect.w += 10;
         frame_rect.h += 10;
 
-        uint32 frame_color = c->isClientContainer() ? Colors::CLIENT_CONTAINER_BORDER:
+        uint32_t frame_color = c->isClientContainer() ? Colors::CLIENT_CONTAINER_BORDER:
                                                       Colors::CONTAINER_BORDER;
 
         canvas->drawFrame(frame_rect, frame_color);
@@ -121,7 +121,7 @@ void drawContainerContainer(ContainerContainer *container, Canvas *canvas)
             focus_rect.w -= 2;
             focus_rect.h -= 2;
 
-            uint32 color = c->isClientContainer() ? Colors::CLIENT_CONTAINER_FOCUS :
+            uint32_t color = c->isClientContainer() ? Colors::CLIENT_CONTAINER_FOCUS :
                                                     Colors::CONTAINER_FOCUS;
 
             canvas->drawFrame(focus_rect, color);
@@ -243,8 +243,8 @@ int getTabAt(int x, int y, ClientContainer *container)
 void drawTab(ClientContainer *container, Client *client, const Rect &rect, bool vertical, Canvas *canvas)
 {
     const ClientContainerSizesInternal &sizes = _clientContainerSizesInternal;
-    uint32 fg = Colors::TAB_TEXT;
-    uint32 bg = Colors::TAB;
+    uint32_t fg = Colors::TAB_TEXT;
+    uint32_t bg = Colors::TAB;
 
     if (client->hasFocus()) {
         bg = Colors::TAB_FOCUSED;
@@ -309,7 +309,7 @@ void drawTabbar(ClientContainer *container, Canvas *canvas)
     status_bar_rect.w += (2 * sizes.tab_inner_margin);
     status_bar_rect.h += (2 * sizes.tab_inner_margin);
 
-    uint32 status_bar_fg = Colors::TAB_TEXT;
+    uint32_t status_bar_fg = Colors::TAB_TEXT;
 
     canvas->drawText(container->isFixedSize() ? "-" : "<->", status_bar_rect, status_bar_fg);
 
@@ -374,7 +374,7 @@ void drawClientFrame(Client *client, Canvas *canvas)
     Rect frame_rect = client->rect();
     frame_rect.setPos(0, 0);
 
-    uint32 frame_color = client->hasFocus() ? Colors::CLIENT_FOCUS : Colors::CLIENT_BORDER;
+    uint32_t frame_color = client->hasFocus() ? Colors::CLIENT_FOCUS : Colors::CLIENT_BORDER;
 
     //FIXME
     canvas->erase(frame_rect);
@@ -393,8 +393,8 @@ void drawClientFrame(Client *client, Canvas *canvas)
         titlebar_height +=
             (client->maxTextHeight() + (2 * Metrics::CLIENT_TITLEBAR_INNER_MARGIN));
 
-        uint32 title_fg = client->hasFocus() ? Colors::TAB_FOCUSED_TEXT : Colors::TAB_TEXT;
-        uint32 title_bg = client->hasFocus() ? Colors::TAB_FOCUSED : Colors::TAB;
+        uint32_t title_fg = client->hasFocus() ? Colors::TAB_FOCUSED_TEXT : Colors::TAB_TEXT;
+        uint32_t title_bg = client->hasFocus() ? Colors::TAB_FOCUSED : Colors::TAB;
 
         Rect titlebar_rect(frame_margin, frame_margin,
                            frame_rect.w - (2 * frame_margin), titlebar_height);

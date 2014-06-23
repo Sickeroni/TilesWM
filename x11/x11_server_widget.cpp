@@ -42,7 +42,7 @@ X11ServerWidget *X11ServerWidget ::find(Window wid)
         return 0;
 }
 
-X11ServerWidget *X11ServerWidget::create(X11ServerWidget *parent, uint32 bg_color,
+X11ServerWidget *X11ServerWidget::create(X11ServerWidget *parent, uint32_t bg_color,
                                          EventHandler *event_handler, long event_mask)
 {
     debug;

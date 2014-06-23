@@ -13,7 +13,7 @@ Canvas *X11GraphicsSystemX11::createCanvas(Drawable drawable, int width, int hei
     return new X11Canvas(drawable);
 }
 
-Icon *X11GraphicsSystemX11::createIcon(int width, int height, X11Widget *parent, const unsigned long *argb_data, uint32 bg_color)
+Icon *X11GraphicsSystemX11::createIcon(int width, int height, X11Widget *parent, const unsigned long *argb_data, uint32_t bg_color)
 {
     return new X11Icon(width, height, parent, argb_data, bg_color);
 }

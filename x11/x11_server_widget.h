@@ -2,7 +2,7 @@
 #define __X11__SERVER_WIDGET_H__
 
 #include "x11_widget.h"
-#include "types.h"
+#include "common.h"
 
 #include <X11/Xlib.h>
 
@@ -26,7 +26,7 @@ public:
         virtual void handleButtonPress(const XButtonEvent &ev) {}
     };
 
-    static X11ServerWidget *create(X11ServerWidget *parent, uint32 bg_color,
+    static X11ServerWidget *create(X11ServerWidget *parent, uint32_t bg_color,
                                    EventHandler *event_handler, long event_mask);
     static bool handleEvent(const XEvent &ev);
 

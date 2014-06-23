@@ -25,7 +25,7 @@ Canvas *X11GraphicsSystemCairo::createCanvas(Drawable drawable, int width, int h
     return new CairoCanvas(surface);
 }
 
-Icon *X11GraphicsSystemCairo::createIcon(int width, int height, X11Widget *parent, const unsigned long *argb_data, uint32 bg_color)
+Icon *X11GraphicsSystemCairo::createIcon(int width, int height, X11Widget *parent, const unsigned long *argb_data, uint32_t bg_color)
 {
     return new CairoIcon(argb_data, width, height);
 }
