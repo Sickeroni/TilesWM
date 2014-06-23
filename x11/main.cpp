@@ -15,5 +15,7 @@ int main()
 
     app.shutdown();
 
+    cout << "shutdown finished. goodbye.\n";
+
     return 0;
 }

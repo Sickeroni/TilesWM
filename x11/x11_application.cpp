@@ -156,7 +156,7 @@ const char *X11Application::errorCodeToString(size_t error_code)
 
 X11Application::X11Application() :
     _dpy(0),
-    _root(0),
+    _root(None),
     _num_server_grabs(0),
     _quit_requested(false),
     _monitor(0)
@@ -205,6 +205,7 @@ bool X11Application::init()
     XWindowAttributes root_attr;
     if (!XGetWindowAttributes(_dpy, _root, &root_attr)) {
         cerr << "ERROR: XGetWindowAttributes() failed for root window.\n";
+        _root = None;
         XCloseDisplay(_dpy);
         _dpy = 0;
         return false;
@@ -212,6 +213,7 @@ bool X11Application::init()
 
     if (root_attr.all_event_masks & SubstructureRedirectMask) {
         cerr<<"ERROR: Another window manager is already running.\n";
+        _root = None;
         XCloseDisplay(_dpy);
         _dpy = 0;
         return false;
@@ -252,9 +254,19 @@ void X11Application::shutdown()
 {
     grabServer();
 
-    Application::shutdown();
+    X11Client::shutdown();
 
-    //FIXME delete root container
+    delete _monitor;
+    _monitor = 0;
+
+    for (size_t i = 0; i < _workspaces.size(); i++) {
+        Workspace *w = _workspaces[i];
+        _workspaces[i] = 0;
+        delete w;
+    }
+    _workspaces.clear();
+
+    Application::shutdown();
 
     XSetWindowAttributes new_root_attr;
     memset(&new_root_attr, 0, sizeof(XSetWindowAttributes));
@@ -270,10 +282,14 @@ void X11Application::shutdown()
 
     _atoms.clear();
 
+    _root = None;
+
     ungrabServer();
 
     XCloseDisplay(_dpy);
     _dpy = 0;
+
+    Config::shutdown();
 }
 
 void X11Application::eventLoop()

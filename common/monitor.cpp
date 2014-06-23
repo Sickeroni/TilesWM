@@ -12,6 +12,12 @@ Monitor::Monitor() :
     _workspace->setMonitor(this);
 }
 
+Monitor::~Monitor()
+{
+    _workspace->setMonitor(0);
+    _workspace = 0;
+}
+
 void Monitor::setSize(int w, int h)
 {
     _w = w;

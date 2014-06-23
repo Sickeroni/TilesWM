@@ -268,6 +268,28 @@ void X11Client::init()
     XFree(children);
 }
 
+void X11Client::shutdown()
+{
+    CriticalSection sec;
+
+    cancelDrag();
+
+    _frame_wid_index.clear();
+
+    for (std::map<Window, X11Client*>::iterator it = _wid_index.begin();
+            it != _wid_index.end();
+            it++)
+    {
+        Application::unmanageClient(it->second);
+        it->second->_widget->reparent(0);
+        XRemoveFromSaveSet(dpy(), it->second->_widget->wid());
+        delete it->second;
+        it->second = 0;
+    }
+
+    _wid_index.clear();
+}
+
 void X11Client::create(Window wid)
 {
     CriticalSection sec;
@@ -668,6 +690,9 @@ void X11Client::refreshName()
             _name = list[0];
             XFreeStringList(list);
         }
+
+        if (prop.value)
+            XFree(prop.value);
     }
 
     _title = _class + " - " + _name;
@@ -688,6 +713,9 @@ void X11Client::refreshIconName()
             _icon_name = list[0];
             XFreeStringList(list);
         }
+
+        if (prop.value)
+            XFree(prop.value);
     }
 }
 

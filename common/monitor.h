@@ -7,6 +7,7 @@ class Monitor
 {
 public:
     Monitor();
+    ~Monitor();
 
     Workspace *workspace() { return _workspace; }
     bool isActive() { return true; }

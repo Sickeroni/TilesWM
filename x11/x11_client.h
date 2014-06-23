@@ -24,6 +24,7 @@ class X11Client final : public Client, public X11ServerWidget::EventHandler
 {
 public:
     static void init();
+    static void shutdown();
     static bool handleEvent(const XEvent &ev);
     static void setFocus(X11Client *client);
 

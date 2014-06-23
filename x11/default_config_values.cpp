@@ -1,6 +1,6 @@
 #include "config.h"
 
-const Config::Map Config::_default_values =
+Config::Map Config::_default_values =
 {
     { "shortcuts.main.reloadConfig", "SHIFT+MOD1+r" },
     { "shortcuts.main.toggleMaximize", "MOD1+m" },

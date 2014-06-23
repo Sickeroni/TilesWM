@@ -18,6 +18,7 @@ public:
 
     static Config *self() { return _self; }
     static void init();
+    static void shutdown();
 
 private:
     typedef std::unordered_map<std::string, std::string> Map;
@@ -26,7 +27,7 @@ private:
 
     Map _values = _default_values;
 
-    static const Map _default_values;
+    static Map _default_values;
     static Config *_self;
 };
 

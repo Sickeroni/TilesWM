@@ -20,8 +20,11 @@ X11Canvas::X11Canvas(Drawable drawable) :
 
 X11Canvas::~X11Canvas()
 {
+    debug;
+    // while not mentionend in in http://www.x.org/releases/X11R7.7/doc/libX11/libX11/libX11.html#XFreeFontInfo,
+    // 'actual_count' also refers to the number of font structures passed in 'free_info'
     if (_font_info)
-        XFreeFontInfo(0, _font_info, 0);
+        XFreeFontInfo(0, _font_info, 1);
     _font_info = 0;
     XFreeGC(dpy(), _gc);
     _gc = 0;
