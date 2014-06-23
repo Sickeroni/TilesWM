@@ -13,6 +13,10 @@
 using namespace X11Global;
 
 
+//FIXME
+const X11Shortcut::ModMask num_lock_mask = Mod2Mask;
+
+
 X11Shortcut::KeyGrabList X11Shortcut::_key_grabs;
 
 struct X11Shortcut::KeyGrab
@@ -31,16 +35,31 @@ X11Shortcut::KeyGrab::KeyGrab(KeySym _key_sym, ModMask _mod_mask) :
     mod_mask(_mod_mask)
 {
     debug;
+
     //FIXME: error message, if grabbing is not possible - member: bool is_active
+
     XGrabKey(dpy(), XKeysymToKeycode(dpy(), key_sym),
              mod_mask, X11Application::root(), true, GrabModeAsync, GrabModeAsync);
+    XGrabKey(dpy(), XKeysymToKeycode(dpy(), key_sym),
+             mod_mask | LockMask, X11Application::root(), true, GrabModeAsync, GrabModeAsync);
+    XGrabKey(dpy(), XKeysymToKeycode(dpy(), key_sym),
+             mod_mask | num_lock_mask, X11Application::root(), true, GrabModeAsync, GrabModeAsync);
+    XGrabKey(dpy(), XKeysymToKeycode(dpy(), key_sym),
+             mod_mask | LockMask | num_lock_mask, X11Application::root(), true, GrabModeAsync, GrabModeAsync);
 }
 
 X11Shortcut::KeyGrab::~KeyGrab()
 {
     XUngrabKey(dpy(), XKeysymToKeycode(dpy(), key_sym),
                mod_mask, X11Application::root());
+    XUngrabKey(dpy(), XKeysymToKeycode(dpy(), key_sym),
+               mod_mask | LockMask, X11Application::root());
+    XUngrabKey(dpy(), XKeysymToKeycode(dpy(), key_sym),
+               mod_mask | num_lock_mask, X11Application::root());
+    XUngrabKey(dpy(), XKeysymToKeycode(dpy(), key_sym),
+               mod_mask | LockMask | num_lock_mask, X11Application::root());
 }
+
 
 X11Shortcut::X11Shortcut(KeySym key_sym, ModMask mod_mask, ShortcutSet::HandlerFunc handler_func) :
     _handler_func(handler_func)
@@ -104,9 +123,10 @@ bool X11Shortcut::handleKeyPress(const XKeyEvent &ev)
     debug;
 
     KeySym key_sym = XLookupKeysym(const_cast<XKeyEvent*>(&ev), 0);
+    ModMask mod_mask = ev.state & ~(LockMask | num_lock_mask);
 
     if (key_sym != NoSymbol) {
-        KeyGrab *key_grab = findKeyGrab(key_sym, ev.state);
+        KeyGrab *key_grab = findKeyGrab(key_sym, mod_mask);
         if (key_grab) {
             const X11ShortcutSet *main_shortcuts = 
                 static_cast<const X11ShortcutSet*>(Application::self()->mainShortcuts());
