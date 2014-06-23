@@ -40,7 +40,6 @@ TTMWM_X11_SRCS += x11_widget
 TTMWM_X11_SRCS += x11_server_widget
 TTMWM_X11_SRCS += x11_client_widget
 TTMWM_X11_SRCS += x11_client
-TTMWM_X11_SRCS += x11_shortcut
 TTMWM_X11_SRCS += x11_shortcut_set
 TTMWM_X11_SRCS += x11_application
 TTMWM_X11_SRCS += x11_global

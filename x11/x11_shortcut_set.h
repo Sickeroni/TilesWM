@@ -3,22 +3,34 @@
 
 
 #include "shortcut_set.h"
-#include "x11_shortcut.h"
+#include "x11_global.h"
+
+#include <list>
 
 class X11ShortcutSet final : public ShortcutSet
 {
-    X11Shortcut::List _shortcuts;
-
 public:
+
     X11ShortcutSet(std::string name);
     ~X11ShortcutSet();
 
     virtual void clear() override;
 
-    const X11Shortcut::List &shortcuts() const { return _shortcuts; }
+    bool handleKeyPress(const X11Global::KeySequence &key_sequence) const;
 
 private:
+    struct Shortcut
+    {
+        Shortcut(const X11Global::KeySequence &key_sequence, HandlerFunc handler_func) :
+            key_sequence(key_sequence), handler_func(handler_func) {}
+
+        X11Global::KeySequence key_sequence;
+        HandlerFunc handler_func = 0;
+    };
+
     virtual void createShortcut(std::string key_sequence, HandlerFunc handler_func) override;
+
+    std::list<Shortcut> _shortcuts;
 };
 
 

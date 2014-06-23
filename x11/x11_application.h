@@ -2,12 +2,14 @@
 #define __X11_APPLICATION_H__
 
 #include "application.h"
+#include "x11_global.h"
 
 #include <X11/Xlib.h>
 
 #include <string>
 #include <map>
 #include <vector>
+#include <list>
 
 class X11ContainerContainer;
 class X11ClientContainer;
@@ -38,6 +40,8 @@ public:
     void eventLoop();
     void grabServer();
     void ungrabServer();
+    bool addKeyGrab(const X11Global::KeySequence &key_sequence);
+    void releaseKeyGrab(const X11Global::KeySequence &key_sequence);
     Atom atom(const char *name);
 
     static X11Application *self() { return _self; }
@@ -53,7 +57,17 @@ public:
     static const char *errorCodeToString(size_t error_code);
 
 private:
+    struct KeyGrab
+    {
+        KeyGrab(X11Global::KeySequence key_sequence) : key_sequence(key_sequence) {}
+
+        X11Global::KeySequence key_sequence;
+        int ref_count = 1;
+    };
+
     static void quit(int signum);
+
+    bool handleKeyPress(const XKeyEvent &ev);
 
     static X11Application *_self;
 
@@ -64,6 +78,8 @@ private:
     Monitor *_monitor;
     std::vector<Workspace*>  _workspaces;
     std::map<std::string, Atom> _atoms; // TODO - use hash
+    std::list<KeyGrab> _key_grabs;
+    X11Global::ModMask num_lock_mask = Mod2Mask; //FIXME
     X11GraphicsSystem *_graphics_system = 0;
 };
 

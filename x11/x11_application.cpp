@@ -10,6 +10,7 @@
 #include "workspace.h"
 #include "monitor.h"
 #include "client_container.h"
+#include "mode.h"
 #include "config.h"
 #include "common.h"
 
@@ -309,7 +310,7 @@ void X11Application::eventLoop()
 
         XNextEvent(_dpy, &ev);
 
-        if (ev.type == KeyPress && X11Shortcut::handleKeyPress(ev.xkey)) {
+        if (ev.type == KeyPress && handleKeyPress(ev.xkey)) {
             // NO-OP
         }
         else if (ev.xany.window && X11Widget::handleEvent(ev)) {
@@ -412,4 +413,84 @@ Atom X11Application::atom(const char *name)
         value = XInternAtom(_dpy, name, false);
 
     return value;
+}
+
+bool X11Application::handleKeyPress(const XKeyEvent &ev)
+{
+
+    X11Global::KeySequence key_sequence(
+        XLookupKeysym(const_cast<XKeyEvent*>(&ev), 0),
+        ev.state & ~(LockMask | num_lock_mask));
+
+    if (key_sequence.key_sym != NoSymbol) {
+        const X11ShortcutSet *main_shortcuts = 
+            static_cast<const X11ShortcutSet*>(mainShortcuts());
+
+        const X11ShortcutSet *active_mode_shortcuts = 
+            static_cast<const X11ShortcutSet*>(activeWorkspace()->mode()->shortcuts());
+
+        if (main_shortcuts->handleKeyPress(key_sequence))
+            return true;
+        else if (active_mode_shortcuts->handleKeyPress(key_sequence))
+            return true;
+    }
+
+    return false;
+}
+
+bool X11Application::addKeyGrab(const X11Global::KeySequence &key_sequence)
+{
+    for(std::list<KeyGrab>::iterator it = _key_grabs.begin();
+        it != _key_grabs.end();
+        it++)
+    {
+        if (it->key_sequence.equals(key_sequence)) {
+            it->ref_count++;
+            return true;
+        }
+    }
+
+    //FIXME: error message / return false, if grabbing is not possible
+
+    XGrabKey(dpy(), XKeysymToKeycode(dpy(), key_sequence.key_sym),
+             key_sequence.mod_mask, root(), true, GrabModeAsync, GrabModeAsync);
+    XGrabKey(dpy(), XKeysymToKeycode(dpy(), key_sequence.key_sym),
+             key_sequence.mod_mask | LockMask, root(), true, GrabModeAsync, GrabModeAsync);
+    XGrabKey(dpy(), XKeysymToKeycode(dpy(), key_sequence.key_sym),
+             key_sequence.mod_mask | num_lock_mask, root(), true, GrabModeAsync, GrabModeAsync);
+    XGrabKey(dpy(), XKeysymToKeycode(dpy(), key_sequence.key_sym),
+             key_sequence.mod_mask | LockMask | num_lock_mask, root(), true, GrabModeAsync, GrabModeAsync);
+
+    _key_grabs.push_back(KeyGrab(key_sequence));
+
+    return true;
+}
+
+void X11Application::releaseKeyGrab(const X11Global::KeySequence &key_sequence)
+{
+    for(std::list<KeyGrab>::iterator it = _key_grabs.begin();
+        it != _key_grabs.end();
+        it++)
+    {
+        if (it->key_sequence.equals(key_sequence)) {
+            it->ref_count--;
+
+            assert(it->ref_count >= 0);
+
+            if (it->ref_count == 0) {
+                XUngrabKey(dpy(), XKeysymToKeycode(dpy(), key_sequence.key_sym),
+                           key_sequence.mod_mask, root());
+                XUngrabKey(dpy(), XKeysymToKeycode(dpy(), key_sequence.key_sym),
+                           key_sequence.mod_mask | LockMask, root());
+                XUngrabKey(dpy(), XKeysymToKeycode(dpy(), key_sequence.key_sym),
+                           key_sequence.mod_mask | num_lock_mask, root());
+                XUngrabKey(dpy(), XKeysymToKeycode(dpy(), key_sequence.key_sym),
+                           key_sequence.mod_mask | LockMask | num_lock_mask, root());
+
+                _key_grabs.erase(it);
+
+                return;
+            }
+        }
+    }
 }
