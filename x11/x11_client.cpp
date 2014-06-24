@@ -135,10 +135,7 @@ void X11Client::setFocus(X11Client *client)
         assert(client->isFloating() || static_cast<X11ClientContainer*>(client->container())->widget()->isMapped());
         assert(client->isFloating() || static_cast<X11ContainerContainer*>(client->container()->parent())->widget()->isMapped());
 
-        //FIXME use isVisible() as condition
-        if (client->isMapped() && (client->isFloating() ||
-                static_cast<X11ContainerContainer*>(client->container()->workspace()->rootContainer())->widget()->isMapped()))
-        {
+        if (client->isMapped() && client->_widget->isViewable()) {
             focused_wid = client->_widget->wid();
             prop[0] = focused_wid;
         }
@@ -335,6 +332,7 @@ void X11Client::create(Window wid)
     if (XGetWindowAttributes(dpy(), wid, &attr)) {
         if (!attr.override_redirect) {
             bool is_mapped = (attr.map_state != IsUnmapped);
+            bool is_viewable = (attr.map_state == IsViewable);
 
             XSetWindowAttributes new_attr;
             memset(&new_attr, 0, sizeof(new_attr));
@@ -349,7 +347,7 @@ void X11Client::create(Window wid)
                 client->_is_modal = true;
 
             Rect rect(attr.x, attr.y, attr.width, attr.height);
-            client->_widget = new X11ClientWidget(wid, client, is_mapped, rect);
+            client->_widget = new X11ClientWidget(wid, client, is_mapped, is_viewable, rect);
 
             client->refreshName();
             client->refreshIconName();

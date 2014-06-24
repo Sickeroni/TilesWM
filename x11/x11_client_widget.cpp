@@ -11,10 +11,13 @@
 using namespace X11Global;
 
 
-X11ClientWidget::X11ClientWidget(Window wid, X11Client *client, bool is_mapped, const Rect &rect) :
-    X11Widget(wid, CLIENT, is_mapped, rect)
-//     ,
-//     _client(client)
+X11ClientWidget::X11ClientWidget(
+            Window wid, X11Client *client,
+            bool is_mapped,
+            bool is_viewable,
+            const Rect &rect) :
+    X11Widget(wid, CLIENT, is_mapped, rect),
+    _is_viewable(is_viewable)
 {
 }
 
@@ -62,6 +65,7 @@ bool X11ClientWidget::refreshMapState()
     XWindowAttributes attr;
     if (XGetWindowAttributes(dpy(), wid(), &attr)) {
         _is_mapped = (attr.map_state != IsUnmapped);
+        _is_viewable = (attr.map_state == IsViewable);
         return true;
     } else {
         debug<<"XGetWindowAttributes() failed.";
