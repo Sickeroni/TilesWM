@@ -47,7 +47,6 @@ public:
     static X11Application *self() { return _self; }
     static Display *dpy()  { return self()->_dpy; }
     static Window root()  { return self()->_root; }
-    static X11ContainerContainer *activeRootContainer();
     static X11ClientContainer *activeClientContainer();
     static Workspace *activeWorkspace();
     static X11Client *activeClient();

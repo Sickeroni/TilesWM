@@ -372,14 +372,6 @@ Workspace *X11Application::activeWorkspace()
     return self()->activeMonitor()->workspace();
 }
 
-X11ContainerContainer *X11Application::activeRootContainer()
-{
-    if (self()->activeLayer() == LAYER_TILED)
-        return static_cast<X11ContainerContainer*>(activeWorkspace()->rootContainer());
-    else
-        return 0;
-}
-
 X11ClientContainer *X11Application::activeClientContainer()
 {
     return static_cast<X11ClientContainer*>(Application::activeClientContainer());
