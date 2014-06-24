@@ -1,42 +1,37 @@
 #include "workspace.h"
 
-#include "container_container.h"
 #include "container_layout.h"
 #include "container_util.h"
+#include "window_manager.h"
 #include "application.h"
 #include "mode.h"
 #include "common.h"
 
 Workspace::Workspace() :
     _monitor(0),
-    _root_container(Application::self()->createContainerContainer()),
     _maximized(false),
     _mode(Application::self()->defaultMode())
 {
-    _root_container->setWorkspace(this);
-
-    mode()->activate(this);
-
-    _root_container->setMapped(true);
+    _window_manager = mode()->createWindowManager(this);
+    _window_manager->initShortcuts();
 }
 
 Workspace::~Workspace()
 {
     assert(!monitor());
-    delete _root_container;
-    _root_container = 0;
+    delete _window_manager;
+    _window_manager = 0;
 }
 
 void Workspace::setMaximized(bool enable)
 {
     _maximized = enable;
-    _root_container->handleMaximizedChanged();
-    _root_container->getLayout()->layoutContents();
+    _window_manager->handleMaximizedChanged();
 }
 
 void Workspace::layoutContents()
 {
-    _root_container->setRect(_rect);
+    _window_manager->layout();
 }
 
 void Workspace::setRect(Rect rect)
@@ -78,7 +73,10 @@ void Workspace::setMode(size_t index)
     assert(index < Application::self()->numModes());
 
     _mode = index;
-    mode()->activate(this);
+
+    delete _window_manager;
+    _window_manager = mode()->createWindowManager(this);
+    _window_manager->initShortcuts();
 
     Application::focusActiveClient();
 }
@@ -90,5 +88,5 @@ void Workspace::rotateOrientation()
     else
         _orientation = Container::HORIZONTAL;
 
-    _root_container->getLayout()->layoutContents();
+   layoutContents();
 }

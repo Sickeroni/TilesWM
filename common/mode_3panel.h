@@ -11,6 +11,8 @@ class Mode3Panel final : public Mode
 public:
     Mode3Panel();
 
+    virtual WindowManager *createWindowManager(Workspace *workspace) override;
+#if 0
     virtual void activate(Workspace *workspace) override;
     virtual void initShortcuts() override;
     virtual void handleShortcut(int id);
@@ -40,6 +42,7 @@ private:
 
     static void setPrimarySlaveToMinimum();
     static void setSecondarySlaveToMinimum();
+#endif
 };
 
 #endif

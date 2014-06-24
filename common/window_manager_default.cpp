@@ -110,6 +110,12 @@ void WindowManagerDefault::layout()
     _root_container->getLayout()->layoutContents();
 }
 
+void WindowManagerDefault::handleMaximizedChanged()
+{
+    _root_container->handleMaximizedChanged();
+    layout();
+}
+
 void WindowManagerDefault::moveClient(Direction direction)
 {
     ClientContainer *container = activeClientContainer();

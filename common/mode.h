@@ -1,19 +1,23 @@
 #ifndef __MODE_H__
 #define __MODE_H__
 
-#include "action_set.h"
+#include <string>
 
+class WindowManager;
 class Workspace;
-class Client;
-class ContainerContainer;
 
-class Mode : public ActionSet
+class Mode
 {
 public:
-    Mode(std::string name) : ActionSet(name) {}
+    Mode(std::string name) : _name(name) {}
+    virtual ~Mode() {}
 
-    virtual void activate(Workspace *workspace) = 0; //FIXME workspace -> ContainerContainer ?
-    virtual void tileClient(Client *client, ContainerContainer *root_container) = 0;
+    virtual WindowManager *createWindowManager(Workspace *workspace) = 0;
+
+    const std::string &name() { return _name; }
+
+private:
+    std::string _name;
 };
 
 #endif

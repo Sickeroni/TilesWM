@@ -8,6 +8,7 @@
 #include "client.h"
 #include "mode_default.h"
 #include "mode_3panel.h"
+#include "window_manager.h"
 #include "config.h"
 #include "common.h"
 
@@ -33,12 +34,9 @@ void Application::init()
     _main_actions = new MainActions();
 
     _modes.push_back(new ModeDefault());
-    _modes.push_back(new Mode3Panel());
+//     _modes.push_back(new Mode3Panel());
 
     _main_actions->initShortcuts();
-
-    for(size_t i = 0; i < _modes.size(); i++)
-        _modes[i]->initShortcuts();
 
     if (_default_mode >= _modes.size())
         _default_mode = 0;
@@ -64,8 +62,7 @@ void Application::reloadConfig()
 
     _main_actions->reloadShortcuts();
 
-    for(size_t i = 0; i < _modes.size(); i++)
-        _modes[i]->reloadShortcuts();
+    //FIXME: foreach(Workspace *w) w->windowManager()->reloadShortcuts()
 }
 
 const ShortcutSet *Application::mainShortcuts()
@@ -83,7 +80,7 @@ ClientContainer *Application::activeClientContainer()
     if (self()->activeLayer() != LAYER_TILED)
         return 0;
     else
-        return activeWorkspace()->rootContainer()->activeClientContainer();
+        return activeWorkspace()->windowManager()->activeClientContainer();
 }
 
 void Application::manageClient(Client *client, bool is_floating)
@@ -94,7 +91,7 @@ void Application::manageClient(Client *client, bool is_floating)
     if (is_floating)
         activeWorkspace()->addClient(client);
     else
-        activeWorkspace()->mode()->tileClient(client, activeWorkspace()->rootContainer());
+        activeWorkspace()->windowManager()->manageClient(client);
 }
 
 void Application::unmanageClient(Client *client)

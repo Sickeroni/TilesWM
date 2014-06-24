@@ -10,7 +10,7 @@
 #include "workspace.h"
 #include "monitor.h"
 #include "client_container.h"
-#include "mode.h"
+#include "window_manager.h"
 #include "config.h"
 #include "common.h"
 
@@ -434,12 +434,12 @@ bool X11Application::handleKeyPress(const XKeyEvent &ev)
         const X11ShortcutSet *main_shortcuts = 
             static_cast<const X11ShortcutSet*>(mainShortcuts());
 
-        const X11ShortcutSet *active_mode_shortcuts = 
-            static_cast<const X11ShortcutSet*>(activeWorkspace()->mode()->shortcuts());
+        const X11ShortcutSet *active_wm_shortcuts =
+            static_cast<const X11ShortcutSet*>(activeWorkspace()->windowManager()->shortcuts());
 
         if (main_shortcuts->handleKeyPress(key_sequence))
             return true;
-        else if (active_mode_shortcuts->handleKeyPress(key_sequence))
+        else if (active_wm_shortcuts->handleKeyPress(key_sequence))
             return true;
     }
 

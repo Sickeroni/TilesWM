@@ -17,6 +17,7 @@ public:
     virtual ClientContainer *activeClientContainer() = 0;
     virtual void manageClient(Client *client) = 0;
     virtual void layout() = 0;
+    virtual void handleMaximizedChanged() = 0;
 
     Workspace *workspace() { return _workspace; }
 

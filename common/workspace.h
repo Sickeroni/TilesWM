@@ -7,10 +7,10 @@
 
 #include <cstddef>
 
-class ContainerContainer;
 class ClientContainer;
 class Client;
 class Mode;
+class WindowManager;
 
 class Workspace
 {
@@ -19,7 +19,6 @@ public:
     ~Workspace();
 
     Monitor *monitor() { return _monitor; }
-    ContainerContainer *rootContainer() { return _root_container; }
     bool maximized() { return _maximized; } //FIXME -> isMaximized()
     void setMaximized(bool enable);
     bool makeActive();
@@ -29,6 +28,7 @@ public:
     void removeClient(Client *client);
     void layoutContents();
     void setRect(Rect rect);
+    const Rect &rect() { return _rect; }
 
     bool isActive() {
         return monitor() && monitor()->isActive();
@@ -42,13 +42,15 @@ public:
     Container::Orientation orientation() { return _orientation; }
     void rotateOrientation();
 
+    WindowManager *windowManager() { return _window_manager; }
+
 private:
     Rect _rect;
     Monitor *_monitor = 0;
     //ContainerContainer *_dock
-    ContainerContainer *_root_container = 0;
     bool _maximized = false;
     size_t _mode = 0;
+    WindowManager *_window_manager = 0;
     Container::Orientation _orientation = Container::HORIZONTAL;
 };
 

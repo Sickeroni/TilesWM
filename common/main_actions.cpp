@@ -8,6 +8,7 @@
 #include "application.h"
 #include "container_util.h"
 #include "shortcut_set.h"
+#include "window_manager.h"
 #include "common.h"
 
 using namespace ContainerUtil;
@@ -46,7 +47,7 @@ void MainActions::handleShortcut(int id)
             }
             break;
         case ACTION_LAYOUT:
-            Application::activeWorkspace()->rootContainer()->getLayout()->layoutContents();
+            Application::activeWorkspace()->windowManager()->layout();
             break;
         case ACTION_ROTATE:
             Application::activeWorkspace()->rotateOrientation();
@@ -64,7 +65,7 @@ void MainActions::handleShortcut(int id)
             focusSibling(DOWN);
             break;
         case ACTION_REDRAW:
-            Application::activeWorkspace()->rootContainer()->redrawAll();
+//             Application::activeWorkspace()->rootContainer()->redrawAll();
             break;
         case ACTION_FOCUS_NEXT_CLIENT:
             focusNextClient();

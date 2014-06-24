@@ -14,7 +14,7 @@ using namespace ContainerUtil;
 Mode3Panel::Mode3Panel() : Mode("3panel")
 {
 }
-
+#if 0
 void Mode3Panel::activate(Workspace *workspace)
 {
     ContainerContainer *root = workspace->rootContainer();
@@ -205,3 +205,4 @@ void Mode3Panel::setSecondarySlaveToMinimum()
         container->enableFixedSize(true);
     }
 }
+#endif

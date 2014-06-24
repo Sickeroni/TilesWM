@@ -58,6 +58,7 @@ void X11ShortcutSet::createShortcut(std::string key_sequence_str, int id)
 
 bool X11ShortcutSet::handleKeyPress(const X11Global::KeySequence &key_sequence) const
 {
+    debug;
     for(std::list<Shortcut>::const_iterator it = _shortcuts.begin();
             it != _shortcuts.end();
             it++)
