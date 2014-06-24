@@ -13,6 +13,11 @@ X11GraphicsSystem *createX11GraphicsSystem()
     return new X11GraphicsSystemCairo();
 }
 
+X11GraphicsSystemCairo::~X11GraphicsSystemCairo()
+{
+    cairo_debug_reset_static_data();
+}
+
 Canvas *X11GraphicsSystemCairo::createCanvas(Drawable drawable, int width, int height)
 {
     Cairo::RefPtr<Cairo::XlibSurface> surface = Cairo::XlibSurface::create(
