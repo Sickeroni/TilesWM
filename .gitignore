@@ -3,6 +3,6 @@
 *.o
 *.a
 *.d
-ttm-wm
 build
 work
+valgrind.xml
