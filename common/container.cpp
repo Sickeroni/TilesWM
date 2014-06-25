@@ -8,41 +8,39 @@
 #include <stdlib.h>
 
 
-Container::Container(Type type) :
+Container::Container(Type type) : ContainerBase(type),
     _parent(0),
-    _workspace(0),
-    _type(type),
     _fixed_width(0),
     _fixed_height(0),
     _is_fixed_size(false)
 {
 }
 
-Container::Orientation Container::orientation()
+Container::~Container()
 {
-    if (!_parent) {
-        if (_workspace)
-            return _workspace->orientation();
-        else
-            return HORIZONTAL;
-    } else if (_parent->isMinimized())
-        return _parent->orientation();
-    else
-        return _parent->isHorizontal() ? VERTICAL : HORIZONTAL;
 }
 
-void Container::setRect(const Rect &rect)
+Container::Orientation Container::orientation()
 {
-    _rect.set(rect);
+    if (!_parent)
+        return HORIZONTAL;
+    else if (_parent->isWorkspace())
+        return _parent->toWorkspace()->orientation();
+    else if (parent()->isMinimized())
+        return parent()->orientation();
+    else
+        return parent()->isHorizontal() ? VERTICAL : HORIZONTAL;
+
 }
 
 bool Container::isActive()
 {
     if (workspace() && workspace()->isActive() &&
-                (Application::self()->activeLayer() == Application::LAYER_TILED)) {
-        if (_parent && (_parent->isActive() && (_parent->activeChild() == this)))
+        (Application::self()->activeLayer() == Application::LAYER_TILED))
+    {
+        if (parent() && (parent()->isActive() && (parent()->activeChild() == this)))
             return true;
-        else if (_parent)
+        else if (parent())
             return false;
         else
             return true;
@@ -72,9 +70,9 @@ bool Container::isMaximized()
 void Container::makeActive()
 {
     workspace()->makeActive();
-    if (_parent) {
-        _parent->makeActive();
-        _parent->setActiveChild(_parent->indexOfChild(this));
+    if (parent()) {
+        parent()->makeActive();
+        parent()->setActiveChild(parent()->indexOfChild(this));
     }
     Application::self()->setActiveLayer(Application::LAYER_TILED);
 }
@@ -88,19 +86,15 @@ bool Container::isAncestorOf(Container *container)
     return false;
 }
 
-void Container::setWorkspace(Workspace *workspace)
-{
-    assert(!_parent);
-    _workspace = workspace;
-}
-
 Workspace *Container::workspace()
 {
     if (_parent) {
-        assert(!_workspace);
-        return _parent->workspace();
+        if (_parent->isWorkspace())
+            return _parent->toWorkspace();
+        else
+            return _parent->toContainerContainer()->workspace();
     } else
-        return _workspace;
+        return 0;
 }
 
 void Container::setFixedWidth(int width)
@@ -137,4 +131,10 @@ Client *Container::activeClient()
         return activeClientContainer()->activeClient();
     else
         return 0;
+}
+
+void Container::setWorkspace(Workspace *workspace)
+{
+    assert(!_parent || _parent->isWorkspace());
+    _parent = workspace;
 }

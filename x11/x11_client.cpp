@@ -132,9 +132,6 @@ void X11Client::setFocus(X11Client *client)
     if (client) {
         client->refreshMapState();
 
-        assert(client->isFloating() || static_cast<X11ClientContainer*>(client->container())->widget()->isMapped());
-        assert(client->isFloating() || static_cast<X11ContainerContainer*>(client->container()->parent())->widget()->isMapped());
-
         if (client->isMapped() && client->_widget->isViewable()) {
             focused_wid = client->_widget->wid();
             prop[0] = focused_wid;

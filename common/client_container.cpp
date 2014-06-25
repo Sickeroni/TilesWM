@@ -49,3 +49,4 @@ void ClientContainer::redrawAll()
 {
     redraw();
 }
+

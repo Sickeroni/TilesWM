@@ -3,29 +3,16 @@
 
 #include "rect.h"
 
+#include "container_base.h"
+
 class Client;
-class ContainerContainer;
-class ClientContainer;
-class Workspace;
 class ContainerLayout;
 
-class Container
+class Container : public ContainerBase
 {
 public:
-    enum Type {
-        CONTAINER,
-        CLIENT
-    };
+    ~Container();
 
-    enum Orientation {
-        HORIZONTAL = 0,
-        VERTICAL = 1
-    };
-
-    virtual ~Container() {}
-
-    virtual ClientContainer *toClientContainer() { return 0; }
-    virtual ContainerContainer *toContainerContainer() { return 0; }
     virtual int numElements() = 0;
     virtual ClientContainer *activeClientContainer() = 0;
     virtual bool isEmpty() = 0;
@@ -35,22 +22,16 @@ public:
     virtual ContainerLayout *getLayout() = 0;
     virtual void setMapped(bool mapped) = 0;
 
-    virtual void setRect(const Rect &rect);
-
     bool isFixedSize() { return _is_fixed_size; }
     void enableFixedSize(bool enable);
     int fixedWidth() { return isMinimized() ? 0 : _fixed_width; }
     void setFixedWidth(int width);
     int fixedHeight() { return isMinimized() ? 0 : _fixed_height; }
     void setFixedHeight(int height);
+    void setWorkspace(Workspace *workspace);
 
     Client *activeClient();
 
-    int x() { return _rect.x; }
-    int y() { return _rect.y; }
-    int width() { return _rect.w; }
-    int height() { return _rect.h; }
-    const Rect &rect() { return _rect; }
     bool isHorizontal() {
         return orientation() == HORIZONTAL;
     }
@@ -60,11 +41,7 @@ public:
 
     Orientation orientation();
 
-    Type type() { return _type; }
-    bool isContainerContainer() { return _type == CONTAINER; }
-    bool isClientContainer() { return _type == CLIENT; }
-
-    ContainerContainer *parent() { return _parent; }
+    ContainerContainer *parent() { return _parent ? _parent->toContainerContainer() : 0; }
 
     void makeActive();
 
@@ -74,17 +51,12 @@ public:
     bool isMaximized();
     bool isActive();
 
-    void setWorkspace(Workspace *workspace);
-
 protected:
     Container(Type type);
 
-    ContainerContainer *_parent;
-    Workspace *_workspace;
-    Rect _rect;
+    ContainerBase *_parent = 0;
 
 private:
-    const Type _type;
     int _fixed_width;
     int _fixed_height;
     bool _is_fixed_size;

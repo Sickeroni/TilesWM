@@ -17,7 +17,6 @@ public:
     X11ClientContainer();
     ~X11ClientContainer();
 
-    virtual void setMapped(bool mapped) override;
     virtual void setRect(const Rect &rect) override;
     virtual void handleMaximizedChanged() override;
     virtual void handleActiveChanged() override;
@@ -32,6 +31,7 @@ public:
     virtual void removeChildren(std::vector<Client*> &clients) override;
     virtual int maxTextHeight() override;
     virtual void redraw() override;
+    virtual void setMapped(bool mapped) override;
 
     // X11ServerWidget::EventHandler implementaion
     virtual void handleExpose() override {

@@ -190,7 +190,6 @@ void X11ContainerContainer::redraw()
 
 void X11ContainerContainer::reparent(X11ContainerContainer *p)
 {
-    assert(!_workspace);
     assert(! (_parent && p) );
 
     _parent = p;

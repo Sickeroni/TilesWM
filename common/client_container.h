@@ -31,7 +31,6 @@ public:
     virtual int maxTextHeight() = 0;
     virtual void redraw() = 0;
 
-    virtual ClientContainer *toClientContainer() override final { return this; }
     virtual void redrawAll() override final;
     virtual ContainerLayout *getLayout() override final;
     virtual ClientContainer *activeClientContainer() override final { return this; }

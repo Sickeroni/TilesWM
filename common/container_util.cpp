@@ -58,6 +58,9 @@ ClientContainer *splitContainer(ClientContainer *container, bool prepend)
 
     ContainerContainer *parent = container->parent();
 
+    if (!parent)
+        return 0;
+
     if (hierarchyDepth(parent) >= max_hierarchy_depth)
         return 0;
 

@@ -3,11 +3,9 @@
 
 #include "container.h"
 
-
 class ClientContainer;
 class Canvas;
 class ContainerContainerLayout;
-
 
 class ContainerContainer : public Container
 {
@@ -28,7 +26,6 @@ public:
     virtual int maxTextHeight() const = 0;
     virtual void redraw() = 0;
 
-    virtual ContainerContainer *toContainerContainer() override final { return this; }
     virtual ContainerLayout *getLayout() override final;
     virtual ClientContainer *activeClientContainer() override final;
     virtual void redrawAll() override final;

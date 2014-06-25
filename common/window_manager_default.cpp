@@ -14,12 +14,12 @@ WindowManagerDefault::WindowManagerDefault(Workspace *workspace, std::string act
     WindowManager(workspace, action_set_name),
     _root_container(Application::self()->createContainerContainer())
 {
-    _root_container->setWorkspace(workspace);
-    _root_container->setMapped(true);
+    workspace->addChild(_root_container);
 }
 
 WindowManagerDefault::~WindowManagerDefault()
 {
+    workspace()->removeChild(_root_container);
     delete _root_container;
     _root_container = 0;
 }

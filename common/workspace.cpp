@@ -7,7 +7,7 @@
 #include "mode.h"
 #include "common.h"
 
-Workspace::Workspace() :
+Workspace::Workspace() : ContainerBase(WORKSPACE),
     _monitor(0),
     _maximized(false),
     _mode(Application::self()->defaultMode())
@@ -34,9 +34,9 @@ void Workspace::layoutContents()
     _window_manager->layout();
 }
 
-void Workspace::setRect(Rect rect)
+void Workspace::setRect(const Rect &rect)
 {
-    _rect = rect;
+    ContainerBase::setRect(rect);
     layoutContents();
 }
 
@@ -89,4 +89,16 @@ void Workspace::rotateOrientation()
         _orientation = Container::HORIZONTAL;
 
    layoutContents();
+}
+
+void Workspace::addChild(Container *container)
+{
+    container->setWorkspace(this);
+    container->setMapped(true);
+}
+
+void Workspace::removeChild(Container *container)
+{
+    container->setMapped(false);
+    container->setWorkspace(0);
 }

@@ -153,7 +153,6 @@ void X11ClientContainer::redraw()
 
 void X11ClientContainer::reparent(X11ContainerContainer *p)
 {
-    assert(!_workspace);
     assert(! (_parent && p) );
 
     _parent = p;
@@ -168,7 +167,6 @@ void X11ClientContainer::reparent(X11ContainerContainer *p)
 void X11ClientContainer::applyMapState()
 {
     printvar(_is_mapped);
-    printvar(_workspace);
 
     if (!_is_mapped || !workspace()) {
         _widget->unmap();

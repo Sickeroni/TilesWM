@@ -3,7 +3,7 @@
 
 #include "monitor.h"
 #include "rect.h"
-#include "container.h"
+#include "container_base.h"
 
 #include <cstddef>
 
@@ -12,11 +12,13 @@ class Client;
 class Mode;
 class WindowManager;
 
-class Workspace
+class Workspace : public ContainerBase
 {
 public:
     Workspace();
     ~Workspace();
+
+    virtual void setRect(const Rect &rect) override;
 
     Monitor *monitor() { return _monitor; }
     bool maximized() { return _maximized; } //FIXME -> isMaximized()
@@ -27,8 +29,6 @@ public:
     void addClient(Client *client);
     void removeClient(Client *client);
     void layoutContents();
-    void setRect(Rect rect);
-    const Rect &rect() { return _rect; }
 
     bool isActive() {
         return monitor() && monitor()->isActive();
@@ -39,19 +39,20 @@ public:
     Mode *mode();
     size_t modeIndex() { return _mode; }
     void setMode(size_t index);
-    Container::Orientation orientation() { return _orientation; }
+    Orientation orientation() { return _orientation; }
     void rotateOrientation();
 
     WindowManager *windowManager() { return _window_manager; }
+    void addChild(Container *container);
+    void removeChild(Container *container);
 
 private:
-    Rect _rect;
     Monitor *_monitor = 0;
     //ContainerContainer *_dock
     bool _maximized = false;
     size_t _mode = 0;
     WindowManager *_window_manager = 0;
-    Container::Orientation _orientation = Container::HORIZONTAL;
+    Orientation _orientation = HORIZONTAL;
 };
 
 #endif // __WORKSPACE_H__

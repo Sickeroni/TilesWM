@@ -131,6 +131,9 @@ void MainActions::focusSibling(Direction where)
     if (!container)
         return;
 
+    if (!container->parent())
+        return;
+
     ContainerContainer *parent = 0;
     if (orientationOfDirection(where) == container->parent()->orientation())
         parent = container->parent();
