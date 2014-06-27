@@ -109,13 +109,6 @@ X11Client::~X11Client()
     _frame = 0;
 }
 
-// bool X11Client::validate()
-// {
-//     bool ret = _widget->validate();
-//     std::cout<<"X11Client::validate(): "<<ret<<'\n';
-//     return ret;
-// }
-
 Icon *X11Client::icon()
 {
     return _icon;
