@@ -3,6 +3,7 @@
 
 #include "rect.h"
 
+class ContainerBase;
 class ContainerContainer;
 class ClientContainer;
 class Client;
@@ -26,8 +27,7 @@ namespace Theme
     const ContainerContainerSizes &containerContainerSizes();
     const ClientContainerSizes &clientContainerSizes();
 
-    void drawContainerContainer(ContainerContainer *container, Canvas *canvas);
-    void drawClientContainer(ClientContainer *container, Canvas *canvas);
+    void drawContainer(ContainerBase *container, Canvas *canvas);
 
     int calcContainerContainerTitlebarHeight(const ContainerContainer *container);
     inline void getContainerContainerClientRect(const ContainerContainer *container,

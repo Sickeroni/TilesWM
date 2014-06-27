@@ -12,7 +12,7 @@ using namespace ContainerUtil;
 
 WindowManagerDefault::WindowManagerDefault(Workspace *workspace, std::string action_set_name) :
     WindowManager(workspace, action_set_name),
-    _root_container(Application::self()->createContainerContainer())
+    _root_container(new ContainerContainer())
 {
     workspace->addChild(_root_container);
 }
@@ -46,6 +46,7 @@ void WindowManagerDefault::initShortcuts()
 void WindowManagerDefault::handleShortcut(int id)
 {
     debug;
+
     switch(id) {
         case ACTION_MOVE_CLIENT_LEFT:
             moveClient(LEFT);
@@ -61,6 +62,7 @@ void WindowManagerDefault::handleShortcut(int id)
             break;
         case ACTION_DELETE_EMPTY_CONTAINERS:
             deleteEmptyChildren(_root_container);
+            Application::focusActiveClient();
             break;
         case ACTION_TOGGLE_EXPANDING:
             if (ClientContainer *c = activeClientContainer())
@@ -96,7 +98,7 @@ ClientContainer *WindowManagerDefault::activeClientContainer()
 void WindowManagerDefault::manageClient(Client *client)
 {
     if (!_root_container->activeClientContainer()) {
-        ClientContainer *c = Application::self()->createClientContainer();
+        ClientContainer *c = new ClientContainer();
         int index = _root_container->addChild(c);
         _root_container->setActiveChild(index);
     }
@@ -106,13 +108,23 @@ void WindowManagerDefault::manageClient(Client *client)
 
 void WindowManagerDefault::layout()
 {
-    _root_container->setRect(Rect(0, 0, workspace()->rect().w, workspace()->rect().h));
+//     _root_container->setRect(Rect(0, 0, workspace()->rect().w, workspace()->rect().h));
+    //HACK
+    _root_container->setRect(Rect(
+        0,
+        workspace()->maxTextHeight(),
+        workspace()->rect().w,
+        workspace()->rect().h - workspace()->maxTextHeight()));
+
     _root_container->getLayout()->layoutContents();
 }
 
 void WindowManagerDefault::handleMaximizedChanged()
 {
-    _root_container->handleMaximizedChanged();
+    if (workspace()->maximized())
+        _root_container->setMinimizeMode(ContainerContainer::MINIMIZE_INACTIVE);
+    else
+        _root_container->setMinimizeMode(ContainerContainer::MINIMIZE_NONE);
     layout();
 }
 

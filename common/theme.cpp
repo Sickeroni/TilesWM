@@ -2,6 +2,7 @@
 
 #include "container_container.h"
 #include "client_container.h"
+#include "container_widget.h"
 #include "workspace.h"
 #include "client.h"
 #include "icon.h"
@@ -90,9 +91,10 @@ void drawContainerContainer(ContainerContainer *container, Canvas *canvas)
     else
         title<<" <->";
 
-    if (container->isMaximized())
-        title<<" +";
-    else if (container->isMinimized())
+//     if (container->isMaximized())
+//         title<<" +";
+//     else
+    if (container->isMinimized())
         title<<" -";
 
     title<<" Mode: "<<container->workspace()->modeIndex();
@@ -128,7 +130,6 @@ void drawContainerContainer(ContainerContainer *container, Canvas *canvas)
         }
     }
 }
-
 
 int calcTabbarHeight(ClientContainer *container) {
     return container->maxTextHeight() + (2 * _clientContainerSizesInternal.tab_inner_margin);
@@ -462,6 +463,30 @@ void calcClientClientRect(Client *client, const Rect &frame_rect, Rect &client_r
     client_rect.y = top_margin;
     client_rect.w -= (2 * side_margin);
     client_rect.h -= (top_margin + bottom_margin);
+}
+
+void drawWorkspace(Workspace *workspace, Canvas *canvas)
+{
+    Rect rect = workspace->rect();
+    rect.setPos(0, 0);
+    canvas->erase(rect);
+    canvas->drawText("--------------- Workspace ---------------", rect, 0x00FF00);
+}
+
+void drawContainer(ContainerBase *container, Canvas *canvas)
+{
+    switch(container->type()) {
+        case ContainerBase::CLIENT:
+            drawClientContainer(container->toClientContainer(), canvas);
+            break;
+        case ContainerBase::CONTAINER:
+            drawContainerContainer(container->toContainerContainer(), canvas);
+            break;
+        case ContainerBase::WORKSPACE:
+            drawWorkspace(container->toWorkspace(), canvas);
+        default:
+            break;
+    }
 }
 
 

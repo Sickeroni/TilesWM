@@ -17,12 +17,14 @@ public:
     virtual ~Client();
 
     virtual Icon *icon() = 0;
-    virtual ClientContainer *container() = 0;
     virtual const Rect &rect() = 0;
     virtual void setRect(const Rect &rect) = 0;
     virtual int maxTextHeight() = 0;
     virtual void requestClose() = 0;
+    virtual void raise() = 0;
+    virtual void setContainer(ClientContainer *container) = 0;
 
+    ClientContainer *container() { return _container; }
     Workspace *workspace() { return 0; }
     bool hasDecoration() { return !container(); }
     bool isMapped() { return _is_mapped; }
@@ -36,6 +38,7 @@ public:
     int maxWidth() { return _max_width; }
     int maxHeight() { return _max_height; }
 
+
 protected:
     Client(bool is_mapped);
 
@@ -47,6 +50,7 @@ protected:
     std::string _title;
     int _min_width, _min_height;
     int _max_width, _max_height;
+    ClientContainer *_container = 0;
 };
 
 #endif // __CLIENT_H__

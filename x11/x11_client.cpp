@@ -1,10 +1,9 @@
 #include "x11_client.h"
 
-#include "x11_client_container.h"
 #include "x11_client_widget.h"
 #include "x11_server_widget.h"
 #include "x11_application.h"
-#include "x11_container_container.h"
+#include "x11_container_widget.h"
 #include "x11_graphics_system.h"
 #include "x11_global.h"
 #include "icon.h"
@@ -13,6 +12,8 @@
 #include "workspace.h"
 #include "colors.h"
 #include "theme.h"
+#include "client_util.h"
+#include "client_container.h"
 #include "common.h"
 
 #include <X11/Xutil.h>
@@ -92,8 +93,7 @@ X11Client::X11Client() : Client(false),
     _frame(0),
     _icon(0),
     _window_type(NORMAL),
-    _is_modal(false),
-    _container(0)
+    _is_modal(false)
 {
 }
 
@@ -185,26 +185,25 @@ void X11Client::setRect(const Rect &rect)
     _widget->setRect(r);
 }
 
-ClientContainer *X11Client::container()
-{
-    return _container;
-}
-
-void X11Client::setContainer(X11ClientContainer *container)
+void X11Client::setContainer(ClientContainer *container)
 {
     debug;
 
     assert(!isOverrideRedirect());
 
-    _container = container;
-
     X11ServerWidget *new_parent_widget = 0;
-    if (container)
-        new_parent_widget = container->widget();
-    //FIXME else new_parent_widget = some_unmapped_dummy_widget;
+    if (container) {
+        // HACK HACK HACK
+        const ContainerWidget *container_widget = const_cast<const ClientContainer*>(container)->widget();
+        X11ContainerWidget *x11_container_widget = static_cast<X11ContainerWidget*>(
+                const_cast<ContainerWidget*>(container_widget));
+        new_parent_widget = x11_container_widget->x11Widget();
+    }
 
     printvar(new_parent_widget);
     _frame->reparent(new_parent_widget);
+
+    _container = container;
 }
 
 void X11Client::makeActive()
@@ -522,7 +521,7 @@ void X11Client::mapInt()
         _is_mapped = true;
 
         if (container())
-            static_cast<X11ClientContainer*>(container())->handleClientMap(this);
+            container()->handleClientMap(this);
 
         Application::focusActiveClient();
     }

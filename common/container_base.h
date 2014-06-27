@@ -7,6 +7,7 @@ class Container;
 class ContainerContainer;
 class ClientContainer;
 class Workspace;
+class ContainerWidget;
 
 class ContainerBase
 {
@@ -22,31 +23,36 @@ public:
         VERTICAL = 1
     };
 
-    virtual ~ContainerBase() {}
+    virtual ~ContainerBase();
 
-    virtual void setRect(const Rect &rect) {
-        _rect.set(rect);
-    }
+    void setRect(const Rect &rect);
 
-    Type type() { return _type; }
-    bool isContainerContainer() { return _type == CONTAINER; }
-    bool isClientContainer() { return _type == CLIENT; }
-    bool isWorkspace() { return _type == WORKSPACE; }
-    bool isContainer() { return !isWorkspace(); }
+    Type type() const { return _type; }
+    bool isContainerContainer() const { return _type == CONTAINER; }
+    bool isClientContainer() const { return _type == CLIENT; }
+    bool isWorkspace() const { return _type == WORKSPACE; }
+    bool isContainer() const { return !isWorkspace(); }
     ClientContainer *toClientContainer();
     ContainerContainer *toContainerContainer();
     Workspace *toWorkspace();
 
-    const Rect &rect() { return _rect; }
-    int width() { return _rect.w; }
-    int height() { return _rect.h; }
+    const Rect &rect() const { return _rect; }
+    int width() const { return _rect.w; }
+    int height() const { return _rect.h; }
+    void setMapped(bool mapped);
+    void redraw();
+    const ContainerWidget *widget() const { return _widget; }
+    int maxTextHeight() const;
 
 protected:
-    ContainerBase(Type type) : _type(type) {}
+    ContainerBase(Type type);
+
+    ContainerWidget *widget() { return _widget; }
 
 private:
     const Type _type;
     Rect _rect;
+    ContainerWidget *_widget = 0;
 };
 
 #endif

@@ -13,22 +13,19 @@ class Container : public ContainerBase
 public:
     ~Container();
 
-    virtual int numElements() = 0;
+    virtual int numElements() const = 0;
     virtual ClientContainer *activeClientContainer() = 0;
-    virtual bool isEmpty() = 0;
+    virtual bool isEmpty() const = 0;
     virtual void redrawAll() = 0;
-    virtual void handleMaximizedChanged() = 0;
-    virtual void handleActiveChanged() = 0;
     virtual ContainerLayout *getLayout() = 0;
-    virtual void setMapped(bool mapped) = 0;
+    virtual bool isMinimized() const = 0;
 
-    bool isFixedSize() { return _is_fixed_size; }
+    bool isFixedSize() const { return _is_fixed_size; }
     void enableFixedSize(bool enable);
-    int fixedWidth() { return isMinimized() ? 0 : _fixed_width; }
+    int fixedWidth() const { return isMinimized() ? 0 : _fixed_width; }
     void setFixedWidth(int width);
-    int fixedHeight() { return isMinimized() ? 0 : _fixed_height; }
+    int fixedHeight() const { return isMinimized() ? 0 : _fixed_height; }
     void setFixedHeight(int height);
-    void setWorkspace(Workspace *workspace);
 
     Client *activeClient();
 
@@ -41,14 +38,18 @@ public:
 
     Orientation orientation();
 
+    //FIXME
+    // should just return _parent
     ContainerContainer *parent() { return _parent ? _parent->toContainerContainer() : 0; }
+    //FIXME remove
+    bool hasParent() { return _parent != 0; }
+
+    void reparent(ContainerBase *parent, ContainerWidget *parent_widget);
 
     void makeActive();
 
     Workspace *workspace();
-    bool isAncestorOf(Container *container);
-    bool isMinimized();
-    bool isMaximized();
+    bool isAncestorOf(Container *container) const;
     bool isActive();
 
 protected:

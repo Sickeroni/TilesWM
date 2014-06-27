@@ -1,8 +1,6 @@
 #include "x11_client_widget.h"
 
-#include "x11_container_container.h"
 #include "x11_client.h"
-#include "x11_client_container.h"
 #include "x11_server_widget.h"
 #include "x11_global.h"
 #include "common.h"

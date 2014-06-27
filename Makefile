@@ -31,13 +31,13 @@ LIBCOMMON_SRCS += mode_3panel
 LIBCOMMON_SRCS += cairo_canvas
 LIBCOMMON_SRCS += cairo_icon
 LIBCOMMON_SRCS += window_manager_default
+# LIBCOMMON_SRCS += window_manager_3panel
 
 TTMWM_X11_SRCS :=
 TTMWM_X11_SRCS += default_config_values
+TTMWM_X11_SRCS += x11_container_widget
 TTMWM_X11_SRCS += x11_icon
 TTMWM_X11_SRCS += x11_canvas
-TTMWM_X11_SRCS += x11_container_container
-TTMWM_X11_SRCS += x11_client_container
 TTMWM_X11_SRCS += x11_widget
 TTMWM_X11_SRCS += x11_server_widget
 TTMWM_X11_SRCS += x11_client_widget

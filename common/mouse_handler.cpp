@@ -23,4 +23,16 @@ void handleClientContainerClick(ClientContainer *container, int x, int y)
 }
 
 
+void handleContainerClick(ContainerBase *container, int x, int y)
+{
+    switch(container->type()) {
+        case ContainerBase::CLIENT:
+            handleClientContainerClick(container->toClientContainer(), x, y);
+            break;
+        default:
+            break;
+    }
+}
+
+
 } // namespace MouseHandler

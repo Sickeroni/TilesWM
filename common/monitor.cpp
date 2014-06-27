@@ -28,4 +28,5 @@ void Monitor::setSize(int w, int h)
 void Monitor::layoutContents()
 {
     _workspace->setRect(Rect(0, 0, _w, _h));
+    _workspace->layoutContents();
 }

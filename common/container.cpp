@@ -3,6 +3,7 @@
 #include "workspace.h"
 #include "client_container.h"
 #include "container_container.h"
+#include "container_widget.h"
 #include "application.h"
 
 #include <stdlib.h>
@@ -30,7 +31,6 @@ Container::Orientation Container::orientation()
         return parent()->orientation();
     else
         return parent()->isHorizontal() ? VERTICAL : HORIZONTAL;
-
 }
 
 bool Container::isActive()
@@ -48,25 +48,6 @@ bool Container::isActive()
         return false;
 }
 
-bool Container::isMinimized()
-{
-    if (workspace()->maximized()) {
-        if (parent()) {
-            if (parent()->isActive() && parent()->activeChild() == this)
-                return false;
-            else
-                return true;
-        } else
-            return false;
-    } else
-        return false;
-}
-
-bool Container::isMaximized()
-{
-    return workspace()->maximized() && !isMinimized();
-}
-
 void Container::makeActive()
 {
     workspace()->makeActive();
@@ -77,7 +58,7 @@ void Container::makeActive()
     Application::self()->setActiveLayer(Application::LAYER_TILED);
 }
 
-bool Container::isAncestorOf(Container *container)
+bool Container::isAncestorOf(Container *container) const
 {
     for (Container *parent = container->parent(); parent; parent = parent->parent()) {
         if (this == parent)
@@ -111,8 +92,8 @@ void Container::setFixedHeight(int height)
     _fixed_height = height;
     if (_fixed_height < 0)
         _fixed_height = 0;
-	if (parent())
-		parent()->handleSizeHintsChanged(this);
+    if (parent())
+        parent()->handleSizeHintsChanged(this);
 }
 
 void Container::enableFixedSize(bool enable)
@@ -133,8 +114,12 @@ Client *Container::activeClient()
         return 0;
 }
 
-void Container::setWorkspace(Workspace *workspace)
+void Container::reparent(ContainerBase *parent, ContainerWidget *parent_widget)
 {
-    assert(!_parent || _parent->isWorkspace());
-    _parent = workspace;
+    assert(!hasParent() || !parent);
+
+    setMapped(false);
+
+    widget()->reparent(parent_widget);
+    _parent = parent;
 }

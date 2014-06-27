@@ -18,8 +18,6 @@ public:
     Workspace();
     ~Workspace();
 
-    virtual void setRect(const Rect &rect) override;
-
     Monitor *monitor() { return _monitor; }
     bool maximized() { return _maximized; } //FIXME -> isMaximized()
     void setMaximized(bool enable);
@@ -35,6 +33,7 @@ public:
     }
     void setMonitor(Monitor *monitor) {
         _monitor = monitor;
+        setMapped(monitor != 0);
     }
     Mode *mode();
     size_t modeIndex() { return _mode; }

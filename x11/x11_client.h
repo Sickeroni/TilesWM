@@ -1,4 +1,4 @@
-#ifndef __X11_CLIENT_H__
+#ifndef __X11_CLIENT_H_
 #define __X11_CLIENT_H__
 
 #include "client.h"
@@ -12,8 +12,7 @@
 #include <map>
 
 
-class ClientContainer;
-class X11ClientContainer;
+class X11ContainerWidget;
 class X11ClientWidget;
 class Icon;
 
@@ -31,11 +30,12 @@ public:
     virtual ~X11Client();
 
     virtual Icon *icon() override;
-    virtual ClientContainer *container() override;
     virtual const Rect &rect()  override { return _frame->rect(); }
     virtual void setRect(const Rect &rect) override;
     virtual int maxTextHeight() override;
     virtual void requestClose() override;
+
+    virtual void setContainer(ClientContainer *container) override;
 
     // X11ServerWidget::EventHandler implementation
     virtual void handleExpose() override;
@@ -43,7 +43,6 @@ public:
 
     void map();
     void unmap();
-    void setContainer(X11ClientContainer *container);
     void raise();
 
 private:
@@ -101,7 +100,6 @@ private:
     Icon *_icon;
     WindowType _window_type;
     bool _is_modal;
-    X11ClientContainer *_container;
 };
 
 #endif // __X11_CLIENT_H__

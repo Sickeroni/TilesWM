@@ -1,7 +1,6 @@
 #include "x11_application.h"
 
-#include "x11_container_container.h"
-#include "x11_client_container.h"
+#include "x11_container_widget.h"
 #include "x11_client.h"
 #include "x11_widget.h"
 #include "x11_shortcut_set.h"
@@ -372,11 +371,6 @@ Workspace *X11Application::activeWorkspace()
     return self()->activeMonitor()->workspace();
 }
 
-X11ClientContainer *X11Application::activeClientContainer()
-{
-    return static_cast<X11ClientContainer*>(Application::activeClientContainer());
-}
-
 void X11Application::setActiveMonitor(Monitor *monitor)
 {
     //FIXME
@@ -389,14 +383,9 @@ Workspace *X11Application::createWorkspace()
     return w;
 }
 
-ContainerContainer *X11Application::createContainerContainer()
+ContainerWidget *X11Application::createContainerWidget(ContainerBase *container)
 {
-    return new X11ContainerContainer();
-}
-
-ClientContainer *X11Application::createClientContainer()
-{
-    return new X11ClientContainer();
+    return new X11ContainerWidget(container);
 }
 
 ShortcutSet *X11Application::createShortcutSet(std::string name)

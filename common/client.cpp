@@ -1,5 +1,7 @@
 #include "client.h"
 
+#include "common.h"
+
 Client::Client(bool is_mapped) :
     _is_mapped(is_mapped),
     _has_focus(false),

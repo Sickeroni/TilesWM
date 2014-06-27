@@ -6,13 +6,14 @@
 #include <string>
 
 class Workspace;
-class ContainerContainer;
 class ClientContainer;
 class Client;
 class Monitor;
 class ShortcutSet;
 class Mode;
 class ActionSet;
+class ContainerWidget;
+class ContainerBase;
 
 class Application
 {
@@ -27,12 +28,11 @@ public:
 
     virtual Monitor *activeMonitor() = 0;
     virtual Workspace *createWorkspace() = 0;
-    virtual ContainerContainer *createContainerContainer() = 0;
-    virtual ClientContainer *createClientContainer() = 0;
     virtual void setActiveMonitor(Monitor *monitor) = 0;
     virtual void setFocus(Client *client) = 0;
     virtual ShortcutSet *createShortcutSet(std::string name) = 0;
     virtual void requestQuit() = 0;
+    virtual ContainerWidget *createContainerWidget(ContainerBase *container) = 0;
 
     void reloadConfig();
     Layer activeLayer() { return LAYER_TILED; } // HACK

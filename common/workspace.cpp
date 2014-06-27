@@ -34,12 +34,6 @@ void Workspace::layoutContents()
     _window_manager->layout();
 }
 
-void Workspace::setRect(const Rect &rect)
-{
-    ContainerBase::setRect(rect);
-    layoutContents();
-}
-
 bool Workspace::makeActive()
 {
     if (monitor()) {
@@ -93,12 +87,11 @@ void Workspace::rotateOrientation()
 
 void Workspace::addChild(Container *container)
 {
-    container->setWorkspace(this);
+    container->reparent(this, widget());
     container->setMapped(true);
 }
 
 void Workspace::removeChild(Container *container)
 {
-    container->setMapped(false);
-    container->setWorkspace(0);
+    container->reparent(0, 0);
 }

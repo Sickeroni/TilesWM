@@ -23,7 +23,7 @@ ClientContainer *createSibling(Container *container, bool prepend)
     ContainerContainer *parent = container->parent();
 
     if (parent) {
-        new_sibling = Application::self()->createClientContainer();
+        new_sibling = new ClientContainer();
         int insert_pos = parent->indexOfChild(container);
         if (!prepend)
             insert_pos++;
@@ -64,11 +64,11 @@ ClientContainer *splitContainer(ClientContainer *container, bool prepend)
     if (hierarchyDepth(parent) >= max_hierarchy_depth)
         return 0;
 
-    ContainerContainer *new_parent = Application::self()->createContainerContainer();
+    ContainerContainer *new_parent = new ContainerContainer();
 
     parent->replaceChild(parent->indexOfChild(container), new_parent); // de-parents container
 
-    ClientContainer *new_sibling = Application::self()->createClientContainer();
+    ClientContainer *new_sibling = new ClientContainer();
 
     // add this + new child container to new parent
     if (prepend) {

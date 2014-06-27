@@ -185,7 +185,7 @@ void ContainerContainerLayout::layoutContents()
     if (available_space < 0) // BAAD - children won't fit
         available_space = 0;
 
-    if (!_container->isMaximized()) {
+    if (_container->minimizeMode() != ContainerContainer::MINIMIZE_INACTIVE) {
         // distribute remaining available space
 //         debug<<"distributing remaining available space ...";
         while (available_space && num_growable_items) {
@@ -257,7 +257,7 @@ void ContainerContainerLayout::layoutContents()
 
 //         debug<<"child"<<i<<"final size:"<<size;
 
-        if (_container->workspace()->maximized() && _container->isActive()) {
+        if (_container->minimizeMode() == ContainerContainer::MINIMIZE_INACTIVE) {
             if (_container->activeChild() == c)
                 size += available_space;
         }

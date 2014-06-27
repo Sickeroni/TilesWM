@@ -26,14 +26,13 @@ public:
 
     virtual Monitor *activeMonitor() override;
     virtual Workspace *createWorkspace() override;
-    virtual ContainerContainer *createContainerContainer() override;
-    virtual ClientContainer *createClientContainer() override;
     virtual void setActiveMonitor(Monitor *monitor) override;
     virtual void setFocus(Client *client) override;
     virtual ShortcutSet *createShortcutSet(std::string name) override;
     virtual void requestQuit() override {
         _quit_requested = true;
     }
+    virtual ContainerWidget *createContainerWidget(ContainerBase *container) override;
 
     bool init();
     void shutdown();
@@ -47,7 +46,6 @@ public:
     static X11Application *self() { return _self; }
     static Display *dpy()  { return self()->_dpy; }
     static Window root()  { return self()->_root; }
-    static X11ClientContainer *activeClientContainer();
     static Workspace *activeWorkspace();
     static X11Client *activeClient();
     static X11GraphicsSystem *graphicsSystem() { return self()->_graphics_system; }

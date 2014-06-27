@@ -81,7 +81,7 @@ void MainActions::handleShortcut(int id)
             break;
         case ACTION_CHANGE_MODE:
             {
-                size_t mode =  Application::activeWorkspace()->modeIndex();
+                size_t mode = Application::activeWorkspace()->modeIndex();
                 mode++;
                 if (mode >= Application::self()->numModes())
                     mode = 0;
@@ -95,6 +95,7 @@ void MainActions::handleShortcut(int id)
             break;
         case ACTION_FOCUS_ACTIVE_CLIENT:
             Application::focusActiveClient();
+            break;
         case ACTION_QUIT:
             Application::self()->requestQuit();
             break;
