@@ -4,6 +4,7 @@
 #include "client_container.h"
 #include "container_widget.h"
 #include "workspace.h"
+#include "window_manager.h"
 #include "client.h"
 #include "icon.h"
 #include "canvas.h"
@@ -99,9 +100,13 @@ void drawContainerContainer(ContainerContainer *container, Canvas *canvas)
 
     title<<" Mode: "<<container->workspace()->modeIndex();
 
+    Workspace *workspace = container->workspace();
+
+    bool is_active = workspace->windowManager()->isContainerActive(container);
+
     canvas->drawText(title.str().c_str(),
                      title_rect,
-                     container->isActive() ?  Colors::CONTAINER_FOCUS : Colors::CONTAINER_BORDER);
+                     is_active ?  Colors::CONTAINER_FOCUS : Colors::CONTAINER_BORDER);
 
     for (int i = 0; i < container->numElements(); i++) {
         Container *c = container->child(i);
@@ -116,7 +121,7 @@ void drawContainerContainer(ContainerContainer *container, Canvas *canvas)
 
         canvas->drawFrame(frame_rect, frame_color);
 
-        if (c->isActive()) {
+        if (workspace->windowManager()->isContainerActive(c)) {
             Rect focus_rect = frame_rect;
             focus_rect.x += 1;
             focus_rect.y += 1;
@@ -241,7 +246,7 @@ int getTabAt(int x, int y, ClientContainer *container)
     return INVALID_INDEX;
 }
 
-void drawTab(ClientContainer *container, Client *client, const Rect &rect, bool vertical, Canvas *canvas)
+void drawTab(ClientContainer *container, bool container_is_active, Client *client, const Rect &rect, bool vertical, Canvas *canvas)
 {
     const ClientContainerSizesInternal &sizes = _clientContainerSizesInternal;
     uint32_t fg = Colors::TAB_TEXT;
@@ -250,7 +255,7 @@ void drawTab(ClientContainer *container, Client *client, const Rect &rect, bool 
     if (client->hasFocus()) {
         bg = Colors::TAB_FOCUSED;
         fg = Colors::TAB_FOCUSED_TEXT;
-    } else if (container->isActive() && container->activeClient() == client) {
+    } else if (container_is_active && container->activeClient() == client) {
         bg = Colors::TAB_ACTIVE;
         fg = Colors::TAB_ACTIVE_TEXT;
     } else if (container->activeClient() == client) {
@@ -320,11 +325,13 @@ void drawTabbar(ClientContainer *container, Canvas *canvas)
     int tab_width, tab_height;
     getTabSize(container, tab_width, tab_height);
 
+    bool is_active = container->workspace()->windowManager()->isContainerActive(container);
+
     for(int i = 0; i < container->numElements(); i++) {
         Rect tab_rect;
         getHorizontalTabRect(tab_width, tab_height, tabbar_rect, i, tab_rect);
 
-        drawTab(container, container->child(i), tab_rect, false, canvas);
+        drawTab(container, is_active, container->child(i), tab_rect, false, canvas);
     }
 }
 
@@ -337,11 +344,13 @@ void drawVerticalTabs(ClientContainer *container, Canvas *canvas)
     Rect tabbar_rect;
     getTabbbarRect(container, tabbar_rect);
 
+    bool is_active = container->workspace()->windowManager()->isContainerActive(container);
+
     for (int i = 0; i < container->numElements(); i++) {
         Rect tab_rect;
         getVerticalTabRect(tabbar_rect, i, tab_rect);
 
-        drawTab(container, container->child(i), tab_rect, true, canvas);
+        drawTab(container, is_active, container->child(i), tab_rect, true, canvas);
     }
 }
 

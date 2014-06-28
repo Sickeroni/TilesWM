@@ -46,11 +46,8 @@ public:
 
     void reparent(ContainerBase *parent, ContainerWidget *parent_widget);
 
-    void makeActive();
-
     Workspace *workspace();
     bool isAncestorOf(Container *container) const;
-    bool isActive();
 
 protected:
     Container(Type type);

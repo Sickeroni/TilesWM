@@ -199,18 +199,10 @@ void X11Client::setContainer(ClientContainer *container)
     _container = container;
 }
 
+//FIXME remove
 void X11Client::makeActive()
 {
-    //FIXME set active layer
-
-    if (container()) {
-        container()->makeActive();
-        container()->setActiveChild(container()->indexOfChild(this));
-    } else if (workspace()) {
-        //FIXME
-        // workspace->setActiveClient(this);
-        workspace()->makeActive();
-    }
+    ClientUtil::makeActive(this);
 }
 
 void X11Client::init()

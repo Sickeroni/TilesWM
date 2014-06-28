@@ -181,7 +181,7 @@ void WindowManagerDefault::moveClient(Direction direction)
         container->removeChild(client);
         int index = target->addChild(client);
         target->setActiveChild(index);
-        target->makeActive();
+        makeContainerActive(target);
         Application::self()->setFocus(client);
     }
 }
@@ -208,4 +208,31 @@ void WindowManagerDefault::setFixedSizeToMinimum()
             container->enableFixedSize(true);
         }
     }
+}
+
+void WindowManagerDefault::makeContainerActive(Container *container)
+{
+    container->workspace()->makeActive();
+    if (ContainerContainer *parent =  container->parent()) {
+        makeContainerActive(parent);
+        parent->setActiveChild(parent->indexOfChild(container));
+    }
+    Application::self()->setActiveLayer(Application::LAYER_TILED);
+}
+
+bool WindowManagerDefault::isContainerActive(Container *container)
+{
+    if (container->workspace() && container->workspace()->isActive() &&
+        (Application::self()->activeLayer() == Application::LAYER_TILED))
+    {
+        if (container->parent() &&
+                isContainerActive(container->parent()) &&
+                (container->parent()->activeChild() == container))
+            return true;
+        else if (container->parent())
+            return false;
+        else
+            return true;
+    } else
+        return false;
 }

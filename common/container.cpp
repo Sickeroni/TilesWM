@@ -33,31 +33,6 @@ Container::Orientation Container::orientation()
         return parent()->isHorizontal() ? VERTICAL : HORIZONTAL;
 }
 
-bool Container::isActive()
-{
-    if (workspace() && workspace()->isActive() &&
-        (Application::self()->activeLayer() == Application::LAYER_TILED))
-    {
-        if (parent() && (parent()->isActive() && (parent()->activeChild() == this)))
-            return true;
-        else if (parent())
-            return false;
-        else
-            return true;
-    } else
-        return false;
-}
-
-void Container::makeActive()
-{
-    workspace()->makeActive();
-    if (parent()) {
-        parent()->makeActive();
-        parent()->setActiveChild(parent()->indexOfChild(this));
-    }
-    Application::self()->setActiveLayer(Application::LAYER_TILED);
-}
-
 bool Container::isAncestorOf(Container *container) const
 {
     for (Container *parent = container->parent(); parent; parent = parent->parent()) {

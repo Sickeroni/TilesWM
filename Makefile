@@ -22,6 +22,7 @@ LIBCOMMON_SRCS += client_container_layout
 LIBCOMMON_SRCS += theme
 LIBCOMMON_SRCS += workspace
 LIBCOMMON_SRCS += client
+LIBCOMMON_SRCS += client_util
 LIBCOMMON_SRCS += monitor
 LIBCOMMON_SRCS += application
 LIBCOMMON_SRCS += main_actions

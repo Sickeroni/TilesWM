@@ -3,6 +3,7 @@
 
 #include "action_set.h"
 
+class Container;
 class ClientContainer;
 class Client;
 class Workspace;
@@ -18,6 +19,8 @@ public:
     virtual void manageClient(Client *client) = 0;
     virtual void layout() = 0;
     virtual void handleMaximizedChanged() = 0;
+    virtual void makeContainerActive(Container *container) = 0;
+    virtual bool isContainerActive(Container *container) = 0;
 
     Workspace *workspace() { return _workspace; }
 

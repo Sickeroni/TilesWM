@@ -22,6 +22,8 @@ public:
     virtual void manageClient(Client *client) override;
     virtual void layout() override;
     virtual void handleMaximizedChanged() override;
+    virtual void makeContainerActive(Container *container) override;
+    virtual bool isContainerActive(Container *container) override;
 
 private:
     enum {

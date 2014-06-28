@@ -38,7 +38,6 @@ public:
     int maxWidth() { return _max_width; }
     int maxHeight() { return _max_height; }
 
-
 protected:
     Client(bool is_mapped);
 
