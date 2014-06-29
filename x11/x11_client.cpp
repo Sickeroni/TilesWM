@@ -195,11 +195,12 @@ void X11Client::init()
 {
     CriticalSection sec;
 
-    XGrabButton(dpy(), 1, Mod1Mask, X11Application::root(), true, ButtonPressMask, GrabModeAsync,
-            GrabModeAsync, None, None);
+//     XGrabButton(dpy(), 1, Mod1Mask, X11Application::root(), true, ButtonPressMask, GrabModeAsync,
+//             GrabModeAsync, None, None);
 //     XGrabButton(dpy(), 3, Mod1Mask, X11Application::root(), true, ButtonPressMask, GrabModeAsync,
 //             GrabModeAsync, None, None);
 
+//     XGrabButton(dpy(), Mod1Mask
 
     //FIXME clear these on shutdown (before closing display connection)
     Atom net_supported_values[] = {
@@ -310,6 +311,9 @@ void X11Client::create(Window wid)
             new_attr.event_mask = attr.your_event_mask | PropertyChangeMask | FocusChangeMask;
 
             XChangeWindowAttributes(dpy(), wid, CWEventMask, &new_attr);
+
+            XGrabButton(dpy(), 1, Mod1Mask, wid, true, ButtonPressMask, GrabModeAsync,
+                GrabModeAsync, None, None);
 
             X11Client *client = new X11Client();
 
@@ -1011,6 +1015,10 @@ bool X11Client::handleEvent(const XEvent &ev)
             _dragged->_frame->move(_dragged_original_x + xdiff, _dragged_original_y + ydiff);
         }
         break;
+    case ButtonPress:
+        debug<<"ButtonPress";
+        wid = ev.xbutton.window;
+        break;
     case ButtonRelease:
         if (ev.xbutton.button == 1 && _dragged) {
             finishDrag();
@@ -1072,6 +1080,10 @@ bool X11Client::handleEvent(const XEvent &ev)
             case FocusIn:
             case FocusOut:
                 client->refreshFocusState();
+                break;
+            case ButtonPress:
+                //FIXME the coordinates might be in either client or frame space
+                client->handleButtonPress(ev.xbutton);
                 break;
 #if 0
             case PropertyNotify:
