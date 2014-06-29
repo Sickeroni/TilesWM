@@ -1,17 +1,18 @@
 #include "workspace.h"
 
-#include "container_layout.h"
-#include "container_util.h"
 #include "window_manager.h"
+#include "widget_backend.h"
 #include "application.h"
 #include "mode.h"
 #include "common.h"
 
-Workspace::Workspace() : ContainerBase(WORKSPACE),
+Workspace::Workspace() : Widget(WORKSPACE),
     _monitor(0),
     _maximized(false),
     _mode(Application::self()->defaultMode())
 {
+    _backend = Application::self()->createWidgetBackend();
+    _backend->setFrontend(this);
     _window_manager = mode()->createWindowManager(this);
     _window_manager->initShortcuts();
 }
@@ -21,6 +22,8 @@ Workspace::~Workspace()
     assert(!monitor());
     delete _window_manager;
     _window_manager = 0;
+    delete _backend;
+    _backend = 0;
 }
 
 void Workspace::setMaximized(bool enable)
@@ -74,7 +77,7 @@ void Workspace::setMode(size_t index)
 
     Application::focusActiveClient();
 }
-
+#if 0
 void Workspace::rotateOrientation()
 {
     if (_orientation == Container::HORIZONTAL)
@@ -95,3 +98,4 @@ void Workspace::removeChild(Container *container)
 {
     container->reparent(0, 0);
 }
+#endif

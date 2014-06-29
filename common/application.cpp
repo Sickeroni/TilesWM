@@ -2,19 +2,18 @@
 
 #include "monitor.h"
 #include "workspace.h"
-#include "client_container.h"
-#include "container_container.h"
-#include "main_actions.h"
+// #include "main_actions.h"
 #include "client.h"
-#include "mode_default.h"
-#include "mode_3panel.h"
+// #include "mode_default.h"
+// #include "mode_3panel.h"
+#include "mode_simple.h"
 #include "window_manager.h"
 #include "config.h"
 #include "common.h"
 
 #include <unistd.h>
 #include <sys/wait.h>
-#include <stdio.h>
+#include <cstdio>
 
 Application *Application::_self = 0;
 
@@ -31,12 +30,13 @@ Application::~Application()
 
 void Application::init()
 {
-    _main_actions = new MainActions();
+//     _main_actions = new MainActions();
 
-    _modes.push_back(new ModeDefault());
+//     _modes.push_back(new ModeDefault());
 //     _modes.push_back(new Mode3Panel());
+    _modes.push_back(new ModeSimple());
 
-    _main_actions->initShortcuts();
+//     _main_actions->initShortcuts();
 
     if (_default_mode >= _modes.size())
         _default_mode = 0;
@@ -75,18 +75,17 @@ Workspace *Application::activeWorkspace()
     return self()->activeMonitor()->workspace();
 }
 
-ClientContainer *Application::activeClientContainer()
+Container *Application::activeContainer()
 {
     if (self()->activeLayer() != LAYER_TILED)
         return 0;
     else
-        return activeWorkspace()->windowManager()->activeClientContainer();
+        return activeWorkspace()->windowManager()->activeContainer();
 }
 
-void Application::manageClient(Client *client, bool is_floating)
+void Application::manageClient(WidgetBackend *backend, bool is_floating)
 {
-    assert(!client->container());
-    assert(!client->workspace());
+    Client *client = new Client(backend);
 
     if (is_floating)
         activeWorkspace()->addClient(client);
@@ -94,12 +93,24 @@ void Application::manageClient(Client *client, bool is_floating)
         activeWorkspace()->windowManager()->manageClient(client);
 }
 
-void Application::unmanageClient(Client *client)
+void Application::unmanageClient(Widget *frontend)
 {
-    if (client->container())
-        client->container()->removeChild(client);
-    else if (client->workspace())
-        client->workspace()->removeClient(client);
+    Client *client = frontend->toClient();
+
+    if (client->parent()) {
+        assert(false);
+
+        if (Workspace *workspace = client->parent()->toWorkspace())
+            workspace->removeClient(client);
+        else if (Container *container = client->parent()->toContainer()) {
+//             container->removeChild(container->indexOfChild(client));
+            (void)container;
+            assert(0);
+        } else
+            abort();
+    }
+
+    delete client;
 }
 
 void Application::runProgram(const char *path)
@@ -123,6 +134,7 @@ void Application::runProgram(const char *path)
 
 void Application::focusActiveClient()
 {
+#if 0
     //FIXME - floating layer !
     ClientContainer *container = activeClientContainer();
     printvar(container);
@@ -130,16 +142,18 @@ void Application::focusActiveClient()
         printvar(container->activeClient());
         self()->setFocus(container->activeClient());
     }
+#endif
 }
 
 Client *Application::activeClient()
 {
     if (self()->activeLayer() == LAYER_TILED) {
-        if (activeClientContainer())
-            return activeClientContainer()->activeClient();
-        else
-            return 0;
+        return activeWorkspace()->windowManager()->activeClient();
     } else
         return activeWorkspace()->activeClient();
+}
 
+void Application::setFocus(Client *client)
+{
+    client->setFocus();
 }

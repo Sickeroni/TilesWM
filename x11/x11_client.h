@@ -1,7 +1,8 @@
 #ifndef __X11_CLIENT_H_
 #define __X11_CLIENT_H__
 
-#include "client.h"
+#include "client_backend.h"
+#include "widget_backend.h"
 
 #include "x11_server_widget.h"
 #include "rect.h"
@@ -19,7 +20,7 @@ class Icon;
 
 //FIXME TODO - set border width via XConfigureWindow
 
-class X11Client final : public Client, public X11ServerWidget::EventHandler
+class X11Client final : public WidgetBackend, public ClientBackend, public X11ServerWidget::EventHandler
 {
 public:
     static void init();
@@ -29,21 +30,39 @@ public:
 
     virtual ~X11Client();
 
-    virtual Icon *icon() override;
-    virtual const Rect &rect()  override { return _frame->rect(); }
+    // WidgetBackend implementation
     virtual void setRect(const Rect &rect) override;
-    virtual int maxTextHeight() override;
-    virtual void requestClose() override;
+    virtual void setMapped(bool mapped) override;
+    virtual void reparent(WidgetBackend *parent) override;
+    virtual void redraw() override { drawFrame(); }
+    virtual int maxTextHeight() const override;
+    virtual void setFrontend(Widget *frontend) {
+        _frontend = frontend;
+    }
+    virtual ClientBackend *clientBackend() override { return this; }
 
-    virtual void setContainer(ClientContainer *container) override;
+    // ClientBackend implementation
+    virtual void setEventHandler(ClientBackend::EventHandler *handler) {
+        _event_handler = handler;
+    }
+    virtual const Rect &rect() { return _frame->rect(); }
+    virtual bool hasFocus() override { return _has_focus; }
+    virtual void setFocus() override {
+        setFocus(this);
+    }
+    virtual Icon *icon() override { return _icon; }
+    virtual void requestClose() override;
+    virtual void raise() override;
+    virtual const std::string &name() override { return _name; }
+
 
     // X11ServerWidget::EventHandler implementation
     virtual void handleExpose() override;
     virtual void handleButtonPress(const XButtonEvent &ev) override;
 
+    bool isMapped() { return _is_mapped; }
     void map();
     void unmap();
-    void raise();
 
 private:
     class CriticalSection;
@@ -100,6 +119,18 @@ private:
     Icon *_icon;
     WindowType _window_type;
     bool _is_modal;
+
+    bool _is_mapped = false;
+    bool _has_focus = false;
+    std::string _name = "<no name>";
+    std::string _class;
+    std::string _icon_name;
+    std::string _title;
+    int _min_width = 0, _min_height = 0;
+    int _max_width = 0, _max_height = 0;
+
+    Widget *_frontend = 0;
+    ClientBackend::EventHandler *_event_handler = 0;
 };
 
 #endif // __X11_CLIENT_H__

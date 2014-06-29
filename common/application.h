@@ -1,19 +1,21 @@
 #ifndef __APPLICATION_H__
 #define __APPLICATION_H__
 
+#include "common.h"
+
 #include <vector>
 #include <cstddef>
 #include <string>
 
 class Workspace;
-class ClientContainer;
 class Client;
+class Container;
 class Monitor;
 class ShortcutSet;
 class Mode;
 class ActionSet;
-class ContainerWidget;
-class ContainerBase;
+class WidgetBackend;
+class Widget;
 
 class Application
 {
@@ -27,20 +29,24 @@ public:
     ~Application();
 
     virtual Monitor *activeMonitor() = 0;
-    virtual Workspace *createWorkspace() = 0;
-    virtual void setActiveMonitor(Monitor *monitor) = 0;
-    virtual void setFocus(Client *client) = 0;
-    virtual ShortcutSet *createShortcutSet(std::string name) = 0;
-    virtual void requestQuit() = 0;
-    virtual ContainerWidget *createContainerWidget(ContainerBase *container) = 0;
 
+    virtual void setActiveMonitor(Monitor *monitor) = 0;
+    virtual void requestQuit() = 0;
+    virtual WidgetBackend *createWidgetBackend() = 0;
+    virtual ShortcutSet *createShortcutSet(std::string name) = 0;
+    virtual Workspace *createWorkspace() = 0; //FIXME make non-virtual
+
+    void setFocus(Client *client);
     void reloadConfig();
     Layer activeLayer() { return LAYER_TILED; } // HACK
     void setActiveLayer(Layer layer) {
         //FIXME
     }
     const ShortcutSet *mainShortcuts();
-    Mode *mode(size_t index) { return _modes[index]; }
+    Mode *mode(size_t index) {
+        assert(index < _modes.size());
+        return _modes[index];
+    }
     size_t defaultMode() { return _default_mode; }
     size_t numModes() { return _modes.size(); }
 
@@ -48,9 +54,9 @@ public:
 
     // helper functions
     static Workspace *activeWorkspace();
-    static ClientContainer *activeClientContainer();
-    static void manageClient(Client *client, bool is_floating);
-    static void unmanageClient(Client *client);
+    static Container *activeContainer();
+    static void manageClient(WidgetBackend *backend, bool is_floating);
+    static void unmanageClient(Widget *frontend);
     static void runProgram(const char *path);
     static void focusActiveClient();
     static Client *activeClient();

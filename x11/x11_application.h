@@ -25,14 +25,13 @@ public:
     ~X11Application();
 
     virtual Monitor *activeMonitor() override;
-    virtual Workspace *createWorkspace() override;
     virtual void setActiveMonitor(Monitor *monitor) override;
-    virtual void setFocus(Client *client) override;
     virtual ShortcutSet *createShortcutSet(std::string name) override;
     virtual void requestQuit() override {
         _quit_requested = true;
     }
-    virtual ContainerWidget *createContainerWidget(ContainerBase *container) override;
+    virtual WidgetBackend *createWidgetBackend() override;
+    virtual Workspace *createWorkspace() override;
 
     bool init();
     void shutdown();

@@ -1,18 +1,72 @@
 #include "client.h"
 
+#include "widget_backend.h"
+#include "client_backend.h"
+// #include "container.h"
 #include "common.h"
 
-Client::Client(bool is_mapped) :
-    _is_mapped(is_mapped),
-    _has_focus(false),
-    _name("<no name>"),
-    _min_width(0),
-    _min_height(0),
-    _max_width(0),
-    _max_height(0)
+Client::Client(WidgetBackend *backend) : ChildWidget(CLIENT)
 {
+    _backend = backend;
+    _backend->setFrontend(this);
+    _backend->clientBackend()->setEventHandler(this);
+    _rect = _backend->clientBackend()->rect();
 }
 
 Client::~Client()
 {
+    _backend->clientBackend()->setEventHandler(0);
+    _backend->setFrontend(0);
+}
+
+bool Client::hasFocus()
+{
+    return _backend->clientBackend()->hasFocus();
+}
+
+bool Client::hasDecoration()
+{
+    return true;
+}
+
+const std::string &Client::name()
+{
+    return _backend->clientBackend()->name();
+}
+
+Icon *Client::icon()
+{
+    return _backend->clientBackend()->icon();
+}
+
+void Client::setFocus()
+{
+    _backend->clientBackend()->setFocus();
+}
+
+void Client::handleGeometryChanged(const Rect &rect)
+{
+    _rect = rect;
+}
+
+void Client::handleFocusChanged()
+{
+    //FIXME
+//     container()->handleClientFocusChanged(this);
+}
+
+void Client::handleSizeHintsChanged()
+{
+    //FIXME
+#if 0
+    if (parent()) {
+        if (Container *container = parent()->toContainer())
+            container->handleSizeHintsChanged(this);
+    }
+#endif
+}
+
+void Client::handleMap()
+{
+    //FIXME
 }

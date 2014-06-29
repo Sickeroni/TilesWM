@@ -3,16 +3,15 @@
 
 #include "monitor.h"
 #include "rect.h"
-#include "container_base.h"
+#include "widget.h"
+#include "common.h"
 
-#include <cstddef>
-
-class ClientContainer;
 class Client;
 class Mode;
 class WindowManager;
+class ChildWidget;
 
-class Workspace : public ContainerBase
+class Workspace : public Widget
 {
 public:
     Workspace();
@@ -22,7 +21,6 @@ public:
     bool maximized() { return _maximized; } //FIXME -> isMaximized()
     void setMaximized(bool enable);
     bool makeActive();
-    bool isMapped();
     Client *activeClient(); // active client in the floating layer
     void addClient(Client *client);
     void removeClient(Client *client);
@@ -38,12 +36,12 @@ public:
     Mode *mode();
     size_t modeIndex() { return _mode; }
     void setMode(size_t index);
-    Orientation orientation() { return _orientation; }
-    void rotateOrientation();
+//     Orientation orientation() { return _orientation; }
+//     void rotateOrientation();
 
     WindowManager *windowManager() { return _window_manager; }
-    void addChild(Container *container);
-    void removeChild(Container *container);
+    void addChild(ChildWidget *child);
+    void removeChild(ChildWidget *child);
 
 private:
     Monitor *_monitor = 0;
@@ -51,7 +49,7 @@ private:
     bool _maximized = false;
     size_t _mode = 0;
     WindowManager *_window_manager = 0;
-    Orientation _orientation = HORIZONTAL;
+//     Orientation _orientation = HORIZONTAL;
 };
 
 #endif // __WORKSPACE_H__

@@ -8,6 +8,7 @@ class ContainerContainer;
 class ClientContainer;
 class Client;
 class Canvas;
+class Widget;
 
 namespace Theme
 {
@@ -27,7 +28,7 @@ namespace Theme
     const ContainerContainerSizes &containerContainerSizes();
     const ClientContainerSizes &clientContainerSizes();
 
-    void drawContainer(ContainerBase *container, Canvas *canvas);
+    void drawWidget(Widget *widget, Canvas *canvas);
 
     int calcContainerContainerTitlebarHeight(const ContainerContainer *container);
     inline void getContainerContainerClientRect(const ContainerContainer *container,
@@ -45,9 +46,8 @@ namespace Theme
     int calcVerticalTabbarHeight(ClientContainer *container);
     int getTabAt(int x, int y, ClientContainer *container);
 
-    void drawClientFrame(Client *client, Canvas *canvas);
-    void calcClientFrameRect(Client *client, const Rect &client_rect, Rect &frame_rect);
-    void calcClientClientRect(Client *client, const Rect &frame_rect, Rect &client_rect);
+    void calcClientFrameRect(bool has_decoration, int max_text_height, const Rect &client_rect, Rect &frame_rect);
+    void calcClientClientRect(bool has_decoration, int max_text_height, const Rect &frame_rect, Rect &client_rect);
 }
 
 #endif // __THEME_H__

@@ -1,10 +1,10 @@
 #include "x11_application.h"
 
-#include "x11_container_widget.h"
 #include "x11_client.h"
 #include "x11_widget.h"
 #include "x11_shortcut_set.h"
 #include "x11_graphics_system.h"
+#include "x11_widget_backend.h"
 
 #include "workspace.h"
 #include "monitor.h"
@@ -272,7 +272,7 @@ void X11Application::shutdown()
 
     XChangeWindowAttributes(_dpy, _root, CWEventMask, &new_root_attr); // clears event mask
 
-    setFocus(0);
+    X11Client::setFocus(0);
 
     delete _graphics_system;
     _graphics_system = 0;
@@ -383,9 +383,9 @@ Workspace *X11Application::createWorkspace()
     return w;
 }
 
-ContainerWidget *X11Application::createContainerWidget(ContainerBase *container)
+WidgetBackend *X11Application::createWidgetBackend()
 {
-    return new X11ContainerWidget(container);
+    return new X11WidgetBackend();
 }
 
 ShortcutSet *X11Application::createShortcutSet(std::string name)
@@ -395,12 +395,8 @@ ShortcutSet *X11Application::createShortcutSet(std::string name)
 
 X11Client *X11Application::activeClient()
 {
-    return static_cast<X11Client*>(Application::activeClient());
-}
-
-void X11Application::setFocus(Client *client)
-{
-    X11Client::setFocus(static_cast<X11Client*>(client));
+    assert(0);
+//     return static_cast<X11Client*>(Application::activeClient());
 }
 
 Atom X11Application::atom(const char *name)

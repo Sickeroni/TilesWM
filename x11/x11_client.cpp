@@ -3,17 +3,15 @@
 #include "x11_client_widget.h"
 #include "x11_server_widget.h"
 #include "x11_application.h"
-#include "x11_container_widget.h"
 #include "x11_graphics_system.h"
 #include "x11_global.h"
 #include "icon.h"
 #include "canvas.h"
-#include "container_layout.h"
 #include "workspace.h"
 #include "colors.h"
 #include "theme.h"
-#include "client_util.h"
-#include "client_container.h"
+#include "widget_backend.h"
+#include "client.h"
 #include "common.h"
 
 #include <X11/Xutil.h>
@@ -88,7 +86,7 @@ int X11Client::_drag_start_x = 0;
 int X11Client::_drag_start_y = 0;
 
 
-X11Client::X11Client() : Client(false),
+X11Client::X11Client() :
     _widget(0),
     _frame(0),
     _icon(0),
@@ -99,7 +97,7 @@ X11Client::X11Client() : Client(false),
 
 X11Client::~X11Client()
 {
-    assert(!_container);
+    assert(!_frontend);
     debug;
     delete _icon;
     _icon = 0;
@@ -107,11 +105,6 @@ X11Client::~X11Client()
     _widget= 0;
     delete _frame;
     _frame = 0;
-}
-
-Icon *X11Client::icon()
-{
-    return _icon;
 }
 
 void X11Client::setFocus(X11Client *client)
@@ -178,31 +171,23 @@ void X11Client::setRect(const Rect &rect)
     _widget->setRect(r);
 }
 
-void X11Client::setContainer(ClientContainer *container)
+void X11Client::reparent(WidgetBackend *parent)
 {
-    debug;
-
-    assert(!isOverrideRedirect());
+   assert(!isOverrideRedirect());
 
     X11ServerWidget *new_parent_widget = 0;
-    if (container) {
-        // HACK HACK HACK
-        const ContainerWidget *container_widget = const_cast<const ClientContainer*>(container)->widget();
-        X11ContainerWidget *x11_container_widget = static_cast<X11ContainerWidget*>(
-                const_cast<ContainerWidget*>(container_widget));
-        new_parent_widget = x11_container_widget->x11Widget();
-    }
+
+    assert(0);
 
     printvar(new_parent_widget);
     _frame->reparent(new_parent_widget);
-
-    _container = container;
 }
 
 //FIXME remove
 void X11Client::makeActive()
 {
-    ClientUtil::makeActive(this);
+    assert(false);
+//     ClientUtil::makeActive(this);
 }
 
 void X11Client::init()
@@ -258,11 +243,14 @@ void X11Client::shutdown()
             it != _wid_index.end();
             it++)
     {
-        Application::unmanageClient(it->second);
-        it->second->_widget->reparent(0);
-        XRemoveFromSaveSet(dpy(), it->second->_widget->wid());
-        delete it->second;
-        it->second = 0;
+        X11Client *client = it->second;
+        if (client->_frontend)
+            Application::unmanageClient(client->_frontend);
+        client->_frontend = 0;
+        client->_widget->reparent(0);
+        XRemoveFromSaveSet(dpy(), client->_widget->wid());
+        delete client;
+        client = 0;
     }
 
     _wid_index.clear();
@@ -350,8 +338,9 @@ void X11Client::create(Window wid)
                                                      client,
                                                      ExposureMask | ButtonPressMask | SubstructureNotifyMask | SubstructureRedirectMask);
 
+
             Rect frame_rect;
-            Theme::calcClientFrameRect(client, rect, frame_rect);
+            Theme::calcClientFrameRect(true, client->maxTextHeight(), rect, frame_rect);
             if (frame_rect.y < 0) //FIXME make sure it's inside client area of screen (screen area minus panels)
                 frame_rect.y = 0;
 #if 0
@@ -371,8 +360,6 @@ void X11Client::create(Window wid)
             client->_frame->setRect(frame_rect);
 
             client->refreshIcon();
-//             if (!client->_icon)
-//                 client->_icon = new X11Icon(20, 20, client->_frame);
 
             _wid_index.insert(std::pair<Window, X11Client*>(wid, client));
             _frame_wid_index.insert(std::pair<Window, X11Client*>(client->_frame->wid(), client));
@@ -458,15 +445,29 @@ bool X11Client::refreshMapState()
     }
 }
 
-void X11Client::map()
+void X11Client::unmap()
 {
-    debug;
+    setMapped(false);
 
     CriticalSection sec;
+}
+
+void X11Client::map()
+{
+    setMapped(true);
+}
+
+void X11Client::setMapped(bool mapped)
+{
+   CriticalSection sec;
 
     if (refreshMapState()) {
-        if (!isMapped())
-            mapInt();
+        if(isMapped() != mapped) {
+            if (mapped)
+                mapInt();
+            else
+                unmapInt();
+        }
     }
 }
 
@@ -483,15 +484,13 @@ void X11Client::mapInt()
         XAddToSaveSet(dpy(), _widget->wid());
 
         Rect client_rect;
-        Theme::calcClientClientRect(this, _frame->rect(), client_rect);
+        Theme::calcClientClientRect(true, maxTextHeight(), _frame->rect(), client_rect);
 
         _widget->reparent(_frame, client_rect.x, client_rect.y);
 
-        assert(!container());
 
         Application::manageClient(this, isDialog() || _is_modal);
 
-        assert(isFloating() || container());
 
         const uint32_t state[2] = {
             STATE_NORMAL, None
@@ -505,22 +504,10 @@ void X11Client::mapInt()
 
         _is_mapped = true;
 
-        if (container())
-            container()->handleClientMap(this);
+        if (_event_handler)
+            _event_handler->handleMap();
 
         Application::focusActiveClient();
-    }
-}
-
-void X11Client::unmap()
-{
-    debug;
-
-    CriticalSection sec;
-
-    if (refreshMapState()) {
-        if(isMapped())
-            unmapInt();
     }
 }
 
@@ -551,7 +538,9 @@ void X11Client::unmapInt()
 
         _is_mapped = false;
 
-        Application::unmanageClient(this);
+        if (_frontend)
+            Application::unmanageClient(_frontend);
+        _frontend = 0;
     }
 
     Application::focusActiveClient();
@@ -592,7 +581,7 @@ void X11Client::handleConfigureRequest(const XConfigureRequestEvent &ev)
 
             // new frame rect based on requested client rect
             Rect frame_rect;
-            Theme::calcClientFrameRect(this, client_rect, frame_rect);
+            Theme::calcClientFrameRect(true, maxTextHeight(), client_rect, frame_rect);
 
             frame_rect.setPos(client_rect.x, client_rect.y);
 
@@ -603,7 +592,7 @@ void X11Client::handleConfigureRequest(const XConfigureRequestEvent &ev)
 
             if (isMapped()) {
                 // the client rect needs to be positioned in respect to the frame rect
-                Theme::calcClientFrameRect(this, frame_rect, client_rect);
+                Theme::calcClientFrameRect(true, maxTextHeight(), frame_rect, client_rect);
                 changes.x = client_rect.x;
                 changes.y = client_rect.y;
 
@@ -613,7 +602,11 @@ void X11Client::handleConfigureRequest(const XConfigureRequestEvent &ev)
 
             _widget->configure(values, changes);
             _frame->setRect(frame_rect);
+
+            if (_event_handler)
+                _event_handler->handleGeometryChanged(frame_rect);
         } else { // client is mapped and in tiling mode
+            assert(false);
             // ignore geometry/stacking requests, as that should be changed on our behalf only
             if (ev.value_mask & CWBorderWidth)
                 _widget->configure(CWBorderWidth, changes);
@@ -647,8 +640,9 @@ void X11Client::refreshSizeHints()
             _min_height = size_hints.min_height;
             _max_width = size_hints.max_width;
             _max_height = size_hints.max_height;
-            if (container())
-                container()->handleClientSizeHintChanged(this);
+
+            if (_event_handler)
+                _event_handler->handleSizeHintsChanged();
         }
     } else
         debug<<"failed to get size hints for client"<<_name;
@@ -744,31 +738,33 @@ void X11Client::refreshFocusState()
     if (!_has_focus && focus_changed) {
         debug<<"client"<<this<<"lost focus";
         if (focus_holder) {
-            Client *c = find(focus_holder);
+            X11Client *c = find(focus_holder);
             debug<<"focus moved to client"<<c;
         }
     }
 
-    if (_has_focus && (X11Application::activeClient() != this)) {
-    // disable the following block as it may lead to the client repeatedly grabbing focus
+    if (_frontend) {
+        if (_has_focus && (Application::activeClient() != _frontend)) {
+        // disable the following block as it may lead to the client repeatedly grabbing focus
 #if 0
-        // client grabbed focus when it wasn't active - bad boy
-        // give focus back to active client
-        if (X11Application::activeClient())
-            X11Application::activeClient()->setFocus();
-        else
-            XSetInputFocus(dpy(), X11Application::root(), RevertToNone, CurrentTime);
+            // client grabbed focus when it wasn't active - bad boy
+            // give focus back to active client
+            if (X11Application::activeClient())
+                X11Application::activeClient()->setFocus();
+            else
+                XSetInputFocus(dpy(), X11Application::root(), RevertToNone, CurrentTime);
 #else
-        debug<<"client has focus, but is not active - activating.";
-        makeActive();
+            debug<<"client has focus, but is not active - activating.";
+            makeActive();
 #endif
+        }
     }
 
     if (!focus_holder) // we lost focus and no other window is currently focused
         XSetInputFocus(dpy(), X11Application::root(), RevertToNone, CurrentTime);
 
-    if (focus_changed && container())
-        container()->handleClientFocusChange(this);
+    if (focus_changed && _event_handler)
+        _event_handler->handleFocusChanged();
 //     else
     if (focus_changed)
         drawFrame();
@@ -903,8 +899,7 @@ void X11Client::refreshIcon()
 
 void X11Client::handleExpose()
 {
-//     if (!container())
-        drawFrame();
+    drawFrame();
 }
 
 // the frame has been clicked
@@ -912,20 +907,22 @@ void X11Client::handleButtonPress(const XButtonEvent &ev)
 {
     assert(!_dragged);
 
-    if (!container()) { // for tiled clients the container handles this
+    //FIXME - use isTiled()
+//     if (!container()) { // for tiled clients the container handles this
         setFocus(this);
         raise();
         if (ev.button == 1)
             startDrag(ev.x_root, ev.y_root);
-    }
+//     }
 }
 
 void X11Client::drawFrame()
 {
-    Theme::drawClientFrame(this, _frame->canvas());
+    if (_frontend)
+        Theme::drawWidget(_frontend, _frame->canvas());
 }
 
-int X11Client::maxTextHeight()
+int X11Client::maxTextHeight() const
 {
     return _frame->canvas()->maxTextHeight();
 }
@@ -1044,7 +1041,9 @@ bool X11Client::handleEvent(const XEvent &ev)
                     cancelDrag();
                 _frame_wid_index.erase(client->_frame->wid());
                 _wid_index.erase(wid);
-                Application::unmanageClient(client);
+                if (client->_frontend)
+                    Application::unmanageClient(client->_frontend);
+                client->_frontend = 0;
                 delete client;
                 client = 0;
                 Application::focusActiveClient();
@@ -1064,6 +1063,7 @@ bool X11Client::handleEvent(const XEvent &ev)
             case FocusOut:
                 client->refreshFocusState();
                 break;
+#if 0
             case PropertyNotify:
                 switch (ev.xproperty.atom) {
                 case XA_WM_NORMAL_HINTS:
@@ -1117,6 +1117,7 @@ bool X11Client::handleEvent(const XEvent &ev)
                             client->container()->getLayout()->layoutContents(); //FIXME use handleClientIconChanged()
                     }
                 }
+#endif
                 break;
             }
 

@@ -1,8 +1,5 @@
 #include "theme.h"
 
-#include "container_container.h"
-#include "client_container.h"
-#include "container_widget.h"
 #include "workspace.h"
 #include "window_manager.h"
 #include "client.h"
@@ -20,7 +17,7 @@ using std::max;
 
 namespace Theme {
 
-
+#if 0
 struct ClientContainerSizesInternal
 {
     int frame_width;
@@ -377,12 +374,14 @@ void getClientContainerClientRect(ClientContainer *container,  Rect &client_rect
     client_rect.w = max(0, client_rect.w);
     client_rect.h = max(0, client_rect.h);
 }
-
+#endif
 
 void drawClientFrame(Client *client, Canvas *canvas)
 {
     Rect frame_rect = client->rect();
     frame_rect.setPos(0, 0);
+
+    assert(frame_rect.w && frame_rect.h);
 
     uint32_t frame_color = client->hasFocus() ? Colors::CLIENT_FOCUS : Colors::CLIENT_BORDER;
 
@@ -431,16 +430,16 @@ void drawClientFrame(Client *client, Canvas *canvas)
     }
 }
 
-void calcClientFrameMargins(Client *client, int &side, int &top, int &bottom)
+void calcClientFrameMargins(bool has_decoration, int max_text_height, int &side, int &top, int &bottom)
 {
     static const int titlebar_gap = 4; //FIXME
     int frame_margin = Metrics::CLIENT_INNER_FRAME_MARGIN;
     int titlebar_height = 0;
 
-    if (client->hasDecoration()) {
+    if (has_decoration) {
         frame_margin += Metrics::CLIENT_DECORATION_MARGIN;
         titlebar_height +=
-            (client->maxTextHeight() + (2 * Metrics::CLIENT_TITLEBAR_INNER_MARGIN));
+            (max_text_height + (2 * Metrics::CLIENT_TITLEBAR_INNER_MARGIN));
     }
 
     side = frame_margin;
@@ -448,10 +447,10 @@ void calcClientFrameMargins(Client *client, int &side, int &top, int &bottom)
     bottom = frame_margin;
 }
 
-void calcClientFrameRect(Client *client, const Rect &client_rect, Rect &frame_rect)
+void calcClientFrameRect(bool has_decoration, int max_text_height, const Rect &client_rect, Rect &frame_rect)
 {
     int side_margin, top_margin, bottom_margin;
-    calcClientFrameMargins(client, side_margin, top_margin, bottom_margin);
+    calcClientFrameMargins(has_decoration, max_text_height, side_margin, top_margin, bottom_margin);
 
     frame_rect.set(client_rect);
 
@@ -461,10 +460,10 @@ void calcClientFrameRect(Client *client, const Rect &client_rect, Rect &frame_re
     frame_rect.h += (top_margin + bottom_margin);
 }
 
-void calcClientClientRect(Client *client, const Rect &frame_rect, Rect &client_rect)
+void calcClientClientRect(bool has_decoration, int max_text_height, const Rect &frame_rect, Rect &client_rect)
 {
     int side_margin, top_margin, bottom_margin;
-    calcClientFrameMargins(client, side_margin, top_margin, bottom_margin);
+    calcClientFrameMargins(has_decoration, max_text_height, side_margin, top_margin, bottom_margin);
 
     client_rect.set(frame_rect);
 
@@ -482,20 +481,12 @@ void drawWorkspace(Workspace *workspace, Canvas *canvas)
     canvas->drawText("--------------- Workspace ---------------", rect, 0x00FF00);
 }
 
-void drawContainer(ContainerBase *container, Canvas *canvas)
+void drawWidget(Widget *widget, Canvas *canvas)
 {
-    switch(container->type()) {
-        case ContainerBase::CLIENT:
-            drawClientContainer(container->toClientContainer(), canvas);
-            break;
-        case ContainerBase::CONTAINER:
-            drawContainerContainer(container->toContainerContainer(), canvas);
-            break;
-        case ContainerBase::WORKSPACE:
-            drawWorkspace(container->toWorkspace(), canvas);
-        default:
-            break;
-    }
+    if (Workspace *workspace = widget->toWorkspace())
+        drawWorkspace(workspace, canvas);
+    else if (Client *client = widget->toClient())
+        drawClientFrame(client, canvas);
 }
 
 
