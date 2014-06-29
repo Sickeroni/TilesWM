@@ -117,3 +117,14 @@ int CairoCanvas::maxTextHeight()
 
     return extents.ascent + extents.descent;
 }
+
+void CairoCanvas::begin()
+{
+    _context->push_group();
+}
+
+void CairoCanvas::end()
+{
+    _context->pop_group_to_source();
+    _context->paint();
+}

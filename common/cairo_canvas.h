@@ -18,6 +18,8 @@ public:
     virtual void drawText(const std::string &text, const Rect &rect, uint32_t color) override final;
     virtual void drawIcon(Icon *icon, int x, int y) override final;
     virtual int maxTextHeight() override final;
+    virtual void begin() override;
+    virtual void end() override;
 
 protected:
     Cairo::RefPtr<Cairo::Surface> _surface;

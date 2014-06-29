@@ -20,6 +20,8 @@ public:
     virtual void drawText(const std::string &text, const Rect &rect, uint32_t color) = 0;
     virtual void drawIcon(Icon *icon, int x, int y) = 0;
     virtual int maxTextHeight() = 0;
+    virtual void begin() {}
+    virtual void end() {}
 };
 
 
