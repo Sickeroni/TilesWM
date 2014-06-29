@@ -39,11 +39,11 @@ public:
     WindowManager *windowManager() { return _window_manager; }
 
     // active child in the floating layer
-    ChildWidget *activeFlotatingChild();
-    // sets the active client in the floating layer
-    void setActiveFloatingChild(ChildWidget *child) {
+    ChildWidget *activeFlotatingChild() {
         return _active_floating_child;
     }
+    // sets the active client in the floating layer
+    void setActiveFloatingChild(ChildWidget *child);
 
     Client *activeFloatingClient();
 
