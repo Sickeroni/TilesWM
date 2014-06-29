@@ -586,7 +586,7 @@ void X11Client::handleConfigureRequest(const XConfigureRequestEvent &ev)
     if (isOverrideRedirect())
         _widget->configure(ev.value_mask, changes);
     else {
-        if (!isMapped() || isDialog() || _is_modal) { // client is either not mapped or not in tiling mode
+        if (!isMapped() || _frontend->toChildWidget()->isFloating()) { // client is either not mapped or not in tiling mode
             Rect client_rect = _widget->rect();
             if (ev.value_mask & CWX)
                 client_rect.x = changes.x;
@@ -602,10 +602,11 @@ void X11Client::handleConfigureRequest(const XConfigureRequestEvent &ev)
             Theme::calcClientFrameRect(true, maxTextHeight(), client_rect, frame_rect);
             limitFrameRect(frame_rect);
 
-            frame_rect.setPos(client_rect.x, client_rect.y);
+//             frame_rect.setPos(client_rect.x, client_rect.y);
+            frame_rect.setPos(_frame->rect().x, _frame->rect().y);
 
             //FIXME use a less random placement - see also X11Client::create()
-            frame_rect.setPos(200, 200);
+//             frame_rect.setPos(200, 200);
 
             unsigned int values = ev.value_mask;
 
@@ -1047,8 +1048,11 @@ bool X11Client::handleEvent(const XEvent &ev)
             while(XCheckTypedEvent(dpy(), MotionNotify, &motion_event)) {} //FIXME - what about motion events after botton release ?
             int xdiff = motion_event.xbutton.x_root - _drag_start_x;
             int ydiff = motion_event.xbutton.y_root - _drag_start_y;
-            if (_drag_mode == DRAG_MOVE)
+            if (_drag_mode == DRAG_MOVE) {
                 _dragged->_frame->move(_dragged_original_rect.x + xdiff, _dragged_original_rect.y + ydiff);
+                if (_dragged->_event_handler)
+                    _dragged->_event_handler->handleGeometryChanged(_dragged->_frame->rect());
+            }
             else if (_drag_mode == DRAG_RESIZE) {
                 Rect rect = _dragged->rect();
                 rect.setSize(_dragged_original_rect.w + xdiff, _dragged_original_rect.h + ydiff);
