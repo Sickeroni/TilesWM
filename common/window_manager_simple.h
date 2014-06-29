@@ -16,12 +16,9 @@ public:
     virtual void initShortcuts() override {}
 
     virtual Client *activeClient() { return 0; }
-    virtual Container *activeContainer() override { return 0; }
     virtual void manageClient(Client *client) override {}
     virtual void layout() override {}
     virtual void handleMaximizedChanged() override {}
-    virtual void makeContainerActive(Container *container) override {}
-    virtual bool isContainerActive(Container *container) override { return false; }
 };
 
 #endif

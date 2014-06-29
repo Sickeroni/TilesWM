@@ -9,7 +9,6 @@
 
 class Workspace;
 class Client;
-class Container;
 class Monitor;
 class ShortcutSet;
 class Mode;
@@ -54,7 +53,6 @@ public:
 
     // helper functions
     static Workspace *activeWorkspace();
-    static Container *activeContainer();
     static void manageClient(WidgetBackend *backend, bool is_floating);
     static void unmanageClient(Widget *frontend);
     static void runProgram(const char *path);

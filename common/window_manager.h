@@ -3,7 +3,6 @@
 
 #include "action_set.h"
 
-class Container;
 class Client;
 class Workspace;
 
@@ -15,18 +14,18 @@ public:
     virtual ~WindowManager() {}
 
     virtual Client *activeClient() = 0;
-    virtual Container *activeContainer() = 0;
+//     virtual Container *activeContainer() = 0;
     virtual void manageClient(Client *client) = 0;
     virtual void layout() = 0;
     virtual void handleMaximizedChanged() = 0;
     // FIXME remove ?
     // and instead have makeClientActive(Client*) ?
     // or have both ?
-    virtual void makeContainerActive(Container *container) = 0;
+//     virtual void makeContainerActive(Container *container) = 0;
     // this also returns true if container is a parent of the active container
     //FIXME better name or remove
     // alternative: container->isParentOf(activeContainer()) / activeContainer()->isChildIf(container)
-    virtual bool isContainerActive(Container *container) = 0;
+//     virtual bool isContainerActive(Container *container) = 0;
 
     Workspace *workspace() { return _workspace; }
 

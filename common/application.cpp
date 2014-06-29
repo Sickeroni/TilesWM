@@ -75,6 +75,7 @@ Workspace *Application::activeWorkspace()
     return self()->activeMonitor()->workspace();
 }
 
+#if 0
 Container *Application::activeContainer()
 {
     if (self()->activeLayer() != LAYER_TILED)
@@ -82,6 +83,7 @@ Container *Application::activeContainer()
     else
         return activeWorkspace()->windowManager()->activeContainer();
 }
+#endif
 
 void Application::manageClient(WidgetBackend *backend, bool is_floating)
 {
