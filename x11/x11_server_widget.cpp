@@ -120,3 +120,10 @@ void X11ServerWidget::setRect(const Rect &rect)
     delete _canvas;
     _canvas = X11Application::graphicsSystem()->createCanvas(wid(), rect.w, rect.h);
 }
+
+void X11ServerWidget::resize(int w, int h)
+{
+    X11Widget::resize(w, h);
+    delete _canvas;
+    _canvas = X11Application::graphicsSystem()->createCanvas(wid(), w, h);
+}

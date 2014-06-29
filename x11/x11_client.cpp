@@ -612,7 +612,7 @@ void X11Client::handleConfigureRequest(const XConfigureRequestEvent &ev)
 
             if (isMapped()) {
                 // the client rect needs to be positioned in respect to the frame rect
-                Theme::calcClientFrameRect(true, maxTextHeight(), frame_rect, client_rect);
+                Theme::calcClientClientRect(true, maxTextHeight(), frame_rect, client_rect);
                 changes.x = client_rect.x;
                 changes.y = client_rect.y;
 
@@ -981,7 +981,7 @@ void X11Client::startResize(Anchor anchor, int x, int y)
     _drag_start_x = x;
     _drag_start_y = y;
 
-    _dragged_original_rect = _frame->rect();
+    _dragged_original_rect = _widget->rect();
 
     XGrabPointer(dpy(), _frame->wid(), true,
                  PointerMotionMask | ButtonReleaseMask,
@@ -1066,11 +1066,20 @@ bool X11Client::handleEvent(const XEvent &ev)
                     _dragged->_event_handler->handleGeometryChanged(_dragged->_frame->rect());
             }
             else if (_drag_mode == DRAG_RESIZE) {
-                Rect rect = _dragged->rect();
-                rect.setSize(_dragged_original_rect.w + xdiff, _dragged_original_rect.h + ydiff);
-                _dragged->applySizeHints(rect);
-                limitFrameRect(rect);
-                _dragged->setRect(rect);
+
+                CriticalSection sec;
+
+                Rect client_rect = _dragged->_widget->rect();
+                client_rect.setSize(_dragged_original_rect.w + xdiff, _dragged_original_rect.h + ydiff);
+                _dragged->applySizeHints(client_rect);
+
+                Rect frame_rect;
+                Theme::calcClientFrameRect(true, _dragged->maxTextHeight(), client_rect, frame_rect);
+                limitFrameRect(frame_rect);
+
+                _dragged->_frame->resize(frame_rect.w, frame_rect.h);
+                _dragged->_widget->resize(client_rect.w, client_rect.h);
+
                 if (_dragged->_event_handler)
                     _dragged->_event_handler->handleGeometryChanged(_dragged->_frame->rect());
             }

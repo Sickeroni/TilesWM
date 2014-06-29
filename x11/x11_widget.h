@@ -21,6 +21,7 @@ public:
 
     void setRect(const Rect &rect);
     void move(int x, int y);
+    void resize(int w, int h);
     bool isMapped() { return _is_mapped; }
     Window wid() { return _wid; }
     void reparent(X11ServerWidget *new_parent, int x = 0, int y = 0);

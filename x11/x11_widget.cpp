@@ -94,6 +94,13 @@ void X11Widget::move(int x, int y)
     XMoveWindow(dpy(), _wid, x, y);
 }
 
+void X11Widget::resize(int w, int h)
+{
+    assert(w && h);
+    _rect.setSize(w, h);
+    XResizeWindow(dpy(), _wid, w, h);
+}
+
 void X11Widget::setRect(const Rect &rect)
 {
 //     std::cout<<"X11Widget::setRect() - _wid: "<<_wid<<'\n';

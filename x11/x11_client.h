@@ -109,6 +109,7 @@ private:
     X11Client();
 
 //     bool validate();
+    void resize(int w, int h);
     void applySizeHints(Rect &rect);
     void setMappedInt(bool mapped);
     void mapInt();
