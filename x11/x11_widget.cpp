@@ -85,6 +85,7 @@ void X11Widget::reparent(X11ServerWidget *new_parent, int x, int y)
 {
     Window new_parent_wid = new_parent ? new_parent->wid() : X11Application::root();
     XReparentWindow(dpy(), _wid, new_parent_wid, x, y);
+    _rect.setPos(x, y);
 }
 
 void X11Widget::move(int x, int y)
