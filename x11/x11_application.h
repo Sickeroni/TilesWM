@@ -46,7 +46,6 @@ public:
     static Display *dpy()  { return self()->_dpy; }
     static Window root()  { return self()->_root; }
     static Workspace *activeWorkspace();
-    static X11Client *activeClient();
     static X11GraphicsSystem *graphicsSystem() { return self()->_graphics_system; }
 
     static const char *eventTypeToString(size_t id);

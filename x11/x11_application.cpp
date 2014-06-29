@@ -393,12 +393,6 @@ ShortcutSet *X11Application::createShortcutSet(std::string name)
     return new X11ShortcutSet(name);
 }
 
-X11Client *X11Application::activeClient()
-{
-    assert(0);
-//     return static_cast<X11Client*>(Application::activeClient());
-}
-
 Atom X11Application::atom(const char *name)
 {
     Atom &value = _atoms[name];
