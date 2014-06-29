@@ -385,6 +385,8 @@ void drawClientFrame(Client *client, Canvas *canvas)
 
     uint32_t frame_color = client->hasFocus() ? Colors::CLIENT_FOCUS : Colors::CLIENT_BORDER;
 
+    canvas->begin();
+
     //FIXME
     canvas->erase(frame_rect);
 //     canvas->fillRectangle(frame_rect, frame_color);
@@ -428,6 +430,8 @@ void drawClientFrame(Client *client, Canvas *canvas)
         }
         canvas->drawText(client->name(), title_rect, title_fg);
     }
+
+    canvas->end();
 }
 
 void calcClientFrameMargins(bool has_decoration, int max_text_height, int &side, int &top, int &bottom)
@@ -477,8 +481,10 @@ void drawWorkspace(Workspace *workspace, Canvas *canvas)
 {
     Rect rect = workspace->rect();
     rect.setPos(0, 0);
+    canvas->begin();
     canvas->erase(rect);
     canvas->drawText("--------------- Workspace ---------------", rect, 0x00FF00);
+    canvas->end();
 }
 
 void drawWidget(Widget *widget, Canvas *canvas)
