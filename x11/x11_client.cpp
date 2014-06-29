@@ -313,9 +313,11 @@ void X11Client::create(Window wid)
 
             XChangeWindowAttributes(dpy(), wid, CWEventMask, &new_attr);
 
-            XGrabButton(dpy(), 1, Mod1Mask, wid, true, ButtonPressMask, GrabModeAsync,
+            ModMask drag_modifier = ControlMask; //FIXME
+
+            XGrabButton(dpy(), 1, drag_modifier, wid, true, ButtonPressMask, GrabModeAsync,
                 GrabModeAsync, None, None);
-            XGrabButton(dpy(), 3, Mod1Mask, wid, true, ButtonPressMask, GrabModeAsync,
+            XGrabButton(dpy(), 3, drag_modifier, wid, true, ButtonPressMask, GrabModeAsync,
                 GrabModeAsync, None, None);
 
             X11Client *client = new X11Client();
