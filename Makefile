@@ -77,11 +77,11 @@ $(BUILD_DIR)/libcommon.a: $(BUILD_DIR)/common $(LIBCOMMON_OBJS)
 
 $(BUILD_DIR)/ttmwm: $(BUILD_DIR)/libcommon.a $(BUILD_DIR)/x11 $(TTMWM_X11_OBJS) $(BUILD_DIR)/x11/x11_graphics_system_x11.o
 	@ echo linking $@
-	@ $(CXX) $(CXXFLAGS) -L$(BUILD_DIR) $(TTMWM_X11_OBJS) $(BUILD_DIR)/x11/x11_graphics_system_x11.o -lX11 -lcommon -o $@
+	@ $(CXX) $(CXXFLAGS) -L$(BUILD_DIR) $(TTMWM_X11_OBJS) $(BUILD_DIR)/x11/x11_graphics_system_x11.o -lX11 -lXcursor -lcommon -o $@
 
 $(BUILD_DIR)/ttmwm-cairo: $(BUILD_DIR)/libcommon.a $(BUILD_DIR)/x11 $(TTMWM_X11_OBJS) $(BUILD_DIR)/x11/x11_graphics_system_cairo.o
 	@ echo linking $@
-	@ $(CXX) $(CXXFLAGS) -L$(BUILD_DIR) $(TTMWM_X11_OBJS) $(BUILD_DIR)/x11/x11_graphics_system_cairo.o -lX11 -lcairomm-1.0 -lcommon -o $@
+	@ $(CXX) $(CXXFLAGS) -L$(BUILD_DIR) $(TTMWM_X11_OBJS) $(BUILD_DIR)/x11/x11_graphics_system_cairo.o -lX11 -lXcursor -lcairomm-1.0 -lcommon -o $@
 
 # pull in dependency info for *existing* .o files
 # from gnu make manual:

@@ -13,6 +13,8 @@
 #include "config.h"
 #include "common.h"
 
+#include <X11/Xcursor/Xcursor.h>
+#include <X11/cursorfont.h>
 #include <sys/select.h>
 #include <sys/types.h>
 #include <sys/wait.h>
@@ -224,6 +226,10 @@ bool X11Application::init()
     new_root_attr.event_mask = SubstructureNotifyMask | SubstructureRedirectMask;
 
     XChangeWindowAttributes(_dpy, _root, CWEventMask, &new_root_attr);
+
+    Cursor cursor = XcursorShapeLoadCursor(dpy(), XC_left_ptr);
+    XDefineCursor(dpy(), _root, cursor);
+    XFreeCursor(dpy(), cursor);
 
     XSync(_dpy, false);
 
