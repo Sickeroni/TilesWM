@@ -117,13 +117,11 @@ bool X11ServerWidget::handleEvent(const XEvent &ev)
 void X11ServerWidget::setRect(const Rect &rect)
 {
     X11Widget::setRect(rect);
-    delete _canvas;
-    _canvas = X11Application::graphicsSystem()->createCanvas(wid(), rect.w, rect.h);
+    _canvas->resize(rect.w, rect.h);
 }
 
 void X11ServerWidget::resize(int w, int h)
 {
     X11Widget::resize(w, h);
-    delete _canvas;
-    _canvas = X11Application::graphicsSystem()->createCanvas(wid(), w, h);
+    _canvas->resize(w, h);
 }

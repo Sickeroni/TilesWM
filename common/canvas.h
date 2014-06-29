@@ -22,6 +22,9 @@ public:
     virtual int maxTextHeight() = 0;
     virtual void begin() {}
     virtual void end() {}
+
+    // this should be called by the backend only
+    virtual void resize(int width, int height) {}
 };
 
 
