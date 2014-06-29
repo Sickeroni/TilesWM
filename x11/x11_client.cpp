@@ -1032,6 +1032,18 @@ void X11Client::limitFrameRect(Rect &rect)
         rect.h = MAX_HEIGHT;
 }
 
+void X11Client::applySizeHints(Rect &rect)
+{
+    if (_min_width && rect.w < _min_width)
+        rect.w = _min_width;
+    if (_min_height && rect.h < _min_height)
+        rect.h = _min_height;
+    if (_max_width && rect.w > _max_width)
+        rect.w = _max_width;
+    if (_max_height && rect.h > _max_height)
+        rect.h = _max_height;
+}
+
 bool X11Client::handleEvent(const XEvent &ev)
 {
     //FIXME handle transient_for change
@@ -1056,6 +1068,7 @@ bool X11Client::handleEvent(const XEvent &ev)
             else if (_drag_mode == DRAG_RESIZE) {
                 Rect rect = _dragged->rect();
                 rect.setSize(_dragged_original_rect.w + xdiff, _dragged_original_rect.h + ydiff);
+                _dragged->applySizeHints(rect);
                 limitFrameRect(rect);
                 _dragged->setRect(rect);
                 if (_dragged->_event_handler)
