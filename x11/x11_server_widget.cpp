@@ -69,7 +69,9 @@ X11ServerWidget *X11ServerWidget::create(X11ServerWidget *parent, uint32_t bg_co
                                CopyFromParent,
                                InputOutput,
                                CopyFromParent,
-                               CWBackPixel /*| CWBorderPixel*/ | CWEventMask,
+//                                CWBackPixel |
+//                                    CWBorderPixel |
+                                   CWEventMask,
                                &attr);
 
     if (!wid)

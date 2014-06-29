@@ -39,7 +39,8 @@ int X11Canvas::maxTextHeight()
 
 void X11Canvas::erase(const Rect &rect)
 {
-    XClearArea(dpy(), _drawable, rect.x, rect.y, rect.w, rect.h, false);
+//     XClearArea(dpy(), _drawable, rect.x, rect.y, rect.w, rect.h, false);
+    fillRectangle(rect, 0);
 }
 
 void X11Canvas::drawFrame(const Rect &rect, uint32_t color)
