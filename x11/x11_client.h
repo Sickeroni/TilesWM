@@ -71,6 +71,23 @@ private:
     // values for the WM_STATE property
     enum WmState { STATE_WITHDRAWN = 0, STATE_NORMAL = 1, STATE_ICONIC = 3 };
 
+    enum Anchor {
+        ANCHOR_LEFT,
+        ANCHOR_RIGHT,
+        ANCHOR_TOP,
+        ANCHOR_BOTTOM,
+        ANCHOR_TOP_LEFT,
+        ANCHOR_TOP_RIGHT,
+        ANCHOR_BOTTOM_LEFT,
+        ANCHOR_BOTTOM_RIGHT
+    };
+
+    enum DragMode {
+        DRAG_MOVE,
+        DRAG_RESIZE,
+        DRAG_NONE
+    };
+
     static const int _inner_frame_width = Metrics::CLIENT_INNER_FRAME_MARGIN; //FIXME remove
 
     static X11Client *find(Window wid);
@@ -106,13 +123,15 @@ private:
         return _is_modal || isDialog() || isOverrideRedirect();
     }
     void startDrag(int x, int y);
+    void startResize(Anchor anchor, int x, int y);
     void makeActive();
 
     // TODO - use hash
     static std::map<Window, X11Client*> _wid_index;
     static std::map<Window, X11Client*> _frame_wid_index;
     static X11Client *_dragged;
-    static int _dragged_original_x, _dragged_original_y;
+    static DragMode _drag_mode;
+    static Rect _dragged_original_rect;
     static int _drag_start_x, _drag_start_y;
 
     X11ClientWidget *_widget;

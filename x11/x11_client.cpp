@@ -81,8 +81,8 @@ int X11Client::CriticalSection::errorHandler(Display *display, XErrorEvent *ev)
 std::map<Window, X11Client*> X11Client::_wid_index;
 std::map<Window, X11Client*> X11Client::_frame_wid_index;
 X11Client *X11Client::_dragged = 0;
-int X11Client::_dragged_original_x = 0;
-int X11Client::_dragged_original_y = 0;
+X11Client::DragMode X11Client::_drag_mode = DRAG_NONE;
+Rect X11Client::_dragged_original_rect;
 int X11Client::_drag_start_x = 0;
 int X11Client::_drag_start_y = 0;
 
@@ -146,8 +146,6 @@ void X11Client::raise()
 
 void X11Client::setRect(const Rect &rect)
 {
-    //FIXME handle floating
-
     assert(!isOverrideRedirect());
 
     assert(rect.w && rect.h);
@@ -155,7 +153,7 @@ void X11Client::setRect(const Rect &rect)
     _frame->setRect(rect);
 
     CriticalSection sec;
-
+#if 0
     Rect r;
     r.x = r.y = _inner_frame_width;
     r.w = rect.w - (2 * _inner_frame_width);
@@ -168,8 +166,11 @@ void X11Client::setRect(const Rect &rect)
         r.w = 10;
     if (r.h < 10)
         r.h = 10;
+#endif
+    Rect client_rect;
+    Theme::calcClientClientRect(true, maxTextHeight(), _frame->rect(), client_rect);
 
-    _widget->setRect(r);
+    _widget->setRect(client_rect);
 }
 
 void X11Client::reparent(WidgetBackend *new_parent)
@@ -313,6 +314,8 @@ void X11Client::create(Window wid)
             XChangeWindowAttributes(dpy(), wid, CWEventMask, &new_attr);
 
             XGrabButton(dpy(), 1, Mod1Mask, wid, true, ButtonPressMask, GrabModeAsync,
+                GrabModeAsync, None, None);
+            XGrabButton(dpy(), 3, Mod1Mask, wid, true, ButtonPressMask, GrabModeAsync,
                 GrabModeAsync, None, None);
 
             X11Client *client = new X11Client();
@@ -927,6 +930,10 @@ void X11Client::handleButtonPress(const XButtonEvent &ev)
         raise();
         if (ev.button == 1)
             startDrag(ev.x_root, ev.y_root);
+        else if (ev.button == 3) {
+            Anchor anchor = ANCHOR_BOTTOM_RIGHT;
+            startResize(anchor, ev.x_root, ev.y_root);
+        }
 //     }
 }
 
@@ -961,18 +968,34 @@ void X11Client::requestClose()
     XSendEvent(dpy(), _widget->wid(), false, NoEventMask, &xev);
 }
 
-void X11Client::startDrag(int x, int y)
+void X11Client::startResize(Anchor anchor, int x, int y)
 {
     //FIXME what if the pointer is already grabbed ?
-    debug;
     assert(!_dragged);
 
     _dragged = this;
-    _dragged_original_x = _frame->rect().x;
-    _dragged_original_y = _frame->rect().y;
-
+    _drag_mode = DRAG_RESIZE;
     _drag_start_x = x;
     _drag_start_y = y;
+
+    _dragged_original_rect = _frame->rect();
+
+    XGrabPointer(dpy(), _frame->wid(), true,
+                 PointerMotionMask | ButtonReleaseMask,
+                 GrabModeAsync, GrabModeAsync, None, None, CurrentTime);
+}
+
+void X11Client::startDrag(int x, int y)
+{
+    //FIXME what if the pointer is already grabbed ?
+    assert(!_dragged);
+
+    _dragged = this;
+    _drag_mode = DRAG_MOVE;
+    _drag_start_x = x;
+    _drag_start_y = y;
+
+    _dragged_original_rect = _frame->rect();
 
     XGrabPointer(dpy(), _frame->wid(), true,
                  PointerMotionMask | ButtonReleaseMask,
@@ -987,9 +1010,9 @@ void X11Client::cancelDrag()
 
 void X11Client::finishDrag()
 {
-    debug;
     _dragged = 0;
-    _dragged_original_x = _dragged_original_y = 0;
+    _drag_mode = DRAG_NONE;
+    _dragged_original_rect.set(0, 0, 0, 0);
     _drag_start_x = _drag_start_y = 0;
     XUngrabPointer(dpy(), CurrentTime);
 }
@@ -1010,9 +1033,15 @@ bool X11Client::handleEvent(const XEvent &ev)
             while(XCheckTypedEvent(dpy(), MotionNotify, &motion_event)) {} //FIXME - what about motion events after botton release ?
             int xdiff = motion_event.xbutton.x_root - _drag_start_x;
             int ydiff = motion_event.xbutton.y_root - _drag_start_y;
-//             cout<<"startx: "<<_drag_start_x<<" starty: "<<_drag_start_y<<'\n';
-//             cout<<"xdiff: "<<xdiff<<" ydiff: "<<ydiff<<'\n';
-            _dragged->_frame->move(_dragged_original_x + xdiff, _dragged_original_y + ydiff);
+            if (_drag_mode == DRAG_MOVE)
+                _dragged->_frame->move(_dragged_original_rect.x + xdiff, _dragged_original_rect.y + ydiff);
+            else if (_drag_mode == DRAG_RESIZE) {
+                Rect rect = _dragged->rect();
+                rect.setSize(_dragged_original_rect.w + xdiff, _dragged_original_rect.h + ydiff);
+                _dragged->setRect(rect);
+                if (_dragged->_event_handler)
+                    _dragged->_event_handler->handleGeometryChanged(_dragged->_frame->rect());
+            }
         }
         break;
     case ButtonPress:
@@ -1020,7 +1049,7 @@ bool X11Client::handleEvent(const XEvent &ev)
         wid = ev.xbutton.window;
         break;
     case ButtonRelease:
-        if (ev.xbutton.button == 1 && _dragged) {
+        if (_dragged) {
             finishDrag();
             return true;
         }
