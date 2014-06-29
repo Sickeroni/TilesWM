@@ -83,6 +83,7 @@ private:
     X11Client();
 
 //     bool validate();
+    void setMappedInt(bool mapped);
     void mapInt();
     void unmapInt();
     bool refreshMapState();

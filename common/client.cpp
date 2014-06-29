@@ -5,12 +5,13 @@
 // #include "container.h"
 #include "common.h"
 
-Client::Client(WidgetBackend *backend) : ChildWidget(CLIENT)
+Client::Client(WidgetBackend *backend, bool is_floating) : ChildWidget(CLIENT)
 {
     _backend = backend;
     _backend->setFrontend(this);
     _backend->clientBackend()->setEventHandler(this);
     _rect = _backend->clientBackend()->rect();
+    _is_floating = is_floating;
 }
 
 Client::~Client()

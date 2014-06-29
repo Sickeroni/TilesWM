@@ -21,9 +21,6 @@ public:
     bool maximized() { return _maximized; } //FIXME -> isMaximized()
     void setMaximized(bool enable);
     bool makeActive();
-    Client *activeClient(); // active client in the floating layer
-    void addClient(Client *client);
-    void removeClient(Client *client);
     void layoutContents();
 
     bool isActive() {
@@ -40,6 +37,16 @@ public:
 //     void rotateOrientation();
 
     WindowManager *windowManager() { return _window_manager; }
+
+    // active child in the floating layer
+    ChildWidget *activeFlotatingChild();
+    // sets the active client in the floating layer
+    void setActiveFloatingChild(ChildWidget *child) {
+        return _active_floating_child;
+    }
+
+    Client *activeFloatingClient();
+
     void addChild(ChildWidget *child);
     void removeChild(ChildWidget *child);
 
@@ -50,6 +57,7 @@ private:
     size_t _mode = 0;
     WindowManager *_window_manager = 0;
 //     Orientation _orientation = HORIZONTAL;
+    ChildWidget *_active_floating_child = 0;
 };
 
 #endif // __WORKSPACE_H__

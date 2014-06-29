@@ -5,6 +5,7 @@
 
 class Client;
 class Workspace;
+class Widget;
 
 class WindowManager : public ActionSet
 {
@@ -18,6 +19,7 @@ public:
     virtual void manageClient(Client *client) = 0;
     virtual void layout() = 0;
     virtual void handleMaximizedChanged() = 0;
+    virtual void makeClientActive(Widget *client) = 0;
     // FIXME remove ?
     // and instead have makeClientActive(Client*) ?
     // or have both ?

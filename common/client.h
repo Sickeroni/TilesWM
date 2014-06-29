@@ -14,7 +14,7 @@ class Container;
 class Client : public ChildWidget, public ClientBackend::EventHandler
 {
 public:
-    Client(WidgetBackend *backend);
+    Client(WidgetBackend *backend, bool is_floating);
     virtual ~Client();
 
     void setFocus();

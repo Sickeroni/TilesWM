@@ -7,6 +7,7 @@ class WidgetBackend;
 class Client;
 class Container;
 class Workspace;
+class ChildWidget;
 
 class Widget
 {
@@ -19,6 +20,8 @@ public:
     };
 
     virtual ~Widget();
+
+    virtual ChildWidget *toChildWidget() { return 0; }
 
     const Rect &rect() const { return _rect; }
     void setRect(const Rect &rect);

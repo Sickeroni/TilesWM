@@ -9,6 +9,7 @@ CXXFLAGS += -I/usr/lib/x86_64-linux-gnu/sigc++-2.0/include
 
 LIBCOMMON_SRCS :=
 LIBCOMMON_SRCS += widget
+LIBCOMMON_SRCS += child_widget
 LIBCOMMON_SRCS += workspace
 # LIBCOMMON_SRCS += container
 LIBCOMMON_SRCS += client

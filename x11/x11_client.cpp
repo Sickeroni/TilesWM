@@ -4,14 +4,15 @@
 #include "x11_server_widget.h"
 #include "x11_application.h"
 #include "x11_graphics_system.h"
+#include "x11_widget_backend.h"
 #include "x11_global.h"
 #include "icon.h"
 #include "canvas.h"
 #include "workspace.h"
 #include "colors.h"
 #include "theme.h"
-#include "widget_backend.h"
 #include "client.h"
+#include "window_manager.h"
 #include "common.h"
 
 #include <X11/Xutil.h>
@@ -171,23 +172,23 @@ void X11Client::setRect(const Rect &rect)
     _widget->setRect(r);
 }
 
-void X11Client::reparent(WidgetBackend *parent)
+void X11Client::reparent(WidgetBackend *new_parent)
 {
    assert(!isOverrideRedirect());
 
     X11ServerWidget *new_parent_widget = 0;
 
-    assert(0);
+    if (new_parent)
+        new_parent_widget = dynamic_cast<X11WidgetBackend*>(new_parent)->widget();
 
     printvar(new_parent_widget);
     _frame->reparent(new_parent_widget);
 }
 
-//FIXME remove
 void X11Client::makeActive()
 {
-    assert(false);
-//     ClientUtil::makeActive(this);
+    if (_frontend)
+        Application::makeClientActive(_frontend);
 }
 
 void X11Client::init()
@@ -445,19 +446,28 @@ bool X11Client::refreshMapState()
     }
 }
 
+
+void X11Client::setMapped(bool mapped)
+{
+    if (mapped)
+        _frame->map();
+    else
+        _frame->unmap();
+}
+
 void X11Client::unmap()
 {
-    setMapped(false);
+    setMappedInt(false);
 
     CriticalSection sec;
 }
 
 void X11Client::map()
 {
-    setMapped(true);
+    setMappedInt(true);
 }
 
-void X11Client::setMapped(bool mapped)
+void X11Client::setMappedInt(bool mapped)
 {
    CriticalSection sec;
 

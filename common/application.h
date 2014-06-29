@@ -58,6 +58,7 @@ public:
     static void runProgram(const char *path);
     static void focusActiveClient();
     static Client *activeClient();
+    static void makeClientActive(Widget *client);
 
 protected:
     Application();

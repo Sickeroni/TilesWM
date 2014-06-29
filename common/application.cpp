@@ -87,10 +87,11 @@ Container *Application::activeContainer()
 
 void Application::manageClient(WidgetBackend *backend, bool is_floating)
 {
-    Client *client = new Client(backend);
+//     Client *client = new Client(backend, is_floating);
+    Client *client = new Client(backend, true);
 
-    if (is_floating)
-        activeWorkspace()->addClient(client);
+    if (client->isFloating())
+        activeWorkspace()->addChild(client);
     else
         activeWorkspace()->windowManager()->manageClient(client);
 }
@@ -100,16 +101,15 @@ void Application::unmanageClient(Widget *frontend)
     Client *client = frontend->toClient();
 
     if (client->parent()) {
-        assert(false);
-
-        if (Workspace *workspace = client->parent()->toWorkspace())
-            workspace->removeClient(client);
-        else if (Container *container = client->parent()->toContainer()) {
-//             container->removeChild(container->indexOfChild(client));
-            (void)container;
+        if (client->isFloating()) {
+            client->workspace()->removeChild(client);
+            assert(!client->parent());
+        } else  {
             assert(0);
-        } else
-            abort();
+//             if (Container *container = client->parent()->toContainer())
+//                  container->removeChild(container->indexOfChild(client));
+
+        }
     }
 
     delete client;
@@ -149,10 +149,29 @@ void Application::focusActiveClient()
 
 Client *Application::activeClient()
 {
-    if (self()->activeLayer() == LAYER_TILED) {
+    if (self()->activeLayer() == LAYER_TILED)
         return activeWorkspace()->windowManager()->activeClient();
-    } else
-        return activeWorkspace()->activeClient();
+    else
+        return activeWorkspace()->activeFloatingClient();
+}
+
+void Application::makeClientActive(Widget *widget)
+{
+    ChildWidget *client = widget->toChildWidget();
+    assert(client);
+
+    Workspace *workspace = client->workspace();
+    assert(workspace);
+
+    if (workspace->makeActive()) {
+        if (client->isFloating()) {
+            workspace->setActiveFloatingChild(client);
+            self()->setActiveLayer(LAYER_FLOATING);
+        } else {
+            workspace->windowManager()->makeClientActive(client);
+            self()->setActiveLayer(LAYER_TILED);
+        }
+    }
 }
 
 void Application::setFocus(Client *client)

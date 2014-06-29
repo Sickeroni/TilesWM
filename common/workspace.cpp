@@ -2,6 +2,7 @@
 
 #include "window_manager.h"
 #include "widget_backend.h"
+#include "child_widget.h"
 #include "application.h"
 #include "mode.h"
 #include "common.h"
@@ -19,6 +20,7 @@ Workspace::Workspace() : Widget(WORKSPACE),
 
 Workspace::~Workspace()
 {
+    _active_floating_child = 0;
     assert(!monitor());
     delete _window_manager;
     _window_manager = 0;
@@ -46,18 +48,30 @@ bool Workspace::makeActive()
         return false;
 }
 
-Client *Workspace::activeClient()
+void Workspace::addChild(ChildWidget *child)
 {
-    //FIXME
-    return 0;
+    child->reparent(this, _backend);
+//     child->setMapped(true);
 }
 
-void Workspace::addClient(Client *client)
+void Workspace::removeChild(ChildWidget *child)
 {
+    if (child == _active_floating_child)
+        _active_floating_child = 0;
+    child->reparent(0, 0);
 }
 
-void Workspace::removeClient(Client *client)
+void Workspace::setActiveFloatingChild(ChildWidget *child)
 {
+    _active_floating_child = child;
+}
+
+Client *Workspace::activeFloatingClient()
+{
+    if (_active_floating_child)
+        return _active_floating_child->toClient();
+    else
+        return 0;
 }
 
 Mode *Workspace::mode()
