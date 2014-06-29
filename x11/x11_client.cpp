@@ -18,7 +18,7 @@
 #include <X11/Xutil.h>
 #include <X11/Xatom.h>
 
-#include <string.h>
+#include <cstring>
 
 
 // FIXME implement iconic state
@@ -349,6 +349,7 @@ void X11Client::create(Window wid)
 
             Rect frame_rect;
             Theme::calcClientFrameRect(true, client->maxTextHeight(), rect, frame_rect);
+            limitFrameRect(frame_rect);
             if (frame_rect.y < 0) //FIXME make sure it's inside client area of screen (screen area minus panels)
                 frame_rect.y = 0;
 #if 0
@@ -599,6 +600,7 @@ void X11Client::handleConfigureRequest(const XConfigureRequestEvent &ev)
             // new frame rect based on requested client rect
             Rect frame_rect;
             Theme::calcClientFrameRect(true, maxTextHeight(), client_rect, frame_rect);
+            limitFrameRect(frame_rect);
 
             frame_rect.setPos(client_rect.x, client_rect.y);
 
@@ -1017,6 +1019,18 @@ void X11Client::finishDrag()
     XUngrabPointer(dpy(), CurrentTime);
 }
 
+void X11Client::limitFrameRect(Rect &rect)
+{
+    if (rect.w < MIN_WIDTH)
+        rect.w = MIN_WIDTH;
+    if (rect.h < MIN_HEIGHT)
+        rect.h = MIN_HEIGHT;
+    if (rect.w > MAX_WIDTH)
+        rect.w = MAX_WIDTH;
+    if (rect.h > MAX_HEIGHT)
+        rect.h = MAX_HEIGHT;
+}
+
 bool X11Client::handleEvent(const XEvent &ev)
 {
     //FIXME handle transient_for change
@@ -1038,6 +1052,7 @@ bool X11Client::handleEvent(const XEvent &ev)
             else if (_drag_mode == DRAG_RESIZE) {
                 Rect rect = _dragged->rect();
                 rect.setSize(_dragged_original_rect.w + xdiff, _dragged_original_rect.h + ydiff);
+                limitFrameRect(rect);
                 _dragged->setRect(rect);
                 if (_dragged->_event_handler)
                     _dragged->_event_handler->handleGeometryChanged(_dragged->_frame->rect());

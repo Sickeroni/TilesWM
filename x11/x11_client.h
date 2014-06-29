@@ -88,7 +88,15 @@ private:
         DRAG_NONE
     };
 
-    static const int _inner_frame_width = Metrics::CLIENT_INNER_FRAME_MARGIN; //FIXME remove
+    enum {
+        MIN_WIDTH = 100,
+        MIN_HEIGHT = 100,
+        //FIXME - use screen size
+        MAX_WIDTH = 2000,
+        MAX_HEIGHT = 2000
+    };
+
+//     static const int _inner_frame_width = Metrics::CLIENT_INNER_FRAME_MARGIN; //FIXME remove
 
     static X11Client *find(Window wid);
     static X11Client *findByFrame(Window wid);
@@ -96,6 +104,7 @@ private:
     static Atom getAtomProperty(Window wid, Atom property);
     static void cancelDrag();
     static void finishDrag();
+    static void limitFrameRect(Rect &rect);
 
     X11Client();
 
