@@ -96,6 +96,10 @@ $(BUILD_DIR)/%.o: %.cpp
 	@ $(CXX) $(CXXFLAGS) -MD -Icommon -c $*.cpp -o $@
 
 
+.PHONY : doc
+doc:
+	BUILD_DIR=$(BUILD_DIR) doxygen Doxyfile
+
 .PHONY : clean
 clean: 
 	rm -rf $(BUILD_DIR)/*
