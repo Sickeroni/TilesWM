@@ -18,7 +18,6 @@ public:
     virtual Client *activeClient() { return 0; }
     virtual void manageClient(Client *client) override {}
     virtual void layout() override {}
-    virtual void handleMaximizedChanged() override {}
     virtual void makeClientActive(Widget *client) {}
 };
 

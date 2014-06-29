@@ -18,7 +18,6 @@ public:
 //     virtual Container *activeContainer() = 0;
     virtual void manageClient(Client *client) = 0;
     virtual void layout() = 0;
-    virtual void handleMaximizedChanged() = 0;
     virtual void makeClientActive(Widget *client) = 0;
     // FIXME remove ?
     // and instead have makeClientActive(Client*) ?

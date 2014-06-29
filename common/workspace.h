@@ -18,8 +18,7 @@ public:
     ~Workspace();
 
     Monitor *monitor() { return _monitor; }
-    bool maximized() { return _maximized; } //FIXME -> isMaximized()
-    void setMaximized(bool enable);
+
     bool makeActive();
     void layoutContents();
 
@@ -33,8 +32,6 @@ public:
     Mode *mode();
     size_t modeIndex() { return _mode; }
     void setMode(size_t index);
-//     Orientation orientation() { return _orientation; }
-//     void rotateOrientation();
 
     WindowManager *windowManager() { return _window_manager; }
 
@@ -53,10 +50,8 @@ public:
 private:
     Monitor *_monitor = 0;
     //ContainerContainer *_dock
-    bool _maximized = false;
     size_t _mode = 0;
     WindowManager *_window_manager = 0;
-//     Orientation _orientation = HORIZONTAL;
     ChildWidget *_active_floating_child = 0;
 };
 

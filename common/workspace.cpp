@@ -9,7 +9,6 @@
 
 Workspace::Workspace() : Widget(WORKSPACE),
     _monitor(0),
-    _maximized(false),
     _mode(Application::self()->defaultMode())
 {
     _backend = Application::self()->createWidgetBackend();
@@ -26,12 +25,6 @@ Workspace::~Workspace()
     _window_manager = 0;
     delete _backend;
     _backend = 0;
-}
-
-void Workspace::setMaximized(bool enable)
-{
-    _maximized = enable;
-    _window_manager->handleMaximizedChanged();
 }
 
 void Workspace::layoutContents()
