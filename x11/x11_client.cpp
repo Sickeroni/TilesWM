@@ -119,7 +119,7 @@ void X11Client::setFocus(X11Client *client)
     if (client) {
         client->refreshMapState();
 
-        if (client->isMapped() && client->_widget->isViewable()) {
+        if (client->_widget->isViewable()) {
             focused_wid = client->_widget->wid();
             prop[0] = focused_wid;
         }
@@ -341,9 +341,6 @@ void X11Client::create(Window wid)
 
             client->refreshSizeHints();
 
-            if (is_mapped)
-                client->_widget->unmap();
-
             client->_frame = X11ServerWidget::create(0, Colors::CLIENT,
                                                      client,
                                                      ExposureMask | ButtonPressMask | SubstructureNotifyMask | SubstructureRedirectMask);
@@ -378,7 +375,7 @@ void X11Client::create(Window wid)
             //FIXME reparent to unmapped dummy window
 
             if (is_mapped)
-                client->map();
+                client->manage();
         }
     } else {
         debug << "XGetWindowAttributes() for client window" << wid << "failed.";
@@ -428,34 +425,15 @@ theoretically possible transitions:
 
 bool X11Client::refreshMapState()
 {
-    debug;
-
     CriticalSection sec;
 
-    bool is_mapped_cached = _widget->isMapped();
-
-    assert(isMapped() == is_mapped_cached);
-    assert(isOverrideRedirect() || (_frame->isMapped() == is_mapped_cached));
-
     if (_widget->refreshMapState()) {
-
-        if (is_mapped_cached == _widget->isMapped()) // state 1 or 2
-            return true;
-        else if (is_mapped_cached && !_widget->isMapped()) { // state 3
-            // client has unmapped itself - handle
-            unmapInt();
-            return true;
-        } else if (!is_mapped_cached && _widget->isMapped()) // state 4
-            abort();
-        else
-            abort();
         return true;
     } else {
         debug<<"WARNING: failed to get current map state of client"<<_name;
         return false;
     }
 }
-
 
 void X11Client::setMapped(bool mapped)
 {
@@ -465,40 +443,17 @@ void X11Client::setMapped(bool mapped)
         _frame->unmap();
 }
 
-void X11Client::unmap()
+void X11Client::manage()
 {
-    setMappedInt(false);
+    assert(!isManaged());
 
     CriticalSection sec;
-}
 
-void X11Client::map()
-{
-    setMappedInt(true);
-}
-
-void X11Client::setMappedInt(bool mapped)
-{
-   CriticalSection sec;
-
-    if (refreshMapState()) {
-        if(isMapped() != mapped) {
-            if (mapped)
-                mapInt();
-            else
-                unmapInt();
-        }
-    }
-}
-
-void X11Client::mapInt()
-{
-    assert(!isMapped());
-    assert(!_frame->isMapped());
+    if (!refreshMapState())
+        return;
 
     if (isOverrideRedirect()) {
         _widget->map();
-        _is_mapped = true;
 //         setFocus(); //FIXME focus model
     } else {
         XAddToSaveSet(dpy(), _widget->wid());
@@ -507,10 +462,9 @@ void X11Client::mapInt()
         Theme::calcClientClientRect(true, maxTextHeight(), _frame->rect(), client_rect);
 
         _widget->reparent(_frame, client_rect.x, client_rect.y);
-
+        _widget->map();
 
         Application::manageClient(this, isDialog() || _is_modal);
-
 
         const uint32_t state[2] = {
             STATE_NORMAL, None
@@ -519,11 +473,6 @@ void X11Client::mapInt()
         XChangeProperty(dpy(), _widget->wid(), ATOM(WM_STATE), ATOM(CARD32), 32, PropModeReplace,
                         reinterpret_cast<const unsigned char*>(state), 2);
 
-        _widget->map();
-        _frame->map();
-
-        _is_mapped = true;
-
         if (_event_handler)
             _event_handler->handleMap();
 
@@ -531,36 +480,30 @@ void X11Client::mapInt()
     }
 }
 
-void X11Client::unmapInt()
+void X11Client::handleUnmap()
 {
-    assert(isMapped());
-    assert(isOverrideRedirect() || _frame->isMapped());
+    CriticalSection sec;
+
+    if (!refreshMapState())
+        return;
+
+    if (_widget->isMapped())
+        return;
 
     if (isOverrideRedirect()) {
-        // if this was called because the client unmapped itself,
-        // _widget is already unmapped
-        if (_widget->isMapped())
-            _widget->unmap();
-
-        _is_mapped = false;
+        _widget->unmap();
     } else {
+        if (_frontend)
+            Application::unmanageClient(_frontend);
+        _frontend = 0;
+
         _frame->unmap();
 
-        // if this was called because the client unmapped itself,
-        // _widget is already unmapped
-        if (_widget->isMapped())
-            _widget->unmap();
         _widget->reparent(0);
 
         XDeleteProperty(dpy(), _widget->wid(), ATOM(WM_STATE));
 
         XRemoveFromSaveSet(dpy(), _widget->wid());
-
-        _is_mapped = false;
-
-        if (_frontend)
-            Application::unmanageClient(_frontend);
-        _frontend = 0;
     }
 
     Application::focusActiveClient();
@@ -588,7 +531,7 @@ void X11Client::handleConfigureRequest(const XConfigureRequestEvent &ev)
     if (isOverrideRedirect())
         _widget->configure(ev.value_mask, changes);
     else {
-        if (!isMapped() || _frontend->toChildWidget()->isFloating()) { // client is either not mapped or not in tiling mode
+        if (!_widget->isMapped() || _frontend->toChildWidget()->isFloating()) { // client is either not mapped or not in tiling mode
             Rect client_rect = _widget->rect();
             if (ev.value_mask & CWX)
                 client_rect.x = changes.x;
@@ -612,7 +555,7 @@ void X11Client::handleConfigureRequest(const XConfigureRequestEvent &ev)
 
             unsigned int values = ev.value_mask;
 
-            if (isMapped()) {
+            if (_widget->isMapped()) {
                 // the client rect needs to be positioned in respect to the frame rect
                 Theme::calcClientClientRect(true, maxTextHeight(), frame_rect, client_rect);
                 changes.x = client_rect.x;
@@ -1141,10 +1084,10 @@ bool X11Client::handleEvent(const XEvent &ev)
             case UnmapNotify:
                 if (_dragged == client)
                     cancelDrag();
-                client->refreshMapState();
+                client->handleUnmap();
                 break;
             case MapRequest:
-                client->map();
+                client->manage();
                 break;
             case ConfigureRequest:
                 client->handleConfigureRequest(ev.xconfigurerequest);

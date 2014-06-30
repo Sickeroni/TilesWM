@@ -44,7 +44,7 @@ bool Workspace::makeActive()
 void Workspace::addChild(ChildWidget *child)
 {
     child->reparent(this, _backend);
-//     child->setMapped(true);
+    child->setMapped(true);
 }
 
 void Workspace::removeChild(ChildWidget *child)

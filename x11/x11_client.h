@@ -37,6 +37,7 @@ public:
     virtual void redraw() override { drawFrame(); }
     virtual int maxTextHeight() const override;
     virtual void setFrontend(Widget *frontend) {
+        assert(!_frontend || !frontend);
         _frontend = frontend;
     }
     virtual ClientBackend *clientBackend() override { return this; }
@@ -59,10 +60,6 @@ public:
     // X11ServerWidget::EventHandler implementation
     virtual void handleExpose() override;
     virtual void handleButtonPress(const XButtonEvent &ev) override;
-
-    bool isMapped() { return _is_mapped; }
-    void map();
-    void unmap();
 
 private:
     class CriticalSection;
@@ -108,7 +105,10 @@ private:
 
     X11Client();
 
-//     bool validate();
+    bool isManaged() {
+        return _frontend != 0;
+    }
+    void manage();
     void resize(int w, int h);
     void applySizeHints(Rect &rect);
     void setMappedInt(bool mapped);
@@ -123,6 +123,7 @@ private:
     void refreshWindowType();
     void refreshIcon();
     void handleConfigureRequest(const XConfigureRequestEvent &ev);
+    void handleUnmap();
     void drawFrame();
     bool isOverrideRedirect() {
         return _window_type == OVERRIDE_REDIRECT;
@@ -151,7 +152,6 @@ private:
     WindowType _window_type;
     bool _is_modal;
 
-    bool _is_mapped = false;
     bool _has_focus = false;
     std::string _name = "<no name>";
     std::string _class;
