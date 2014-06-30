@@ -42,36 +42,36 @@ void MainActions::handleShortcut(int id)
             break;
         case ACTION_TOGGLE_MAXIMIZE:
             {
-                bool maximized = Application::activeWorkspace()->maximized();
-                Application::activeWorkspace()->setMaximized(!maximized);
+//                 bool maximized = Application::activeWorkspace()->maximized();
+//                 Application::activeWorkspace()->setMaximized(!maximized);
             }
             break;
         case ACTION_LAYOUT:
             Application::activeWorkspace()->windowManager()->layout();
             break;
         case ACTION_ROTATE:
-            Application::activeWorkspace()->rotateOrientation();
+//             Application::activeWorkspace()->rotateOrientation();
             break;
         case ACTION_FOCUS_LEFT:
-            focusSibling(LEFT);
+//             focusSibling(LEFT);
             break;
         case ACTION_FOCUS_RIGHT:
-            focusSibling(RIGHT);
+//             focusSibling(RIGHT);
             break;
         case ACTION_FOCUS_UP:
-            focusSibling(UP);
+//             focusSibling(UP);
             break;
         case ACTION_FOCUS_DOWN:
-            focusSibling(DOWN);
+//             focusSibling(DOWN);
             break;
         case ACTION_REDRAW:
 //             Application::activeWorkspace()->rootContainer()->redrawAll();
             break;
         case ACTION_FOCUS_NEXT_CLIENT:
-            focusNextClient();
+//             focusNextClient();
             break;
         case ACTION_FOCUS_PREV_CLIENT:
-            focusPrevClient();
+//             focusPrevClient();
             break;
         case ACTION_RUN_PROGRAM:
             Application::runProgram("/usr/bin/gmrun");
@@ -90,8 +90,9 @@ void MainActions::handleShortcut(int id)
             }
             break;
         case ACTION_CLOSE_ACTIVE_CLIENT:
-            if (Client *c = Application::activeClient())
+            if (Client *c = Application::activeClient()) {
                 c->requestClose();
+            }
             break;
         case ACTION_FOCUS_ACTIVE_CLIENT:
             Application::focusActiveClient();
@@ -102,6 +103,7 @@ void MainActions::handleShortcut(int id)
     }
 }
 
+#if 0
 void MainActions::focusPrevChild(ContainerContainer *container)
 {
     if (container->activeChildIndex() != INVALID_INDEX) {
@@ -178,3 +180,4 @@ void MainActions::focusNextClient()
         }
     }
 }
+#endif

@@ -35,11 +35,11 @@ private:
         ACTION_QUIT
     };
 
-    static void focusPrevClient();
-    static void focusNextClient();
-    static void focusPrevChild(ContainerContainer *container);
-    static void focusNextChild(ContainerContainer *container);
-    static void focusSibling(ContainerUtil::Direction where);
+//     static void focusPrevClient();
+//     static void focusNextClient();
+//     static void focusPrevChild(ContainerContainer *container);
+//     static void focusNextChild(ContainerContainer *container);
+//     static void focusSibling(ContainerUtil::Direction where);
 };
 
 #endif

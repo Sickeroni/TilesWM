@@ -37,9 +37,9 @@ public:
 
     void setFocus(Client *client);
     void reloadConfig();
-    Layer activeLayer() { return LAYER_TILED; } // HACK
+    Layer activeLayer() { return _active_layer; }
     void setActiveLayer(Layer layer) {
-        //FIXME
+        _active_layer = layer;
     }
     const ShortcutSet *mainShortcuts();
     Mode *mode(size_t index) {
@@ -69,6 +69,7 @@ protected:
     ActionSet *_main_actions = 0;
     std::vector<Mode*> _modes;
     size_t _default_mode = 0;
+    Layer _active_layer = LAYER_FLOATING;
 
     static Application *_self;
 };

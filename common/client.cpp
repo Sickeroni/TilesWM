@@ -71,3 +71,8 @@ void Client::handleMap()
 {
     //FIXME
 }
+
+void Client::requestClose()
+{
+    _backend->clientBackend()->requestClose();
+}

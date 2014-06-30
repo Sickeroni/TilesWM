@@ -22,6 +22,7 @@ public:
     bool hasDecoration();
     const std::string &name();
     Icon *icon();
+    void requestClose();
 
 private:
     virtual void handleGeometryChanged(const Rect &rect) override;
