@@ -12,6 +12,7 @@ class Widget;
 
 namespace Theme
 {
+#if 0
     struct ContainerContainerSizes
     {
         int child_frame_width;
@@ -27,9 +28,10 @@ namespace Theme
 
     const ContainerContainerSizes &containerContainerSizes();
     const ClientContainerSizes &clientContainerSizes();
-
+#endif
     void drawWidget(Widget *widget, Canvas *canvas);
 
+#if 0
     int calcContainerContainerTitlebarHeight(const ContainerContainer *container);
     inline void getContainerContainerClientRect(const ContainerContainer *container,
                                                 const Rect &container_rect,
@@ -45,6 +47,7 @@ namespace Theme
     int calcTabbarHeight(ClientContainer *container);
     int calcVerticalTabbarHeight(ClientContainer *container);
     int getTabAt(int x, int y, ClientContainer *container);
+#endif
 
     void calcClientFrameRect(bool has_decoration, int max_text_height, const Rect &client_rect, Rect &frame_rect);
     void calcClientClientRect(bool has_decoration, int max_text_height, const Rect &frame_rect, Rect &client_rect);
