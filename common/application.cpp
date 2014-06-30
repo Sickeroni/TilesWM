@@ -2,11 +2,12 @@
 
 #include "monitor.h"
 #include "workspace.h"
-#include "main_actions.h"
+// #include "main_actions.h"
 #include "client.h"
+#include "mode.h"
 // #include "mode_default.h"
 // #include "mode_3panel.h"
-#include "mode_simple.h"
+// #include "mode_simple.h"
 #include "window_manager.h"
 #include "config.h"
 #include "common.h"
@@ -30,13 +31,13 @@ Application::~Application()
 
 void Application::init()
 {
-    _main_actions = new MainActions();
+//     _main_actions = new MainActions();
 
 //     _modes.push_back(new ModeDefault());
 //     _modes.push_back(new Mode3Panel());
-    _modes.push_back(new ModeSimple());
+//     _modes.push_back(new ModeSimple());
 
-    _main_actions->initShortcuts();
+//     _main_actions->initShortcuts();
 
     if (_default_mode >= _modes.size())
         _default_mode = 0;

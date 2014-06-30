@@ -1,0 +1,31 @@
+#ifndef __CONFIG_H__
+#define __CONFIG_H__
+
+#include <string>
+#include <unordered_map>
+
+class Config
+{
+public:
+    void reload() {}
+
+    static const std::string &value(const std::string &key, const std::string &default_value = std::string());
+    static double getDouble(const std::string &key, double default_value = 0);
+
+    static Config *self() { return _self; }
+    static void init();
+    static void shutdown();
+
+private:
+    typedef std::unordered_map<std::string, std::string> Map;
+
+//     static bool getValueFromMap(const Map &map, const std::string &key, (const std::string&) *value_ret);
+//     static bool getDoubleFromMap(const Map &map, const std::string &key, double &value_ret);
+
+    Map _values = _default_values;
+
+    static Map _default_values;
+    static Config *_self;
+};
+
+#endif

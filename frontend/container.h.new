@@ -1,0 +1,98 @@
+#ifndef __CONTAINER_H__
+#define __CONTAINER_H__
+
+#include "child_widget.h"
+#include "rect.h"
+#include "common.h"
+
+#include <vector>
+
+class ContainerLayout;
+
+class Container : public ChildWidget
+{
+public:
+    // which children should be minimized
+    enum MinimizeMode {
+        MINIMIZE_NONE,
+        MINIMIZE_ALL,
+        MINIMIZE_INACTIVE
+    };
+
+    Container();
+    ~Container();
+
+    bool isFixedSize() const { return _is_fixed_size; }
+    void enableFixedSize(bool enable);
+    int fixedWidth() const { return isMinimized() ? 0 : _fixed_width; }
+    void setFixedWidth(int width);
+    int fixedHeight() const { return isMinimized() ? 0 : _fixed_height; }
+    void setFixedHeight(int height);
+
+    int numElements() const { return _children.size(); }
+    bool isEmpty() const{ return _children.empty(); }
+    void redrawAll();
+    ContainerLayout *getLayout();
+    bool isMinimized() const {
+        return _minimize_mode == MINIMIZE_ALL;
+    }
+
+    ChildWidget *child(int index) { return _children[index]; }
+    int activeChildIndex() { return _active_child_index; }
+    void setActiveChild(int index);
+    int indexOfChild(const ChildWidget *child);
+    // ret: index of added child
+    int addChild(ChildWidget *child);
+    // inserts child at insert_pos
+    void insertChild(ChildWidget *child, int insert_pos);
+    // de-parents and returns the child at index
+    ChildWidget *replaceChild(int index, ChildWidget *new_child);
+    ChildWidget *removeChild(int index);
+
+//     void setDirty(bool set);
+
+    void handleSizeHintsChanged(ChildWidget *child);
+
+    ChildWidget *activeChild() {
+        return activeChildIndex() >= 0 ? child(activeChildIndex()) : 0;
+    }
+
+    void setMinimizeMode(MinimizeMode mode);
+    MinimizeMode minimizeMode() { return _minimize_mode; }
+
+
+    Client *activeClient();
+
+    Container *parentContainer();
+#if 0
+    bool isHorizontal() {
+        return orientation() == HORIZONTAL;
+    }
+    bool isVertical() {
+        return orientation() == VERTICAL;
+    }
+
+    Orientation orientation();
+#endif
+
+
+//     bool isAncestorOf(Container *container) const;
+
+private:
+//     void updateDirtyStatus();
+    void clear();
+    void applyMinimizeMode(ChildWidget *child);
+
+    int _fixed_width = 0;
+    int _fixed_height = 0;
+    bool _is_fixed_size = false;
+    
+    ContainerLayout *_layout = 0;
+
+    MinimizeMode _minimize_mode = MINIMIZE_NONE;
+
+    std::vector<ChildWidget*> _children;
+    int _active_child_index = INVALID_INDEX;
+};
+
+#endif // __CONTAINER_H__

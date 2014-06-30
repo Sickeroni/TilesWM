@@ -8,7 +8,6 @@
 
 #include "workspace.h"
 #include "monitor.h"
-#include "client_container.h"
 #include "window_manager.h"
 #include "config.h"
 #include "common.h"
