@@ -29,7 +29,7 @@ private:
     virtual void handleFocusChanged() override;
     virtual void handleMap() override;
 //     virtual void handleUnmap() override;
-    virtual void handleSizeHintsChanged() override;
+    virtual void handlePropertyChanged(ClientBackend::Property property) override;
 
 };
 

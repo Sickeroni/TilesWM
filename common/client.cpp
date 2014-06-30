@@ -45,6 +45,11 @@ void Client::setFocus()
     _backend->clientBackend()->setFocus();
 }
 
+void Client::requestClose()
+{
+    _backend->clientBackend()->requestClose();
+}
+
 void Client::handleGeometryChanged(const Rect &rect)
 {
     _rect = rect;
@@ -56,23 +61,23 @@ void Client::handleFocusChanged()
 //     container()->handleClientFocusChanged(this);
 }
 
+#if 0
 void Client::handleSizeHintsChanged()
 {
     //FIXME
-#if 0
     if (parent()) {
         if (Container *container = parent()->toContainer())
             container->handleSizeHintsChanged(this);
     }
-#endif
 }
+#endif
 
 void Client::handleMap()
 {
     //FIXME
 }
 
-void Client::requestClose()
+void Client::handlePropertyChanged(ClientBackend::Property property)
 {
-    _backend->clientBackend()->requestClose();
+    //FIXME
 }

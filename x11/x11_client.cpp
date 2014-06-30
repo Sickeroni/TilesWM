@@ -609,9 +609,6 @@ void X11Client::refreshSizeHints()
             _min_height = size_hints.min_height;
             _max_width = size_hints.max_width;
             _max_height = size_hints.max_height;
-
-            if (_event_handler)
-                _event_handler->handleSizeHintsChanged();
         }
     } else
         debug<<"failed to get size hints for client"<<_name;
@@ -1110,26 +1107,25 @@ bool X11Client::handleEvent(const XEvent &ev)
                 //FIXME the coordinates might be in either client or frame space
                 client->handleButtonPress(ev.xbutton);
                 break;
-#if 0
+#if 1
             case PropertyNotify:
+                ClientBackend::Property prop = PROP_NONE;
                 switch (ev.xproperty.atom) {
                 case XA_WM_NORMAL_HINTS:
                     client->refreshSizeHints();
+                    prop = PROP_SIZE_HINTS;
                     break;
                 case XA_WM_NAME:
                     client->refreshName();
-                    if (client->container())
-                        client->container()->redraw();
+                    prop = PROP_NAME;
                     break;
                 case XA_WM_ICON_NAME:
                     client->refreshIconName();
-                    if (client->container())
-                        client->container()->redraw();
+                    prop = PROP_ICON_NAME;
                     break;
                 case XA_WM_CLASS:
                     client->refreshClass();
-                    if (client->container())
-                        client->container()->redraw();
+                    prop = PROP_CLASS;
                     break;
                 case XA_WM_TRANSIENT_FOR:
                     //FIXME
@@ -1142,8 +1138,8 @@ bool X11Client::handleEvent(const XEvent &ev)
                         client->refreshWindowType();
                         printvar(client->isDialog());
                         if (was_dialog != client->isDialog()) {
-                            // ignore changes for mapped clients - bad luck for them
-                            if (!client->isMapped()) {
+                            // ignore changes for managed clients - bad luck for them
+                            if (!client->isManaged()) {
 #if 0
                                 if (client->isDialog()) {
                                     if (client->container()) {
@@ -1160,10 +1156,11 @@ bool X11Client::handleEvent(const XEvent &ev)
                         }
                     } else if (ev.xproperty.atom == ATOM(_NET_WM_ICON)) {
                         client->refreshIcon();
-                        if (client->container())
-                            client->container()->getLayout()->layoutContents(); //FIXME use handleClientIconChanged()
+                        prop = PROP_ICON;
                     }
                 }
+                if (prop != PROP_NONE && client->_event_handler)
+                    client->_event_handler->handlePropertyChanged(prop);
 #endif
                 break;
             }
