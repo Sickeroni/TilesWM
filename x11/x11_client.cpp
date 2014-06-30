@@ -169,6 +169,7 @@ void X11Client::setRect(const Rect &rect)
 #endif
     Rect client_rect;
     Theme::calcClientClientRect(true, maxTextHeight(), _frame->rect(), client_rect);
+    limitClientRect(client_rect);
 
     _widget->setRect(client_rect);
 }
@@ -533,6 +534,7 @@ void X11Client::handleConfigureRequest(const XConfigureRequestEvent &ev)
     else {
         if (!_widget->isMapped() || _frontend->toChildWidget()->isFloating()) { // client is either not mapped or not in tiling mode
             Rect client_rect = _widget->rect();
+
             if (ev.value_mask & CWX)
                 client_rect.x = changes.x;
             if (ev.value_mask & CWY)
@@ -541,6 +543,8 @@ void X11Client::handleConfigureRequest(const XConfigureRequestEvent &ev)
                 client_rect.w = changes.width;
             if (ev.value_mask & CWHeight)
                 client_rect.h = changes.height;
+
+            limitClientRect(client_rect);
 
             // new frame rect based on requested client rect
             Rect frame_rect;
@@ -965,6 +969,11 @@ void X11Client::finishDrag()
     XUngrabPointer(dpy(), CurrentTime);
 }
 
+void X11Client::limitClientRect(Rect &rect)
+{
+    limitFrameRect(rect);
+}
+
 void X11Client::limitFrameRect(Rect &rect)
 {
     if (rect.w < MIN_WIDTH)
@@ -1017,6 +1026,7 @@ bool X11Client::handleEvent(const XEvent &ev)
                 Rect client_rect = _dragged->_widget->rect();
                 client_rect.setSize(_dragged_original_rect.w + xdiff, _dragged_original_rect.h + ydiff);
                 _dragged->applySizeHints(client_rect);
+                limitClientRect(client_rect);
 
                 Rect frame_rect;
                 Theme::calcClientFrameRect(true, _dragged->maxTextHeight(), client_rect, frame_rect);

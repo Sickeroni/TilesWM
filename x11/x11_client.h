@@ -102,6 +102,7 @@ private:
     static void cancelDrag();
     static void finishDrag();
     static void limitFrameRect(Rect &rect);
+    static void limitClientRect(Rect &rect);
 
     X11Client();
 
