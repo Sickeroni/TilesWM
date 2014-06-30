@@ -61,16 +61,16 @@ void Client::handleFocusChanged()
 //     container()->handleClientFocusChanged(this);
 }
 
-#if 0
 void Client::handleSizeHintsChanged()
 {
     //FIXME
+#if 0
     if (parent()) {
         if (Container *container = parent()->toContainer())
             container->handleSizeHintsChanged(this);
     }
-}
 #endif
+}
 
 void Client::handleMap()
 {
@@ -79,5 +79,18 @@ void Client::handleMap()
 
 void Client::handlePropertyChanged(ClientBackend::Property property)
 {
-    //FIXME
+    switch (property) {
+        case ClientBackend::PROP_SIZE_HINTS:
+            handleSizeHintsChanged();
+            break;
+        case ClientBackend::PROP_NAME:
+        case ClientBackend::PROP_ICON_NAME:
+        case ClientBackend::PROP_CLASS:
+        case ClientBackend::PROP_ICON:
+            redraw();
+            //FIXME notify parent
+            break;
+        default:
+            debug<<"unhandled property:"<<property;
+    }
 }

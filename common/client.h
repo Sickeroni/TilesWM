@@ -31,6 +31,8 @@ private:
 //     virtual void handleUnmap() override;
     virtual void handlePropertyChanged(ClientBackend::Property property) override;
 
+    void handleSizeHintsChanged();
+
 };
 
 #endif // __CLIENT_H__
