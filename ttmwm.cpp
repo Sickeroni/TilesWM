@@ -1,7 +1,28 @@
 #include "x11/x11_application.h"
 #include "frontend_base.h"
+#include "client_frontend.h"
+#include "widget_backend.h"
 
 #include "common.h"
+
+
+class ClientFrontendDummy : public ClientFrontend
+{
+public:
+    ClientFrontendDummy(ClientBackend *backend): _backend(backend) {}
+
+    virtual bool isFloating() { return true; }
+    virtual void handleGeometryChanged(const Rect &rect) {}
+    virtual void handleFocusChanged(bool has_focus) {}
+    virtual void handleMap() {
+        _backend->widget()->setMapped(true);
+    }
+    virtual void handlePropertyChanged(ClientBackend::Property property) {}
+
+private:
+    ClientBackend *_backend = 0;
+};
+
 
 class FrontendDummy : public FrontendBase
 {
@@ -9,11 +30,11 @@ public:
     virtual void init() {}
     virtual void shutdown() {}
     virtual void focusActiveClient() {}
-    virtual ClientFrontend *createClientFrontend(ClientBackend *backend, bool is_floating) { return 0; }
-    virtual ClientFrontend *activeClient() { return 0; }
-//     virtual void handleUnmanagedClientGotFocus() {}
-//     virtual void handleUnmanagedClientLostFocus() {}
+    virtual ClientFrontend *createClientFrontend(ClientBackend *backend, bool is_floating) { 
+        return new ClientFrontendDummy(backend);
+    }
 };
+
 
 
 int main()
