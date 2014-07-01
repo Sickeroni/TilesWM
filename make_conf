@@ -10,4 +10,9 @@ CXXFLAGS += -std=c++11
 #CXXFLAGS += -fstrict-aliasing
 #CXXFLAGS += -fpermissive
 
-BUILD_DIR := build
+CXXFLAGS += -I/usr/include/cairomm-1.0
+CXXFLAGS += -I/usr/include/sigc++-2.0
+CXXFLAGS += -I/usr/include/cairo
+CXXFLAGS += -I/usr/include/freetype2
+# workaround debian bug
+CXXFLAGS += -I/usr/lib/x86_64-linux-gnu/sigc++-2.0/include

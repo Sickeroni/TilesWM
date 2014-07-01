@@ -1,0 +1,12 @@
+FRONTEND_SRCS :=
+FRONTEND_SRCS += main_actions
+FRONTEND_SRCS += mode_simple
+FRONTEND_SRCS += monitor
+FRONTEND_SRCS += widget
+FRONTEND_SRCS += child_widget
+FRONTEND_SRCS += workspace
+# FRONTEND_SRCS += container
+FRONTEND_SRCS += client
+# FRONTEND_SRCS += container_container
+# FRONTEND_SRCS += client_container
+FRONTEND_SRCS += action_set
