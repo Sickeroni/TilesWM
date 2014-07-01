@@ -2,6 +2,9 @@
 #define __SHORTCUT_SET_H__
 
 #include <string>
+#include <list>
+
+class KeySequence;
 
 class ShortcutSet
 {
@@ -13,9 +16,9 @@ public:
     };
 
     ShortcutSet(std::string name) : _name(name) {}
-    virtual ~ShortcutSet() {}
+    ~ShortcutSet() {}
 
-    virtual void clear() = 0;
+    void clear();
 
     void createAction(std::string action_name, int id);
     Handler *handler() const { return _handler; }
@@ -23,12 +26,21 @@ public:
         _handler = handler;
     }
 
+    bool handleKeyPress(const KeySequence *key_sequence) const;
+
 private:
-    // key_sequence: a backend-specific string based representation of a key sequence
-    virtual void createShortcut(std::string key_sequence, int id) = 0;
+    struct Shortcut
+    {
+        Shortcut(const KeySequence *key_sequence, int id) :
+            key_sequence(key_sequence), id(id) {}
+
+        const KeySequence *key_sequence;
+        int id;
+    };
 
     std::string _name;
     Handler *_handler = 0;
+    std::list<Shortcut> _shortcuts;
 };
 
 #endif
