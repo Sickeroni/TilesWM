@@ -1,4 +1,4 @@
-include make_conf
+include config.mk
 
 BUILD_DIR=build
 
