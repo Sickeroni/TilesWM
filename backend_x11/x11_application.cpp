@@ -2,13 +2,9 @@
 
 #include "x11_client.h"
 #include "x11_widget.h"
-#include "x11_shortcut_set.h"
 #include "x11_graphics_system.h"
 #include "x11_widget_backend.h"
 
-// #include "workspace.h"
-// #include "monitor.h"
-// #include "window_manager.h"
 #include "frontend_base.h"
 #include "config.h"
 #include "common.h"
@@ -396,10 +392,10 @@ WidgetBackend *X11Application::createWidgetBackend()
     return new X11WidgetBackend();
 }
 
-ShortcutSet *X11Application::createShortcutSet(std::string name)
-{
-    return new X11ShortcutSet(name);
-}
+// ShortcutSet *X11Application::createShortcutSet(std::string name)
+// {
+//     return new X11ShortcutSet(name);
+// }
 
 Atom X11Application::atom(const char *name)
 {

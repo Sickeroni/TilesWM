@@ -34,7 +34,7 @@ public:
     virtual void setActiveMonitor(Monitor *monitor) override;
     virtual Workspace *createWorkspace() override;
 #endif
-    virtual ShortcutSet *createShortcutSet(std::string name);
+//     virtual ShortcutSet *createShortcutSet(std::string name);
     virtual void requestQuit() {
         _quit_requested = true;
     }
