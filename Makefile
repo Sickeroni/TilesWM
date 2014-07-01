@@ -56,7 +56,7 @@ BACKEND_X11_NATIVE_SRCS += x11/x11_graphics_system_x11
 objs_from_srcs = $(patsubst %,$(BUILD_DIR)/%.o,$(1))
 
 COMMON_OBJS := $(call objs_from_srcs, $(COMMON_SRCS))
-libfrontend_OBJS := $(call objs_from_srcs, $(FRONTEND_SRCS))
+FRONTEND_OBJS := $(call objs_from_srcs, $(FRONTEND_SRCS))
 BACKEND_X11_OBJS := $(call objs_from_srcs, $(BACKEND_X11_SRCS))
 BACKEND_X11_NATIVE_OBJS := $(call objs_from_srcs, $(BACKEND_X11_NATIVE_SRCS))
 
@@ -112,16 +112,19 @@ $(BUILD_DIR)/ttmwm: $(BUILD_DIR)/libcommon.a $(BUILD_DIR)/libbackend_x11.a $(BUI
 # from gnu make manual:
 # If you want make to simply ignore a makefile which does not exist or cannot be remade,
 # with no error message, use the -include directive instead of include
-# -include $(patsubst %,$(BUILD_DIR)/common/%.d,$(COMMON_SRCS))
-# -include $(patsubst %,$(BUILD_DIR)/x11/%.d,$(TTMWM_X11_SRCS))
+
+-include $(BUILD_DIR)/ttmwm.d
+-include $(patsubst %,$(BUILD_DIR)/common/%.d,$(COMMON_SRCS))
+-include $(patsubst %,$(BUILD_DIR)/frontend/%.d,$(FRONTEND_SRCS))
+-include $(patsubst %,$(BUILD_DIR)/x11/%.d,$(BACKEND_X11_SRCS))
+-include $(patsubst %,$(BUILD_DIR)/x11/%.d,$(BACKEND_X11_NATIVE_SRCS))
+-include $(patsubst %,$(BUILD_DIR)/x11/%.d,$(BACKEND_X11_CAIRO_SRCS))
 
 # compile and generate dependency info
 $(BUILD_DIR)/%.o: %.cpp
 	@ echo $*.cpp
-	@ $(CXX) $(CXXFLAGS) -Icommon -c $*.cpp -o $@
+	@ $(CXX) $(CXXFLAGS) -MD -Icommon -c $*.cpp -o $@
 
-
-#@ $(CXX) $(CXXFLAGS) -MD -Icommon -c $*.cpp -o $@
 
 .PHONY : doc
 doc:
