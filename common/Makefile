@@ -16,5 +16,7 @@ SRCS += cairo_icon
 # SRCS += window_manager_default
 # SRCS += window_manager_3panel
 
+LIBNAME := common
+
 include ../config.mk
 include ../static_library.mk

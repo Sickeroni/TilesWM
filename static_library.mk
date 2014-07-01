@@ -1,6 +1,6 @@
 OBJS := $(patsubst %,$(BUILD_DIR)/%.o,$(SRCS))
 
-$(OUTPUT_DIR)/lib%.a: $(OBJS)
+$(OUTPUT_DIR)/lib$(LIBNAME).a: $(OBJS)
 	@ echo creating static library $@
 	@ ar rcs $@ $(OBJS)
 
