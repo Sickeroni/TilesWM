@@ -16,6 +16,7 @@
 class X11ContainerWidget;
 class X11ClientWidget;
 class Icon;
+class ClientFrontend;
 
 
 //FIXME TODO - set border width via XConfigureWindow
@@ -36,16 +37,13 @@ public:
     virtual void reparent(WidgetBackend *parent) override;
     virtual void redraw() override { drawFrame(); }
     virtual int maxTextHeight() const override;
-    virtual void setFrontend(Widget *frontend) {
-        assert(!_frontend || !frontend);
-        _frontend = frontend;
+    virtual void setFrontend(WidgetFrontend *frontend) {
+        assert(!_widget_frontend || !frontend);
+        _widget_frontend = frontend;
     }
-    virtual ClientBackend *clientBackend() override { return this; }
 
     // ClientBackend implementation
-    virtual void setEventHandler(ClientBackend::EventHandler *handler) {
-        _event_handler = handler;
-    }
+    virtual WidgetBackend *widget() override { return this; }
     virtual const Rect &rect() { return _frame->rect(); }
     virtual bool hasFocus() override { return _has_focus; }
     virtual void setFocus() override {
@@ -106,8 +104,9 @@ private:
 
     X11Client();
 
+    bool isFloating();
     bool isManaged() {
-        return _frontend != 0;
+        return _client_frontend != 0;
     }
     void manage();
     void resize(int w, int h);
@@ -131,9 +130,6 @@ private:
     }
     bool isDialog() {
         return _window_type == DIALOG;
-    }
-    bool isFloating() {
-        return _is_modal || isDialog() || isOverrideRedirect();
     }
     void startDrag(int x, int y);
     void startResize(Anchor anchor, int x, int y);
@@ -161,8 +157,8 @@ private:
     int _min_width = 0, _min_height = 0;
     int _max_width = 0, _max_height = 0;
 
-    Widget *_frontend = 0;
-    ClientBackend::EventHandler *_event_handler = 0;
+    WidgetFrontend *_widget_frontend = 0;
+    ClientFrontend *_client_frontend = 0;
 };
 
 #endif // __X11_CLIENT_H__

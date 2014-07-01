@@ -3,17 +3,11 @@
 
 #include "rect.h"
 
-class Widget;
-class ClientBackend;
+class WidgetFrontend;
 
 class WidgetBackend
 {
 public:
-//     enum Type {
-//         CLIENT,
-//         SERVER
-//     };
-
     virtual ~WidgetBackend() {}
 
     virtual void setRect(const Rect &rect) = 0;
@@ -21,10 +15,12 @@ public:
     virtual void reparent(WidgetBackend *parent) = 0;
     virtual void redraw() = 0;
     virtual int maxTextHeight() const = 0;
-    virtual void setFrontend(Widget *frontend) = 0;
+    virtual void setFrontend(WidgetFrontend *frontend) = 0;
 
     // if this widget is a client return its backend interface
-    virtual ClientBackend *clientBackend() { return 0; }
+//     virtual ClientBackend *clientBackend() { return 0; }
+
+
     virtual void setMinimized(bool minimized) {}
     // intended as a rendering hint -
     // if set, only child needs to be rendered

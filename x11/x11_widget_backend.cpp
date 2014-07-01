@@ -2,6 +2,7 @@
 
 #include "x11_canvas.h"
 #include "theme.h"
+#include "widget_frontend.h"
 
 X11WidgetBackend::X11WidgetBackend() :
     _widget(X11ServerWidget::create(
@@ -23,7 +24,7 @@ X11WidgetBackend::~X11WidgetBackend()
     _widget = 0;
 }
 
-void X11WidgetBackend::setFrontend(Widget *frontend)
+void X11WidgetBackend::setFrontend(WidgetFrontend *frontend)
 {
     _frontend = frontend;
 }
@@ -57,7 +58,7 @@ void X11WidgetBackend::reparent(WidgetBackend *new_parent)
 void X11WidgetBackend::redraw()
 {
     if (_is_mapped) //FIXME use isVisible()
-        Theme::drawWidget(_frontend, currentWidget()->canvas());
+        _frontend->draw(currentWidget()->canvas());
 }
 
 int X11WidgetBackend::maxTextHeight() const

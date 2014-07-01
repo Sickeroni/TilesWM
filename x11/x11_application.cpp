@@ -6,9 +6,10 @@
 #include "x11_graphics_system.h"
 #include "x11_widget_backend.h"
 
-#include "workspace.h"
-#include "monitor.h"
-#include "window_manager.h"
+// #include "workspace.h"
+// #include "monitor.h"
+// #include "window_manager.h"
+#include "frontend_base.h"
 #include "config.h"
 #include "common.h"
 
@@ -154,12 +155,12 @@ const char *X11Application::errorCodeToString(size_t error_code)
 }
 
 
-X11Application::X11Application() :
+X11Application::X11Application(FrontendBase *frontend) :
     _dpy(0),
     _root(None),
     _num_server_grabs(0),
     _quit_requested(false),
-    _monitor(0)
+    _frontend(frontend)
 {
     if (_self)
         abort();
@@ -234,15 +235,14 @@ bool X11Application::init()
 
     _graphics_system = createX11GraphicsSystem();
 
-    Application::init();
-
-    _monitor = new Monitor();
-    _monitor->setSize(root_attr.width, root_attr.height);
+//     _monitor = new Monitor();
+//     _monitor->setSize(root_attr.width, root_attr.height);
+    _frontend->init();
 
     X11Client::init();
 
     // set initial focus
-    focusActiveClient();
+    _frontend->focusActiveClient();
 
 //     XFlush(_dpy);
     XSync(_dpy, false);
@@ -260,17 +260,20 @@ void X11Application::shutdown()
 
     X11Client::shutdown();
 
-    delete _monitor;
-    _monitor = 0;
+//     delete _monitor;
+//     _monitor = 0;
+    _frontend->shutdown();
 
+#if 0
     for (size_t i = 0; i < _workspaces.size(); i++) {
         Workspace *w = _workspaces[i];
         _workspaces[i] = 0;
         delete w;
     }
     _workspaces.clear();
+#endif
 
-    Application::shutdown();
+//     Application::shutdown();
 
     XSetWindowAttributes new_root_attr;
     memset(&new_root_attr, 0, sizeof(XSetWindowAttributes));
@@ -366,27 +369,27 @@ void X11Application::ungrabServer()
         XUngrabServer(_dpy);
 }
 
-Monitor *X11Application::activeMonitor()
-{
-    return _monitor;
-}
+// Monitor *X11Application::activeMonitor()
+// {
+//     return _monitor;
+// }
 
-Workspace *X11Application::activeWorkspace()
-{
-    return self()->activeMonitor()->workspace();
-}
+// Workspace *X11Application::activeWorkspace()
+// {
+//     return self()->activeMonitor()->workspace();
+// }
 
-void X11Application::setActiveMonitor(Monitor *monitor)
-{
-    //FIXME
-}
+// void X11Application::setActiveMonitor(Monitor *monitor)
+// {
+//     //FIXME
+// }
 
-Workspace *X11Application::createWorkspace()
-{
-    Workspace *w = new Workspace();
-    _workspaces.push_back(w);
-    return w;
-}
+// Workspace *X11Application::createWorkspace()
+// {
+//     Workspace *w = new Workspace();
+//     _workspaces.push_back(w);
+//     return w;
+// }
 
 WidgetBackend *X11Application::createWidgetBackend()
 {
@@ -409,7 +412,7 @@ Atom X11Application::atom(const char *name)
 
 bool X11Application::handleKeyPress(const XKeyEvent &ev)
 {
-
+#if 0
     X11Global::KeySequence key_sequence(
         XLookupKeysym(const_cast<XKeyEvent*>(&ev), 0),
         ev.state & ~(LockMask | num_lock_mask));
@@ -426,7 +429,7 @@ bool X11Application::handleKeyPress(const XKeyEvent &ev)
         else if (active_wm_shortcuts->handleKeyPress(key_sequence))
             return true;
     }
-
+#endif
     return false;
 }
 

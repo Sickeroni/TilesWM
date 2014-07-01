@@ -12,6 +12,9 @@
 #include "config.h"
 #include "common.h"
 
+// #include "../frontend/mode_simple.h"
+// #include "../frontend/main_actions.h"
+
 #include <unistd.h>
 #include <sys/wait.h>
 #include <cstdio>
@@ -148,7 +151,7 @@ void Application::focusActiveClient()
 #endif
 }
 
-Client *Application::activeClient()
+Widget *Application::activeClient()
 {
     if (self()->activeLayer() == LAYER_TILED)
         return activeWorkspace()->windowManager()->activeClient();

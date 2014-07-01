@@ -1,8 +1,9 @@
 #ifndef __X11_APPLICATION_H__
 #define __X11_APPLICATION_H__
 
-#include "application.h"
 #include "x11_global.h"
+
+#include "frontend_base.h"
 
 #include <X11/Xlib.h>
 
@@ -14,24 +15,30 @@
 class X11ContainerContainer;
 class X11ClientContainer;
 class X11Client;
-class Workspace;
-class Monitor;
+// class Workspace;
+// class Monitor;
 class X11GraphicsSystem;
+class FrontendBase;
 
-class X11Application final : public Application
+class ShortcutSet;
+class WidgetBackend;
+
+class X11Application
 {
 public:
-    X11Application();
+    X11Application(FrontendBase *frontend);
     ~X11Application();
 
+#if 0
     virtual Monitor *activeMonitor() override;
     virtual void setActiveMonitor(Monitor *monitor) override;
-    virtual ShortcutSet *createShortcutSet(std::string name) override;
-    virtual void requestQuit() override {
+    virtual Workspace *createWorkspace() override;
+#endif
+    virtual ShortcutSet *createShortcutSet(std::string name);
+    virtual void requestQuit() {
         _quit_requested = true;
     }
-    virtual WidgetBackend *createWidgetBackend() override;
-    virtual Workspace *createWorkspace() override;
+    virtual WidgetBackend *createWidgetBackend();
 
     bool init();
     void shutdown();
@@ -45,8 +52,9 @@ public:
     static X11Application *self() { return _self; }
     static Display *dpy()  { return self()->_dpy; }
     static Window root()  { return self()->_root; }
-    static Workspace *activeWorkspace();
+//     static Workspace *activeWorkspace();
     static X11GraphicsSystem *graphicsSystem() { return self()->_graphics_system; }
+    static FrontendBase *frontend() { return self()->_frontend; }
 
     static const char *eventTypeToString(size_t id);
     static const char *errorCodeToString(size_t error_code);
@@ -70,12 +78,13 @@ private:
     Window _root;
     int _num_server_grabs;
     volatile bool _quit_requested;
-    Monitor *_monitor;
-    std::vector<Workspace*>  _workspaces;
+//     Monitor *_monitor;
+//     std::vector<Workspace*>  _workspaces;
     std::map<std::string, Atom> _atoms; // TODO - use hash
     std::list<KeyGrab> _key_grabs;
     X11Global::ModMask num_lock_mask = Mod2Mask; //FIXME
     X11GraphicsSystem *_graphics_system = 0;
+    FrontendBase *_frontend = 0;
 };
 
 #define ATOM(name) (X11Application::self()->atom(#name))

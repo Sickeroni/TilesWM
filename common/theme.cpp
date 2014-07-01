@@ -1,8 +1,8 @@
 #include "theme.h"
 
-#include "workspace.h"
-#include "window_manager.h"
-#include "client.h"
+// #include "workspace.h"
+// #include "window_manager.h"
+// #include "client.h"
 #include "icon.h"
 #include "canvas.h"
 #include "colors.h"
@@ -375,7 +375,7 @@ void getClientContainerClientRect(ClientContainer *container,  Rect &client_rect
     client_rect.h = max(0, client_rect.h);
 }
 #endif
-
+#if 0
 void drawClientFrame(Client *client, Canvas *canvas)
 {
     Rect frame_rect = client->rect();
@@ -433,7 +433,7 @@ void drawClientFrame(Client *client, Canvas *canvas)
 
     canvas->end();
 }
-
+#endif
 void calcClientFrameMargins(bool has_decoration, int max_text_height, int &side, int &top, int &bottom)
 {
     static const int titlebar_gap = 4; //FIXME
@@ -476,7 +476,7 @@ void calcClientClientRect(bool has_decoration, int max_text_height, const Rect &
     client_rect.w -= (2 * side_margin);
     client_rect.h -= (top_margin + bottom_margin);
 }
-
+#if 0
 void drawWorkspace(Workspace *workspace, Canvas *canvas)
 {
     Rect rect = workspace->rect();
@@ -494,6 +494,6 @@ void drawWidget(Widget *widget, Canvas *canvas)
     else if (Client *client = widget->toClient())
         drawClientFrame(client, canvas);
 }
-
+#endif
 
 } // namespace Theme

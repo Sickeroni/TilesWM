@@ -57,7 +57,8 @@ public:
     static void unmanageClient(Widget *frontend);
     static void runProgram(const char *path);
     static void focusActiveClient();
-    static Client *activeClient();
+//     static Client *activeClient();
+    static Widget *activeClient();
     static void makeClientActive(Widget *client);
 
 protected:
@@ -65,7 +66,8 @@ protected:
 
     void init();
     void shutdown();
-
+    
+private:
     ActionSet *_main_actions = 0;
     std::vector<Mode*> _modes;
     size_t _default_mode = 0;

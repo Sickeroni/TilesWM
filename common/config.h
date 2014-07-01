@@ -12,9 +12,9 @@ public:
     static const std::string &value(const std::string &key) {
         return valueFromMap(self()->_values, key);
     }
-    static const std::string &defaultValue(const std::string &key) {
-        return valueFromMap(_default_values, key);
-    }
+//     static const std::string &defaultValue(const std::string &key) {
+//         return valueFromMap(_default_values, key);
+//     }
 
     static Config *self() { return _self; }
     static void init();
@@ -25,7 +25,8 @@ private:
 
     static const std::string &valueFromMap(const Map &map, const std::string &key);
 
-    Map _values = _default_values;
+//     Map _values = _default_values;
+    Map _values;
 
     static Map _default_values;
     static Config *_self;

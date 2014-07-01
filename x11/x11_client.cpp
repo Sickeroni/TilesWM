@@ -8,11 +8,14 @@
 #include "x11_global.h"
 #include "icon.h"
 #include "canvas.h"
-#include "workspace.h"
+// #include "workspace.h"
 #include "colors.h"
 #include "theme.h"
-#include "client.h"
-#include "window_manager.h"
+// #include "client.h"
+// #include "child_widget.h"
+// #include "window_manager.h"
+#include "client_frontend.h"
+#include "widget_frontend.h"
 #include "common.h"
 
 #include <X11/Xutil.h>
@@ -98,7 +101,8 @@ X11Client::X11Client() :
 
 X11Client::~X11Client()
 {
-    assert(!_frontend);
+    assert(!_client_frontend);
+    assert(!_widget_frontend);
     debug;
     delete _icon;
     _icon = 0;
@@ -189,8 +193,9 @@ void X11Client::reparent(WidgetBackend *new_parent)
 
 void X11Client::makeActive()
 {
-    if (_frontend)
-        Application::makeClientActive(_frontend);
+    assert(0);
+//     if (_frontend)
+//         Application::makeClientActive(_frontend);
 }
 
 void X11Client::init()
@@ -248,9 +253,9 @@ void X11Client::shutdown()
             it++)
     {
         X11Client *client = it->second;
-        if (client->_frontend)
-            Application::unmanageClient(client->_frontend);
-        client->_frontend = 0;
+        delete client->_client_frontend;
+        client->_client_frontend = 0;
+        assert(!client->_widget_frontend);
         client->_widget->reparent(0);
         XRemoveFromSaveSet(dpy(), client->_widget->wid());
         delete client;
@@ -465,7 +470,7 @@ void X11Client::manage()
         _widget->reparent(_frame, client_rect.x, client_rect.y);
         _widget->map();
 
-        Application::manageClient(this, isDialog() || _is_modal);
+        _client_frontend = X11Application::frontend()->createClientFrontend(this, isDialog() || _is_modal);
 
         const uint32_t state[2] = {
             STATE_NORMAL, None
@@ -474,10 +479,12 @@ void X11Client::manage()
         XChangeProperty(dpy(), _widget->wid(), ATOM(WM_STATE), ATOM(CARD32), 32, PropModeReplace,
                         reinterpret_cast<const unsigned char*>(state), 2);
 
-        if (_event_handler)
-            _event_handler->handleMap();
+        if (_client_frontend)
+            _client_frontend->handleMap();
+        else
+            _frame->map();
 
-        Application::focusActiveClient();
+        X11Application::frontend()->focusActiveClient();
     }
 }
 
@@ -494,9 +501,9 @@ void X11Client::handleUnmap()
     if (isOverrideRedirect()) {
         _widget->unmap();
     } else {
-        if (_frontend)
-            Application::unmanageClient(_frontend);
-        _frontend = 0;
+        delete _client_frontend;
+        _client_frontend = 0;
+        assert(!_widget_frontend);
 
         _frame->unmap();
 
@@ -507,7 +514,13 @@ void X11Client::handleUnmap()
         XRemoveFromSaveSet(dpy(), _widget->wid());
     }
 
-    Application::focusActiveClient();
+    X11Application::frontend()->focusActiveClient();
+}
+
+bool X11Client::isFloating()
+{
+    return !_client_frontend || _client_frontend->isFloating();
+//     return _is_modal || isDialog() || isOverrideRedirect();
 }
 
 void X11Client::handleConfigureRequest(const XConfigureRequestEvent &ev)
@@ -532,7 +545,9 @@ void X11Client::handleConfigureRequest(const XConfigureRequestEvent &ev)
     if (isOverrideRedirect())
         _widget->configure(ev.value_mask, changes);
     else {
-        if (!_widget->isMapped() || _frontend->toChildWidget()->isFloating()) { // client is either not mapped or not in tiling mode
+        if (!_widget->isMapped() || isFloating()) {
+            // client is either not mapped or not in tiling mode
+
             Rect client_rect = _widget->rect();
 
             if (ev.value_mask & CWX)
@@ -572,8 +587,8 @@ void X11Client::handleConfigureRequest(const XConfigureRequestEvent &ev)
             _widget->configure(values, changes);
             _frame->setRect(frame_rect);
 
-            if (_event_handler)
-                _event_handler->handleGeometryChanged(frame_rect);
+            if (_client_frontend)
+                _client_frontend->handleGeometryChanged(frame_rect);
         } else { // client is mapped and in tiling mode
             assert(false);
             // ignore geometry/stacking requests, as that should be changed on our behalf only
@@ -709,7 +724,10 @@ void X11Client::refreshFocusState()
         }
     }
 
-    if (_frontend) {
+#if 0
+    if (_client_frontend) {
+        assert(0);
+
         if (_has_focus && (Application::activeClient() != _frontend)) {
         // disable the following block as it may lead to the client repeatedly grabbing focus
 #if 0
@@ -725,13 +743,20 @@ void X11Client::refreshFocusState()
 #endif
         }
     }
+#endif
 
     if (!focus_holder) // we lost focus and no other window is currently focused
         XSetInputFocus(dpy(), X11Application::root(), RevertToNone, CurrentTime);
 
-    if (focus_changed && _event_handler)
-        _event_handler->handleFocusChanged();
-//     else
+    if (focus_changed) {
+        if(_client_frontend)
+            _client_frontend->handleFocusChanged(_has_focus);
+//         else if (has_focus)
+//             X11Application::frontend()->handleUnmanagedClientGotFocus();
+//         else
+//             X11Application::frontend()->handleUnmanagedClientLostFocus();
+    }
+
     if (focus_changed)
         drawFrame();
 }
@@ -868,28 +893,27 @@ void X11Client::handleExpose()
     drawFrame();
 }
 
-// the frame has been clicked
 void X11Client::handleButtonPress(const XButtonEvent &ev)
 {
     assert(!_dragged);
 
-    //FIXME - use isTiled()
-//     if (!container()) { // for tiled clients the container handles this
-        setFocus(this);
-        raise();
+    setFocus(this);
+    raise();
+
+    if (isFloating()) {
         if (ev.button == 1)
             startDrag(ev.x_root, ev.y_root);
         else if (ev.button == 3) {
             Anchor anchor = ANCHOR_BOTTOM_RIGHT;
             startResize(anchor, ev.x_root, ev.y_root);
         }
-//     }
+    }
 }
 
 void X11Client::drawFrame()
 {
-    if (_frontend)
-        Theme::drawWidget(_frontend, _frame->canvas());
+    if (_widget_frontend)
+        _widget_frontend->draw(_frame->canvas());
 }
 
 int X11Client::maxTextHeight() const
@@ -1011,10 +1035,11 @@ bool X11Client::handleEvent(const XEvent &ev)
             while(XCheckTypedEvent(dpy(), MotionNotify, &motion_event)) {} //FIXME - what about motion events after botton release ?
             int xdiff = motion_event.xbutton.x_root - _drag_start_x;
             int ydiff = motion_event.xbutton.y_root - _drag_start_y;
+
             if (_drag_mode == DRAG_MOVE) {
                 _dragged->_frame->move(_dragged_original_rect.x + xdiff, _dragged_original_rect.y + ydiff);
-                if (_dragged->_event_handler)
-                    _dragged->_event_handler->handleGeometryChanged(_dragged->_frame->rect());
+                if (_dragged->_client_frontend)
+                    _dragged->_client_frontend->handleGeometryChanged(_dragged->_frame->rect());
             }
             else if (_drag_mode == DRAG_RESIZE) {
 
@@ -1032,8 +1057,8 @@ bool X11Client::handleEvent(const XEvent &ev)
                 _dragged->_frame->resize(frame_rect.w, frame_rect.h);
                 _dragged->_widget->resize(client_rect.w, client_rect.h);
 
-                if (_dragged->_event_handler)
-                    _dragged->_event_handler->handleGeometryChanged(_dragged->_frame->rect());
+                if (_dragged->_client_frontend)
+                    _dragged->_client_frontend->handleGeometryChanged(_dragged->_frame->rect());
             }
         }
         break;
@@ -1081,12 +1106,12 @@ bool X11Client::handleEvent(const XEvent &ev)
                     cancelDrag();
                 _frame_wid_index.erase(client->_frame->wid());
                 _wid_index.erase(wid);
-                if (client->_frontend)
-                    Application::unmanageClient(client->_frontend);
-                client->_frontend = 0;
+                delete client->_client_frontend;
+                client->_client_frontend = 0;
+                assert(!client->_widget_frontend);
                 delete client;
                 client = 0;
-                Application::focusActiveClient();
+                X11Application::self()->frontend()->focusActiveClient();
                 break;
             case UnmapNotify:
                 if (_dragged == client)
@@ -1159,8 +1184,8 @@ bool X11Client::handleEvent(const XEvent &ev)
                         prop = PROP_ICON;
                     }
                 }
-                if (prop != PROP_NONE && client->_event_handler)
-                    client->_event_handler->handlePropertyChanged(prop);
+                if (prop != PROP_NONE && client->_client_frontend)
+                    client->_client_frontend->handlePropertyChanged(prop);
 #endif
                 break;
             }

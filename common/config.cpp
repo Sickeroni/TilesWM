@@ -15,7 +15,7 @@ void Config::shutdown()
 {
     delete _self;
     _self = 0;
-    _default_values.clear();
+//     _default_values.clear();
 }
 
 const std::string &Config::valueFromMap(const Map &map, const std::string &key)

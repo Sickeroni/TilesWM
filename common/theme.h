@@ -29,7 +29,7 @@ namespace Theme
     const ContainerContainerSizes &containerContainerSizes();
     const ClientContainerSizes &clientContainerSizes();
 #endif
-    void drawWidget(Widget *widget, Canvas *canvas);
+//     void drawWidget(Widget *widget, Canvas *canvas);
 
 #if 0
     int calcContainerContainerTitlebarHeight(const ContainerContainer *container);

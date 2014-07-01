@@ -90,8 +90,8 @@ void MainActions::handleShortcut(int id)
             }
             break;
         case ACTION_CLOSE_ACTIVE_CLIENT:
-            if (Client *c = Application::activeClient()) {
-                c->requestClose();
+            if (Widget *c = Application::activeClient()) {
+                c->toClient()->requestClose();
             }
             break;
         case ACTION_FOCUS_ACTIVE_CLIENT:

@@ -6,6 +6,7 @@
 #include <string>
 
 class Icon;
+class WidgetBackend;
 
 class ClientBackend
 {
@@ -19,16 +20,8 @@ public:
         PROP_ICON
     };
 
-    class EventHandler {
-    public:
-        virtual void handleGeometryChanged(const Rect &rect) = 0;
-        virtual void handleFocusChanged() = 0;
-        virtual void handleMap() = 0;
-//         virtual void handleUnmap() = 0;
-        virtual void handlePropertyChanged(Property property) = 0;
-    };
+    virtual WidgetBackend *widget() = 0;
 
-    virtual void setEventHandler(EventHandler *handler) = 0;
     virtual const Rect &rect() = 0;
     virtual bool hasFocus() = 0;
     virtual void setFocus() = 0;
