@@ -865,7 +865,7 @@ void X11Client::refreshIcon()
                     _icon = X11Application::graphicsSystem()->createIcon(
                         width,
                         height,
-                        _frame,
+                        _frame->wid(),
                         reinterpret_cast<unsigned long*>(ret) + 2,
                         0x999999 /*FIXME - taken form X11ServerWidget */);
                 }

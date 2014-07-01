@@ -1,23 +1,18 @@
-
 #include "x11_icon.h"
 
 #include "x11_canvas.h"
-#include "x11_widget.h"
-#include "x11_global.h"
 #include "common.h"
 
 #include <X11/Xutil.h>
 
 
-using namespace X11Global;
-
-
-void X11Icon::init(X11Widget *parent)
+void X11Icon::init(Drawable parent)
 {
    const unsigned int depth = 24; //FIXME HACK
-    _pixmap = XCreatePixmap(dpy(), parent->wid(), _width, _height, depth);
+    _pixmap = XCreatePixmap(dpy(), parent, _width, _height, depth);
+#if 0
     if (_pixmap) {
-        X11Canvas canvas(_pixmap);
+        X11Canvas canvas(dpy(), _pixmap);
 
         Rect frame_rect(0, 0, _width, _height);
 
@@ -29,21 +24,18 @@ void X11Icon::init(X11Widget *parent)
         canvas.drawLine(frame_rect.x, frame_rect.y + frame_rect.h,
                         frame_rect.x + frame_rect.w, frame_rect.y, 0xFFFFFF);
     }
+#endif
 }
 
-
-X11Icon::X11Icon(int width, int height, X11Widget *parent) : Icon(width, height),
-    _pixmap(0)
-//     _mask(0)
-{
-    init(parent);
-}
-
-
-
-X11Icon::X11Icon(int width, int height, X11Widget *parent, const unsigned long *argb_data, uint32_t bg_color) : Icon(width, height),
-    _pixmap(0)
-//     _mask(0)
+X11Icon::X11Icon(
+            Display *display,
+            int width, 
+            int height, 
+            Drawable parent, 
+            const unsigned long *argb_data, 
+            uint32_t bg_color) :
+    Icon(width, height),
+    _dpy(display)
 {
     init(parent);
 
@@ -78,7 +70,7 @@ X11Icon::X11Icon(int width, int height, X11Widget *parent, const unsigned long *
             }
         }
 
-        X11Canvas canvas(_pixmap);
+        X11Canvas canvas(dpy(), _pixmap);
         XPutImage(dpy(), _pixmap, canvas.gc(), image,
                 0, 0, 0, 0, _width, _height);
 

@@ -9,16 +9,8 @@ DEFAULT_TARGETS += $(BUILD_DIR)/ttmwm
 .PHONY : all
 all: $(DEFAULT_TARGETS)
 
-.PHONY : $(BUILD_DIR)/libbackend_x11_native.a 
-$(BUILD_DIR)/libbackend_x11_native.a:
-	(mkdir -p $(BUILD_DIR)/backend_x11_native && \
-	cd backend_x11 &&  \
-	make BUILD_DIR=../$(BUILD_DIR)/backend_x11_native OUTPUT_DIR=../$(BUILD_DIR) ../$(BUILD_DIR)/libbackend_x11_native.a)
-
-.PHONY : $(BUILD_DIR)/lib%.a 
-$(BUILD_DIR)/lib%.a:
+$(BUILD_DIR)/lib%.a: %/*.cpp %/*.h
 	(mkdir -p $(BUILD_DIR)/$* && cd $* &&  make BUILD_DIR=../$(BUILD_DIR)/$* OUTPUT_DIR=../$(BUILD_DIR) ../$(BUILD_DIR)/lib$*.a)
-
 
 $(BUILD_DIR)/ttmwm: $(BUILD_DIR)/libcommon.a $(BUILD_DIR)/libbackend_x11.a $(BUILD_DIR)/libbackend_x11_native.a $(BUILD_DIR)/ttmwm.o
 	@ echo linking $@

@@ -1,13 +1,10 @@
 #include "x11_canvas.h"
-
-#include "x11_global.h"
 #include "x11_icon.h"
 
-using namespace X11Global;
-
-
-X11Canvas::X11Canvas(Drawable drawable) :
-    _drawable(drawable), _gc(0), _font_info(0)
+X11Canvas::X11Canvas(Display *display, Drawable drawable) :
+    _drawable(drawable), _gc(0),
+    _font_info(0),
+    _dpy(display)
 {
     _gc = XCreateGC(dpy(), _drawable, 0, 0);
     XSetForeground(dpy(), _gc, 0xFFFFFF); //HACK

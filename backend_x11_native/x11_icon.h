@@ -13,20 +13,19 @@ class X11Widget;
 class X11Icon final : public Icon
 {
 public:
-    X11Icon(int width, int height, X11Widget *parent);
-    X11Icon(int width, int height, X11Widget *parent, const unsigned long *argb_data, uint32_t bg_color);
+    X11Icon(Display *display, int width, int height, Drawable parent, const unsigned long *argb_data, uint32_t bg_color);
     X11Icon(const X11Icon &other);
     ~X11Icon();
     X11Icon &operator=(const X11Icon &other);
 
     Pixmap pixmap() { return _pixmap; }
-//     Pixmap mask() { return _mask; }
+    Display *dpy() { return _dpy; }
 
 private:
-    void init(X11Widget *parent);
+    void init(Drawable parent);
 
-    Pixmap _pixmap;
-//     Pixmap _mask;
+    Pixmap _pixmap = None;
+    Display *_dpy = 0;
 };
 
 #endif // __X11_ICON_H__

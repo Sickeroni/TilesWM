@@ -27,7 +27,7 @@
 #include <stdio.h>
 
 
-X11GraphicsSystem *createX11GraphicsSystem();
+X11GraphicsSystem *createX11GraphicsSystem(Display *dpy);
 
 
 #if 0
@@ -233,7 +233,7 @@ bool X11Application::init()
 
     XSync(_dpy, false);
 
-    _graphics_system = createX11GraphicsSystem();
+    _graphics_system = createX11GraphicsSystem(_dpy);
 
 //     _monitor = new Monitor();
 //     _monitor->setSize(root_attr.width, root_attr.height);

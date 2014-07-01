@@ -10,7 +10,7 @@
 class X11Canvas final : public Canvas
 {
 public:
-    X11Canvas(Drawable drawable);
+    X11Canvas(Display *display, Drawable drawable);
     ~X11Canvas();
 
     virtual void erase(const Rect &rect) override;
@@ -23,11 +23,13 @@ public:
     void drawLine(int x1, int y1, int x2, int y2, uint32_t color);
 
     GC gc() { return _gc; }
+    Display *dpy() { return _dpy; }
 
 private:
-    Drawable _drawable;
-    GC _gc;
-    XFontStruct *_font_info;
+    Drawable _drawable = None;
+    GC _gc = None;
+    XFontStruct *_font_info = 0;
+    Display *_dpy = 0;
 };
 
 

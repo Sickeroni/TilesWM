@@ -1,8 +1,8 @@
 #include "x11_widget_backend.h"
 
-#include "x11_canvas.h"
 #include "theme.h"
 #include "widget_frontend.h"
+#include "canvas.h"
 
 X11WidgetBackend::X11WidgetBackend() :
     _widget(X11ServerWidget::create(
