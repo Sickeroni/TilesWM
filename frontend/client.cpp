@@ -63,7 +63,8 @@ void Client::handleFocusChanged()
 
 void Client::handleSizeHintsChanged()
 {
-    //FIXME
+//FIXME
+    // WARNING frame dimensions must be added !
 #if 0
     if (parent()) {
         if (Container *container = parent()->toContainer())
