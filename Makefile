@@ -31,7 +31,7 @@ $(BUILD_DIR)/%.o: %.cpp
 
 .PHONY : doc
 doc:
-	BUILD_DIR=$(BUILD_DIR) doxygen Doxyfile
+	BUILD_DIR=$(BUILD_DIR) doxygen Doxyfile_all
 	BUILD_DIR=$(BUILD_DIR) doxygen Doxyfile_common
 
 .PHONY : clean
