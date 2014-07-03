@@ -394,11 +394,6 @@ WidgetBackend *X11Application::createWidgetBackend()
     return new X11WidgetBackend();
 }
 
-// ShortcutSet *X11Application::createShortcutSet(std::string name)
-// {
-//     return new X11ShortcutSet(name);
-// }
-
 Atom X11Application::atom(const char *name)
 {
     Atom &value = _atoms[name];

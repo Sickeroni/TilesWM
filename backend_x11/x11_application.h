@@ -15,12 +15,8 @@
 class X11ContainerContainer;
 class X11ClientContainer;
 class X11Client;
-// class Workspace;
-// class Monitor;
 class X11GraphicsSystem;
 class FrontendBase;
-
-class ShortcutSet;
 class WidgetBackend;
 
 class X11Application
@@ -34,7 +30,7 @@ public:
     virtual void setActiveMonitor(Monitor *monitor) override;
     virtual Workspace *createWorkspace() override;
 #endif
-//     virtual ShortcutSet *createShortcutSet(std::string name);
+
     virtual void requestQuit() {
         _quit_requested = true;
     }
