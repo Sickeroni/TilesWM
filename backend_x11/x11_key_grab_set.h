@@ -9,10 +9,10 @@
 class X11KeyGrabSet final : public KeyGrabSet
 {
 public:
-    virtual int addGrab(std::string sequence) override;
+    virtual int addGrab(std::string key_sequence) override;
     virtual void clear() override;
 
-    int find(const X11Global::KeySequence &sequence) const;
+    int find(const X11Global::KeySequence &key_sequence) const;
 
 private:
     std::vector<X11Global::KeySequence> _grabs;
