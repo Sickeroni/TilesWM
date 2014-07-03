@@ -2,9 +2,22 @@ include config.mk
 
 BUILD_DIR=build
 
+COMMON_DEPS := $(BUILD_DIR)/libfrontend.a $(BUILD_DIR)/libcommon.a
+COMMON_LIBS := -lfrontend -lcommon
+
+BACKEND_X11_DEPS := $(BUILD_DIR)/libbackend_x11.a
+BACKEND_X11_LIBS := -lX11 -lXcursor -lbackend_x11
+
+BACKEND_X11_NATIVE_DEPS := $(BUILD_DIR)/libbackend_x11_native.a
+BACKEND_X11_NATIVE_LIBS := -lbackend_x11_native
+
+BACKEND_X11_CAIRO_DEPS := $(BUILD_DIR)/libbackend_x11_cairo.a
+BACKEND_X11_CAIRO_LIBS := -lbackend_x11_cairo -lcairomm-1.0
+
 DEFAULT_TARGETS :=
 DEFAULT_TARGETS += $(BUILD_DIR)/ttmwm
 # DEFAULT_TARGETS += $(BUILD_DIR)/ttmwm-cairo
+
 
 .PHONY : all
 all: $(DEFAULT_TARGETS)
@@ -12,13 +25,13 @@ all: $(DEFAULT_TARGETS)
 $(BUILD_DIR)/lib%.a: %/*.cpp %/*.h
 	(mkdir -p $(BUILD_DIR)/$* && cd $* &&  make BUILD_DIR=../$(BUILD_DIR)/$* OUTPUT_DIR=../$(BUILD_DIR) ../$(BUILD_DIR)/lib$*.a)
 
-$(BUILD_DIR)/ttmwm: $(BUILD_DIR)/libcommon.a $(BUILD_DIR)/libfrontend.a $(BUILD_DIR)/libbackend_x11.a $(BUILD_DIR)/libbackend_x11_native.a $(BUILD_DIR)/ttmwm.o
+$(BUILD_DIR)/ttmwm: $(COMMON_DEPS) $(BACKEND_X11_DEPS) $(BACKEND_X11_NATIVE_DEPS) $(BUILD_DIR)/ttmwm.o
 	@ echo linking $@
-	@ $(CXX) $(CXXFLAGS) -L$(BUILD_DIR) $(BUILD_DIR)/ttmwm.o -lX11 -lXcursor -lbackend_x11 -lbackend_x11_native -lfrontend -lcommon -o $@
+	@ $(CXX) $(CXXFLAGS) -L$(BUILD_DIR) $(BUILD_DIR)/ttmwm.o $(BACKEND_X11_LIBS) $(BACKEND_X11_NATIVE_LIBS) $(COMMON_LIBS) -o $@
 
-$(BUILD_DIR)/ttmwm-cairo: $(BUILD_DIR)/libcommon.a $(BUILD_DIR)/x11 $(TTMWM_X11_OBJS) $(BUILD_DIR)/x11/x11_graphics_system_cairo.o
+$(BUILD_DIR)/ttmwm-cairo: $(COMMON_DEPS) $(BACKEND_X11_DEPS) $(BACKEND_X11_CAIRO_DEPS) $(BUILD_DIR)/ttmwm.o
 	@ echo linking $@
-	@ $(CXX) $(CXXFLAGS) -L$(BUILD_DIR) $(TTMWM_X11_OBJS) $(BUILD_DIR)/x11/x11_graphics_system_cairo.o -lX11 -lXcursor -lcairomm-1.0 -lfrontend -lcommon -o $@
+	@ $(CXX) $(CXXFLAGS) -L$(BUILD_DIR) $(BUILD_DIR)/ttmwm.o $(BACKEND_X11_LIBS) $(BACKEND_X11_CAIRO_LIBS) $(COMMON_LIBS) -o $@
 
 
 # pull in dependency info for *existing* .o files
