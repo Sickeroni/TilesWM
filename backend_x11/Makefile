@@ -4,9 +4,9 @@ SRCS += x11_widget
 SRCS += x11_server_widget
 SRCS += x11_client_widget
 SRCS += x11_client
-# SRCS += x11_shortcut_set
 SRCS += x11_application
 SRCS += x11_global
+SRCS += x11_key_grab_set
 
 LIBNAME := backend_x11
 

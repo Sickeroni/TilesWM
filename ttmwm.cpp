@@ -33,6 +33,8 @@ public:
     virtual ClientFrontend *createClientFrontend(ClientBackend *backend, bool is_floating) { 
         return new ClientFrontendDummy(backend);
     }
+    virtual int numKeyGrabHandlers() { return 0; }
+    virtual KeyGrabHandlerBase *keyGrabHandler(int index) { return 0; }
 };
 
 

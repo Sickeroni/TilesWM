@@ -3,6 +3,7 @@
 
 class ClientFrontend;
 class ClientBackend;
+class KeyGrabHandlerBase;
 
 class FrontendBase
 {
@@ -14,6 +15,8 @@ public:
     virtual ClientFrontend *createClientFrontend(ClientBackend *backend, bool is_floating) = 0;
 //     virtual ClientFrontend *activeClient() = 0;
 
+    virtual int numKeyGrabHandlers() = 0;
+    virtual KeyGrabHandlerBase *keyGrabHandler(int index) = 0;
 
 //     virtual void handleUnmanagedClientGotFocus() = 0;
 //     virtual void handleUnmanagedClientLostFocus() = 0;

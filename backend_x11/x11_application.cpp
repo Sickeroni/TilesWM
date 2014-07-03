@@ -4,8 +4,10 @@
 #include "x11_widget.h"
 #include "x11_graphics_system.h"
 #include "x11_widget_backend.h"
+#include "x11_key_grab_set.h"
 
 #include "frontend_base.h"
+#include "key_grab_handler_base.h"
 #include "config.h"
 #include "common.h"
 
@@ -408,24 +410,22 @@ Atom X11Application::atom(const char *name)
 
 bool X11Application::handleKeyPress(const XKeyEvent &ev)
 {
-#if 0
     X11Global::KeySequence key_sequence(
         XLookupKeysym(const_cast<XKeyEvent*>(&ev), 0),
         ev.state & ~(LockMask | num_lock_mask));
 
     if (key_sequence.key_sym != NoSymbol) {
-        const X11ShortcutSet *main_shortcuts = 
-            static_cast<const X11ShortcutSet*>(mainShortcuts());
-
-        const X11ShortcutSet *active_wm_shortcuts =
-            static_cast<const X11ShortcutSet*>(activeWorkspace()->windowManager()->shortcuts());
-
-        if (main_shortcuts->handleKeyPress(key_sequence))
-            return true;
-        else if (active_wm_shortcuts->handleKeyPress(key_sequence))
-            return true;
+        for (int i = 0; i < frontend()->numKeyGrabHandlers(); i++) {
+            KeyGrabHandlerBase *handler = frontend()->keyGrabHandler(i);
+            const X11KeyGrabSet *key_grabs = dynamic_cast<const X11KeyGrabSet*>(handler->grabs());
+            int index = key_grabs->find(key_sequence);
+            if (index != INVALID_INDEX) {
+                handler->handleKeyGrabPressed(index);
+                return true;
+            }
+        }
     }
-#endif
+
     return false;
 }
 
