@@ -1,0 +1,109 @@
+#ifndef __ACTION_SET_H__
+#define __ACTION_SET_H__
+
+#include "shortcut_set.h"
+
+#include <string>
+
+
+class KeySequenceHandler
+{
+public:
+    void handleKeySequence(const KeySequence *sequence);
+
+protected:
+    virtual void performAction(int id) = 0;
+    virtual const KeyBindingSet *keyBindings() = 0;
+
+private:
+    // the window manager this handler is associated with
+    WindowManager *_wm = 0;
+};
+
+class WindowManager : public KeySequenceHandler
+{
+};
+
+
+void KeySequenceHandler::handleKeySequence(KeySequence *sequence)
+{
+    const KeyBinding *binding = keyBindings()->find(sequence);
+    if (binding) {
+        switch (binding->action->type()) {
+            case TYPE_SIMPLE:
+                performAction(static_cast<SimpleAction*>(binding->action)->id());
+                break;
+            case TYPE_COMPLEX:
+                static_cast<ComplexAction*>(binding->action)->execute(this, binding->parameters);
+                break;
+        }
+    }
+}
+
+
+struct ActionParameters
+{
+    virtual ~ActionParameters() {}
+};
+
+
+class Action
+{
+    enum Type
+    {
+        TYPE_SIMPLE,
+        TYPE_COMPLEX
+    };
+
+    string _name;
+
+    Type type;
+};
+
+
+class SimpleAction
+{
+public:
+//     struct Handler
+//     {
+//         virtual void performAction(int id, WindowManager *wm) = 0;
+//     };
+
+    int _id;
+//     Handler *_handler;
+};
+
+
+
+class ComplexAction
+{
+public:
+    virtual ActionParameters *parseParameters(string parameters) { return 0; }
+    virtual void execute(WindowManager *wm, ActionParameters *params) = 0;
+};
+
+
+struct KeyBinding
+{
+    KeySequence *key_seq = 0;
+    Action *action = 0;
+    ActionParameters *parameters = 0:
+};
+
+class KeyBindingSet
+{
+    KeyBindingSet(ActionSet *actions);
+};
+
+
+class ActionSet
+{
+    void addAction(std::string name, int id) {
+        _actions.push_back(new SimpleAction(name, id));
+    }
+
+private:
+    list<Action*> _actions;
+};
+
+#endif
