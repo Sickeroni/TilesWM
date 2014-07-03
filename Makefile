@@ -12,13 +12,13 @@ all: $(DEFAULT_TARGETS)
 $(BUILD_DIR)/lib%.a: %/*.cpp %/*.h
 	(mkdir -p $(BUILD_DIR)/$* && cd $* &&  make BUILD_DIR=../$(BUILD_DIR)/$* OUTPUT_DIR=../$(BUILD_DIR) ../$(BUILD_DIR)/lib$*.a)
 
-$(BUILD_DIR)/ttmwm: $(BUILD_DIR)/libcommon.a $(BUILD_DIR)/libbackend_x11.a $(BUILD_DIR)/libbackend_x11_native.a $(BUILD_DIR)/ttmwm.o
+$(BUILD_DIR)/ttmwm: $(BUILD_DIR)/libcommon.a $(BUILD_DIR)/libfrontend.a $(BUILD_DIR)/libbackend_x11.a $(BUILD_DIR)/libbackend_x11_native.a $(BUILD_DIR)/ttmwm.o
 	@ echo linking $@
-	@ $(CXX) $(CXXFLAGS) -L$(BUILD_DIR) $(BUILD_DIR)/ttmwm.o -lX11 -lXcursor -lbackend_x11 -lbackend_x11_native -lcommon -o $@
+	@ $(CXX) $(CXXFLAGS) -L$(BUILD_DIR) $(BUILD_DIR)/ttmwm.o -lX11 -lXcursor -lbackend_x11 -lbackend_x11_native -lfrontend -lcommon -o $@
 
 $(BUILD_DIR)/ttmwm-cairo: $(BUILD_DIR)/libcommon.a $(BUILD_DIR)/x11 $(TTMWM_X11_OBJS) $(BUILD_DIR)/x11/x11_graphics_system_cairo.o
 	@ echo linking $@
-	@ $(CXX) $(CXXFLAGS) -L$(BUILD_DIR) $(TTMWM_X11_OBJS) $(BUILD_DIR)/x11/x11_graphics_system_cairo.o -lX11 -lXcursor -lcairomm-1.0 -lcommon -o $@
+	@ $(CXX) $(CXXFLAGS) -L$(BUILD_DIR) $(TTMWM_X11_OBJS) $(BUILD_DIR)/x11/x11_graphics_system_cairo.o -lX11 -lXcursor -lcairomm-1.0 -lfrontend -lcommon -o $@
 
 
 # pull in dependency info for *existing* .o files

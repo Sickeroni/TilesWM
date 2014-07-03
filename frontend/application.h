@@ -1,6 +1,7 @@
 #ifndef __APPLICATION_H__
 #define __APPLICATION_H__
 
+#include "frontend_base.h"
 #include "common.h"
 
 #include <vector>
@@ -12,11 +13,11 @@ class Client;
 class Monitor;
 class ShortcutSet;
 class Mode;
-class ActionSet;
+// class ActionSet;
 class WidgetBackend;
 class Widget;
 
-class Application
+class Application final : public FrontendBase
 {
 public:
     enum Layer
@@ -25,15 +26,22 @@ public:
         LAYER_TILED
     };
 
+    Application();
     ~Application();
 
-    virtual Monitor *activeMonitor() = 0;
+    virtual void init() override;
+    virtual void shutdown() override;
+    virtual void focusActiveClient() override;
+    virtual ClientFrontend *createClientFrontend(ClientBackend *backend, bool is_floating) override;
+    virtual int numKeyGrabHandlers() override;
+    virtual KeyGrabHandlerBase *keyGrabHandler(int index) override;
 
-    virtual void setActiveMonitor(Monitor *monitor) = 0;
-    virtual void requestQuit() = 0;
-    virtual WidgetBackend *createWidgetBackend() = 0;
-    virtual ShortcutSet *createShortcutSet(std::string name) = 0;
-    virtual Workspace *createWorkspace() = 0; //FIXME make non-virtual
+    Monitor *activeMonitor() { return _monitor; }
+//     void setActiveMonitor(Monitor *monitor);
+//     virtual void requestQuit() = 0;
+//     virtual WidgetBackend *createWidgetBackend() = 0;
+//     virtual ShortcutSet *createShortcutSet(std::string name) = 0;
+    Workspace *createWorkspace();
 
     void setFocus(Client *client);
     void reloadConfig();
@@ -41,7 +49,7 @@ public:
     void setActiveLayer(Layer layer) {
         _active_layer = layer;
     }
-    const ShortcutSet *mainShortcuts();
+//     const ShortcutSet *mainShortcuts();
     Mode *mode(size_t index) {
         assert(index < _modes.size());
         return _modes[index];
@@ -53,27 +61,22 @@ public:
 
     // helper functions
     static Workspace *activeWorkspace();
-    static void manageClient(WidgetBackend *backend, bool is_floating);
-    static void unmanageClient(Widget *frontend);
+//     static void manageClient(WidgetBackend *backend, bool is_floating);
+//     static void unmanageClient(Widget *frontend);
     static void runProgram(const char *path);
-    static void focusActiveClient();
 //     static Client *activeClient();
-    static Widget *activeClient();
-    static void makeClientActive(Widget *client);
+//     static Widget *activeClient();
+//     static void makeClientActive(Widget *client);
 
-protected:
-    Application();
-
-    void init();
-    void shutdown();
-    
 private:
-    ActionSet *_main_actions = 0;
+//     ActionSet *_main_actions = 0;
     std::vector<Mode*> _modes;
     size_t _default_mode = 0;
     Layer _active_layer = LAYER_FLOATING;
 
     static Application *_self;
+    std::vector<Workspace*>  _workspaces;
+    Monitor *_monitor = 0;
 };
 
 #endif // __APPLICATION_H__

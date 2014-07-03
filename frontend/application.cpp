@@ -3,7 +3,7 @@
 #include "monitor.h"
 #include "workspace.h"
 // #include "main_actions.h"
-#include "client.h"
+// #include "client.h"
 #include "mode.h"
 // #include "mode_default.h"
 // #include "mode_3panel.h"
@@ -54,8 +54,37 @@ void Application::shutdown()
         delete _modes[i];
     _modes.clear();
 
-    delete _main_actions;
-    _main_actions = 0;
+//     delete _main_actions;
+//     _main_actions = 0;
+}
+
+void Application::focusActiveClient()
+{
+    assert(0);
+#if 0
+    //FIXME - floating layer !
+    ClientContainer *container = activeClientContainer();
+    printvar(container);
+    if (container) {
+        printvar(container->activeClient());
+        self()->setFocus(container->activeClient());
+    }
+#endif
+}
+
+ClientFrontend *Application::createClientFrontend(ClientBackend *backend, bool is_floating)
+{
+    return 0;
+}
+
+int Application::numKeyGrabHandlers()
+{
+    return 0;
+}
+
+KeyGrabHandlerBase *Application::keyGrabHandler(int index)
+{
+    return 0;
 }
 
 void Application::reloadConfig()
@@ -64,15 +93,15 @@ void Application::reloadConfig()
 
     Config::self()->reload();
 
-    _main_actions->reloadShortcuts();
+//     _main_actions->reloadShortcuts();
 
     //FIXME: foreach(Workspace *w) w->windowManager()->reloadShortcuts()
 }
 
-const ShortcutSet *Application::mainShortcuts()
-{
-    return _main_actions->shortcuts();
-}
+// const ShortcutSet *Application::mainShortcuts()
+// {
+//     return _main_actions->shortcuts();
+// }
 
 Workspace *Application::activeWorkspace()
 {
@@ -89,35 +118,35 @@ Container *Application::activeContainer()
 }
 #endif
 
-void Application::manageClient(WidgetBackend *backend, bool is_floating)
-{
-//     Client *client = new Client(backend, is_floating);
-    Client *client = new Client(backend, true);
-
-    if (client->isFloating())
-        activeWorkspace()->addChild(client);
-    else
-        activeWorkspace()->windowManager()->manageClient(client);
-}
-
-void Application::unmanageClient(Widget *frontend)
-{
-    Client *client = frontend->toClient();
-
-    if (client->parent()) {
-        if (client->isFloating()) {
-            client->workspace()->removeChild(client);
-            assert(!client->parent());
-        } else  {
-            assert(0);
-//             if (Container *container = client->parent()->toContainer())
-//                  container->removeChild(container->indexOfChild(client));
-
-        }
-    }
-
-    delete client;
-}
+// void Application::manageClient(WidgetBackend *backend, bool is_floating)
+// {
+// //     Client *client = new Client(backend, is_floating);
+//     Client *client = new Client(backend, true);
+// 
+//     if (client->isFloating())
+//         activeWorkspace()->addChild(client);
+//     else
+//         activeWorkspace()->windowManager()->manageClient(client);
+// }
+// 
+// void Application::unmanageClient(Widget *frontend)
+// {
+//     Client *client = frontend->toClient();
+// 
+//     if (client->parent()) {
+//         if (client->isFloating()) {
+//             client->workspace()->removeChild(client);
+//             assert(!client->parent());
+//         } else  {
+//             assert(0);
+// //             if (Container *container = client->parent()->toContainer())
+// //                  container->removeChild(container->indexOfChild(client));
+// 
+//         }
+//     }
+// 
+//     delete client;
+// }
 
 void Application::runProgram(const char *path)
 {
@@ -138,47 +167,36 @@ void Application::runProgram(const char *path)
         cerr<<"ERROR: running "<<path<<": Can't fork.";
 }
 
-void Application::focusActiveClient()
-{
-#if 0
-    //FIXME - floating layer !
-    ClientContainer *container = activeClientContainer();
-    printvar(container);
-    if (container) {
-        printvar(container->activeClient());
-        self()->setFocus(container->activeClient());
-    }
-#endif
-}
 
-Widget *Application::activeClient()
-{
-    if (self()->activeLayer() == LAYER_TILED)
-        return activeWorkspace()->windowManager()->activeClient();
-    else
-        return activeWorkspace()->activeFloatingClient();
-}
+// Widget *Application::activeClient()
+// {
+//     if (self()->activeLayer() == LAYER_TILED)
+//         return activeWorkspace()->windowManager()->activeClient();
+//     else
+//         return activeWorkspace()->activeFloatingClient();
+// }
 
-void Application::makeClientActive(Widget *widget)
-{
-    ChildWidget *client = widget->toChildWidget();
-    assert(client);
+// void Application::makeClientActive(Widget *widget)
+// {
+//     ChildWidget *client = widget->toChildWidget();
+//     assert(client);
+// 
+//     Workspace *workspace = client->workspace();
+//     assert(workspace);
+// 
+//     if (workspace->makeActive()) {
+//         if (client->isFloating()) {
+//             workspace->setActiveFloatingChild(client);
+//             self()->setActiveLayer(LAYER_FLOATING);
+//         } else {
+//             workspace->windowManager()->makeClientActive(client);
+//             self()->setActiveLayer(LAYER_TILED);
+//         }
+//     }
+// }
 
-    Workspace *workspace = client->workspace();
-    assert(workspace);
+// void Application::setFocus(Client *client)
+// {
+//     client->setFocus();
+// }
 
-    if (workspace->makeActive()) {
-        if (client->isFloating()) {
-            workspace->setActiveFloatingChild(client);
-            self()->setActiveLayer(LAYER_FLOATING);
-        } else {
-            workspace->windowManager()->makeClientActive(client);
-            self()->setActiveLayer(LAYER_TILED);
-        }
-    }
-}
-
-void Application::setFocus(Client *client)
-{
-    client->setFocus();
-}
