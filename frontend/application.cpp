@@ -60,7 +60,7 @@ void Application::shutdown()
 
 void Application::focusActiveClient()
 {
-    assert(0);
+    UNIMPLEMENTED
 #if 0
     //FIXME - floating layer !
     ClientContainer *container = activeClientContainer();
