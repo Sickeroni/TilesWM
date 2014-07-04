@@ -74,16 +74,24 @@ void Application::focusActiveClient()
 
 ClientFrontend *Application::createClientFrontend(ClientBackend *backend, bool is_floating)
 {
+    UNIMPLEMENTED
     return 0;
+}
+
+void Application::destroyClientFrontend(ClientFrontend *frontend) 
+{
+    UNIMPLEMENTED
 }
 
 int Application::numKeyGrabHandlers()
 {
+    UNIMPLEMENTED
     return 0;
 }
 
 KeyGrabHandlerBase *Application::keyGrabHandler(int index)
 {
+    UNIMPLEMENTED
     return 0;
 }
 

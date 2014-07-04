@@ -33,6 +33,7 @@ public:
     virtual void shutdown() override;
     virtual void focusActiveClient() override;
     virtual ClientFrontend *createClientFrontend(ClientBackend *backend, bool is_floating) override;
+    virtual void destroyClientFrontend(ClientFrontend *frontend) override;
     virtual int numKeyGrabHandlers() override;
     virtual KeyGrabHandlerBase *keyGrabHandler(int index) override;
 

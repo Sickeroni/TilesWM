@@ -253,7 +253,7 @@ void X11Client::shutdown()
             it++)
     {
         X11Client *client = it->second;
-        delete client->_client_frontend;
+        X11Application::frontend()->destroyClientFrontend(client->_client_frontend);
         client->_client_frontend = 0;
         assert(!client->_widget_frontend);
         client->_widget->reparent(0);
@@ -501,7 +501,7 @@ void X11Client::handleUnmap()
     if (isOverrideRedirect()) {
         _widget->unmap();
     } else {
-        delete _client_frontend;
+        X11Application::frontend()->destroyClientFrontend(_client_frontend);
         _client_frontend = 0;
         assert(!_widget_frontend);
 
@@ -1106,7 +1106,9 @@ bool X11Client::handleEvent(const XEvent &ev)
                     cancelDrag();
                 _frame_wid_index.erase(client->_frame->wid());
                 _wid_index.erase(wid);
-                delete client->_client_frontend;
+                delete client->_widget;
+                client->_widget = 0;
+                X11Application::frontend()->destroyClientFrontend(client->_client_frontend);
                 client->_client_frontend = 0;
                 assert(!client->_widget_frontend);
                 delete client;
