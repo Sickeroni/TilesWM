@@ -6,8 +6,6 @@
 class ClientFrontend
 {
 public:
-    virtual ~ClientFrontend() {}
-
     virtual bool isFloating() = 0;
     virtual void handleGeometryChanged(const Rect &rect) = 0;
     virtual void handleFocusChanged(bool has_focus) = 0;

@@ -50,6 +50,7 @@ public:
 
 protected:
     ChildWidget(Type type) : Widget(type) {}
+    ~ChildWidget() {}
 
     bool _is_floating = false;
 

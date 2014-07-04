@@ -19,8 +19,6 @@ public:
         OTHER
     };
 
-    virtual ~Widget();
-
     virtual ChildWidget *toChildWidget() { return 0; }
 
     const Rect &rect() const { return _rect; }
@@ -36,6 +34,7 @@ public:
 
 protected:
     Widget(Type type) : _type(type) {}
+    ~Widget() {}
 
     WidgetBackend *_backend = 0;
     const Type _type;
