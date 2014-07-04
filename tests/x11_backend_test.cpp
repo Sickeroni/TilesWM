@@ -5,7 +5,7 @@
 
 #include "common.h"
 
-class ClientFrontendDummy : public ClientFrontend
+class ClientFrontendDummy final : public ClientFrontend
 {
 public:
     ClientFrontendDummy(ClientBackend *backend): _backend(backend) {}
@@ -31,6 +31,9 @@ public:
     virtual void focusActiveClient() {}
     virtual ClientFrontend *createClientFrontend(ClientBackend *backend, bool is_floating) { 
         return new ClientFrontendDummy(backend);
+    }
+    virtual void destroyClientFrontend(ClientFrontend *frontend) {
+        delete dynamic_cast<ClientFrontendDummy*>(frontend);
     }
     virtual int numKeyGrabHandlers() { return 0; }
     virtual KeyGrabHandlerBase *keyGrabHandler(int index) { return 0; }

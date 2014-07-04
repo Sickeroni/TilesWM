@@ -1,3 +1,5 @@
+TOP_DIR := ..
+
 SRCS :=
 SRCS += x11_widget_backend
 SRCS += x11_widget
@@ -10,7 +12,6 @@ SRCS += x11_key_grab_set
 
 LIBNAME := backend_x11
 
-CXXFLAGS += -I../backend_x11_common -I../common
+CXXFLAGS += -I$(TOP_DIR)/backend_x11_common -I$(TOP_DIR)/common
 
-include ../config.mk
-include ../static_library.mk
+include $(TOP_DIR)/static_library.mk

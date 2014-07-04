@@ -1,6 +1,6 @@
-include config.mk
+TOP_DIR := .
 
-BUILD_DIR=build
+include $(TOP_DIR)/config.mk
 
 COMMON_DEPS := $(BUILD_DIR)/libfrontend.a $(BUILD_DIR)/libcommon.a
 COMMON_LIBS := -lfrontend -lcommon
@@ -22,8 +22,12 @@ DEFAULT_TARGETS += $(BUILD_DIR)/ttmwm
 .PHONY : all
 all: $(DEFAULT_TARGETS)
 
-$(BUILD_DIR)/lib%.a: %/*.cpp %/*.h
-	(mkdir -p $(BUILD_DIR)/$* && cd $* &&  make BUILD_DIR=../$(BUILD_DIR)/$* OUTPUT_DIR=../$(BUILD_DIR) ../$(BUILD_DIR)/lib$*.a)
+.PHONY : tests
+tests:
+	@ (cd $(TOP_DIR)/tests && make)
+
+$(BUILD_DIR)/lib%.a: $(TOP_DIR)/%/*.cpp $(TOP_DIR)/%/*.h
+	@ (cd $(TOP_DIR)/$* &&  make)
 
 $(BUILD_DIR)/ttmwm: $(COMMON_DEPS) $(BACKEND_X11_DEPS) $(BACKEND_X11_NATIVE_DEPS) $(BUILD_DIR)/ttmwm.o
 	@ echo linking $@
@@ -40,7 +44,7 @@ $(BUILD_DIR)/ttmwm-cairo: $(COMMON_DEPS) $(BACKEND_X11_DEPS) $(BACKEND_X11_CAIRO
 # compile and generate dependency info
 $(BUILD_DIR)/%.o: %.cpp
 	@ echo $*.cpp
-	@ $(CXX) $(CXXFLAGS) -MD -Icommon -c $*.cpp -o $@
+	@ $(CXX) $(CXXFLAGS) -MD -I$(TOP_DIR)/common -c $*.cpp -o $@
 
 .PHONY : doc
 doc:

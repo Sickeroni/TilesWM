@@ -16,3 +16,5 @@ CXXFLAGS += -I/usr/include/cairo
 CXXFLAGS += -I/usr/include/freetype2
 # workaround debian bug
 CXXFLAGS += -I/usr/lib/x86_64-linux-gnu/sigc++-2.0/include
+
+BUILD_DIR := $(TOP_DIR)/build

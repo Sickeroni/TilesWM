@@ -1,3 +1,5 @@
+TOP_DIR = ..
+
 SRCS :=
 SRCS += x11_canvas
 SRCS += x11_icon
@@ -5,7 +7,6 @@ SRCS += x11_graphics_system_x11
 
 LIBNAME := backend_x11_native
 
-CXXFLAGS += -I../backend_x11_common -I../common
+CXXFLAGS += -I$(TOP_DIR)/backend_x11_common -I$(TOP_DIR)/common
 
-include ../config.mk
-include ../static_library.mk
+include $(TOP_DIR)/static_library.mk

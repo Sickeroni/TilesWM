@@ -1,3 +1,5 @@
+TOP_DIR = ..
+
 SRCS :=
 # SRCS += main_actions
 # SRCS += mode_simple
@@ -24,7 +26,6 @@ SRCS += application
 
 LIBNAME := frontend
 
-CXXFLAGS += -I../common
+CXXFLAGS += -I$(TOP_DIR)/common
 
-include ../config.mk
-include ../static_library.mk
+include $(TOP_DIR)/static_library.mk
