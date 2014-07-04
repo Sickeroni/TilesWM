@@ -13,6 +13,7 @@ public:
 
 protected:
     virtual void performAction(int id) = 0;
+    virtual void performComplexAction(ComplexAction *action, ActionParameters *parameters) = 0;
     virtual const KeyBindingSet *keyBindings() = 0;
 
 private:
@@ -22,6 +23,9 @@ private:
 
 class WindowManager : public KeySequenceHandler
 {
+    virtual void performComplexAction(ComplexAction *action, ActionParameters *parameters) override {
+        dynamic_cast<ComplexWindowManagerAction*>(action)->execute(this, parameters);
+    }
 };
 
 
@@ -34,7 +38,7 @@ void KeySequenceHandler::handleKeySequence(KeySequence *sequence)
                 performAction(static_cast<SimpleAction*>(binding->action)->id());
                 break;
             case TYPE_COMPLEX:
-                static_cast<ComplexAction*>(binding->action)->execute(this, binding->parameters);
+                performComplexAction(static_cast<ComplexAction*>(binding->action), binding->parameters);
                 break;
         }
     }
@@ -61,6 +65,25 @@ class Action
 };
 
 
+struct Action
+{
+    enum Type
+    {
+        TYPE_SIMPLE,
+        TYPE_COMPLEX
+    };
+
+    string _name;
+
+    Type type;
+
+    union {
+        ComplexAction *complex_action = 0;
+        int id = -1;
+    };
+};
+
+
 class SimpleAction
 {
 public:
@@ -79,8 +102,14 @@ class ComplexAction
 {
 public:
     virtual ActionParameters *parseParameters(string parameters) { return 0; }
-    virtual void execute(WindowManager *wm, ActionParameters *params) = 0;
 };
+
+class ComplexWindowManagerAction
+{
+public:
+    virtual void execute(WindowManager *wm, ActionParameters *parameters) = 0;
+};
+
 
 
 struct KeyBinding
