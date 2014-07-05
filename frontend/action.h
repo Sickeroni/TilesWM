@@ -30,7 +30,7 @@ struct Action
     Action(const std::string &_name, int _id) : 
         type(TYPE_SIMPLE),
         name(_name),
-        complex_action(0) {}
+        id(_id) {}
 
     Action(const std::string &_name, ComplexAction *_complex_action) : 
         type(TYPE_COMPLEX),
