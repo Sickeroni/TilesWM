@@ -11,11 +11,10 @@ class Canvas;
 class Workspace;
 class Container;
 
-class Client : public ChildWidget, public ClientBackend::EventHandler
+class Client : public ChildWidget
 {
 public:
-    Client(WidgetBackend *backend, bool is_floating);
-    virtual ~Client();
+    Client(bool is_floating);
 
     void setFocus();
     bool hasFocus();
@@ -25,6 +24,15 @@ public:
     void requestClose();
 
 private:
+    struct : public ClientFrontend {
+        virtual void foo() { client->setFocus();}
+        virtual void bar() { client->requestClose(); }
+
+        Client *client = 0;
+    } _frontend_impl;
+
+    ~Client();
+
     virtual void handleGeometryChanged(const Rect &rect) override;
     virtual void handleFocusChanged() override;
     virtual void handleMap() override;
