@@ -7,10 +7,10 @@ class Client;
 class Workspace;
 class Widget;
 
-class WindowManager : public ActionSet
+class WindowManager
 {
 public:
-    WindowManager(Workspace *workspace, std::string action_set_name) : ActionSet(action_set_name),
+    WindowManager(Workspace *workspace, std::string action_set_name) :
         _workspace(workspace) {}
     virtual ~WindowManager() {}
 

@@ -6,7 +6,7 @@
 
 namespace StringUtil
 {
-    void tokenize(std::string str, char separator, std::vector<std::string> &tokens);
+    void tokenize(std::string str, char separator, std::vector<std::string> &tokens, bool include_empty_tokens = true);
 }
 
 #endif

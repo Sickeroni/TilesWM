@@ -6,7 +6,9 @@
 class KeyGrabSet
 {
 public:
-    // return: the index of the added grab in the set - may be INVALID_INDEX if grabbing is not possible
+    virtual ~KeyGrabSet() {}
+
+    // return: the id of the added grab, or INVALID_INDEX if grabbing is not possible
     // key_sequence: an opaque backend-specific representation of the key sequence
     virtual int addGrab(std::string key_sequence) = 0;
     // clear the set and releases the key grabs

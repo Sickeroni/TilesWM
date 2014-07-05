@@ -1,7 +1,7 @@
 TOP_DIR = ..
 
 SRCS :=
-# SRCS += main_actions
+SRCS += main_actions
 # SRCS += mode_simple
 # SRCS += monitor
 # SRCS += widget
@@ -11,7 +11,7 @@ SRCS :=
 # SRCS += client
 # SRCS += container_container
 # SRCS += client_container
-# SRCS += action_set
+SRCS += action_set
 # SRCS += container_container_layout
 # SRCS += client_container_layout
 # SRCS += client_util
@@ -23,6 +23,8 @@ SRCS += application
 # SRCS += window_manager_3panel
 # SRCS += shortcut_set
 # SRCS += mouse_handler
+SRCS += key_grab_handler
+SRCS += key_binding_set
 
 LIBNAME := frontend
 

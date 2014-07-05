@@ -1,18 +1,21 @@
 #ifndef __MAIN_ACTIONS_H__
 #define __MAIN_ACTIONS_H__
 
+#include "key_grab_handler.h"
 #include "action_set.h"
-#include "container_util.h"
 
-class ContainerContainer;
-
-class MainActions : public ActionSet
+class MainActions final : public KeyGrabHandler
 {
 public:
-    MainActions() : ActionSet("main") {}
+    MainActions();
+    ~MainActions();
 
-    virtual void initShortcuts() override;
-    virtual void handleShortcut(int id) override;
+    virtual const KeyGrabSet *grabs() override { return _key_grabs; }
+
+protected:
+    virtual void performAction(int id) override;
+    virtual void performComplexAction(ComplexAction *action, ComplexAction::Parameters *parameters) override;
+    virtual const KeyBindingSet *keyBindings() override;
 
 private:
     enum {
@@ -40,6 +43,9 @@ private:
 //     static void focusPrevChild(ContainerContainer *container);
 //     static void focusNextChild(ContainerContainer *container);
 //     static void focusSibling(ContainerUtil::Direction where);
+
+    ActionSet _actions;
+    KeyGrabSet *_key_grabs = 0;
 };
 
 #endif

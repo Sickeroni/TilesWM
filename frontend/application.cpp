@@ -2,7 +2,7 @@
 
 #include "monitor.h"
 #include "workspace.h"
-// #include "main_actions.h"
+#include "main_actions.h"
 // #include "client.h"
 #include "mode.h"
 // #include "mode_default.h"
@@ -34,7 +34,7 @@ Application::~Application()
 
 void Application::init()
 {
-//     _main_actions = new MainActions();
+    _common_actions = new MainActions();
 
 //     _modes.push_back(new ModeDefault());
 //     _modes.push_back(new Mode3Panel());
@@ -54,8 +54,8 @@ void Application::shutdown()
         delete _modes[i];
     _modes.clear();
 
-//     delete _main_actions;
-//     _main_actions = 0;
+    delete _common_actions;
+    _common_actions = 0;
 }
 
 void Application::focusActiveClient()
@@ -85,14 +85,20 @@ void Application::destroyClientFrontend(ClientFrontend *frontend)
 
 int Application::numKeyGrabHandlers()
 {
-    UNIMPLEMENTED
-    return 0;
+    return 1;
 }
 
 KeyGrabHandlerBase *Application::keyGrabHandler(int index)
 {
-    UNIMPLEMENTED
-    return 0;
+    assert(index < numKeyGrabHandlers());
+    switch (index) {
+        case 0:
+            return  _common_actions;
+            break;
+        default:
+            assert(false);
+            return 0;
+    }
 }
 
 void Application::reloadConfig()

@@ -59,7 +59,7 @@ class Action
         TYPE_COMPLEX
     };
 
-    string _name;
+    string name;
 
     Type type;
 };
@@ -73,9 +73,9 @@ struct Action
         TYPE_COMPLEX
     };
 
-    string _name;
+    string name;
 
-    Type type;
+    Type type = TYPE_SIMPLE;
 
     union {
         ComplexAction *complex_action = 0;
@@ -101,28 +101,10 @@ public:
 class ComplexAction
 {
 public:
-    virtual ActionParameters *parseParameters(string parameters) { return 0; }
-};
-
-class ComplexWindowManagerAction
-{
-public:
-    virtual void execute(WindowManager *wm, ActionParameters *parameters) = 0;
+    virtual ActionParameters *parseParameters(const vector<string&> &parameters) { return 0; }
 };
 
 
-
-struct KeyBinding
-{
-    KeySequence *key_seq = 0;
-    Action *action = 0;
-    ActionParameters *parameters = 0:
-};
-
-class KeyBindingSet
-{
-    KeyBindingSet(ActionSet *actions);
-};
 
 
 class ActionSet

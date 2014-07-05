@@ -1,18 +1,55 @@
 #include "main_actions.h"
 
-#include "client_container.h"
-#include "container_container.h"
-#include "container_layout.h"
-#include "client.h"
-#include "workspace.h"
 #include "application.h"
-#include "container_util.h"
-#include "shortcut_set.h"
-#include "window_manager.h"
+#include "key_grab_set.h"
 #include "common.h"
 
-using namespace ContainerUtil;
+MainActions::MainActions() :
+//     _key_grabs(Application::self()->backend()->createKeyGrabSet())
+    _key_grabs(0)
+{
+    _actions.createAction("reloadConfig", ACTION_RELOAD_CONFIG);
+    _actions.createAction("toggleMaximize", ACTION_TOGGLE_MAXIMIZE);
+    _actions.createAction("layout", ACTION_LAYOUT);
+    _actions.createAction("rotate", ACTION_ROTATE);
+    _actions.createAction("focusLeft", ACTION_FOCUS_LEFT);
+    _actions.createAction("focusRight", ACTION_FOCUS_RIGHT);
+    _actions.createAction("focusUp", ACTION_FOCUS_UP);
+    _actions.createAction("focusDown", ACTION_FOCUS_DOWN);
+    _actions.createAction("redraw", ACTION_REDRAW);
+    _actions.createAction("focusPrevClient", ACTION_FOCUS_PREV_CLIENT);
+    _actions.createAction("focusNextClient", ACTION_FOCUS_NEXT_CLIENT);
+    _actions.createAction("runProgram", ACTION_RUN_PROGRAM);
+    _actions.createAction("runTerminal", ACTION_RUN_TERMINAL);
+    _actions.createAction("changeMode", ACTION_CHANGE_MODE);
+    _actions.createAction("closeActiveClient", ACTION_CLOSE_ACTIVE_CLIENT);
+    _actions.createAction("focusActiveClient", ACTION_FOCUS_ACTIVE_CLIENT);
+    _actions.createAction("quit", ACTION_QUIT);
+}
 
+MainActions::~MainActions()
+{
+    delete _key_grabs;
+    _key_grabs = 0;
+}
+
+void MainActions::performAction(int id)
+{
+    UNIMPLEMENTED
+}
+
+void MainActions::performComplexAction(ComplexAction *action, ComplexAction::Parameters *parameters)
+{
+    UNIMPLEMENTED
+}
+
+const KeyBindingSet *MainActions::keyBindings()
+{
+    UNIMPLEMENTED
+    return 0;
+}
+
+#if 0
 void MainActions::initShortcuts()
 {
     createAction("reloadConfig", ACTION_RELOAD_CONFIG);
@@ -33,7 +70,9 @@ void MainActions::initShortcuts()
     createAction("focusActiveClient", ACTION_FOCUS_ACTIVE_CLIENT);
     createAction("quit", ACTION_QUIT);
 }
+#endif
 
+#if 0
 void MainActions::handleShortcut(int id)
 {
     switch(id) {
@@ -180,4 +219,5 @@ void MainActions::focusNextClient()
         }
     }
 }
+#endif
 #endif

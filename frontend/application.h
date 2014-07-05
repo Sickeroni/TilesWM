@@ -13,6 +13,7 @@ class Client;
 class Monitor;
 class ShortcutSet;
 class Mode;
+class MainActions;
 // class ActionSet;
 class WidgetBackend;
 class Widget;
@@ -71,6 +72,7 @@ public:
 
 private:
 //     ActionSet *_main_actions = 0;
+    MainActions *_common_actions = 0;
     std::vector<Mode*> _modes;
     size_t _default_mode = 0;
     Layer _active_layer = LAYER_FLOATING;

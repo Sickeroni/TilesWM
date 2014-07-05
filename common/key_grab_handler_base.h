@@ -7,7 +7,7 @@ class KeyGrabHandlerBase
 {
 public:
     virtual const KeyGrabSet *grabs() = 0;
-    virtual void handleKeyGrabPressed(int grab_index);
+    virtual void handleKeyGrabPressed(int grab_id) = 0;
 };
 
 #endif
