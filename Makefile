@@ -4,6 +4,8 @@ include $(TOP_DIR)/config.mk
 
 COMMON_DEPS := $(BUILD_DIR)/libfrontend.a $(BUILD_DIR)/libcommon.a
 COMMON_LIBS := -lfrontend -lcommon
+# COMMON_DEPS := $(BUILD_DIR)/libcommon.a
+# COMMON_LIBS := -lcommon
 
 BACKEND_X11_DEPS := $(BUILD_DIR)/libbackend_x11.a
 BACKEND_X11_LIBS := -lX11 -lXcursor -lbackend_x11
