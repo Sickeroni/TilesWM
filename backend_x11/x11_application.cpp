@@ -233,9 +233,7 @@ bool X11Application::init()
 
     _graphics_system = createX11GraphicsSystem(_dpy);
 
-//     _monitor = new Monitor();
-//     _monitor->setSize(root_attr.width, root_attr.height);
-    _frontend->init();
+    _frontend->init(this);
 
     X11Client::init();
 
@@ -255,23 +253,11 @@ bool X11Application::init()
 void X11Application::shutdown()
 {
     grabServer();
+    XSync(_dpy, false);
 
     X11Client::shutdown();
 
-//     delete _monitor;
-//     _monitor = 0;
     _frontend->shutdown();
-
-#if 0
-    for (size_t i = 0; i < _workspaces.size(); i++) {
-        Workspace *w = _workspaces[i];
-        _workspaces[i] = 0;
-        delete w;
-    }
-    _workspaces.clear();
-#endif
-
-//     Application::shutdown();
 
     XSetWindowAttributes new_root_attr;
     memset(&new_root_attr, 0, sizeof(XSetWindowAttributes));
@@ -392,6 +378,11 @@ void X11Application::ungrabServer()
 WidgetBackend *X11Application::createWidgetBackend()
 {
     return new X11WidgetBackend();
+}
+
+KeyGrabSet *X11Application::createKeyGrabSet()
+{
+    return new X11KeyGrabSet();
 }
 
 Atom X11Application::atom(const char *name)

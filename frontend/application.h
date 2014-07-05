@@ -29,7 +29,7 @@ public:
     Application();
     ~Application();
 
-    virtual void init() override;
+    virtual void init(Backend *backend) override;
     virtual void shutdown() override;
     virtual void focusActiveClient() override;
     virtual ClientFrontend *createClientFrontend(ClientBackend *backend, bool is_floating) override;
@@ -79,6 +79,7 @@ private:
     static Application *_self;
     std::vector<Workspace*>  _workspaces;
     Monitor *_monitor = 0;
+    Backend *_backend = 0;
 };
 
 #endif // __APPLICATION_H__

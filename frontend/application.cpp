@@ -30,10 +30,13 @@ Application::Application()
 
 Application::~Application()
 {
+    _self = 0;
 }
 
-void Application::init()
+void Application::init(Backend *backend)
 {
+    _backend = backend;
+
     _common_actions = new CommonActions();
 
 //     _modes.push_back(new ModeDefault());
@@ -44,11 +47,24 @@ void Application::init()
 
     if (_default_mode >= _modes.size())
         _default_mode = 0;
+
+//     _monitor = new Monitor();
+//     _monitor->setSize(root_attr.width, root_attr.height);
 }
 
 void Application::shutdown()
 {
-    _self = 0;
+#if 0
+    delete _monitor;
+    _monitor = 0;
+
+    for (size_t i = 0; i < _workspaces.size(); i++) {
+        Workspace *w = _workspaces[i];
+        _workspaces[i] = 0;
+        delete w;
+    }
+    _workspaces.clear();
+#endif
 
     for(size_t i = 0; i < _modes.size(); i++)
         delete _modes[i];
@@ -56,6 +72,8 @@ void Application::shutdown()
 
     delete _common_actions;
     _common_actions = 0;
+
+    _backend = 0;
 }
 
 void Application::focusActiveClient()

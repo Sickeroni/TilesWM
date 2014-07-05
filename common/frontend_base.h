@@ -4,11 +4,12 @@
 class ClientFrontend;
 class ClientBackend;
 class KeyGrabHandlerBase;
+class Backend;
 
 class FrontendBase
 {
 public:
-    virtual void init() = 0;
+    virtual void init(Backend *backend) = 0;
     virtual void shutdown() = 0;
     virtual void focusActiveClient() = 0;
 //     virtual void manageClient(WidgetBackend *backend, bool is_floating);

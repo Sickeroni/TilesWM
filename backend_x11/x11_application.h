@@ -2,8 +2,8 @@
 #define __X11_APPLICATION_H__
 
 #include "x11_global.h"
-
 #include "frontend_base.h"
+#include "backend.h"
 
 #include <X11/Xlib.h>
 
@@ -19,7 +19,7 @@ class X11GraphicsSystem;
 class FrontendBase;
 class WidgetBackend;
 
-class X11Application
+class X11Application final : public Backend
 {
 public:
     X11Application(FrontendBase *frontend);
@@ -31,10 +31,11 @@ public:
     virtual Workspace *createWorkspace() override;
 #endif
 
-    virtual void requestQuit() {
+    virtual void requestQuit() override {
         _quit_requested = true;
     }
-    virtual WidgetBackend *createWidgetBackend();
+    virtual WidgetBackend *createWidgetBackend() override;
+    virtual KeyGrabSet *createKeyGrabSet() override;
 
     bool init();
     void shutdown();
