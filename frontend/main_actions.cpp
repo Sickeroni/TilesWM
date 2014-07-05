@@ -5,8 +5,7 @@
 #include "common.h"
 
 MainActions::MainActions() :
-//     _key_grabs(Application::self()->backend()->createKeyGrabSet())
-    _key_grabs(0)
+    _key_bindings("common", &_actions)
 {
     _actions.createAction("reloadConfig", ACTION_RELOAD_CONFIG);
     _actions.createAction("toggleMaximize", ACTION_TOGGLE_MAXIMIZE);
@@ -29,8 +28,11 @@ MainActions::MainActions() :
 
 MainActions::~MainActions()
 {
-    delete _key_grabs;
-    _key_grabs = 0;
+}
+
+void MainActions::createKeyBindings()
+{
+    _key_bindings.createBindings();
 }
 
 void MainActions::performAction(int id)

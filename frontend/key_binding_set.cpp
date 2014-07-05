@@ -4,6 +4,12 @@
 using std::string;
 using std::vector;
 
+KeyBindingSet::KeyBindingSet(const char *config_group, const ActionSet *actions) :
+    _config_group(config_group),
+    _actions(actions)
+{
+}
+
 const KeyBindingSet::Binding *KeyBindingSet::find(int key_grab_id) const
 {
     UNIMPLEMENTED
@@ -12,6 +18,7 @@ const KeyBindingSet::Binding *KeyBindingSet::find(int key_grab_id) const
 
 void KeyBindingSet::createBindings()
 {
+    UNIMPLEMENTED
 #if 0
     if (const ConfigGroup *grp = Config::group(_config_group)) {
         for (size_t i = 0; i < grp->numEntries(); i++) {

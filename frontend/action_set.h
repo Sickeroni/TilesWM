@@ -1,9 +1,8 @@
 #ifndef __ACTION_SET_H__
 #define __ACTION_SET_H__
 
-// #include "shortcut_set.h"
-
 #include <string>
+#include <vector>
 
 class Action;
 
@@ -36,6 +35,9 @@ public:
 
     void createAction(std::string action_name, int id);
     const Action *find(std::string action_name) const;
+
+private:
+    std::vector<Action*> _actions;
 };
 
 #endif

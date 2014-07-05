@@ -40,7 +40,7 @@ void Application::init()
 //     _modes.push_back(new Mode3Panel());
 //     _modes.push_back(new ModeSimple());
 
-//     _main_actions->initShortcuts();
+    _common_actions->createKeyBindings();
 
     if (_default_mode >= _modes.size())
         _default_mode = 0;

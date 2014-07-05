@@ -16,11 +16,12 @@ public:
         ComplexAction::Parameters *parameters = 0;
     };
 
-    KeyBindingSet(const std::string &config_group, const ActionSet *actions);
+    KeyBindingSet(const char *config_group, const ActionSet *actions);
 
     void clear();
     void createBindings();
     const Binding *find(int key_grab_id) const;
+    const KeyGrabSet *keyGrabs() { return _key_grabs; }
 
 private:
     std::string _config_group;

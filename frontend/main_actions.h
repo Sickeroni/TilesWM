@@ -3,6 +3,7 @@
 
 #include "key_grab_handler.h"
 #include "action_set.h"
+#include "key_binding_set.h"
 
 class MainActions final : public KeyGrabHandler
 {
@@ -10,7 +11,9 @@ public:
     MainActions();
     ~MainActions();
 
-    virtual const KeyGrabSet *grabs() override { return _key_grabs; }
+    virtual const KeyGrabSet *grabs() override { return _key_bindings.keyGrabs(); }
+
+    void createKeyBindings();
 
 protected:
     virtual void performAction(int id) override;
@@ -45,7 +48,7 @@ private:
 //     static void focusSibling(ContainerUtil::Direction where);
 
     ActionSet _actions;
-    KeyGrabSet *_key_grabs = 0;
+    KeyBindingSet _key_bindings;
 };
 
 #endif
