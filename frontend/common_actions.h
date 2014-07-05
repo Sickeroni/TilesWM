@@ -1,15 +1,15 @@
-#ifndef __MAIN_ACTIONS_H__
-#define __MAIN_ACTIONS_H__
+#ifndef __COMMON_ACTIONS_H__
+#define __COMMON_ACTIONS_H__
 
 #include "key_grab_handler.h"
 #include "action_set.h"
 #include "key_binding_set.h"
 
-class MainActions final : public KeyGrabHandler
+class CommonActions final : public KeyGrabHandler
 {
 public:
-    MainActions();
-    ~MainActions();
+    CommonActions();
+    ~CommonActions();
 
     virtual const KeyGrabSet *grabs() override { return _key_bindings.keyGrabs(); }
 

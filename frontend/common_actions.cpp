@@ -1,10 +1,10 @@
-#include "main_actions.h"
+#include "common_actions.h"
 
 #include "application.h"
 #include "key_grab_set.h"
 #include "common.h"
 
-MainActions::MainActions() :
+CommonActions::CommonActions() :
     _key_bindings("common", &_actions)
 {
     _actions.createAction("reloadConfig", ACTION_RELOAD_CONFIG);
@@ -26,33 +26,33 @@ MainActions::MainActions() :
     _actions.createAction("quit", ACTION_QUIT);
 }
 
-MainActions::~MainActions()
+CommonActions::~CommonActions()
 {
 }
 
-void MainActions::createKeyBindings()
+void CommonActions::createKeyBindings()
 {
     _key_bindings.createBindings();
 }
 
-void MainActions::performAction(int id)
+void CommonActions::performAction(int id)
 {
     UNIMPLEMENTED
 }
 
-void MainActions::performComplexAction(ComplexAction *action, ComplexAction::Parameters *parameters)
+void CommonActions::performComplexAction(ComplexAction *action, ComplexAction::Parameters *parameters)
 {
     UNIMPLEMENTED
 }
 
-const KeyBindingSet *MainActions::keyBindings()
+const KeyBindingSet *CommonActions::keyBindings()
 {
     UNIMPLEMENTED
     return 0;
 }
 
 #if 0
-void MainActions::initShortcuts()
+void CommonActions::initShortcuts()
 {
     createAction("reloadConfig", ACTION_RELOAD_CONFIG);
     createAction("toggleMaximize", ACTION_TOGGLE_MAXIMIZE);
@@ -75,7 +75,7 @@ void MainActions::initShortcuts()
 #endif
 
 #if 0
-void MainActions::handleShortcut(int id)
+void CommonActions::handleShortcut(int id)
 {
     switch(id) {
         case ACTION_RELOAD_CONFIG:
@@ -145,7 +145,7 @@ void MainActions::handleShortcut(int id)
 }
 
 #if 0
-void MainActions::focusPrevChild(ContainerContainer *container)
+void CommonActions::focusPrevChild(ContainerContainer *container)
 {
     if (container->activeChildIndex() != INVALID_INDEX) {
         int new_index = container->activeChildIndex() - 1;
@@ -156,7 +156,7 @@ void MainActions::focusPrevChild(ContainerContainer *container)
     }
 }
 
-void MainActions::focusNextChild(ContainerContainer *container)
+void CommonActions::focusNextChild(ContainerContainer *container)
 {
     if (container->activeChildIndex() != INVALID_INDEX) {
         int new_index = container->activeChildIndex() + 1;
@@ -167,7 +167,7 @@ void MainActions::focusNextChild(ContainerContainer *container)
     }
 }
 
-void MainActions::focusSibling(Direction where)
+void CommonActions::focusSibling(Direction where)
 {
     debug;
 
@@ -192,7 +192,7 @@ void MainActions::focusSibling(Direction where)
     }
 }
 
-void MainActions::focusPrevClient()
+void CommonActions::focusPrevClient()
 {
     ClientContainer *container = Application::activeClientContainer();
     if(container) {
@@ -207,7 +207,7 @@ void MainActions::focusPrevClient()
     }
 }
 
-void MainActions::focusNextClient()
+void CommonActions::focusNextClient()
 {
     ClientContainer *container = Application::activeClientContainer();
     if(container) {

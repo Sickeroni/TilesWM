@@ -2,7 +2,7 @@
 
 #include "monitor.h"
 #include "workspace.h"
-#include "main_actions.h"
+#include "common_actions.h"
 // #include "client.h"
 #include "mode.h"
 // #include "mode_default.h"
@@ -34,7 +34,7 @@ Application::~Application()
 
 void Application::init()
 {
-    _common_actions = new MainActions();
+    _common_actions = new CommonActions();
 
 //     _modes.push_back(new ModeDefault());
 //     _modes.push_back(new Mode3Panel());

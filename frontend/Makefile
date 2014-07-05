@@ -1,7 +1,7 @@
 TOP_DIR = ..
 
 SRCS :=
-SRCS += main_actions
+SRCS += common_actions
 # SRCS += mode_simple
 # SRCS += monitor
 # SRCS += widget
