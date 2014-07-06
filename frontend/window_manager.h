@@ -1,8 +1,6 @@
 #ifndef __WINDOW_MANAGER_H__
 #define __WINDOW_MANAGER_H__
 
-#include "action_set.h"
-
 class Client;
 class Workspace;
 class Widget;

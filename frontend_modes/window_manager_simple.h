@@ -9,12 +9,6 @@ public:
     WindowManagerSimple(Workspace *workspace, std::string action_set_name) :
         WindowManager(workspace, action_set_name) {}
 
-    // ShortcutSet::Handler implementation
-    virtual void handleShortcut(int id) override {}
-
-    // ActionSet implementation
-    virtual void initShortcuts() override {}
-
     virtual Client *activeClient() { return 0; }
     virtual void manageClient(Client *client) override {}
     virtual void layout() override {}

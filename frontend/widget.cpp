@@ -5,11 +5,6 @@
 #include "client.h"
 #include "common.h"
 
-Widget::~Widget()
-{
-
-}
-
 void Widget::setRect(const Rect &rect)
 {
     _backend->setRect(rect);
@@ -47,7 +42,12 @@ Workspace *Widget::toWorkspace()
         return 0;
 }
 
-Container *Widget::toContainer()
+// Container *Widget::toContainer()
+// {
+//     abort();
+// }
+
+void Widget::draw(Canvas *canvas)
 {
-    abort();
+    UNIMPLEMENTED
 }

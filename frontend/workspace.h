@@ -11,7 +11,7 @@ class Mode;
 class WindowManager;
 class ChildWidget;
 
-class Workspace : public Widget
+class Workspace final : public Widget
 {
 public:
     Workspace();

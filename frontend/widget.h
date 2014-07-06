@@ -1,24 +1,25 @@
 #ifndef __WIDGET_H__
 #define __WIDGET_H__
 
+#include "widget_frontend.h"
 #include "rect.h"
 
 class WidgetBackend;
 class Client;
-class Container;
 class Workspace;
 class ChildWidget;
 
-class Widget
+class Widget : public WidgetFrontend
 {
 public:
     enum Type {
         CLIENT,
-        CONTAINER,
+//         CONTAINER,
         WORKSPACE,
         OTHER
     };
 
+    virtual void draw(Canvas *canvas) override;
     virtual ChildWidget *toChildWidget() { return 0; }
 
     const Rect &rect() const { return _rect; }
@@ -30,7 +31,7 @@ public:
     int maxTextHeight() const;
     Client *toClient();
     Workspace *toWorkspace();
-    Container *toContainer();
+//     Container *toContainer();
 
 protected:
     Widget(Type type) : _type(type) {}

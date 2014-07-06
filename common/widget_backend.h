@@ -15,6 +15,7 @@ public:
     virtual void reparent(WidgetBackend *parent) = 0;
     virtual void redraw() = 0;
     virtual int maxTextHeight() const = 0;
+    //FIXME remove
     virtual void setFrontend(WidgetFrontend *frontend) = 0;
 
     // if this widget is a client return its backend interface

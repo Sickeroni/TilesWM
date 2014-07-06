@@ -3,11 +3,11 @@
 #include "monitor.h"
 #include "workspace.h"
 #include "common_actions.h"
-// #include "client.h"
+#include "client.h"
 #include "mode.h"
 // #include "mode_default.h"
 // #include "mode_3panel.h"
-// #include "mode_simple.h"
+#include "mode_simple.h"
 #include "window_manager.h"
 #include "config.h"
 #include "common.h"
@@ -42,20 +42,19 @@ void Application::init(Backend *backend)
 
 //     _modes.push_back(new ModeDefault());
 //     _modes.push_back(new Mode3Panel());
-//     _modes.push_back(new ModeSimple());
+    _modes.push_back(new ModeSimple());
 
     _common_actions->createKeyBindings();
 
     if (_default_mode >= _modes.size())
         _default_mode = 0;
 
-//     _monitor = new Monitor();
-//     _monitor->setSize(root_attr.width, root_attr.height);
+    _monitor = new Monitor();
+    _monitor->setSize(800, 600);
 }
 
 void Application::shutdown()
 {
-#if 0
     delete _monitor;
     _monitor = 0;
 
@@ -65,7 +64,6 @@ void Application::shutdown()
         delete w;
     }
     _workspaces.clear();
-#endif
 
     for(size_t i = 0; i < _modes.size(); i++)
         delete _modes[i];
@@ -93,8 +91,7 @@ void Application::focusActiveClient()
 
 ClientFrontend *Application::createClientFrontend(ClientBackend *backend, bool is_floating)
 {
-    UNIMPLEMENTED
-    return 0;
+    return new Client(backend, is_floating);
 }
 
 void Application::destroyClientFrontend(ClientFrontend *frontend) 
@@ -151,16 +148,14 @@ Container *Application::activeContainer()
 }
 #endif
 
-// void Application::manageClient(WidgetBackend *backend, bool is_floating)
-// {
-// //     Client *client = new Client(backend, is_floating);
-//     Client *client = new Client(backend, true);
-// 
-//     if (client->isFloating())
-//         activeWorkspace()->addChild(client);
-//     else
-//         activeWorkspace()->windowManager()->manageClient(client);
-// }
+void Application::manageClient(Client *client)
+{
+    if (client->isFloating())
+        activeWorkspace()->addChild(client);
+    else
+        activeWorkspace()->windowManager()->manageClient(client);
+}
+
 // 
 // void Application::unmanageClient(Widget *frontend)
 // {
@@ -258,3 +253,14 @@ void Application::runProgram(const std::vector<std::string> &args)
 //     client->setFocus();
 // }
 
+void Application::setActiveMonitor(Monitor *monitor)
+{
+    UNIMPLEMENTED
+}
+
+Workspace *Application::createWorkspace()
+{
+    Workspace *w = new Workspace();
+    _workspaces.push_back(w);
+    return w;
+}

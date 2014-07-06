@@ -3,18 +3,18 @@
 
 #include "child_widget.h"
 #include "client_backend.h"
+#include "client_frontend.h"
 
 #include <string>
 
 class Icon;
-class Canvas;
-class Workspace;
-class Container;
 
-class Client : public ChildWidget
+class Client : public ChildWidget, public ClientFrontend
 {
 public:
-    Client(bool is_floating);
+    Client(ClientBackend *client_backend, bool is_floating);
+
+    virtual bool isFloating() { return true; }
 
     void setFocus();
     bool hasFocus();
@@ -24,23 +24,16 @@ public:
     void requestClose();
 
 private:
-    struct : public ClientFrontend {
-        virtual void foo() { client->setFocus();}
-        virtual void bar() { client->requestClose(); }
-
-        Client *client = 0;
-    } _frontend_impl;
-
     ~Client();
 
     virtual void handleGeometryChanged(const Rect &rect) override;
-    virtual void handleFocusChanged() override;
+    virtual void handleFocusChanged(bool has_focus) override;
     virtual void handleMap() override;
-//     virtual void handleUnmap() override;
     virtual void handlePropertyChanged(ClientBackend::Property property) override;
 
     void handleSizeHintsChanged();
 
+    ClientBackend *_client_backend = 0;
 };
 
 #endif // __CLIENT_H__

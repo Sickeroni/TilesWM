@@ -5,16 +5,17 @@
 #include "child_widget.h"
 #include "application.h"
 #include "mode.h"
+#include "backend.h"
 #include "common.h"
 
 Workspace::Workspace() : Widget(WORKSPACE),
     _monitor(0),
     _mode(Application::self()->defaultMode())
 {
-    _backend = Application::self()->createWidgetBackend();
+    _backend = Application::self()->backend()->createWidgetBackend();
     _backend->setFrontend(this);
     _window_manager = mode()->createWindowManager(this);
-    _window_manager->initShortcuts();
+//     _window_manager->initShortcuts();
 }
 
 Workspace::~Workspace()
@@ -80,9 +81,9 @@ void Workspace::setMode(size_t index)
 
     delete _window_manager;
     _window_manager = mode()->createWindowManager(this);
-    _window_manager->initShortcuts();
+//     _window_manager->initShortcuts();
 
-    Application::focusActiveClient();
+    Application::self()->focusActiveClient();
 }
 #if 0
 void Workspace::rotateOrientation()

@@ -1,28 +1,24 @@
 #include "client.h"
 
 #include "widget_backend.h"
-#include "client_backend.h"
-// #include "container.h"
+#include "application.h"
 #include "common.h"
 
-Client::Client(WidgetBackend *backend, bool is_floating) : ChildWidget(CLIENT)
+Client::Client(ClientBackend *client_backend, bool is_floating) : ChildWidget(CLIENT),
+    _client_backend(client_backend)
 {
-    _backend = backend;
-    _backend->setFrontend(this);
-    _backend->clientBackend()->setEventHandler(this);
-    _rect = _backend->clientBackend()->rect();
+    _backend = _client_backend->widget();
+    _rect = _client_backend->rect();
     _is_floating = is_floating;
 }
 
 Client::~Client()
 {
-    _backend->clientBackend()->setEventHandler(0);
-    _backend->setFrontend(0);
 }
 
 bool Client::hasFocus()
 {
-    return _backend->clientBackend()->hasFocus();
+    return _client_backend->hasFocus();
 }
 
 bool Client::hasDecoration()
@@ -32,22 +28,22 @@ bool Client::hasDecoration()
 
 const std::string &Client::name()
 {
-    return _backend->clientBackend()->name();
+    return _client_backend->name();
 }
 
 Icon *Client::icon()
 {
-    return _backend->clientBackend()->icon();
+    return _client_backend->icon();
 }
 
 void Client::setFocus()
 {
-    _backend->clientBackend()->setFocus();
+    _client_backend->setFocus();
 }
 
 void Client::requestClose()
 {
-    _backend->clientBackend()->requestClose();
+    _client_backend->requestClose();
 }
 
 void Client::handleGeometryChanged(const Rect &rect)
@@ -55,9 +51,11 @@ void Client::handleGeometryChanged(const Rect &rect)
     _rect = rect;
 }
 
-void Client::handleFocusChanged()
+void Client::handleFocusChanged(bool has_focus)
 {
     //FIXME
+    // if (has_focus && !isActive())
+    //      makeActive()
 //     container()->handleClientFocusChanged(this);
 }
 
@@ -75,7 +73,7 @@ void Client::handleSizeHintsChanged()
 
 void Client::handleMap()
 {
-    //FIXME
+    Application::manageClient(this);
 }
 
 void Client::handlePropertyChanged(ClientBackend::Property property)

@@ -2,7 +2,7 @@
 
 #include "window_manager_simple.h"
 
-ModeSimple::ModeSimple() : Mode("simpe")
+ModeSimple::ModeSimple() : Mode("simple")
 {
 }
 

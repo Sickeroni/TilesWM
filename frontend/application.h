@@ -38,7 +38,7 @@ public:
     virtual KeyGrabHandlerBase *keyGrabHandler(int index) override;
 
     Monitor *activeMonitor() { return _monitor; }
-//     void setActiveMonitor(Monitor *monitor);
+    void setActiveMonitor(Monitor *monitor);
 //     virtual void requestQuit() = 0;
 //     virtual WidgetBackend *createWidgetBackend() = 0;
 //     virtual ShortcutSet *createShortcutSet(std::string name) = 0;
@@ -62,7 +62,7 @@ public:
 
     // helper functions
     static Workspace *activeWorkspace();
-//     static void manageClient(WidgetBackend *backend, bool is_floating);
+    static void manageClient(Client *client);
 //     static void unmanageClient(Widget *frontend);
     static void runProgram(const char *path);
     static void runProgram(const std::vector<std::string> &args);
