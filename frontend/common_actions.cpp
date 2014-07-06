@@ -1,5 +1,7 @@
 #include "common_actions.h"
 
+#include "common_complex_action.h"
+#include "action_run.h"
 #include "application.h"
 #include "key_grab_set.h"
 #include "workspace.h"
@@ -28,6 +30,7 @@ CommonActions::CommonActions() :
     _actions.createAction("closeActiveClient", ACTION_CLOSE_ACTIVE_CLIENT);
     _actions.createAction("focusActiveClient", ACTION_FOCUS_ACTIVE_CLIENT);
     _actions.createAction("quit", ACTION_QUIT);
+    _actions.createAction("run", new ActionRun());
 }
 
 CommonActions::~CommonActions()
@@ -91,9 +94,10 @@ void CommonActions::performAction(int id)
     }
 }
 
-void CommonActions::performComplexAction(ComplexAction *action, ComplexAction::Parameters *parameters)
+void CommonActions::performComplexAction(const ComplexAction *action, const ComplexAction::Parameters *parameters)
 {
-    UNIMPLEMENTED
+    const CommonComplexAction *a = dynamic_cast<const CommonComplexAction*>(action);
+    a->exec(parameters);
 }
 
 const KeyBindingSet *CommonActions::keyBindings()

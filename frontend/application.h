@@ -65,6 +65,7 @@ public:
 //     static void manageClient(WidgetBackend *backend, bool is_floating);
 //     static void unmanageClient(Widget *frontend);
     static void runProgram(const char *path);
+    static void runProgram(const std::vector<std::string> &args);
 //     static Client *activeClient();
     static Widget *activeClient();
 //     static void makeClientActive(Widget *client);

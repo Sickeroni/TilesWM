@@ -18,6 +18,7 @@
 #include <unistd.h>
 #include <sys/wait.h>
 #include <cstdio>
+#include <cstring>
 
 Application *Application::_self = 0;
 
@@ -199,6 +200,31 @@ void Application::runProgram(const char *path)
         cerr<<"ERROR: running "<<path<<": Can't fork.";
 }
 
+void Application::runProgram(const std::vector<std::string> &args)
+{
+    assert(!args.empty());
+    assert(!args[0].empty());
+
+    const char *program = args[0].c_str();
+
+    char *argv[args.size() + 1];
+    memset(argv, 0, sizeof(argv));
+
+    for (size_t i = 0; i < args.size(); i++)
+        argv[i] = const_cast<char*>(args[i].c_str());
+
+    pid_t pid = fork();
+
+    if (pid > 0) {
+        waitpid(pid, 0, WNOHANG);
+    } else if (pid == 0) {
+        execvp(program, argv);
+        printvar(program);
+        perror ("ERROR: Can't execute program: ");
+        exit(1);
+    } else
+        cerr<<"ERROR: running "<<program<<": Can't fork.";
+}
 
 // Widget *Application::activeClient()
 // {

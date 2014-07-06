@@ -5,6 +5,7 @@
 #include <vector>
 
 class Action;
+class ComplexAction;
 
 #if 0
 class ActionSet : public ShortcutSet::Handler
@@ -34,6 +35,8 @@ public:
     ~ActionSet();
 
     void createAction(std::string action_name, int id);
+    // this action set becomes owner of <complex_action>
+    void createAction(std::string action_name, ComplexAction *complex_action);
     const Action *find(std::string action_name) const;
 
 private:

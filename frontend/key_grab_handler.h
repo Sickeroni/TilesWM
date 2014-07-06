@@ -13,7 +13,7 @@ public:
 
 protected:
     virtual void performAction(int id) = 0;
-    virtual void performComplexAction(ComplexAction *action, ComplexAction::Parameters *parameters) = 0;
+    virtual void performComplexAction(const ComplexAction *action, const ComplexAction::Parameters *parameters) = 0;
     virtual const KeyBindingSet *keyBindings() = 0;
 };
 

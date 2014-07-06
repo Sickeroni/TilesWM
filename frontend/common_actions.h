@@ -17,7 +17,7 @@ public:
 
 protected:
     virtual void performAction(int id) override;
-    virtual void performComplexAction(ComplexAction *action, ComplexAction::Parameters *parameters) override;
+    virtual void performComplexAction(const ComplexAction *action, const ComplexAction::Parameters *parameters) override;
     virtual const KeyBindingSet *keyBindings() override;
 
 private:

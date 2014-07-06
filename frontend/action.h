@@ -16,7 +16,7 @@ public:
 
     virtual ~ComplexAction() {}
 
-    virtual Parameters *parseParameters(const std::vector<std::string> &parameters) { return 0; }
+    virtual Parameters *parseParameters(const std::vector<std::string> &parameters) const { return 0; }
 };
 
 struct Action
@@ -32,7 +32,8 @@ struct Action
         name(_name),
         id(_id) {}
 
-    Action(const std::string &_name, ComplexAction *_complex_action) : 
+    // action becomes owner of <_complex_action>
+    Action(const std::string &_name, ComplexAction *_complex_action) :
         type(TYPE_COMPLEX),
         name(_name),
         complex_action(_complex_action) {}

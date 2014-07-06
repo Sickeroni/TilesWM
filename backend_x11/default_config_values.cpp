@@ -1,6 +1,5 @@
 #include "config.h"
 
-
 void Config::setDefaults()
 {
     clear();
@@ -15,7 +14,7 @@ void Config::setDefaults()
     s->addEntry("MOD1+KP_Right", "focusRight");
     s->addEntry("MOD1+KP_Up", "focusUp");
     s->addEntry("MOD1+KP_Down", "focusDown");
-    s->addEntry("MOD1+t", "runTerminal");
+//     s->addEntry("MOD1+t", "runTerminal");
     s->addEntry("MOD1+d", "redraw");
     s->addEntry("MOD1+comma", "focusPrevClient");
     s->addEntry("MOD1+period", "focusNextClient");
@@ -23,6 +22,7 @@ void Config::setDefaults()
     s->addEntry("CTRL+m", "changeMode");
     s->addEntry("MOD1+f", "focusActiveClient");
     s->addEntry("MOD1+x", "closeActiveClient");
+    s->addEntry("MOD1+t", "run lxterminal");
 
     s = createSection("keybindings.tiling.common");
     //FIXME

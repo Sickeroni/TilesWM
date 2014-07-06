@@ -12,6 +12,7 @@ SRCS += common_actions
 # SRCS += container_container
 # SRCS += client_container
 SRCS += action_set
+SRCS += action_run
 # SRCS += container_container_layout
 # SRCS += client_container_layout
 # SRCS += client_util
