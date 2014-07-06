@@ -36,6 +36,7 @@ public:
     }
     virtual WidgetBackend *createWidgetBackend() override;
     virtual KeyGrabSet *createKeyGrabSet() override;
+    virtual void getMonitorSize(int &w, int &h) override;
 
     bool init();
     void shutdown();
@@ -82,6 +83,8 @@ private:
     X11Global::ModMask num_lock_mask = Mod2Mask; //FIXME
     X11GraphicsSystem *_graphics_system = 0;
     FrontendBase *_frontend = 0;
+    int _root_width = 0;
+    int _root_height = 0;
 };
 
 #define ATOM(name) (X11Application::self()->atom(#name))

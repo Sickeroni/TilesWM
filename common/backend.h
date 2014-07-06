@@ -10,6 +10,9 @@ public:
     virtual void requestQuit() = 0;
     virtual WidgetBackend *createWidgetBackend() = 0;
     virtual KeyGrabSet *createKeyGrabSet() = 0;
+
+    //HACK
+    virtual void getMonitorSize(int &w, int &h) = 0;
 };
 
 #endif

@@ -219,6 +219,9 @@ bool X11Application::init()
         return false;
     }
 
+    _root_width = root_attr.width;
+    _root_height = root_attr.height;
+
     XSetWindowAttributes new_root_attr;
     memset(&new_root_attr, 0, sizeof(XSetWindowAttributes));
 
@@ -471,4 +474,10 @@ void X11Application::releaseKeyGrab(const X11Global::KeySequence &key_sequence)
             }
         }
     }
+}
+
+void X11Application::getMonitorSize(int &w, int &h)
+{
+    w = _root_width;
+    h = _root_height;
 }

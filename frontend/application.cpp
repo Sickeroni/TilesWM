@@ -9,11 +9,9 @@
 // #include "mode_3panel.h"
 #include "mode_simple.h"
 #include "window_manager.h"
+#include "backend.h"
 #include "config.h"
 #include "common.h"
-
-// #include "../frontend/mode_simple.h"
-// #include "../frontend/main_actions.h"
 
 #include <unistd.h>
 #include <sys/wait.h>
@@ -49,8 +47,11 @@ void Application::init(Backend *backend)
     if (_default_mode >= _modes.size())
         _default_mode = 0;
 
+    int monitor_w, monitor_h;
+    backend->getMonitorSize(monitor_w,  monitor_h);
+
     _monitor = new Monitor();
-    _monitor->setSize(800, 600);
+    _monitor->setSize(monitor_w, monitor_h);
 }
 
 void Application::shutdown()
