@@ -8,12 +8,14 @@ Client::Client(ClientBackend *client_backend, bool is_floating) : ChildWidget(CL
     _client_backend(client_backend)
 {
     _backend = _client_backend->widget();
+    _backend->setFrontend(this);
     _rect = _client_backend->rect();
     _is_floating = is_floating;
 }
 
 Client::~Client()
 {
+    _backend->setFrontend(0);
 }
 
 bool Client::hasFocus()

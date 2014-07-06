@@ -3,6 +3,7 @@
 #include "widget_backend.h"
 #include "workspace.h"
 #include "client.h"
+#include "frontend_theme.h"
 #include "common.h"
 
 void Widget::setRect(const Rect &rect)
@@ -49,5 +50,5 @@ Workspace *Widget::toWorkspace()
 
 void Widget::draw(Canvas *canvas)
 {
-    UNIMPLEMENTED
+    Theme::drawWidget(this, canvas);
 }

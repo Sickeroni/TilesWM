@@ -22,6 +22,7 @@ SRCS += application
 # SRCS += mouse_handler
 SRCS += key_grab_handler
 SRCS += key_binding_set
+SRCS += frontend_theme
 
 LIBNAME := frontend
 
