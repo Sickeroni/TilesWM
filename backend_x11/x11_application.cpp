@@ -184,6 +184,7 @@ void X11Application::quit(int signum)
 bool X11Application::init()
 {
     Config::init();
+    Config::self()->setDefaults();
 
     signal(SIGINT, &quit);
 

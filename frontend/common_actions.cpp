@@ -2,10 +2,14 @@
 
 #include "application.h"
 #include "key_grab_set.h"
+#include "workspace.h"
+#include "window_manager.h"
+// #include "client.h"
+#include "backend.h"
 #include "common.h"
 
 CommonActions::CommonActions() :
-    _key_bindings("common", &_actions)
+    _key_bindings("keybindings.common", &_actions)
 {
     _actions.createAction("reloadConfig", ACTION_RELOAD_CONFIG);
     _actions.createAction("toggleMaximize", ACTION_TOGGLE_MAXIMIZE);
@@ -37,7 +41,54 @@ void CommonActions::createKeyBindings()
 
 void CommonActions::performAction(int id)
 {
-    UNIMPLEMENTED
+    switch(id) {
+        case ACTION_RELOAD_CONFIG:
+            Application::self()->reloadConfig();
+            break;
+        case ACTION_TOGGLE_MAXIMIZE:
+            assert(0);
+            {
+//                 bool maximized = Application::activeWorkspace()->maximized();
+//                 Application::activeWorkspace()->setMaximized(!maximized);
+            }
+            break;
+        case ACTION_LAYOUT:
+            Application::activeWorkspace()->windowManager()->layout();
+            break;
+        case ACTION_REDRAW:
+            assert(0);
+//             Application::activeWorkspace()->rootContainer()->redrawAll();
+            break;
+        case ACTION_RUN_PROGRAM:
+            Application::runProgram("/usr/bin/gmrun");
+            break;
+        case ACTION_RUN_TERMINAL:
+            Application::runProgram("/usr/bin/xterm");
+            break;
+        case ACTION_CHANGE_MODE:
+            assert(0);
+//             {
+//                 size_t mode = Application::activeWorkspace()->modeIndex();
+//                 mode++;
+//                 if (mode >= Application::self()->numModes())
+//                     mode = 0;
+//
+//                 Application::activeWorkspace()->setMode(mode);
+//             }
+            break;
+        case ACTION_CLOSE_ACTIVE_CLIENT:
+            assert(0);
+//             if (Widget *c = Application::activeClient()) {
+//                 c->toClient()->requestClose();
+//             }
+            break;
+        case ACTION_FOCUS_ACTIVE_CLIENT:
+            Application::self()->focusActiveClient();
+            break;
+        case ACTION_QUIT:
+            Application::self()->backend()->requestQuit();
+            break;
+    }
 }
 
 void CommonActions::performComplexAction(ComplexAction *action, ComplexAction::Parameters *parameters)
@@ -47,8 +98,7 @@ void CommonActions::performComplexAction(ComplexAction *action, ComplexAction::P
 
 const KeyBindingSet *CommonActions::keyBindings()
 {
-    UNIMPLEMENTED
-    return 0;
+    return &_key_bindings;
 }
 
 #if 0

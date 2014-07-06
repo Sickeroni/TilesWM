@@ -1,48 +1,57 @@
 #include "config.h"
 
-Config::Map Config::_default_values =
+
+void Config::setDefaults()
 {
-    { "shortcuts.main.reloadConfig", "SHIFT+MOD1+r" },
-    { "shortcuts.main.toggleMaximize", "MOD1+m" },
-    { "shortcuts.main.layout", "MOD1+l" },
-    { "shortcuts.main.rotate", "MOD1+r" },
-    { "shortcuts.main.focusLeft", "MOD1+KP_Left" },
-    { "shortcuts.main.focusRight", "MOD1+KP_Right" },
-    { "shortcuts.main.focusUp", "MOD1+KP_Up" },
-    { "shortcuts.main.focusDown", "MOD1+KP_Down" },
-    { "shortcuts.main.runTerminal", "MOD1+t" },
-    { "shortcuts.main.redraw", "MOD1+d" },
-    { "shortcuts.main.focusPrevClient", "MOD1+comma" },
-    { "shortcuts.main.focusNextClient", "MOD1+period" },
-    { "shortcuts.main.runProgram", "MOD1+F2" },
-    { "shortcuts.main.changeMode", "CTRL+m" },
-    { "shortcuts.main.quit", "MOD1+q" },
-    { "shortcuts.main.focusActiveClient", "MOD1+f" },
-    { "shortcuts.main.closeActiveClient", "MOD1+x" },
+    clear();
 
-    { "shortcuts.default.moveClientLeft", "SHIFT+MOD1+KP_Left" },
-    { "shortcuts.default.moveClientRight", "SHIFT+MOD1+KP_Right" },
-    { "shortcuts.default.moveClientUp", "SHIFT+MOD1+KP_Up" },
-    { "shortcuts.default.moveClientDown", "SHIFT+MOD1+KP_Down" },
-    { "shortcuts.default.deleteEmptyContainers", "MOD1+c" },
-    { "shortcuts.default.incWidth", "CTRL+MOD1+KP_Right" },
-    { "shortcuts.default.decWidth", "CTRL+MOD1+KP_Left" },
-    { "shortcuts.default.incHeight", "CTRL+MOD1+KP_Down" },
-    { "shortcuts.default.decHeight", "CTRL+MOD1+KP_Up" },
-    { "shortcuts.default.toggleExpanding", "MOD1+e" },
-    { "shortcuts.default.toggleParentExpanding", "CTRL+MOD1+e" },
-    { "shortcuts.default.setFixedSizeToMinimum", "SHIFT+MOD1+m" },
+    Section *s = createSection("keybindings.common");
+    s->addEntry("MOD1+q", "quit");
+    s->addEntry("SHIFT+MOD1+r", "reloadConfig");
+    s->addEntry("MOD1+m", "toggleMaximize");
+    s->addEntry("MOD1+l", "layout");
+    s->addEntry("MOD1+r", "rotate");
+    s->addEntry("MOD1+KP_Left", "focusLeft");
+    s->addEntry("MOD1+KP_Right", "focusRight");
+    s->addEntry("MOD1+KP_Up", "focusUp");
+    s->addEntry("MOD1+KP_Down", "focusDown");
+    s->addEntry("MOD1+t", "runTerminal");
+    s->addEntry("MOD1+d", "redraw");
+    s->addEntry("MOD1+comma", "focusPrevClient");
+    s->addEntry("MOD1+period", "focusNextClient");
+    s->addEntry("MOD1+F2", "runProgram");
+    s->addEntry("CTRL+m", "changeMode");
+    s->addEntry("MOD1+f", "focusActiveClient");
+    s->addEntry("MOD1+x", "closeActiveClient");
 
-    { "shortcuts.3panel.moveClientLeft", "SHIFT+MOD1+KP_Left" },
-    { "shortcuts.3panel.moveClientRight", "SHIFT+MOD1+KP_Right" },
-    { "shortcuts.3panel.moveClientUp", "SHIFT+MOD1+KP_Up" },
-    { "shortcuts.3panel.moveClientDown", "SHIFT+MOD1+KP_Down" },
-    { "shortcuts.3panel.moveHSplitRight", "CTRL+MOD1+KP_Right" },
-    { "shortcuts.3panel.moveHSplitLeft", "CTRL+MOD1+KP_Left" },
-    { "shortcuts.3panel.moveVSplitDown", "CTRL+MOD1+KP_Down" },
-    { "shortcuts.3panel.moveVSplitUp", "CTRL+MOD1+KP_Up" },
-    { "shortcuts.3panel.togglePrimaryExpanding", "MOD1+e" },
-    { "shortcuts.3panel.toggleSecondaryExpanding", "CTRL+MOD1+e" },
-    { "shortcuts.3panel.setPrimarySlaveToMinimum", "CTRL+MOD1+m" },
-    { "shortcuts.3panel.setSecondarySlaveToMinimum", "SHIFT+MOD1+m" },
-};
+    s = createSection("keybindings.tiling.common");
+    //FIXME
+
+    s = createSection("keybindings.tiling.default");
+    s->addEntry("SHIFT+MOD1+KP_Left", "moveClientLeft");
+    s->addEntry("SHIFT+MOD1+KP_Right", "moveClientRight");
+    s->addEntry("SHIFT+MOD1+KP_Up", "moveClientUp");
+    s->addEntry("SHIFT+MOD1+KP_Down", "moveClientDown");
+    s->addEntry("MOD1+c", "deleteEmptyContainers");
+    s->addEntry("CTRL+MOD1+KP_Right", "incWidth");
+    s->addEntry("CTRL+MOD1+KP_Left", "decWidth");
+    s->addEntry("CTRL+MOD1+KP_Down", "incHeight");
+    s->addEntry("CTRL+MOD1+KP_Up", "decHeight");
+    s->addEntry("MOD1+e", "toggleExpanding");
+    s->addEntry("CTRL+MOD1+e", "toggleParentExpanding");
+    s->addEntry("SHIFT+MOD1+m", "setFixedSizeToMinimum");
+
+    s = createSection("keybindings.tiling.3panel");
+    s->addEntry("SHIFT+MOD1+KP_Left", "moveClientLeft");
+    s->addEntry("SHIFT+MOD1+KP_Right", "moveClientRight");
+    s->addEntry("SHIFT+MOD1+KP_Up", "moveClientUp");
+    s->addEntry("SHIFT+MOD1+KP_Down", "moveClientDown");
+    s->addEntry("CTRL+MOD1+KP_Right", "moveHSplitRight");
+    s->addEntry("CTRL+MOD1+KP_Left", "moveHSplitLeft");
+    s->addEntry("CTRL+MOD1+KP_Down", "moveVSplitDown");
+    s->addEntry("CTRL+MOD1+KP_Up", "moveVSplitUp");
+    s->addEntry("MOD1+e", "togglePrimaryExpanding");
+    s->addEntry("CTRL+MOD1+e", "toggleSecondaryExpanding");
+    s->addEntry("CTRL+MOD1+m", "setPrimarySlaveToMinimum");
+    s->addEntry("SHIFT+MOD1+m", "setSecondarySlaveToMinimum");
+}

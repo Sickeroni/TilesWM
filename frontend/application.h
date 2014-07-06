@@ -66,8 +66,9 @@ public:
 //     static void unmanageClient(Widget *frontend);
     static void runProgram(const char *path);
 //     static Client *activeClient();
-//     static Widget *activeClient();
+    static Widget *activeClient();
 //     static void makeClientActive(Widget *client);
+    static Backend *backend() { return self()->_backend; }
 
 private:
 //     ActionSet *_main_actions = 0;

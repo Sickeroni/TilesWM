@@ -16,7 +16,7 @@ public:
 
     virtual ~ComplexAction() {}
 
-    virtual Parameters *parseParameters(const std::vector<std::string&> &parameters) { return 0; }
+    virtual Parameters *parseParameters(const std::vector<std::string> &parameters) { return 0; }
 };
 
 struct Action

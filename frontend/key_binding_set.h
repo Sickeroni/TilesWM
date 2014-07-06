@@ -3,6 +3,8 @@
 
 #include "action.h"
 
+#include <vector>
+
 class KeyGrabSet;
 class ActionSet;
 
@@ -12,11 +14,12 @@ public:
     struct Binding
     {
         int key_grab_id = 0;
-        Action *action = 0;
+        const Action *action = 0;
         ComplexAction::Parameters *parameters = 0;
     };
 
     KeyBindingSet(const char *config_group, const ActionSet *actions);
+    ~KeyBindingSet();
 
     void clear();
     void createBindings();
@@ -25,8 +28,9 @@ public:
 
 private:
     std::string _config_group;
-    KeyGrabSet *_key_grabs = 0;
     const ActionSet *_actions = 0;
+    std::vector<Binding> _bindings;
+    KeyGrabSet *_key_grabs = 0;
 };
 
 #endif

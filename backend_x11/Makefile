@@ -9,6 +9,7 @@ SRCS += x11_client
 SRCS += x11_application
 SRCS += x11_global
 SRCS += x11_key_grab_set
+SRCS += default_config_values
 
 LIBNAME := backend_x11
 

@@ -2,33 +2,43 @@
 #define __CONFIG_H__
 
 #include <string>
+#include <vector>
 #include <unordered_map>
 
 class Config
 {
 public:
-    void reload() {}
+    struct Entry {
+        std::string key;
+        std::string value;
+    };
 
-    static const std::string &value(const std::string &key) {
-        return valueFromMap(self()->_values, key);
-    }
-//     static const std::string &defaultValue(const std::string &key) {
-//         return valueFromMap(_default_values, key);
-//     }
+    class Section {
+    public:
+        const std::vector<Entry> &entries() const { return _entries; }
+        void addEntry(const std::string &key, const std::string &value);
+
+    private:
+        std::vector<Entry> _entries;
+    };
+
+    ~Config();
+
+    void setDefaults();
+    void reload() {}
+    const Section *section(const std::string &name);
 
     static Config *self() { return _self; }
     static void init();
     static void shutdown();
 
 private:
-    typedef std::unordered_map<std::string, std::string> Map;
 
-    static const std::string &valueFromMap(const Map &map, const std::string &key);
+    void clear();
+    Section *createSection(const std::string &name);
 
-//     Map _values = _default_values;
-    Map _values;
+    std::unordered_map<std::string, Section*> _sections;
 
-    static Map _default_values;
     static Config *_self;
 };
 

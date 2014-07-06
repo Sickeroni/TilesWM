@@ -253,7 +253,8 @@ void X11Client::shutdown()
             it++)
     {
         X11Client *client = it->second;
-        X11Application::frontend()->destroyClientFrontend(client->_client_frontend);
+        if (client->_client_frontend)
+            X11Application::frontend()->destroyClientFrontend(client->_client_frontend);
         client->_client_frontend = 0;
         assert(!client->_widget_frontend);
         client->_widget->reparent(0);
