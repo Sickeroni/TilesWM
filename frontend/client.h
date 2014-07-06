@@ -9,10 +9,11 @@
 
 class Icon;
 
-class Client : public ChildWidget, public ClientFrontend
+class Client final : public ChildWidget, public ClientFrontend
 {
 public:
     Client(ClientBackend *client_backend, bool is_floating);
+    ~Client();
 
     virtual bool isFloating() { return true; }
 
@@ -24,8 +25,6 @@ public:
     void requestClose();
 
 private:
-    ~Client();
-
     virtual void handleGeometryChanged(const Rect &rect) override;
     virtual void handleFocusChanged(bool has_focus) override;
     virtual void handleMap() override;

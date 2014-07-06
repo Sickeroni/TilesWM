@@ -63,7 +63,7 @@ public:
     // helper functions
     static Workspace *activeWorkspace();
     static void manageClient(Client *client);
-//     static void unmanageClient(Widget *frontend);
+    static void unmanageClient(Client *client);
     static void runProgram(const char *path);
     static void runProgram(const std::vector<std::string> &args);
 //     static Client *activeClient();

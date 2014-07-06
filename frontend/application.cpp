@@ -97,7 +97,9 @@ ClientFrontend *Application::createClientFrontend(ClientBackend *backend, bool i
 
 void Application::destroyClientFrontend(ClientFrontend *frontend) 
 {
-    UNIMPLEMENTED
+    Client *client = dynamic_cast<Client*>(frontend);
+    unmanageClient(client);
+    delete client;
 }
 
 int Application::numKeyGrabHandlers()
@@ -157,25 +159,20 @@ void Application::manageClient(Client *client)
         activeWorkspace()->windowManager()->manageClient(client);
 }
 
-// 
-// void Application::unmanageClient(Widget *frontend)
-// {
-//     Client *client = frontend->toClient();
-// 
-//     if (client->parent()) {
-//         if (client->isFloating()) {
-//             client->workspace()->removeChild(client);
-//             assert(!client->parent());
-//         } else  {
-//             assert(0);
-// //             if (Container *container = client->parent()->toContainer())
-// //                  container->removeChild(container->indexOfChild(client));
-// 
-//         }
-//     }
-// 
-//     delete client;
-// }
+void Application::unmanageClient(Client *client)
+{
+    if (client->parent()) {
+        if (client->isFloating()) {
+            client->workspace()->removeChild(client);
+            assert(!client->parent());
+        } else  {
+            assert(0);
+//             if (Container *container = client->parent()->toContainer())
+//                  container->removeChild(container->indexOfChild(client));
+
+        }
+    }
+}
 
 void Application::runProgram(const char *path)
 {
