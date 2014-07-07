@@ -6,17 +6,30 @@ remove comparision with -1
     use >= 0 instead pf > -1
     
     
-class AbstractClientContainer
-{
-public:
-    enum Type {
-        WORKSPACE,
-        CONTAINER
-    };
+
     
-    virtual void removeChild(Client *child) = 0;
+// all windowmanagers are "active" at the same time - only one is shown/mapped and handles input
+// when the shown wm changes, the clients are reparented to the new shown wm
+class StandardClientFrontend: public ClientFrontend
+{
+    vector<ClientInstance*> instances:
+    WidgetBackend *backend_widget;
+    ClientBackend *client_backend; // just the actual client (no frame parent widget)
 };
 
-remove Client::_workspace
+// one instance per wm - should be created by wm (wm may use more specific subclass)
+// acts as frame
+// other names: ClientFrame, ...
+class ClientInstance : public ChildWidget
+{
+    WindowManager *wm;
+    StandardClientFrontend *client_frontend;
 
-Client::_container -> AbstractClientContainer
+    void setActive() {
+        client_frontend->reparent(this);
+    }
+}
+
+maybe: desktop function: add/remove window manager
+
+TODO: mouse drag: ignore caps/numlock modifiers
