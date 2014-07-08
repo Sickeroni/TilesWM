@@ -15,7 +15,6 @@ Workspace::Workspace() : Widget(WORKSPACE),
     _backend = Application::self()->backend()->createWidgetBackend();
     _backend->setFrontend(this);
     _window_manager = mode()->createWindowManager(this);
-//     _window_manager->initShortcuts();
 }
 
 Workspace::~Workspace()

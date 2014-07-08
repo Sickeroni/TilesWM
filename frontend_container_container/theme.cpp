@@ -58,9 +58,6 @@ void drawContainerContainer(ContainerContainer *container, Canvas *canvas)
     if (container->isMinimized())
         title<<" -";
 
-    title<<" Mode: "<<container->workspace()->modeIndex();
-
-
     bool is_active = container->isActive();
 
     canvas->drawText(title.str().c_str(),

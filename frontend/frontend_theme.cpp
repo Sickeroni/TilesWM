@@ -6,6 +6,8 @@
 #include "canvas.h"
 #include "colors.h"
 #include "metrics.h"
+#include "application.h"
+#include "mode.h"
 #include "common.h"
 
 #include <sstream>
@@ -80,7 +82,13 @@ void drawWorkspace(Workspace *workspace, Canvas *canvas)
     rect.setPos(0, 0);
     canvas->begin();
     canvas->erase(rect);
-    canvas->drawText("--------------- Workspace ---------------", rect, 0x00FF00);
+
+    const std::string &mode_name = Application::self()->mode(workspace->modeIndex())->name();
+
+    std::stringstream title;
+    title<<"Mode: "<<mode_name<<" ("<<(workspace->modeIndex() + 1)<<"/"<<Application::self()->numModes()<<")";
+
+    canvas->drawText(title.str().c_str(), rect, 0x00FF00);
     canvas->end();
 }
 
