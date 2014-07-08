@@ -37,6 +37,7 @@ public:
     virtual WidgetBackend *createWidgetBackend() override;
     virtual KeyGrabSet *createKeyGrabSet() override;
     virtual void getMonitorSize(int &w, int &h) override;
+    virtual Icon *loadImage(std::string filename) override;
 
     bool init();
     void shutdown();

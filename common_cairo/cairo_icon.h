@@ -9,10 +9,13 @@
 class CairoIcon final : public Icon
 {
 public:
+    CairoIcon(Cairo::RefPtr<Cairo::ImageSurface> surface);
     CairoIcon(const unsigned long *argb32_data, int width, int height);
     CairoIcon(const CairoIcon &other);
     CairoIcon &operator=(const CairoIcon &other);
     ~CairoIcon() {}
+
+    virtual Icon *scale(int width, int height) override;
 
     const Cairo::RefPtr<Cairo::Surface> &surface() { return _surface; }
 

@@ -29,3 +29,16 @@ Icon *X11GraphicsSystemCairo::createIcon(int width, int height, Drawable parent,
 {
     return new CairoIcon(argb_data, width, height);
 }
+
+Icon *X11GraphicsSystemCairo::loadImage(std::string filename)
+{
+    try {
+        Cairo::RefPtr<Cairo::ImageSurface> surface = Cairo::ImageSurface::create_from_png(filename);
+        return new CairoIcon(surface);
+    }
+    catch(Cairo::logic_error error) {
+        debug<<"error loading"<<filename;
+    }
+
+    return 0;
+}

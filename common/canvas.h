@@ -5,9 +5,7 @@
 
 #include <string>
 
-
 class Icon;
-
 
 class Canvas
 {

@@ -9,6 +9,9 @@ public:
     Icon &operator=(const Icon &other);
     virtual ~Icon() {}
 
+    // create a scaled copy
+    virtual Icon *scale(int width, int height) { return 0; }
+
     int width() { return _width; }
     int height() { return _height; }
 

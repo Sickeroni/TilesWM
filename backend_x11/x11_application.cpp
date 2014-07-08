@@ -391,6 +391,12 @@ KeyGrabSet *X11Application::createKeyGrabSet()
     return new X11KeyGrabSet();
 }
 
+Icon *X11Application::loadImage(std::string filename)
+{
+    printvar(filename);
+    return _graphics_system->loadImage(filename);
+}
+
 Atom X11Application::atom(const char *name)
 {
     Atom &value = _atoms[name];

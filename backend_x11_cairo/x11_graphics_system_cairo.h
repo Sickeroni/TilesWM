@@ -11,6 +11,7 @@ public:
 
     virtual Canvas *createCanvas(Drawable drawable, int width, int height) override;
     virtual Icon *createIcon(int width, int height, Drawable parent, const unsigned long *argb_data, uint32_t bg_color) override;
+    virtual Icon *loadImage(std::string filename) override;
 
 private:
     Display *_dpy = 0;
