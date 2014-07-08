@@ -24,20 +24,6 @@ Container::~Container()
     _backend = 0;
 }
 
-// Container::Orientation Container::orientation()
-// {
-//     UNIMPLEMENTED
-//     assert(0);
-// //     if (!_parent)
-// //         return HORIZONTAL;
-// //     else if (_parent->isWorkspace())
-// //         return _parent->toWorkspace()->orientation();
-// //     else if (parent()->isMinimized())
-// //         return parent()->orientation();
-// //     else
-// //         return parent()->isHorizontal() ? VERTICAL : HORIZONTAL;
-// }
-
 bool Container::isAncestorOf(Container *container) const
 {
     for (Container *parent = container->parentContainer(); parent; parent = parent->parentContainer()) {

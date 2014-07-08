@@ -26,15 +26,6 @@ ClientContainer::~ClientContainer()
     _layout = 0;
 }
 
-// void ClientContainer::clear()
-// {
-//     _active_child_index = INVALID_INDEX;
-// 
-//     for(Client *child : _children)
-//         child->setContainer(0);
-//     _children.clear();
-// }
-
 ContainerLayout *ClientContainer::getLayout()
 {
     return _layout;
@@ -70,16 +61,6 @@ int ClientContainer::indexOfChild(const Client *child)
     assert(false);
     abort();
 }
-
-// void ClientContainer::handleClientMap(Client *client)
-// {
-//     if (!activeClient()) {
-//         int index = indexOfChild(client);
-//         assert(index != INVALID_INDEX);
-//         setActiveChild(index);
-//     }
-//     getLayout()->layoutContents();
-// }
 
 void ClientContainer::setActiveChild(int index)
 {

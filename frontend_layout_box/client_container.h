@@ -47,8 +47,6 @@ public:
         return activeChildIndex() != INVALID_INDEX ? child(activeChildIndex()) : 0;
     }
 
-//     void handleClientMap(Client *client);
-//     void handleClientUnmap(Client *client);
     void handleClientFocusChange(Client *client);
     void handleClientSizeHintChanged(Client *client);
 
