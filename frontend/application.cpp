@@ -122,25 +122,10 @@ void Application::reloadConfig()
     //FIXME: foreach(Workspace *w) w->windowManager()->reloadShortcuts()
 }
 
-// const ShortcutSet *Application::mainShortcuts()
-// {
-//     return _main_actions->shortcuts();
-// }
-
 Workspace *Application::activeWorkspace()
 {
     return self()->activeMonitor()->workspace();
 }
-
-#if 0
-Container *Application::activeContainer()
-{
-    if (self()->activeLayer() != LAYER_TILED)
-        return 0;
-    else
-        return activeWorkspace()->windowManager()->activeContainer();
-}
-#endif
 
 void Application::manageClient(Client *client)
 {
@@ -209,13 +194,13 @@ void Application::runProgram(const std::vector<std::string> &args)
         cerr<<"ERROR: running "<<program<<": Can't fork.";
 }
 
-// Widget *Application::activeClient()
-// {
-//     if (self()->activeLayer() == LAYER_TILED)
-//         return activeWorkspace()->windowManager()->activeClient();
-//     else
-//         return activeWorkspace()->activeFloatingClient();
-// }
+Client *Application::activeClient()
+{
+    if (self()->activeLayer() == LAYER_TILED)
+        return activeWorkspace()->windowManager()->activeClient();
+    else
+        return activeWorkspace()->activeFloatingClient();
+}
 
 void Application::makeClientActive(Client *client)
 {
@@ -232,11 +217,6 @@ void Application::makeClientActive(Client *client)
         }
     }
 }
-
-// void Application::setFocus(Client *client)
-// {
-//     client->setFocus();
-// }
 
 void Application::setActiveMonitor(Monitor *monitor)
 {

@@ -6,7 +6,7 @@
 #include "key_grab_set.h"
 #include "workspace.h"
 #include "window_manager.h"
-// #include "client.h"
+#include "client.h"
 #include "backend.h"
 #include "common.h"
 
@@ -69,21 +69,19 @@ void CommonActions::performAction(int id)
             Application::runProgram("/usr/bin/xterm");
             break;
         case ACTION_CHANGE_MODE:
-            assert(0);
-//             {
-//                 size_t mode = Application::activeWorkspace()->modeIndex();
-//                 mode++;
-//                 if (mode >= Application::self()->numModes())
-//                     mode = 0;
-//
-//                 Application::activeWorkspace()->setMode(mode);
-//             }
+            {
+                size_t mode = Application::activeWorkspace()->modeIndex();
+                mode++;
+                if (mode >= Application::self()->numModes())
+                    mode = 0;
+
+                Application::activeWorkspace()->setMode(mode);
+            }
             break;
         case ACTION_CLOSE_ACTIVE_CLIENT:
-            assert(0);
-//             if (Widget *c = Application::activeClient()) {
-//                 c->toClient()->requestClose();
-//             }
+            if (Client *c = Application::activeClient()) {
+                c->requestClose();
+            }
             break;
         case ACTION_FOCUS_ACTIVE_CLIENT:
             Application::self()->focusActiveClient();
@@ -105,28 +103,6 @@ const KeyBindingSet *CommonActions::keyBindings()
     return &_key_bindings;
 }
 
-#if 0
-void CommonActions::initShortcuts()
-{
-    createAction("reloadConfig", ACTION_RELOAD_CONFIG);
-    createAction("toggleMaximize", ACTION_TOGGLE_MAXIMIZE);
-    createAction("layout", ACTION_LAYOUT);
-    createAction("rotate", ACTION_ROTATE);
-    createAction("focusLeft", ACTION_FOCUS_LEFT);
-    createAction("focusRight", ACTION_FOCUS_RIGHT);
-    createAction("focusUp", ACTION_FOCUS_UP);
-    createAction("focusDown", ACTION_FOCUS_DOWN);
-    createAction("redraw", ACTION_REDRAW);
-    createAction("focusPrevClient", ACTION_FOCUS_PREV_CLIENT);
-    createAction("focusNextClient", ACTION_FOCUS_NEXT_CLIENT);
-    createAction("runProgram", ACTION_RUN_PROGRAM);
-    createAction("runTerminal", ACTION_RUN_TERMINAL);
-    createAction("changeMode", ACTION_CHANGE_MODE);
-    createAction("closeActiveClient", ACTION_CLOSE_ACTIVE_CLIENT);
-    createAction("focusActiveClient", ACTION_FOCUS_ACTIVE_CLIENT);
-    createAction("quit", ACTION_QUIT);
-}
-#endif
 
 #if 0
 void CommonActions::handleShortcut(int id)

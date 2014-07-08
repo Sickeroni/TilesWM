@@ -39,9 +39,6 @@ public:
 
     Monitor *activeMonitor() { return _monitor; }
     void setActiveMonitor(Monitor *monitor);
-//     virtual void requestQuit() = 0;
-//     virtual WidgetBackend *createWidgetBackend() = 0;
-//     virtual ShortcutSet *createShortcutSet(std::string name) = 0;
     Workspace *createWorkspace();
 
     void setFocus(Client *client);
@@ -50,7 +47,6 @@ public:
     void setActiveLayer(Layer layer) {
         _active_layer = layer;
     }
-//     const ShortcutSet *mainShortcuts();
     Mode *mode(size_t index) {
         assert(index < _modes->size());
         return _modes->at(index);
@@ -66,8 +62,7 @@ public:
     static void unmanageClient(Client *client);
     static void runProgram(const char *path);
     static void runProgram(const std::vector<std::string> &args);
-//     static Client *activeClient();
-    static Widget *activeClient();
+    static Client *activeClient();
     static void makeClientActive(Client *client);
     static Backend *backend() { return self()->_backend; }
 
