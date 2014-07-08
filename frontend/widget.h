@@ -22,7 +22,6 @@ public:
     virtual ChildWidget *toChildWidget() { return 0; }
 
     const Rect &rect() const { return _rect; }
-    void setRect(const Rect &rect);
     int width() const { return _rect.w; }
     int height() const { return _rect.h; }
     void setMapped(bool mapped);
@@ -33,6 +32,8 @@ public:
 
     template <class T>
     T* to() { return dynamic_cast<T*>(this); }
+
+    virtual void setRect(const Rect &rect);
 
 protected:
     Widget(Type type) : _type(type) {}

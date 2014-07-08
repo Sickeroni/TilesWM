@@ -6,6 +6,7 @@
 #include "application.h"
 #include "mode.h"
 #include "backend.h"
+#include "icon.h"
 #include "common.h"
 
 Workspace::Workspace() : Widget(WORKSPACE),
@@ -15,6 +16,7 @@ Workspace::Workspace() : Widget(WORKSPACE),
     _backend = Application::self()->backend()->createWidgetBackend();
     _backend->setFrontend(this);
     _window_manager = mode()->createWindowManager(this);
+    _background = Application::self()->backend()->loadImage("wallpaper.png");
 }
 
 Workspace::~Workspace()
@@ -25,6 +27,19 @@ Workspace::~Workspace()
     _window_manager = 0;
     delete _backend;
     _backend = 0;
+    delete _background;
+    _background = 0;
+    delete _background_scaled;
+    _background_scaled = 0;
+}
+
+void Workspace::setRect(const Rect &rect)
+{
+    Widget::setRect(rect);
+    if (_background) {
+        delete _background_scaled;
+        _background_scaled = _background->scale(_rect.w, _rect.h);
+    }
 }
 
 void Workspace::layoutContents()

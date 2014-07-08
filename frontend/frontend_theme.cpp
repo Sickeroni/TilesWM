@@ -81,7 +81,11 @@ void drawWorkspace(Workspace *workspace, Canvas *canvas)
     Rect rect = workspace->rect();
     rect.setPos(0, 0);
     canvas->begin();
-    canvas->erase(rect);
+
+    if (workspace->background())
+        canvas->drawIcon(workspace->background(), 0, 0);
+    else
+        canvas->erase(rect);
 
     const std::string &mode_name = Application::self()->mode(workspace->modeIndex())->name();
 
