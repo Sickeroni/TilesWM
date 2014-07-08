@@ -2,7 +2,9 @@
 
 #include "backend_x11/x11_application.h"
 #ifndef FRONTEND_DUMMY
-#include "frontend/application.h"
+#include "application.h"
+#include "mode_simple.h"
+#include "mode_default.h"
 #endif
 
 #include "common.h"
@@ -27,10 +29,15 @@ public:
 
 int main()
 {
+    std::vector<Mode*> modes;
+
 #ifdef FRONTEND_DUMMY
-    FrontendDummy frontend;
+    FrontendDummy frontend(&modes);
 #else
-    Application frontend;
+//     modes.push_back(new ModeDefault());
+//     modes.push_back(new Mode3Panel());
+    modes.push_back(new ModeSimple());
+    Application frontend(&modes);
 #endif
 
     X11Application backend(&frontend);
@@ -43,6 +50,12 @@ int main()
     cout << "returned from main loop - shutting down ...\n";
 
     backend.shutdown();
+
+#ifndef FRONTEND_DUMMY
+    for(size_t i = 0; i < modes.size(); i++)
+        delete modes[i];
+    modes.clear();
+#endif
 
     cout << "shutdown finished. goodbye.\n";
 

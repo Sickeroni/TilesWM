@@ -1,7 +1,6 @@
 #include "client_container.h"
 
 #include "client.h"
-#include "container_container.h"
 #include "client_container_layout.h"
 #include "client_container_theme.h"
 #include "widget_backend.h"

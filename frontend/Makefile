@@ -20,6 +20,6 @@ SRCS += frontend_theme
 
 LIBNAME := frontend
 
-CXXFLAGS += -I$(TOP_DIR)/common -I$(TOP_DIR)/frontend -I$(TOP_DIR)/frontend_modes
+CXXFLAGS += -I$(TOP_DIR)/common
 
 include $(TOP_DIR)/static_library.mk

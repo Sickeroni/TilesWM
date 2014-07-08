@@ -8,6 +8,9 @@ SRCS += mode_simple
 
 LIBNAME := frontend_modes
 
-CXXFLAGS += -I$(TOP_DIR)/common -I$(TOP_DIR)/frontend -I$(TOP_DIR)/frontend_modes -I$(TOP_DIR)/frontend_layout_box
+CXXFLAGS += -I$(TOP_DIR)/common
+CXXFLAGS += -I$(TOP_DIR)/frontend
+CXXFLAGS += -I$(TOP_DIR)/frontend_container
+CXXFLAGS += -I$(TOP_DIR)/frontend_container_container
 
 include $(TOP_DIR)/static_library.mk

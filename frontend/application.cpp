@@ -5,9 +5,6 @@
 #include "common_actions.h"
 #include "client.h"
 #include "mode.h"
-#include "mode_default.h"
-// #include "mode_3panel.h"
-#include "mode_simple.h"
 #include "window_manager.h"
 #include "backend.h"
 #include "config.h"
@@ -20,7 +17,8 @@
 
 Application *Application::_self = 0;
 
-Application::Application()
+Application::Application(const std::vector<Mode*> *modes) :
+    _modes(modes)
 {
     if (_self)
         abort();
@@ -38,13 +36,9 @@ void Application::init(Backend *backend)
 
     _common_actions = new CommonActions();
 
-//     _modes.push_back(new ModeDefault());
-//     _modes.push_back(new Mode3Panel());
-    _modes.push_back(new ModeSimple());
-
     _common_actions->createKeyBindings();
 
-    if (_default_mode >= _modes.size())
+    if (_default_mode >= _modes->size())
         _default_mode = 0;
 
     int monitor_w, monitor_h;
@@ -65,10 +59,6 @@ void Application::shutdown()
         delete w;
     }
     _workspaces.clear();
-
-    for(size_t i = 0; i < _modes.size(); i++)
-        delete _modes[i];
-    _modes.clear();
 
     delete _common_actions;
     _common_actions = 0;

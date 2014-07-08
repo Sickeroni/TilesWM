@@ -26,7 +26,7 @@ public:
         LAYER_TILED
     };
 
-    Application();
+    Application(const std::vector<Mode*> *modes);
     ~Application();
 
     virtual void init(Backend *backend) override;
@@ -52,11 +52,11 @@ public:
     }
 //     const ShortcutSet *mainShortcuts();
     Mode *mode(size_t index) {
-        assert(index < _modes.size());
-        return _modes[index];
+        assert(index < _modes->size());
+        return _modes->at(index);
     }
     size_t defaultMode() { return _default_mode; }
-    size_t numModes() { return _modes.size(); }
+    size_t numModes() { return _modes->size(); }
 
     static Application *self() { return _self; }
 
@@ -73,8 +73,8 @@ public:
 
 private:
 //     ActionSet *_main_actions = 0;
+    const std::vector<Mode*> *_modes = 0;
     CommonActions *_common_actions = 0;
-    std::vector<Mode*> _modes;
     size_t _default_mode = 0;
     Layer _active_layer = LAYER_FLOATING;
 

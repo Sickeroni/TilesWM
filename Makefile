@@ -2,8 +2,18 @@ TOP_DIR := .
 
 include $(TOP_DIR)/config.mk
 
-COMMON_DEPS := $(BUILD_DIR)/libfrontend.a $(BUILD_DIR)/libfrontend_modes.a $(BUILD_DIR)/libfrontend_layout_box.a $(BUILD_DIR)/libcommon.a
-COMMON_LIBS := -lfrontend -lfrontend_modes -lfrontend_layout_box -lcommon
+COMMON_DEPS :=
+COMMON_DEPS += $(BUILD_DIR)/libfrontend.a
+COMMON_DEPS += $(BUILD_DIR)/libfrontend_modes.a
+COMMON_DEPS += $(BUILD_DIR)/libfrontend_container.a
+COMMON_DEPS += $(BUILD_DIR)/libcommon.a
+
+COMMON_LIBS :=
+COMMON_LIBS += -lfrontend_modes
+COMMON_LIBS += -lfrontend_container
+COMMON_LIBS += -lfrontend
+COMMON_LIBS += -lcommon
+
 # COMMON_DEPS := $(BUILD_DIR)/libcommon.a
 # COMMON_LIBS := -lcommon
 
@@ -20,6 +30,9 @@ DEFAULT_TARGETS :=
 DEFAULT_TARGETS += $(BUILD_DIR)/ttmwm
 # DEFAULT_TARGETS += $(BUILD_DIR)/ttmwm-cairo
 
+
+CXXFLAGS += -I$(TOP_DIR)/frontend
+CXXFLAGS += -I$(TOP_DIR)/frontend_modes
 
 .PHONY : all
 all: $(DEFAULT_TARGETS)
