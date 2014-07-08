@@ -13,6 +13,7 @@ public:
 
     virtual Client *activeClient() { return 0; }
     virtual void manageClient(Client *client) override {
+        client->setIsFloating(true);
         workspace()->addChild(client);
     }
     virtual void layout() override {}

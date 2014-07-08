@@ -172,7 +172,7 @@ void X11Client::setRect(const Rect &rect)
         r.h = 10;
 #endif
     Rect client_rect;
-    Theme::calcClientClientRect(isFloating(), maxTextHeight(), _frame->rect(), client_rect);
+    Theme::calcClientClientRect(hasDecoration(), maxTextHeight(), _frame->rect(), client_rect);
     limitClientRect(client_rect);
 
     _widget->setRect(client_rect);
@@ -465,14 +465,14 @@ void X11Client::manage()
     } else {
         XAddToSaveSet(dpy(), _widget->wid());
 
+        printvar((isDialog() || _is_modal));
+        _client_frontend = X11Application::frontend()->createClientFrontend(this, isDialog() || _is_modal);
+
         Rect client_rect;
-        Theme::calcClientClientRect(isFloating(), maxTextHeight(), _frame->rect(), client_rect);
+        Theme::calcClientClientRect(hasDecoration(), maxTextHeight(), _frame->rect(), client_rect);
 
         _widget->reparent(_frame, client_rect.x, client_rect.y);
         _widget->map();
-
-        printvar((isDialog() || _is_modal));
-        _client_frontend = X11Application::frontend()->createClientFrontend(this, isDialog() || _is_modal);
 
         const uint32_t state[2] = {
             STATE_NORMAL, None
@@ -525,6 +525,11 @@ bool X11Client::isFloating()
     return !_client_frontend || _client_frontend->isFloating();
 }
 
+bool X11Client::hasDecoration()
+{
+    return !_client_frontend || _client_frontend->hasDecoration();
+}
+
 void X11Client::handleConfigureRequest(const XConfigureRequestEvent &ev)
 {
     debug;
@@ -565,7 +570,7 @@ void X11Client::handleConfigureRequest(const XConfigureRequestEvent &ev)
 
             // new frame rect based on requested client rect
             Rect frame_rect;
-            Theme::calcClientFrameRect(isFloating(), maxTextHeight(), client_rect, frame_rect);
+            Theme::calcClientFrameRect(hasDecoration(), maxTextHeight(), client_rect, frame_rect);
             limitFrameRect(frame_rect);
 
 //             frame_rect.setPos(client_rect.x, client_rect.y);
@@ -578,7 +583,7 @@ void X11Client::handleConfigureRequest(const XConfigureRequestEvent &ev)
 
             if (_widget->isMapped()) {
                 // the client rect needs to be positioned in respect to the frame rect
-                Theme::calcClientClientRect(isFloating(), maxTextHeight(), frame_rect, client_rect);
+                Theme::calcClientClientRect(hasDecoration(), maxTextHeight(), frame_rect, client_rect);
                 changes.x = client_rect.x;
                 changes.y = client_rect.y;
 
@@ -597,6 +602,23 @@ void X11Client::handleConfigureRequest(const XConfigureRequestEvent &ev)
             if (ev.value_mask & CWBorderWidth)
                 _widget->configure(CWBorderWidth, changes);
         }
+    }
+}
+
+void X11Client::updateGeometry()
+{
+    CriticalSection sec;
+
+    Rect client_rect;
+    Theme::calcClientClientRect(hasDecoration(), maxTextHeight(), _frame->rect(), client_rect);
+
+    if (isFloating()) {
+        Rect frame_rect;
+        Theme::calcClientFrameRect(hasDecoration(), maxTextHeight(), client_rect, frame_rect);
+        _widget->move(client_rect.x, client_rect.y);
+        _frame->resize(frame_rect.w, frame_rect.h);
+    } else {
+        _widget->setRect(client_rect);
     }
 }
 
@@ -1053,7 +1075,7 @@ bool X11Client::handleEvent(const XEvent &ev)
                 limitClientRect(client_rect);
 
                 Rect frame_rect;
-                Theme::calcClientFrameRect(_dragged->isFloating(), _dragged->maxTextHeight(), client_rect, frame_rect);
+                Theme::calcClientFrameRect(_dragged->hasDecoration(), _dragged->maxTextHeight(), client_rect, frame_rect);
                 limitFrameRect(frame_rect);
 
                 _dragged->_frame->resize(frame_rect.w, frame_rect.h);

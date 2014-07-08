@@ -7,6 +7,7 @@ class ClientFrontend
 {
 public:
     virtual bool isFloating() = 0;
+    virtual bool hasDecoration() = 0;
     virtual void handleGeometryChanged(const Rect &rect) = 0;
     virtual void handleFocusChanged(bool has_focus) = 0;
     virtual void handleMap() = 0;

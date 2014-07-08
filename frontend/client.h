@@ -16,10 +16,13 @@ public:
     Client(ClientBackend *client_backend, bool is_floating);
     ~Client();
 
-    virtual bool isFloating() { return false; }
-
-    bool hasDecoration() {
+    virtual bool isFloating() override { return _is_floating; }
+    virtual bool hasDecoration() override {
         return isFloating();
+    }
+    void setIsFloating(bool is_floating) {
+        _is_floating = is_floating;
+        _client_backend->updateGeometry();
     }
     const std::string &name() {
         return _client_backend->name();
@@ -69,6 +72,7 @@ private:
 
     void handleSizeHintsChanged();
 
+    bool _is_floating = false;
     ClientBackend *_client_backend = 0;
 };
 

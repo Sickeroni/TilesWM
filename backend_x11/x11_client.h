@@ -52,6 +52,7 @@ public:
     virtual Icon *icon() override { return _icon; }
     virtual void requestClose() override;
     virtual void raise() override;
+    virtual void updateGeometry() override;
     virtual const std::string &name() override { return _name; }
     virtual const std::string &className() override { return _class; }
     virtual const std::string &iconName() override { return _icon_name; }
@@ -111,6 +112,7 @@ private:
     X11Client();
 
     bool isFloating();
+    bool hasDecoration();
     bool isManaged() {
         return _client_frontend != 0;
     }

@@ -28,6 +28,7 @@ public:
     virtual Icon *icon() = 0;
     virtual void requestClose() = 0;
     virtual void raise() = 0;
+    virtual void updateGeometry() = 0;
 
     virtual const std::string &name() = 0;
     virtual const std::string &className() = 0;
