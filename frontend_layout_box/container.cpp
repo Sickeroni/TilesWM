@@ -1,7 +1,7 @@
 #include "container.h"
 
+#include "container_layout.h"
 #include "client_container.h"
-#include "container_container.h"
 #include "application.h"
 #include "backend.h"
 #include "widget_backend.h"
@@ -11,7 +11,7 @@
 #include <stdlib.h>
 
 
-Container::Container(Type type) : ChildWidget(OTHER),
+Container::Container(Type type) : ChildWidget(Widget::OTHER),
     _type(type)
 {
     _backend = Application::self()->backend()->createWidgetBackend();
@@ -83,11 +83,6 @@ Client *Container::activeClient()
         return 0;
 }
 
-ContainerContainer *Container::parentContainer()
-{
-    return dynamic_cast<ContainerContainer*>(parent());
-}
-
 ClientContainer *Container::toClientContainer()
 {
     if (isClientContainer())
@@ -96,12 +91,12 @@ ClientContainer *Container::toClientContainer()
         return 0;
 }
 
-ContainerContainer *Container::toContainerContainer()
+void Container::handleSizeHintsChanged(ChildWidget *child)
 {
-    if (isContainerContainer())
-        return static_cast<ContainerContainer*>(this);
+    if (parentContainer())
+        parentContainer()->handleSizeHintsChanged(this);
     else
-        return 0;
+        getLayout()->layoutContents();
 }
 
 void Container::handleClick(int x, int y)

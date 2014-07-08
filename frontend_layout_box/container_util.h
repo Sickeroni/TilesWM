@@ -5,6 +5,8 @@
 
 #include <vector>
 
+class ContainerContainer;
+
 namespace ContainerUtil
 {
     enum Direction {

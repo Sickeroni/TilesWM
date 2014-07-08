@@ -14,7 +14,6 @@ class Widget : public WidgetFrontend
 public:
     enum Type {
         CLIENT,
-//         CONTAINER,
         WORKSPACE,
         OTHER
     };
@@ -31,7 +30,9 @@ public:
     int maxTextHeight() const;
     Client *toClient();
     Workspace *toWorkspace();
-//     Container *toContainer();
+
+    template <class T>
+    T* to() { return dynamic_cast<T*>(this); }
 
 protected:
     Widget(Type type) : _type(type) {}

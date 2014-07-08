@@ -2,6 +2,8 @@
 #define __WINDOW_MANAGER_SIMPLE_H__
 
 #include "window_manager.h"
+#include "workspace.h"
+#include "client.h"
 
 class WindowManagerSimple : public WindowManager
 {
@@ -10,7 +12,9 @@ public:
         WindowManager(workspace, action_set_name) {}
 
     virtual Client *activeClient() { return 0; }
-    virtual void manageClient(Client *client) override {}
+    virtual void manageClient(Client *client) override {
+        workspace()->addChild(client);
+    }
     virtual void layout() override {}
     virtual void makeClientActive(Client *client) {}
 };

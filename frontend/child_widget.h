@@ -43,6 +43,9 @@ public:
     Widget *parent() { return _parent; }
     void reparent(Widget *parent, WidgetBackend *parent_backend);
 
+    template <class T>
+    T* parentTo() { return dynamic_cast<T*>(_parent); }
+
     Workspace *workspace();
 //     bool isAncestorOf(ChildWidget *container) const;
 

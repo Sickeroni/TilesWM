@@ -11,8 +11,8 @@ namespace ContainerUtil
 
 int hierarchyDepth(Container *container)
 {
-    if (container->parentContainer())
-        return hierarchyDepth(container->parentContainer()) + 1;
+    if (ContainerContainer *parent = container->parentTo<ContainerContainer>())
+        return hierarchyDepth(parent) + 1;
     else
         return 0;
 }
@@ -20,7 +20,7 @@ int hierarchyDepth(Container *container)
 ClientContainer *createSibling(Container *container, bool prepend)
 {
     ClientContainer *new_sibling = 0;
-    ContainerContainer *parent = container->parentContainer();
+    ContainerContainer *parent = container->parentTo<ContainerContainer>();
 
     if (parent) {
         new_sibling = new ClientContainer();
@@ -36,7 +36,7 @@ ClientContainer *createSibling(Container *container, bool prepend)
 
 ClientContainer *getSibling(Container *container, bool get_prev, bool create_new_if_not_existing)
 {
-    ContainerContainer *parent = container->parentContainer();
+    ContainerContainer *parent = container->parentTo<ContainerContainer>();
     if (!parent)
         return 0;
 
@@ -56,7 +56,7 @@ ClientContainer *splitContainer(ClientContainer *container, bool prepend)
 {
     static const int max_hierarchy_depth = 1;
 
-    ContainerContainer *parent = container->parentContainer();
+    ContainerContainer *parent = container->parentTo<ContainerContainer>();
 
     if (!parent)
         return 0;
@@ -87,8 +87,8 @@ ClientContainer *splitContainer(ClientContainer *container, bool prepend)
 void emptyContainer(ContainerContainer *container, std::vector<Client*> &clients)
 {
     while(!container->isEmpty()) {
-        if (container->child(0)->isContainerContainer())
-            emptyContainer(container->child(0)->toContainerContainer(), clients);
+        if (ContainerContainer *c = container->child(0)->to<ContainerContainer>())
+            emptyContainer(c, clients);
         else
             container->child(0)->toClientContainer()->removeChildren(clients);
         delete container->removeChild(0);
@@ -100,18 +100,18 @@ void deleteEmptyChildren(ContainerContainer *container)
     for (int i = 0; i < container->numElements(); ) {
         Container *child = container->child(i);
 
-        if (child->isContainerContainer()) {
+        if (ContainerContainer *child_container_container = child->to<ContainerContainer>()) {
             // recurse
-            deleteEmptyChildren(child->toContainerContainer());
+            deleteEmptyChildren(child_container_container);
 
             // dissolve child containers with only one child
             if (child->numElements() == 1) {
-                Container *c = child->toContainerContainer()->removeChild(0);
-                assert(c->isClientContainer());
+                Container *child_child = child_container_container->removeChild(0);
+                assert(child_child->isClientContainer());
 
-                container->replaceChild(i, c);
+                container->replaceChild(i, child_child);
                 delete child;
-                child = c;
+                child = child_child;
             }
         }
 

@@ -38,9 +38,9 @@ void Application::init(Backend *backend)
 
     _common_actions = new CommonActions();
 
-    _modes.push_back(new ModeDefault());
+//     _modes.push_back(new ModeDefault());
 //     _modes.push_back(new Mode3Panel());
-//     _modes.push_back(new ModeSimple());
+    _modes.push_back(new ModeSimple());
 
     _common_actions->createKeyBindings();
 

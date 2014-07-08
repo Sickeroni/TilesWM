@@ -8,14 +8,13 @@
 class Client;
 class ContainerLayout;
 class ClientContainer;
-class ContainerContainer;
 
 class Container : public ChildWidget
 {
 public:
     enum Type {
-        CONTAINER,
         CLIENT,
+        OTHER
     };
 
     enum Orientation {
@@ -56,15 +55,15 @@ public:
     }
     Orientation orientation() { return _orientation; }
 
-    ContainerContainer *parentContainer();
+    Container *parentContainer() { return parentTo<Container>(); }
 
     bool isAncestorOf(Container *container) const;
 
     Type type() const { return _type; }
-    bool isContainerContainer() const { return _type == CONTAINER; }
     bool isClientContainer() const { return _type == CLIENT; }
     ClientContainer *toClientContainer();
-    ContainerContainer *toContainerContainer();
+
+    void handleSizeHintsChanged(ChildWidget *child);
 
 protected:
     Container(Type type);

@@ -10,7 +10,7 @@
 #include <stdlib.h>
 
 
-ContainerContainer::ContainerContainer() : Container(CONTAINER),
+ContainerContainer::ContainerContainer() : Container(OTHER),
 //     _dirty(true)
     _layout(new ContainerContainerLayout(this))
 {
@@ -142,14 +142,6 @@ ContainerLayout *ContainerContainer::getLayout()
     return _layout;
 }
 
-void ContainerContainer::handleSizeHintsChanged(Container *child)
-{
-    if (parentContainer())
-        parentContainer()->handleSizeHintsChanged(this);
-    else
-        getLayout()->layoutContents();
-}
-
 ClientContainer *ContainerContainer::activeClientContainer()
 {
     if (Container *active = activeChild()) {
@@ -176,19 +168,19 @@ void ContainerContainer::setMinimizeMode(MinimizeMode mode)
         case MINIMIZE_NONE:
         case MINIMIZE_ALL:
             for(Container *child : _children) {
-                if (child->isContainerContainer())
-                    child->toContainerContainer()->setMinimizeMode(mode);
-                else
+                if (child->isClientContainer())
                     child->toClientContainer()->setMinimized(mode == MINIMIZE_ALL);
+                else
+                    child->to<ContainerContainer>()->setMinimizeMode(mode);
             }
             break;
         case MINIMIZE_INACTIVE:
             for(Container *child : _children) {
-                if (child->isContainerContainer())
-                    child->toContainerContainer()->setMinimizeMode(
-                        (active_child == child) ? MINIMIZE_INACTIVE : MINIMIZE_ALL);
-                else
+                if (child->isClientContainer())
                     child->toClientContainer()->setMinimized(active_child != child);
+                else
+                    child->to<ContainerContainer>()->setMinimizeMode(
+                        (active_child == child) ? MINIMIZE_INACTIVE : MINIMIZE_ALL);
             }
             break;
     }
@@ -203,17 +195,18 @@ void ContainerContainer::applyMinimizeMode(Container *child)
     switch (_minimize_mode) {
         case MINIMIZE_NONE:
         case MINIMIZE_ALL:
-            if (child->isContainerContainer())
-                child->toContainerContainer()->setMinimizeMode(_minimize_mode);
-            else
+            if (child->isClientContainer())
                 child->toClientContainer()->setMinimized(_minimize_mode == MINIMIZE_ALL);
+            else
+                child->to<ContainerContainer>()->setMinimizeMode(_minimize_mode);
             break;
         case MINIMIZE_INACTIVE:
-            if (child->isContainerContainer())
-                child->toContainerContainer()->setMinimizeMode(
-                    is_active ? MINIMIZE_INACTIVE : MINIMIZE_ALL);
-            else
+            if (child->isClientContainer())
                 child->toClientContainer()->setMinimized(!is_active);
+            else
+                child->to<ContainerContainer>()->setMinimizeMode(
+                    is_active ? MINIMIZE_INACTIVE : MINIMIZE_ALL);
+
             break;
     }
 
