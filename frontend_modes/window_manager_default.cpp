@@ -113,6 +113,14 @@ void WindowManagerDefault::manageClient(Client *client)
     _root_container->activeClientContainer()->addChild(client);
 }
 
+void WindowManagerDefault::unmanageClient(Client *client)
+{
+    assert(client->workspace() == workspace());
+
+    ClientContainer *container = client->parentTo<ClientContainer>();
+    container->removeChild(client);
+}
+
 void WindowManagerDefault::layout()
 {
 //     _root_container->setRect(Rect(0, 0, workspace()->rect().w, workspace()->rect().h));

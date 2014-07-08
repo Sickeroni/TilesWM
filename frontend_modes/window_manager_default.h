@@ -14,6 +14,7 @@ public:
 
     virtual void layout() override;
     virtual void manageClient(Client *client) override;
+    virtual void unmanageClient(Client *client) override;
     virtual Client *activeClient() override;
     virtual void makeClientActive(Client *client) override;
 

@@ -17,6 +17,7 @@ public:
     virtual Client *activeClient() = 0;
 //     virtual Container *activeContainer() = 0;
     virtual void manageClient(Client *client) = 0;
+    virtual void unmanageClient(Client *client) = 0;
     virtual void layout() = 0;
     virtual void makeClientActive(Client *client) = 0;
     // FIXME remove ?

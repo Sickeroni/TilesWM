@@ -159,10 +159,7 @@ void Application::unmanageClient(Client *client)
             client->workspace()->removeChild(client);
             assert(!client->parent());
         } else  {
-            assert(0);
-//             if (Container *container = client->parent()->toContainer())
-//                  container->removeChild(container->indexOfChild(client));
-
+            client->workspace()->windowManager()->unmanageClient(client);
         }
     }
 }

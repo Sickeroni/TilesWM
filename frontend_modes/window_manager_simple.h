@@ -16,6 +16,10 @@ public:
         client->setIsFloating(true);
         workspace()->addChild(client);
     }
+    virtual void unmanageClient(Client *client) override {
+        client->setIsFloating(false);
+        workspace()->removeChild(client);
+    }
     virtual void layout() override {}
     virtual void makeClientActive(Client *client) {}
 };
