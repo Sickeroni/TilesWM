@@ -1,17 +1,31 @@
 #ifndef __CONTAINER_H__
 #define __CONTAINER_H__
 
+#include "child_widget.h"
 #include "rect.h"
-
-#include "container_base.h"
+#include "common.h"
 
 class Client;
 class ContainerLayout;
+class ClientContainer;
+class ContainerContainer;
 
-class Container : public ContainerBase
+class Container : public ChildWidget
 {
 public:
-    ~Container();
+    enum Type {
+        CONTAINER,
+        CLIENT,
+    };
+
+    enum Orientation {
+        HORIZONTAL = 0,
+        VERTICAL = 1
+    };
+
+    virtual ~Container();
+
+    virtual void handleClick(int x, int y);
 
     virtual int numElements() const = 0;
     virtual ClientContainer *activeClientContainer() = 0;
@@ -27,6 +41,11 @@ public:
     int fixedHeight() const { return isMinimized() ? 0 : _fixed_height; }
     void setFixedHeight(int height);
 
+    bool isActive() {
+        UNIMPLEMENTED
+        return false;
+    }
+
     Client *activeClient();
 
     bool isHorizontal() {
@@ -35,29 +54,27 @@ public:
     bool isVertical() {
         return orientation() == VERTICAL;
     }
+    Orientation orientation() { return _orientation; }
 
-    Orientation orientation();
+    ContainerContainer *parentContainer();
 
-    //FIXME
-    // should just return _parent
-    ContainerContainer *parent() { return _parent ? _parent->toContainerContainer() : 0; }
-    //FIXME remove
-    bool hasParent() { return _parent != 0; }
-
-    void reparent(ContainerBase *parent, ContainerWidget *parent_widget);
-
-    Workspace *workspace();
     bool isAncestorOf(Container *container) const;
+
+    Type type() const { return _type; }
+    bool isContainerContainer() const { return _type == CONTAINER; }
+    bool isClientContainer() const { return _type == CLIENT; }
+    ClientContainer *toClientContainer();
+    ContainerContainer *toContainerContainer();
 
 protected:
     Container(Type type);
 
-    ContainerBase *_parent = 0;
-
 private:
-    int _fixed_width;
-    int _fixed_height;
-    bool _is_fixed_size;
+    const Type _type;
+    int _fixed_width = 0;
+    int _fixed_height = 0;
+    bool _is_fixed_size = false;
+    Orientation _orientation = HORIZONTAL;
 };
 
 #endif // __CONTAINER_H__

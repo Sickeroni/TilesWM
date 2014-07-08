@@ -1,9 +1,8 @@
 #include "container_container_layout.h"
 
-#include "theme.h"
 #include "container_container.h"
+#include "container_container_theme.h"
 #include "common.h"
-#include "workspace.h"
 
 ContainerContainerLayout::ContainerContainerLayout(ContainerContainer *container) :
     _container(container)

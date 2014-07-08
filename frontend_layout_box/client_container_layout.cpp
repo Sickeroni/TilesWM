@@ -1,8 +1,8 @@
 #include "client_container_layout.h"
 
 #include "client_container.h"
+#include "client_container_theme.h"
 #include "client.h"
-#include "theme.h"
 
 #include <cmath>
 

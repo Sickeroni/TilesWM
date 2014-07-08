@@ -19,6 +19,8 @@ public:
     ClientContainer();
     virtual ~ClientContainer();
 
+    virtual void draw(Canvas *canvas) override;
+
     virtual int numElements() const override { return _children.size(); }
     virtual ClientContainer *activeClientContainer() override { return this; }
     virtual bool isEmpty() const override { return _children.empty(); }
@@ -39,14 +41,14 @@ public:
     // deparents all children and puts them into <clients>
     void removeChildren(std::vector<Client*> &clients);
     void setMinimized(bool minimized);
-    void clear();
+//     void clear();
 
     Client *activeClient() {
         return activeChildIndex() != INVALID_INDEX ? child(activeChildIndex()) : 0;
     }
 
-    void handleClientMap(Client *client);
-    void handleClientUnmap(Client *client);
+//     void handleClientMap(Client *client);
+//     void handleClientUnmap(Client *client);
     void handleClientFocusChange(Client *client);
     void handleClientSizeHintChanged(Client *client);
 

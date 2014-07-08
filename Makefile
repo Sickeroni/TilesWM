@@ -2,8 +2,8 @@ TOP_DIR := .
 
 include $(TOP_DIR)/config.mk
 
-COMMON_DEPS := $(BUILD_DIR)/libfrontend.a $(BUILD_DIR)/libfrontend_modes.a $(BUILD_DIR)/libcommon.a
-COMMON_LIBS := -lfrontend -lfrontend_modes -lcommon
+COMMON_DEPS := $(BUILD_DIR)/libfrontend.a $(BUILD_DIR)/libfrontend_modes.a $(BUILD_DIR)/libfrontend_layout_box.a $(BUILD_DIR)/libcommon.a
+COMMON_LIBS := -lfrontend -lfrontend_modes -lfrontend_layout_box -lcommon
 # COMMON_DEPS := $(BUILD_DIR)/libcommon.a
 # COMMON_LIBS := -lcommon
 

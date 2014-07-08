@@ -2,13 +2,9 @@
 
 #include "client.h"
 #include "container_container.h"
-#include "container_widget.h"
 #include "client_container_layout.h"
-#include "canvas.h"
-#include "workspace.h"
-#include "icon.h"
-#include "colors.h"
-#include "theme.h"
+#include "client_container_theme.h"
+#include "widget_backend.h"
 #include "application.h"
 #include "common.h"
 
@@ -30,14 +26,14 @@ ClientContainer::~ClientContainer()
     _layout = 0;
 }
 
-void ClientContainer::clear()
-{
-    _active_child_index = INVALID_INDEX;
-
-    for(Client *child : _children)
-        child->setContainer(0);
-    _children.clear();
-}
+// void ClientContainer::clear()
+// {
+//     _active_child_index = INVALID_INDEX;
+// 
+//     for(Client *child : _children)
+//         child->setContainer(0);
+//     _children.clear();
+// }
 
 ContainerLayout *ClientContainer::getLayout()
 {
@@ -51,15 +47,18 @@ void ClientContainer::handleClientFocusChange(Client *client)
 
 void ClientContainer::handleClientSizeHintChanged(Client *client)
 {
-    if (activeClient() == client)
-        parent()->handleSizeHintsChanged(this);
-    getLayout()->layoutContents();
+    if (activeClient() == client) {
+        if (parentContainer())
+            parentContainer()->handleSizeHintsChanged(this);
+        else
+            getLayout()->layoutContents();
+    }
 }
 
 void ClientContainer::setMinimized(bool minimized)
 {
     _is_minimized = minimized;
-    widget()->setMinimized(minimized);
+    _backend->setMinimized(minimized);
 }
 
 int ClientContainer::indexOfChild(const Client *child)
@@ -72,15 +71,15 @@ int ClientContainer::indexOfChild(const Client *child)
     abort();
 }
 
-void ClientContainer::handleClientMap(Client *client)
-{
-    if (!activeClient()) {
-        int index = indexOfChild(client);
-        assert(index != INVALID_INDEX);
-        setActiveChild(index);
-    }
-    getLayout()->layoutContents();
-}
+// void ClientContainer::handleClientMap(Client *client)
+// {
+//     if (!activeClient()) {
+//         int index = indexOfChild(client);
+//         assert(index != INVALID_INDEX);
+//         setActiveChild(index);
+//     }
+//     getLayout()->layoutContents();
+// }
 
 void ClientContainer::setActiveChild(int index)
 {
@@ -91,22 +90,22 @@ void ClientContainer::setActiveChild(int index)
 //         std::cout<<"ClientContainer::setActiveClient(): 0\n";
 
     assert(index < numElements());
-    assert(index == INVALID_INDEX || _children[index]->isMapped());
+//     assert(index == INVALID_INDEX || _children[index]->isMapped());
 
     _active_child_index = index;
 
     if (activeClient())
         activeClient()->raise();
 
-    if (parent())
-        parent()->handleSizeHintsChanged(this);
+    if (parentContainer())
+        parentContainer()->handleSizeHintsChanged(this);
 }
 
 int ClientContainer::addChild(Client *client)
 {
-    assert(!client->container());
+    assert(!client->parent());
 
-    client->setContainer(this);
+    client->reparent(this, _backend);
 
     // make sure the active client stays on top of the stacking order
     if (activeClient())
@@ -114,7 +113,15 @@ int ClientContainer::addChild(Client *client)
 
     _children.push_back(client);
 
+    client->setMapped(true);
+
     printvar(numElements());
+
+    if (!activeClient()) {
+        int index = indexOfChild(client);
+        assert(index != INVALID_INDEX);
+        setActiveChild(index);
+    }
 
     getLayout()->layoutContents();
 
@@ -126,7 +133,7 @@ void ClientContainer::removeChild(Client *client)
     int index = indexOfChild(client);
     assert(index >= 0);
 
-    client->setContainer(0);
+    client->reparent(0, 0);
 
     _children.erase(_children.begin() + index);
 
@@ -141,7 +148,18 @@ void ClientContainer::removeChild(Client *client)
 
 void ClientContainer::removeChildren(std::vector<Client*> &clients)
 {
-    for(Client *child : _children)
+    _active_child_index = INVALID_INDEX;
+
+    clients.reserve(_children.size());
+
+    for(Client *child : _children) {
+        child->reparent(0, 0);
         clients.push_back(child);
-    clear();
+    }
+    _children.clear();
+}
+
+void ClientContainer::draw(Canvas *canvas)
+{
+    Theme::drawClientContainer(this, canvas);
 }

@@ -11,8 +11,8 @@ namespace ContainerUtil
 
 int hierarchyDepth(Container *container)
 {
-    if (container->parent())
-        return hierarchyDepth(container->parent()) + 1;
+    if (container->parentContainer())
+        return hierarchyDepth(container->parentContainer()) + 1;
     else
         return 0;
 }
@@ -20,7 +20,7 @@ int hierarchyDepth(Container *container)
 ClientContainer *createSibling(Container *container, bool prepend)
 {
     ClientContainer *new_sibling = 0;
-    ContainerContainer *parent = container->parent();
+    ContainerContainer *parent = container->parentContainer();
 
     if (parent) {
         new_sibling = new ClientContainer();
@@ -36,7 +36,7 @@ ClientContainer *createSibling(Container *container, bool prepend)
 
 ClientContainer *getSibling(Container *container, bool get_prev, bool create_new_if_not_existing)
 {
-    ContainerContainer *parent = container->parent();
+    ContainerContainer *parent = container->parentContainer();
     if (!parent)
         return 0;
 
@@ -56,7 +56,7 @@ ClientContainer *splitContainer(ClientContainer *container, bool prepend)
 {
     static const int max_hierarchy_depth = 1;
 
-    ContainerContainer *parent = container->parent();
+    ContainerContainer *parent = container->parentContainer();
 
     if (!parent)
         return 0;
@@ -88,9 +88,9 @@ void emptyContainer(ContainerContainer *container, std::vector<Client*> &clients
 {
     while(!container->isEmpty()) {
         if (container->child(0)->isContainerContainer())
-            emptyContainer(static_cast<ContainerContainer*>(container->child(0)), clients);
+            emptyContainer(container->child(0)->toContainerContainer(), clients);
         else
-            static_cast<ClientContainer*>(container->child(0))->removeChildren(clients);
+            container->child(0)->toClientContainer()->removeChildren(clients);
         delete container->removeChild(0);
     }
 }

@@ -8,6 +8,7 @@
 #include "application.h"
 #include "common.h"
 
+
 using namespace ContainerUtil;
 
 WindowManagerDefault::WindowManagerDefault(Workspace *workspace, std::string action_set_name) :
@@ -23,7 +24,7 @@ WindowManagerDefault::~WindowManagerDefault()
     delete _root_container;
     _root_container = 0;
 }
-
+#if 0
 void WindowManagerDefault::initShortcuts()
 {
     createAction("moveClientLeft", ACTION_MOVE_CLIENT_LEFT);
@@ -89,14 +90,20 @@ void WindowManagerDefault::handleShortcut(int id)
             break;
     }
 }
-
+#endif
 ClientContainer *WindowManagerDefault::activeClientContainer()
 {
     return _root_container->activeClientContainer();
 }
 
+Client *WindowManagerDefault::activeClient()
+{
+    return activeClientContainer() ? activeClientContainer()->activeClient() : 0;
+}
+
 void WindowManagerDefault::manageClient(Client *client)
 {
+    debug;
     if (!_root_container->activeClientContainer()) {
         ClientContainer *c = new ClientContainer();
         int index = _root_container->addChild(c);
@@ -119,9 +126,11 @@ void WindowManagerDefault::layout()
     _root_container->getLayout()->layoutContents();
 }
 
-void WindowManagerDefault::handleMaximizedChanged()
+void WindowManagerDefault::setMaximizeActiveContainer(bool set)
 {
-    if (workspace()->maximized())
+    _maximize_active_container = set;
+
+    if (_maximize_active_container)
         _root_container->setMinimizeMode(ContainerContainer::MINIMIZE_INACTIVE);
     else
         _root_container->setMinimizeMode(ContainerContainer::MINIMIZE_NONE);
@@ -141,20 +150,17 @@ void WindowManagerDefault::moveClient(Direction direction)
     if (!client)
         return;
 
-    assert(client->container() == container);
+    assert(client->parent() == container);
 
-    if (container->workspace()->maximized()) //FIXME
-        return;
-
-    if (!client->isMapped()) //FIXME is this ok ?
+    if (_maximize_active_container) //FIXME
         return;
 
     bool backward = !isForwardDirection(direction);
 
     ClientContainer *target = 0;
 
-    if (container->parent()) {
-        if (orientationOfDirection(direction) == container->parent()->orientation()) { // easy case
+    if (container->parentContainer()) {
+        if (orientationOfDirection(direction) == container->parentContainer()->orientation()) { // easy case
             if (container->numElements() > 1) // only create new direct sibling if container doesn't become empty
                 target = getSibling(container, backward, true);
             else
@@ -166,12 +172,12 @@ void WindowManagerDefault::moveClient(Direction direction)
                  // else: 1. replace this with new parent container; 2. add this and new client container to parent created in step 1
 
             if (container->numElements() <= 1) // cant't split - use sibling of parent container
-                target = getSibling(container->parent(), backward, true);
+                target = getSibling(container->parentContainer(), backward, true);
             else { // split this
                 target = splitContainer(container, backward);
 
                 if (!target) { // split failed - maximum hierarchy depth exceeded ?
-                    target = getSibling(container->parent(), backward, true);
+                    target = getSibling(container->parentContainer(), backward, true);
                 }
             }
         }
@@ -182,14 +188,14 @@ void WindowManagerDefault::moveClient(Direction direction)
         int index = target->addChild(client);
         target->setActiveChild(index);
         makeContainerActive(target);
-        Application::self()->setFocus(client);
+        client->setFocus();
     }
 }
 
 void WindowManagerDefault::changeSize(bool horizontal, int delta)
 {
     if (Container *c = activeClientContainer()) {
-        Container *target = (c->parent()->isHorizontal() == horizontal) ? c : c->parent();
+        Container *target = (c->parentContainer()->isHorizontal() == horizontal) ? c : c->parentContainer();
         if (target->isFixedSize()) {
             if (horizontal)
                 target->setFixedWidth(target->fixedWidth() + delta);
@@ -212,22 +218,35 @@ void WindowManagerDefault::setFixedSizeToMinimum()
 
 void WindowManagerDefault::makeContainerActive(Container *container)
 {
+    assert(container->workspace()->windowManager() == this);
+
     container->workspace()->makeActive();
-    if (ContainerContainer *parent =  container->parent()) {
+    if (ContainerContainer *parent =  container->parentContainer()) {
         makeContainerActive(parent);
         parent->setActiveChild(parent->indexOfChild(container));
     }
     Application::self()->setActiveLayer(Application::LAYER_TILED);
 }
 
+void WindowManagerDefault::makeClientActive(Client *client)
+{
+    ClientContainer *container = dynamic_cast<ClientContainer*>(client->parent());
+    assert(container);
+
+    makeContainerActive(container);
+    container->setActiveChild(container->indexOfChild(client));
+}
+
 bool WindowManagerDefault::isContainerActive(Container *container)
 {
-    if (container->workspace() && container->workspace()->isActive() &&
+    assert(container->workspace()->windowManager() == this);
+
+    if (container->workspace()->isActive() &&
         (Application::self()->activeLayer() == Application::LAYER_TILED))
     {
-        if (container->parent() &&
-                isContainerActive(container->parent()) &&
-                (container->parent()->activeChild() == container))
+        if (container->parentContainer() &&
+                isContainerActive(container->parentContainer()) &&
+                (container->parentContainer()->activeChild() == container))
             return true;
         else if (container->parent())
             return false;

@@ -7,45 +7,17 @@
 Client::Client(ClientBackend *client_backend, bool is_floating) : ChildWidget(CLIENT),
     _client_backend(client_backend)
 {
+    printvar(is_floating);
     _backend = _client_backend->widget();
     _backend->setFrontend(this);
     _rect = _client_backend->rect();
-    _is_floating = is_floating;
+//     _is_floating = is_floating;
+//     abort();
 }
 
 Client::~Client()
 {
     _backend->setFrontend(0);
-}
-
-bool Client::hasFocus()
-{
-    return _client_backend->hasFocus();
-}
-
-bool Client::hasDecoration()
-{
-    return true;
-}
-
-const std::string &Client::name()
-{
-    return _client_backend->name();
-}
-
-Icon *Client::icon()
-{
-    return _client_backend->icon();
-}
-
-void Client::setFocus()
-{
-    _client_backend->setFocus();
-}
-
-void Client::requestClose()
-{
-    _client_backend->requestClose();
 }
 
 void Client::handleGeometryChanged(const Rect &rect)
@@ -55,6 +27,7 @@ void Client::handleGeometryChanged(const Rect &rect)
 
 void Client::handleFocusChanged(bool has_focus)
 {
+    UNIMPLEMENTED
     //FIXME
     // if (has_focus && !isActive())
     //      makeActive()
@@ -63,6 +36,7 @@ void Client::handleFocusChanged(bool has_focus)
 
 void Client::handleSizeHintsChanged()
 {
+    UNIMPLEMENTED
 //FIXME
     // WARNING frame dimensions must be added !
 #if 0

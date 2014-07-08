@@ -22,6 +22,8 @@ public:
     ContainerContainer();
     virtual ~ContainerContainer();
 
+    virtual void draw(Canvas *canvas) override;
+
     virtual int numElements() const override { return _children.size(); }
     virtual ClientContainer *activeClientContainer() override;
     virtual bool isEmpty() const override { return _children.empty(); }

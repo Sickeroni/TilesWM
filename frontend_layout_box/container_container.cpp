@@ -2,12 +2,9 @@
 
 #include "client_container.h"
 #include "container_container_layout.h"
-#include "container_widget.h"
-#include "canvas.h"
-#include "colors.h"
+#include "container_container_theme.h"
 #include "workspace.h"
 #include "common.h"
-#include "theme.h"
 
 #include <sstream>
 #include <stdlib.h>
@@ -47,9 +44,9 @@ int ContainerContainer::indexOfChild(const Container *child)
 
 int ContainerContainer::addChild(Container *child)
 {
-    assert(!child->hasParent());
+    assert(!child->parent());
 
-    child->reparent(this, widget());
+    child->reparent(this, _backend);
 
     _children.push_back(child);
     printvar(numElements());
@@ -64,9 +61,9 @@ int ContainerContainer::addChild(Container *child)
 
 void ContainerContainer::insertChild(Container *child, int insert_pos)
 {
-    assert(!child->hasParent());
+    assert(!child->parent());
 
-    child->reparent(this, widget());
+    child->reparent(this, _backend);
 
     assert(insert_pos <= numElements());
     _children.insert(_children.begin() + insert_pos, child);
@@ -79,13 +76,13 @@ void ContainerContainer::insertChild(Container *child, int insert_pos)
 
 Container *ContainerContainer::replaceChild(int index, Container *new_child)
 {
-    assert(!new_child->hasParent());
+    assert(!new_child->parent());
     assert(index < numElements());
 
     Container *old_child = _children[index];
 
     old_child->reparent(0, 0);
-    new_child->reparent(this, widget());
+    new_child->reparent(this, _backend);
 
     _children[index] = new_child;
 
@@ -147,8 +144,8 @@ ContainerLayout *ContainerContainer::getLayout()
 
 void ContainerContainer::handleSizeHintsChanged(Container *child)
 {
-    if (parent())
-        parent()->handleSizeHintsChanged(this);
+    if (parentContainer())
+        parentContainer()->handleSizeHintsChanged(this);
     else
         getLayout()->layoutContents();
 }
@@ -220,6 +217,11 @@ void ContainerContainer::applyMinimizeMode(Container *child)
             break;
     }
 
+}
+
+void ContainerContainer::draw(Canvas *canvas)
+{
+    Theme::drawContainerContainer(this, canvas);
 }
 
 #if 0

@@ -30,13 +30,13 @@ public:
     virtual void raise() = 0;
 
     virtual const std::string &name() = 0;
-//     virtual const std::string &className() = 0;
-//     virtual const std::string &iconName() = 0; 
-//     virtual const std::string &title() = 0; 
-//     virtual int minWidth() = 0; 
-//     virtual int minHeight() = 0; 
-//     virtual int maxWidth() = 0;
-//     virtual int maxHeight() = 0; 
+    virtual const std::string &className() = 0;
+    virtual const std::string &iconName() = 0;
+    virtual const std::string &title() = 0;
+    virtual int minWidth() = 0;
+    virtual int minHeight() = 0;
+    virtual int maxWidth() = 0;
+    virtual int maxHeight() = 0;
 };
 
 #endif

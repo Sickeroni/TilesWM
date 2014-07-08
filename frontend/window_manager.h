@@ -1,6 +1,8 @@
 #ifndef __WINDOW_MANAGER_H__
 #define __WINDOW_MANAGER_H__
 
+#include <string>
+
 class Client;
 class Workspace;
 class Widget;
@@ -16,7 +18,7 @@ public:
 //     virtual Container *activeContainer() = 0;
     virtual void manageClient(Client *client) = 0;
     virtual void layout() = 0;
-    virtual void makeClientActive(Widget *client) = 0;
+    virtual void makeClientActive(Client *client) = 0;
     // FIXME remove ?
     // and instead have makeClientActive(Client*) ?
     // or have both ?

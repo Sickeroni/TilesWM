@@ -12,18 +12,11 @@ public:
     WindowManagerDefault(Workspace *workspace, std::string action_set_name);
     ~WindowManagerDefault();
 
-    // ShortcutSet::Handler implementation
-    virtual void handleShortcut(int id) override;
-
-    // ActionSet implementation
-    virtual void initShortcuts() override;
-
-    virtual ClientContainer *activeClientContainer() override;
-    virtual void manageClient(Client *client) override;
     virtual void layout() override;
-    virtual void handleMaximizedChanged() override;
-    virtual void makeContainerActive(Container *container) override;
-    virtual bool isContainerActive(Container *container) override;
+    virtual void manageClient(Client *client) override;
+    virtual Client *activeClient() override;
+    virtual void makeClientActive(Client *client) override;
+
 
 private:
     enum {
@@ -41,11 +34,17 @@ private:
         ACTION_SET_FIXED_SIZE_TO_MINIMUM
     };
 
+    ClientContainer *activeClientContainer();
+
     void moveClient(ContainerUtil::Direction direction);
     void changeSize(bool horizontal, int delta);
     void setFixedSizeToMinimum();
+    void setMaximizeActiveContainer(bool set);
+    void makeContainerActive(Container *container);
+    bool isContainerActive(Container *container);
 
     ContainerContainer *_root_container = 0;
+    bool _maximize_active_container = false;
 };
 
 #endif

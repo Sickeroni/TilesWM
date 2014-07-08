@@ -68,7 +68,8 @@ int X11WidgetBackend::maxTextHeight() const
 
 void X11WidgetBackend::handleButtonPress(const XButtonEvent &ev)
 {
-//     MouseHandler::handleContainerClick(_container, ev.x, ev.y);
+    if (_frontend)
+        _frontend->handleClick(ev.x, ev.y);
 }
 
 void X11WidgetBackend::applyMapState()

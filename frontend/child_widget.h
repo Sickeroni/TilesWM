@@ -46,13 +46,13 @@ public:
     Workspace *workspace();
 //     bool isAncestorOf(ChildWidget *container) const;
 
-    bool isFloating() { return _is_floating; }
+//     bool isFloating() { return _is_floating; }
 
 protected:
     ChildWidget(Type type) : Widget(type) {}
     ~ChildWidget() {}
 
-    bool _is_floating = false;
+//     bool _is_floating = false;
 
 private:
     Widget *_parent = 0;

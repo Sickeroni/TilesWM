@@ -12,7 +12,7 @@ public:
     virtual Client *activeClient() { return 0; }
     virtual void manageClient(Client *client) override {}
     virtual void layout() override {}
-    virtual void makeClientActive(Widget *client) {}
+    virtual void makeClientActive(Client *client) {}
 };
 
 #endif

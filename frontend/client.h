@@ -4,6 +4,7 @@
 #include "child_widget.h"
 #include "client_backend.h"
 #include "client_frontend.h"
+#include "common.h"
 
 #include <string>
 
@@ -15,14 +16,50 @@ public:
     Client(ClientBackend *client_backend, bool is_floating);
     ~Client();
 
-    virtual bool isFloating() { return true; }
+    virtual bool isFloating() { return false; }
 
-    void setFocus();
-    bool hasFocus();
-    bool hasDecoration();
-    const std::string &name();
-    Icon *icon();
-    void requestClose();
+    bool hasDecoration() {
+        return isFloating();
+    }
+    const std::string &name() {
+        return _client_backend->name();
+    }
+    const std::string &className() {
+        return _client_backend->className();
+    }
+    const std::string &iconName() {
+        return _client_backend->iconName();
+    }
+    const std::string &title() {
+        return _client_backend->title();
+    }
+    Icon *icon() {
+        return _client_backend->icon();
+    }
+    void requestClose() {
+        _client_backend->requestClose();
+    }
+    void setFocus() {
+        _client_backend->setFocus();
+    }
+    bool hasFocus() {
+        return _client_backend->hasFocus();
+    }
+    void raise() {
+        _client_backend->raise();
+    }
+    int minWidth() {
+        return _client_backend->minWidth();
+    }
+    int minHeight() {
+        return _client_backend->minHeight();
+    }
+    int maxWidth() {
+        return _client_backend->maxWidth();
+    }
+    int maxHeight() {
+        return _client_backend->maxHeight();
+    }
 
 private:
     virtual void handleGeometryChanged(const Rect &rect) override;

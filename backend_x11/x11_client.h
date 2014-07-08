@@ -53,7 +53,13 @@ public:
     virtual void requestClose() override;
     virtual void raise() override;
     virtual const std::string &name() override { return _name; }
-
+    virtual const std::string &className() override { return _class; }
+    virtual const std::string &iconName() override { return _icon_name; }
+    virtual const std::string &title() override { return _title; }
+    virtual int minWidth() override { return _min_width; }
+    virtual int minHeight() override { return _min_height; }
+    virtual int maxWidth() override { return _max_width; }
+    virtual int maxHeight() override { return _max_height; }
 
     // X11ServerWidget::EventHandler implementation
     virtual void handleExpose() override;

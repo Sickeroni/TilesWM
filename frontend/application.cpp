@@ -5,7 +5,7 @@
 #include "common_actions.h"
 #include "client.h"
 #include "mode.h"
-// #include "mode_default.h"
+#include "mode_default.h"
 // #include "mode_3panel.h"
 #include "mode_simple.h"
 #include "window_manager.h"
@@ -38,9 +38,9 @@ void Application::init(Backend *backend)
 
     _common_actions = new CommonActions();
 
-//     _modes.push_back(new ModeDefault());
+    _modes.push_back(new ModeDefault());
 //     _modes.push_back(new Mode3Panel());
-    _modes.push_back(new ModeSimple());
+//     _modes.push_back(new ModeSimple());
 
     _common_actions->createKeyBindings();
 
@@ -92,6 +92,7 @@ void Application::focusActiveClient()
 
 ClientFrontend *Application::createClientFrontend(ClientBackend *backend, bool is_floating)
 {
+    printvar(is_floating);
     return new Client(backend, is_floating);
 }
 
@@ -153,6 +154,8 @@ Container *Application::activeContainer()
 
 void Application::manageClient(Client *client)
 {
+    debug;
+    printvar(client->isFloating());
     if (client->isFloating())
         activeWorkspace()->addChild(client);
     else
