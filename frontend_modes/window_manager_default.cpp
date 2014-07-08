@@ -16,6 +16,7 @@ WindowManagerDefault::WindowManagerDefault(Workspace *workspace, std::string act
     _root_container(new ContainerContainer())
 {
     workspace->addChild(_root_container);
+    layout();
 }
 
 WindowManagerDefault::~WindowManagerDefault()
@@ -121,17 +122,24 @@ void WindowManagerDefault::unmanageClient(Client *client)
     container->removeChild(client);
 }
 
+void WindowManagerDefault::unmanageAllClients(std::vector<Client*> &unmanaged_clients)
+{
+    ContainerUtil::emptyContainer(_root_container, unmanaged_clients);
+}
+
 void WindowManagerDefault::layout()
 {
+    if (workspace()->rect().w && workspace()->rect().h) {
 //     _root_container->setRect(Rect(0, 0, workspace()->rect().w, workspace()->rect().h));
-    //HACK
-    _root_container->setRect(Rect(
-        0,
-        workspace()->maxTextHeight(),
-        workspace()->rect().w,
-        workspace()->rect().h - workspace()->maxTextHeight()));
+        //HACK
+        _root_container->setRect(Rect(
+            0,
+            workspace()->maxTextHeight(),
+            workspace()->rect().w,
+            workspace()->rect().h - workspace()->maxTextHeight()));
 
-    _root_container->getLayout()->layoutContents();
+        _root_container->getLayout()->layoutContents();
+    }
 }
 
 void WindowManagerDefault::setMaximizeActiveContainer(bool set)

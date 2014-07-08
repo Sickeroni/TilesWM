@@ -15,6 +15,7 @@ public:
     virtual void layout() override;
     virtual void manageClient(Client *client) override;
     virtual void unmanageClient(Client *client) override;
+    virtual void unmanageAllClients(std::vector<Client*> &unmanaged_clients) override;
     virtual Client *activeClient() override;
     virtual void makeClientActive(Client *client) override;
 

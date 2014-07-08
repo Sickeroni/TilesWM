@@ -79,9 +79,15 @@ void Workspace::setMode(size_t index)
 
     _mode = index;
 
+    std::vector<Client*> unmanaged_clients;
+    _window_manager->unmanageAllClients(unmanaged_clients);
+
     delete _window_manager;
     _window_manager = mode()->createWindowManager(this);
 //     _window_manager->initShortcuts();
+
+    for (Client *c : unmanaged_clients)
+        _window_manager->manageClient(c);
 
     Application::self()->focusActiveClient();
 }

@@ -2,6 +2,8 @@
 #define __WINDOW_MANAGER_H__
 
 #include <string>
+#include <vector>
+
 
 class Client;
 class Workspace;
@@ -18,6 +20,7 @@ public:
 //     virtual Container *activeContainer() = 0;
     virtual void manageClient(Client *client) = 0;
     virtual void unmanageClient(Client *client) = 0;
+    virtual void unmanageAllClients(std::vector<Client*> &unmanaged_clients) = 0;
     virtual void layout() = 0;
     virtual void makeClientActive(Client *client) = 0;
     // FIXME remove ?

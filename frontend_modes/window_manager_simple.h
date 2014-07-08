@@ -1,9 +1,12 @@
 #ifndef __WINDOW_MANAGER_SIMPLE_H__
 #define __WINDOW_MANAGER_SIMPLE_H__
 
+#include <list>
+
 #include "window_manager.h"
 #include "workspace.h"
 #include "client.h"
+#include "common.h"
 
 class WindowManagerSimple : public WindowManager
 {
@@ -11,17 +14,34 @@ public:
     WindowManagerSimple(Workspace *workspace, std::string action_set_name) :
         WindowManager(workspace, action_set_name) {}
 
+    ~WindowManagerSimple() {
+        assert(_clients.empty());
+    }
+
     virtual Client *activeClient() { return 0; }
     virtual void manageClient(Client *client) override {
+        _clients.push_back(client);
         client->setIsFloating(true);
         workspace()->addChild(client);
     }
     virtual void unmanageClient(Client *client) override {
-        client->setIsFloating(false);
         workspace()->removeChild(client);
+        client->setIsFloating(false);
+        _clients.remove(client);
+    }
+    virtual void unmanageAllClients(std::vector<Client*> &unmanaged_clients) override {
+        for (Client *client : _clients) {
+            workspace()->removeChild(client);
+            client->setIsFloating(false);
+            unmanaged_clients.push_back(client);
+        }
+        _clients.clear();
     }
     virtual void layout() override {}
     virtual void makeClientActive(Client *client) {}
+
+private:
+    std::list<Client*> _clients;
 };
 
 #endif
