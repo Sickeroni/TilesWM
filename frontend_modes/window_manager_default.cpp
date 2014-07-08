@@ -11,8 +11,8 @@
 
 using namespace ContainerUtil;
 
-WindowManagerDefault::WindowManagerDefault(Workspace *workspace, std::string action_set_name) :
-    WindowManager(workspace, action_set_name),
+WindowManagerDefault::WindowManagerDefault(Workspace *workspace, Mode *mode) :
+    WindowManager(workspace, mode),
     _root_container(new ContainerContainer())
 {
     workspace->addChild(_root_container);
@@ -25,30 +25,9 @@ WindowManagerDefault::~WindowManagerDefault()
     delete _root_container;
     _root_container = 0;
 }
-#if 0
-void WindowManagerDefault::initShortcuts()
+
+void WindowManagerDefault::performAction(int id)
 {
-    createAction("moveClientLeft", ACTION_MOVE_CLIENT_LEFT);
-    createAction("moveClientRight", ACTION_MOVE_CLIENT_RIGHT);
-    createAction("moveClientUp", ACTION_MOVE_CLIENT_UP);
-    createAction("moveClientDown", ACTION_MOVE_CLIENT_DOWN);
-    createAction("deleteEmptyContainers", ACTION_DELETE_EMPTY_CONTAINERS);
-
-    createAction("toggleExpanding", ACTION_TOGGLE_EXPANDING);
-    createAction("toggleParentExpanding", ACTION_TOGGLE_PARENT_EXPANDING);
-
-    createAction("incWidth", ACTION_INC_WIDTH);
-    createAction("decWidth", ACTION_DEC_WIDTH);
-    createAction("incHeight", ACTION_INC_HEIGHT);
-    createAction("decHeight", ACTION_DEC_HEIGHT);
-
-    createAction("setFixedSizeToMinimum", ACTION_SET_FIXED_SIZE_TO_MINIMUM);
-}
-
-void WindowManagerDefault::handleShortcut(int id)
-{
-    debug;
-
     switch(id) {
         case ACTION_MOVE_CLIENT_LEFT:
             moveClient(LEFT);
@@ -64,7 +43,7 @@ void WindowManagerDefault::handleShortcut(int id)
             break;
         case ACTION_DELETE_EMPTY_CONTAINERS:
             deleteEmptyChildren(_root_container);
-            Application::focusActiveClient();
+            Application::self()->focusActiveClient();
             break;
         case ACTION_TOGGLE_EXPANDING:
             if (ClientContainer *c = activeClientContainer())
@@ -72,7 +51,7 @@ void WindowManagerDefault::handleShortcut(int id)
             break;
         case ACTION_TOGGLE_PARENT_EXPANDING:
             if (ClientContainer *c = activeClientContainer())
-                c->parent()->enableFixedSize(!c->parent()->isFixedSize());
+                c->parentContainer()->enableFixedSize(!c->parentContainer()->isFixedSize());
             break;
         case ACTION_INC_WIDTH:
             changeSize(true, -100);
@@ -91,7 +70,7 @@ void WindowManagerDefault::handleShortcut(int id)
             break;
     }
 }
-#endif
+
 ClientContainer *WindowManagerDefault::activeClientContainer()
 {
     return _root_container->activeClientContainer();

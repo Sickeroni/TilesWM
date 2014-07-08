@@ -11,7 +11,7 @@
 #include "common.h"
 
 CommonActions::CommonActions() :
-    _key_bindings("keybindings.common", &_actions)
+    _key_bindings("common", &_actions)
 {
     _actions.createAction("reloadConfig", ACTION_RELOAD_CONFIG);
     _actions.createAction("toggleMaximize", ACTION_TOGGLE_MAXIMIZE);

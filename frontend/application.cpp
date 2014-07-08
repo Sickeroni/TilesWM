@@ -20,23 +20,25 @@ Application *Application::_self = 0;
 Application::Application(const std::vector<Mode*> *modes) :
     _modes(modes)
 {
-    if (_self)
-        abort();
-    _self = this;
 }
 
 Application::~Application()
 {
-    _self = 0;
 }
 
 void Application::init(Backend *backend)
 {
+    assert(!_self);
+    _self = this;
+
     _backend = backend;
 
     _common_actions = new CommonActions();
 
     _common_actions->createKeyBindings();
+
+    for (Mode *mode : *_modes)
+        mode->createKeyBindings();
 
     if (_default_mode >= _modes->size())
         _default_mode = 0;
@@ -60,10 +62,15 @@ void Application::shutdown()
     }
     _workspaces.clear();
 
+    for (Mode *mode : *_modes)
+        mode->clearKeyBindings();
+
     delete _common_actions;
     _common_actions = 0;
 
     _backend = 0;
+
+    _self = 0;
 }
 
 void Application::focusActiveClient()
@@ -95,7 +102,7 @@ void Application::destroyClientFrontend(ClientFrontend *frontend)
 
 int Application::numKeyGrabHandlers()
 {
-    return 1;
+    return 2;
 }
 
 KeyGrabHandlerBase *Application::keyGrabHandler(int index)
@@ -104,6 +111,9 @@ KeyGrabHandlerBase *Application::keyGrabHandler(int index)
     switch (index) {
         case 0:
             return  _common_actions;
+            break;
+        case 1:
+            return activeWorkspace()->windowManager();
             break;
         default:
             assert(false);

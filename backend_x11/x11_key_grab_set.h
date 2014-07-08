@@ -9,6 +9,10 @@
 class X11KeyGrabSet final : public KeyGrabSet
 {
 public:
+    ~X11KeyGrabSet() {
+        clear();
+    }
+
     virtual int addGrab(std::string key_sequence) override;
     virtual void clear() override;
 

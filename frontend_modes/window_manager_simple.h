@@ -11,8 +11,8 @@
 class WindowManagerSimple : public WindowManager
 {
 public:
-    WindowManagerSimple(Workspace *workspace, std::string action_set_name) :
-        WindowManager(workspace, action_set_name) {}
+    WindowManagerSimple(Workspace *workspace, Mode *mode) :
+        WindowManager(workspace, mode) {}
 
     ~WindowManagerSimple() {
         assert(_clients.empty());
@@ -39,6 +39,10 @@ public:
     }
     virtual void layout() override {}
     virtual void makeClientActive(Client *client) {}
+
+protected:
+    virtual void performAction(int id) override {}
+    virtual void performComplexAction(const ComplexAction *action, const ComplexAction::Parameters *parameters) override {}
 
 private:
     std::list<Client*> _clients;

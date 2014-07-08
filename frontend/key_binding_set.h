@@ -18,13 +18,13 @@ public:
         ComplexAction::Parameters *parameters = 0;
     };
 
-    KeyBindingSet(const char *config_group, const ActionSet *actions);
+    KeyBindingSet(const std::string &name, const ActionSet *actions);
     ~KeyBindingSet();
 
     void clear();
     void createBindings();
     const Binding *find(int key_grab_id) const;
-    const KeyGrabSet *keyGrabs() { return _key_grabs; }
+    const KeyGrabSet *keyGrabs() const { return _key_grabs; }
 
 private:
     std::string _config_group;

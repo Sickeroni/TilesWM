@@ -2,11 +2,11 @@
 
 #include "window_manager_simple.h"
 
-ModeSimple::ModeSimple() : Mode("simple")
+ModeSimple::ModeSimple() : Mode("floating.simple")
 {
 }
 
 WindowManager *ModeSimple::createWindowManager(Workspace *workspace)
 {
-    return new WindowManagerSimple(workspace, name());
+    return new WindowManagerSimple(workspace, this);
 }

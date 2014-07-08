@@ -10,10 +10,9 @@
 using std::string;
 using std::vector;
 
-KeyBindingSet::KeyBindingSet(const char *config_group, const ActionSet *actions) :
-    _config_group(config_group),
-    _actions(actions),
-    _key_grabs(Application::backend()->createKeyGrabSet())
+KeyBindingSet::KeyBindingSet(const std::string &name, const ActionSet *actions) :
+    _config_group(std::string("keybindings.") + name),
+    _actions(actions)
 {
 }
 
@@ -29,7 +28,8 @@ void KeyBindingSet::clear()
     for (Binding &b : _bindings)
         delete b.parameters;
     _bindings.clear();
-    _key_grabs->clear();
+    delete _key_grabs;
+    _key_grabs = 0;
 }
 
 const KeyBindingSet::Binding *KeyBindingSet::find(int key_grab_id) const
@@ -44,6 +44,10 @@ const KeyBindingSet::Binding *KeyBindingSet::find(int key_grab_id) const
 void KeyBindingSet::createBindings()
 {
     clear();
+
+    assert(!_key_grabs);
+
+    _key_grabs = Application::backend()->createKeyGrabSet();
 
     if (const Config::Section *section = Config::self()->section(_config_group)) {
         for (const Config::Entry &entry : section->entries()) {

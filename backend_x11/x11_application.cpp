@@ -160,9 +160,6 @@ X11Application::X11Application(FrontendBase *frontend) :
     _quit_requested(false),
     _frontend(frontend)
 {
-    if (_self)
-        abort();
-    _self = this;
 }
 
 X11Application::~X11Application()
@@ -229,13 +226,16 @@ bool X11Application::init()
 
     XChangeWindowAttributes(_dpy, _root, CWEventMask, &new_root_attr);
 
-    Cursor cursor = XcursorShapeLoadCursor(dpy(), XC_left_ptr);
-    XDefineCursor(dpy(), _root, cursor);
-    XFreeCursor(dpy(), cursor);
+    Cursor cursor = XcursorShapeLoadCursor(_dpy, XC_left_ptr);
+    XDefineCursor(_dpy, _root, cursor);
+    XFreeCursor(_dpy, cursor);
 
     XSync(_dpy, false);
 
     _graphics_system = createX11GraphicsSystem(_dpy);
+
+    assert(!_self);
+    _self = this;
 
     _frontend->init(this);
 
@@ -285,6 +285,8 @@ void X11Application::shutdown()
     _dpy = 0;
 
     Config::shutdown();
+
+    _self = 0;
 }
 
 void X11Application::eventLoop()
@@ -400,6 +402,7 @@ Atom X11Application::atom(const char *name)
 
 bool X11Application::handleKeyPress(const XKeyEvent &ev)
 {
+    debug;
     X11Global::KeySequence key_sequence(
         XLookupKeysym(const_cast<XKeyEvent*>(&ev), 0),
         ev.state & ~(LockMask | num_lock_mask));
@@ -433,13 +436,13 @@ bool X11Application::addKeyGrab(const X11Global::KeySequence &key_sequence)
 
     //FIXME: error message / return false, if grabbing is not possible
 
-    XGrabKey(dpy(), XKeysymToKeycode(dpy(), key_sequence.key_sym),
+    XGrabKey(_dpy, XKeysymToKeycode(_dpy, key_sequence.key_sym),
              key_sequence.mod_mask, root(), true, GrabModeAsync, GrabModeAsync);
-    XGrabKey(dpy(), XKeysymToKeycode(dpy(), key_sequence.key_sym),
+    XGrabKey(_dpy, XKeysymToKeycode(_dpy, key_sequence.key_sym),
              key_sequence.mod_mask | LockMask, root(), true, GrabModeAsync, GrabModeAsync);
-    XGrabKey(dpy(), XKeysymToKeycode(dpy(), key_sequence.key_sym),
+    XGrabKey(_dpy, XKeysymToKeycode(_dpy, key_sequence.key_sym),
              key_sequence.mod_mask | num_lock_mask, root(), true, GrabModeAsync, GrabModeAsync);
-    XGrabKey(dpy(), XKeysymToKeycode(dpy(), key_sequence.key_sym),
+    XGrabKey(_dpy, XKeysymToKeycode(_dpy, key_sequence.key_sym),
              key_sequence.mod_mask | LockMask | num_lock_mask, root(), true, GrabModeAsync, GrabModeAsync);
 
     _key_grabs.push_back(KeyGrab(key_sequence));
@@ -459,13 +462,13 @@ void X11Application::releaseKeyGrab(const X11Global::KeySequence &key_sequence)
             assert(it->ref_count >= 0);
 
             if (it->ref_count == 0) {
-                XUngrabKey(dpy(), XKeysymToKeycode(dpy(), key_sequence.key_sym),
+                XUngrabKey(_dpy, XKeysymToKeycode(_dpy, key_sequence.key_sym),
                            key_sequence.mod_mask, root());
-                XUngrabKey(dpy(), XKeysymToKeycode(dpy(), key_sequence.key_sym),
+                XUngrabKey(_dpy, XKeysymToKeycode(_dpy, key_sequence.key_sym),
                            key_sequence.mod_mask | LockMask, root());
-                XUngrabKey(dpy(), XKeysymToKeycode(dpy(), key_sequence.key_sym),
+                XUngrabKey(_dpy, XKeysymToKeycode(_dpy, key_sequence.key_sym),
                            key_sequence.mod_mask | num_lock_mask, root());
-                XUngrabKey(dpy(), XKeysymToKeycode(dpy(), key_sequence.key_sym),
+                XUngrabKey(_dpy, XKeysymToKeycode(_dpy, key_sequence.key_sym),
                            key_sequence.mod_mask | LockMask | num_lock_mask, root());
 
                 _key_grabs.erase(it);

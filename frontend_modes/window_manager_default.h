@@ -9,18 +9,6 @@ class ContainerContainer;
 class WindowManagerDefault final : public WindowManager
 {
 public:
-    WindowManagerDefault(Workspace *workspace, std::string action_set_name);
-    ~WindowManagerDefault();
-
-    virtual void layout() override;
-    virtual void manageClient(Client *client) override;
-    virtual void unmanageClient(Client *client) override;
-    virtual void unmanageAllClients(std::vector<Client*> &unmanaged_clients) override;
-    virtual Client *activeClient() override;
-    virtual void makeClientActive(Client *client) override;
-
-
-private:
     enum {
         ACTION_MOVE_CLIENT_LEFT,
         ACTION_MOVE_CLIENT_RIGHT,
@@ -36,6 +24,21 @@ private:
         ACTION_SET_FIXED_SIZE_TO_MINIMUM
     };
 
+    WindowManagerDefault(Workspace *workspace, Mode *mode);
+    ~WindowManagerDefault();
+
+    virtual void layout() override;
+    virtual void manageClient(Client *client) override;
+    virtual void unmanageClient(Client *client) override;
+    virtual void unmanageAllClients(std::vector<Client*> &unmanaged_clients) override;
+    virtual Client *activeClient() override;
+    virtual void makeClientActive(Client *client) override;
+
+protected:
+    virtual void performAction(int id) override;
+    virtual void performComplexAction(const ComplexAction *action, const ComplexAction::Parameters *parameters) override {}
+
+private:
     ClientContainer *activeClientContainer();
 
     void moveClient(ContainerUtil::Direction direction);
