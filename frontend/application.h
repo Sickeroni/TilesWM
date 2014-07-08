@@ -68,7 +68,7 @@ public:
     static void runProgram(const std::vector<std::string> &args);
 //     static Client *activeClient();
     static Widget *activeClient();
-//     static void makeClientActive(Widget *client);
+    static void makeClientActive(Client *client);
     static Backend *backend() { return self()->_backend; }
 
 private:

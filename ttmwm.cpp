@@ -36,7 +36,7 @@ int main()
 #else
     modes.push_back(new ModeDefault());
 //     modes.push_back(new Mode3Panel());
-    modes.push_back(new ModeSimple());
+//     modes.push_back(new ModeSimple());
     Application frontend(&modes);
 #endif
 

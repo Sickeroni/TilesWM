@@ -220,24 +220,21 @@ void Application::runProgram(const std::vector<std::string> &args)
 //         return activeWorkspace()->activeFloatingClient();
 // }
 
-// void Application::makeClientActive(Widget *widget)
-// {
-//     ChildWidget *client = widget->toChildWidget();
-//     assert(client);
-// 
-//     Workspace *workspace = client->workspace();
-//     assert(workspace);
-// 
-//     if (workspace->makeActive()) {
-//         if (client->isFloating()) {
-//             workspace->setActiveFloatingChild(client);
-//             self()->setActiveLayer(LAYER_FLOATING);
-//         } else {
-//             workspace->windowManager()->makeClientActive(client);
-//             self()->setActiveLayer(LAYER_TILED);
-//         }
-//     }
-// }
+void Application::makeClientActive(Client *client)
+{
+    Workspace *workspace = client->workspace();
+    assert(workspace);
+
+    if (workspace->makeActive()) {
+        if (client->isFloating()) {
+            workspace->setActiveFloatingChild(client);
+            self()->setActiveLayer(LAYER_FLOATING);
+        } else {
+            workspace->windowManager()->makeClientActive(client);
+            self()->setActiveLayer(LAYER_TILED);
+        }
+    }
+}
 
 // void Application::setFocus(Client *client)
 // {

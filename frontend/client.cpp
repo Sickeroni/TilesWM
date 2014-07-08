@@ -27,11 +27,17 @@ void Client::handleGeometryChanged(const Rect &rect)
 
 void Client::handleFocusChanged(bool has_focus)
 {
-    UNIMPLEMENTED
     //FIXME
-    // if (has_focus && !isActive())
-    //      makeActive()
-//     container()->handleClientFocusChanged(this);
+    // this should be overidden in a subclass like TiledClient
+
+
+    if (has_focus)
+        Application::makeClientActive(this);
+
+    //container()->handleClientFocusChanged(this);
+    //HACK
+    if (parent())
+        parent()->redraw();
 }
 
 void Client::handleSizeHintsChanged()
