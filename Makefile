@@ -6,10 +6,12 @@ COMMON_DEPS :=
 COMMON_DEPS += $(BUILD_DIR)/libfrontend.a
 COMMON_DEPS += $(BUILD_DIR)/libfrontend_modes.a
 COMMON_DEPS += $(BUILD_DIR)/libfrontend_container.a
+COMMON_DEPS += $(BUILD_DIR)/libfrontend_container_container.a
 COMMON_DEPS += $(BUILD_DIR)/libcommon.a
 
 COMMON_LIBS :=
 COMMON_LIBS += -lfrontend_modes
+COMMON_LIBS += -lfrontend_container_container
 COMMON_LIBS += -lfrontend_container
 COMMON_LIBS += -lfrontend
 COMMON_LIBS += -lcommon

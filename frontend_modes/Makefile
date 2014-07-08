@@ -1,9 +1,9 @@
 TOP_DIR = ..
 
 SRCS += mode_simple
-# SRCS += mode_default
-# SRCS += mode_3pane
-# SRCS += window_manager_default
+SRCS += mode_default
+# SRCS += mode_3panel
+SRCS += window_manager_default
 # SRCS += window_manager_3panel
 
 LIBNAME := frontend_modes

@@ -221,7 +221,7 @@ void WindowManagerDefault::makeContainerActive(Container *container)
     assert(container->workspace()->windowManager() == this);
 
     container->workspace()->makeActive();
-    if (ContainerContainer *parent =  container->parentContainer()) {
+    if (ContainerContainer *parent =  container->parentTo<ContainerContainer>()) {
         makeContainerActive(parent);
         parent->setActiveChild(parent->indexOfChild(container));
     }
@@ -244,9 +244,8 @@ bool WindowManagerDefault::isContainerActive(Container *container)
     if (container->workspace()->isActive() &&
         (Application::self()->activeLayer() == Application::LAYER_TILED))
     {
-        if (container->parentContainer() &&
-                isContainerActive(container->parentContainer()) &&
-                (container->parentContainer()->activeChild() == container))
+        ContainerContainer *parent = container->parentTo<ContainerContainer>();
+        if (parent && isContainerActive(parent) && (parent->activeChild() == container))
             return true;
         else if (container->parent())
             return false;

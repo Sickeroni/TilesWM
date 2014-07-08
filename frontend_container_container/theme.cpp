@@ -1,3 +1,16 @@
+#include "container_container_theme.h"
+#include "container_container.h"
+#include "workspace.h"
+#include "canvas.h"
+#include "colors.h"
+
+#include <sstream>
+
+
+namespace Theme
+{
+
+
 const ContainerContainerSizes _containerContainerSizes = {
     .child_frame_width = 10,
     .frame_width = 10
@@ -81,3 +94,6 @@ void drawContainerContainer(ContainerContainer *container, Canvas *canvas)
         }
     }
 }
+
+
+} // namespace Theme

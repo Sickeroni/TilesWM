@@ -34,7 +34,7 @@ int main()
 #ifdef FRONTEND_DUMMY
     FrontendDummy frontend(&modes);
 #else
-//     modes.push_back(new ModeDefault());
+    modes.push_back(new ModeDefault());
 //     modes.push_back(new Mode3Panel());
     modes.push_back(new ModeSimple());
     Application frontend(&modes);
