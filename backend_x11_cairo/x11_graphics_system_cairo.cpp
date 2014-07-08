@@ -2,14 +2,10 @@
 
 #include "x11_cairo_canvas.h"
 #include "cairo_icon.h"
-#include "x11_global.h"
 
-using namespace X11Global;
-
-
-X11GraphicsSystem *createX11GraphicsSystem()
+X11GraphicsSystem *createX11GraphicsSystem(Display *dpy)
 {
-    return new X11GraphicsSystemCairo();
+    return new X11GraphicsSystemCairo(dpy);
 }
 
 X11GraphicsSystemCairo::~X11GraphicsSystemCairo()
@@ -20,16 +16,16 @@ X11GraphicsSystemCairo::~X11GraphicsSystemCairo()
 Canvas *X11GraphicsSystemCairo::createCanvas(Drawable drawable, int width, int height)
 {
     Cairo::RefPtr<Cairo::XlibSurface> surface = Cairo::XlibSurface::create(
-        dpy(),
+        _dpy,
         drawable,
-        XDefaultVisual(dpy(), XDefaultScreen(dpy())),
+        XDefaultVisual(_dpy, XDefaultScreen(_dpy)),
         width,
         height);
 
     return new X11CairoCanvas(surface);
 }
 
-Icon *X11GraphicsSystemCairo::createIcon(int width, int height, X11Widget *parent, const unsigned long *argb_data, uint32_t bg_color)
+Icon *X11GraphicsSystemCairo::createIcon(int width, int height, Drawable parent, const unsigned long *argb_data, uint32_t bg_color)
 {
     return new CairoIcon(argb_data, width, height);
 }

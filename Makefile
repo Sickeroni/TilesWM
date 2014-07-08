@@ -25,12 +25,12 @@ BACKEND_X11_LIBS := -lX11 -lXcursor -lbackend_x11
 BACKEND_X11_NATIVE_DEPS := $(BUILD_DIR)/libbackend_x11_native.a
 BACKEND_X11_NATIVE_LIBS := -lbackend_x11_native
 
-BACKEND_X11_CAIRO_DEPS := $(BUILD_DIR)/libbackend_x11_cairo.a
-BACKEND_X11_CAIRO_LIBS := -lbackend_x11_cairo -lcairomm-1.0
+BACKEND_X11_CAIRO_DEPS := $(BUILD_DIR)/libbackend_x11_cairo.a $(BUILD_DIR)/libcommon_cairo.a
+BACKEND_X11_CAIRO_LIBS := -lbackend_x11_cairo -lcommon_cairo -lcairomm-1.0
 
 DEFAULT_TARGETS :=
 DEFAULT_TARGETS += $(BUILD_DIR)/ttmwm
-# DEFAULT_TARGETS += $(BUILD_DIR)/ttmwm-cairo
+DEFAULT_TARGETS += $(BUILD_DIR)/ttmwm-cairo
 
 
 CXXFLAGS += -I$(TOP_DIR)/frontend
