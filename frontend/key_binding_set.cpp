@@ -78,7 +78,7 @@ void KeyBindingSet::createBindings()
 
                         _bindings.push_back(binding);
                     } else
-                        debug<<"no such action:"<<action_name;
+                        debug<<"no action"<<action_name<<"in set"<<_config_group;
                 } else
                     debug<<"missing action for key sequence "<<entry.key;
             }

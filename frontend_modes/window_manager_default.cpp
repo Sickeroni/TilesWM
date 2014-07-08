@@ -68,6 +68,11 @@ void WindowManagerDefault::performAction(int id)
         case ACTION_SET_FIXED_SIZE_TO_MINIMUM:
             setFixedSizeToMinimum();
             break;
+        case ACTION_ROTATE:
+            _root_container->setOrientation(Container::rotatedOrientation(_root_container->orientation()));
+            _root_container->getLayout()->layoutContents();
+            _root_container->redrawAll();
+            break;
     }
 }
 

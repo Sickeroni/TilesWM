@@ -24,14 +24,18 @@ public:
 
     virtual ~Container();
 
-    virtual void handleClick(int x, int y);
-
     virtual int numElements() const = 0;
     virtual ClientContainer *activeClientContainer() = 0;
     virtual bool isEmpty() const = 0;
     virtual void redrawAll() = 0;
     virtual ContainerLayout *getLayout() = 0;
     virtual bool isMinimized() const = 0;
+
+    virtual void handleClick(int x, int y) override;
+
+    virtual void setOrientation(Orientation orientation) {
+        _orientation = orientation;
+    }
 
     bool isFixedSize() const { return _is_fixed_size; }
     void enableFixedSize(bool enable);
@@ -64,6 +68,10 @@ public:
     ClientContainer *toClientContainer();
 
     void handleSizeHintsChanged(ChildWidget *child);
+
+    static Orientation rotatedOrientation(Orientation o) {
+        return (o == HORIZONTAL) ? VERTICAL : HORIZONTAL;
+    }
 
 protected:
     Container(Type type);

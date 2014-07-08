@@ -32,6 +32,7 @@ public:
     virtual bool isMinimized() const {
         return _minimize_mode == MINIMIZE_ALL;
     }
+    virtual void setOrientation(Orientation orientation) override;
 
     Container *child(int index) { return _children[index]; }
     int activeChildIndex() { return _active_child_index; }

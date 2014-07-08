@@ -21,7 +21,8 @@ public:
         ACTION_DEC_WIDTH,
         ACTION_INC_HEIGHT,
         ACTION_DEC_HEIGHT,
-        ACTION_SET_FIXED_SIZE_TO_MINIMUM
+        ACTION_SET_FIXED_SIZE_TO_MINIMUM,
+        ACTION_ROTATE
     };
 
     WindowManagerDefault(Workspace *workspace, Mode *mode);

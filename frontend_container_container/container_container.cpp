@@ -46,6 +46,8 @@ int ContainerContainer::addChild(Container *child)
 {
     assert(!child->parent());
 
+    child->setOrientation(rotatedOrientation(orientation()));
+
     child->reparent(this, _backend);
 
     _children.push_back(child);
@@ -63,6 +65,8 @@ void ContainerContainer::insertChild(Container *child, int insert_pos)
 {
     assert(!child->parent());
 
+    child->setOrientation(rotatedOrientation(orientation()));
+
     child->reparent(this, _backend);
 
     assert(insert_pos <= numElements());
@@ -78,6 +82,8 @@ Container *ContainerContainer::replaceChild(int index, Container *new_child)
 {
     assert(!new_child->parent());
     assert(index < numElements());
+
+    new_child->setOrientation(rotatedOrientation(orientation()));
 
     Container *old_child = _children[index];
 
@@ -215,6 +221,13 @@ void ContainerContainer::applyMinimizeMode(Container *child)
 void ContainerContainer::draw(Canvas *canvas)
 {
     Theme::drawContainerContainer(this, canvas);
+}
+
+void ContainerContainer::setOrientation(Orientation o)
+{
+    Container::setOrientation(o);
+    for (Container *child : _children)
+        child->setOrientation(rotatedOrientation(orientation()));
 }
 
 #if 0

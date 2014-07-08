@@ -9,7 +9,6 @@ void Config::setDefaults()
     s->addEntry("SHIFT+MOD1+r", "reloadConfig");
     s->addEntry("MOD1+m", "toggleMaximize");
     s->addEntry("MOD1+l", "layout");
-    s->addEntry("MOD1+r", "rotate");
     s->addEntry("MOD1+KP_Left", "focusLeft");
     s->addEntry("MOD1+KP_Right", "focusRight");
     s->addEntry("MOD1+KP_Up", "focusUp");
@@ -40,6 +39,7 @@ void Config::setDefaults()
     s->addEntry("MOD1+e", "toggleExpanding");
     s->addEntry("CTRL+MOD1+e", "toggleParentExpanding");
     s->addEntry("SHIFT+MOD1+m", "setFixedSizeToMinimum");
+    s->addEntry("MOD1+r", "rotate");
 
     s = createSection("keybindings.tiling.3panel");
     s->addEntry("SHIFT+MOD1+KP_Left", "moveClientLeft");

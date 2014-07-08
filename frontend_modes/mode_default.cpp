@@ -19,6 +19,8 @@ ModeDefault::ModeDefault() : Mode("tiling.default")
     _actions.createAction("decHeight", WindowManagerDefault::ACTION_DEC_HEIGHT);
 
     _actions.createAction("setFixedSizeToMinimum", WindowManagerDefault::ACTION_SET_FIXED_SIZE_TO_MINIMUM);
+
+    _actions.createAction("rotate", WindowManagerDefault::ACTION_ROTATE);
 }
 
 WindowManager *ModeDefault::createWindowManager(Workspace *workspace)

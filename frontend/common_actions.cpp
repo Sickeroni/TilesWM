@@ -16,7 +16,6 @@ CommonActions::CommonActions() :
     _actions.createAction("reloadConfig", ACTION_RELOAD_CONFIG);
     _actions.createAction("toggleMaximize", ACTION_TOGGLE_MAXIMIZE);
     _actions.createAction("layout", ACTION_LAYOUT);
-    _actions.createAction("rotate", ACTION_ROTATE);
     _actions.createAction("focusLeft", ACTION_FOCUS_LEFT);
     _actions.createAction("focusRight", ACTION_FOCUS_RIGHT);
     _actions.createAction("focusUp", ACTION_FOCUS_UP);
