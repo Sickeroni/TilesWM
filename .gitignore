@@ -4,5 +4,6 @@
 *.a
 *.d
 build
+cmake-build
 work
 valgrind.xml
