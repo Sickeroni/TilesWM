@@ -150,6 +150,8 @@ void Application::manageClient(Client *client)
 void Application::unmanageClient(Client *client)
 {
     if (client->parent()) {
+        // FIXME
+        // crashes if Workspace::windowManager() is a floating wm
         if (client->isFloating()) {
             client->workspace()->removeChild(client);
             assert(!client->parent());
