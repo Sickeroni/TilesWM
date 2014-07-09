@@ -28,22 +28,17 @@ set (CAIROMM_LIBS cairomm-1.0)
 include_directories (common)
 
 add_subdirectory (common)
-add_subdirectory (common_cairo)
 add_subdirectory (frontend)
-add_subdirectory (frontend_container)
-add_subdirectory (frontend_container_container)
-add_subdirectory (frontend_modes)
 add_subdirectory (backend_x11)
-add_subdirectory (backend_x11_native)
-add_subdirectory (backend_x11_cairo)
-
-link_directories (common)
 
 include_directories (frontend)
-include_directories (frontend_modes)
+include_directories (frontend/tiling)
+include_directories (frontend/floating)
+
+set (COMMON_LIBS floating_modes tiling_modes frontend common)
 
 add_executable (ttmwm ttmwm.cpp)
-add_executable (ttmwm-cairo ttmwm.cpp)
+target_link_libraries (ttmwm backend_x11 backend_x11_native ${COMMON_LIBS})
 
-target_link_libraries (ttmwm backend_x11 backend_x11_native frontend_modes frontend common)
-target_link_libraries (ttmwm-cairo backend_x11 backend_x11_cairo frontend_modes frontend common)
+add_executable (ttmwm-cairo ttmwm.cpp)
+target_link_libraries (ttmwm-cairo backend_x11 backend_x11_cairo ${COMMON_LIBS})
