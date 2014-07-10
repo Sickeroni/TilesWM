@@ -1,4 +1,0 @@
-@INCLUDE = Doxyfile_defaults
-
-INPUT                  = common common_cairo
-OUTPUT_DIRECTORY       = $(BUILD_DIR)/doxygen_common

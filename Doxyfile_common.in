@@ -1,0 +1,5 @@
+@INCLUDE = Doxyfile_defaults
+
+INPUT                  = @CMAKE_CURRENT_SOURCE_DIR@/common
+OUTPUT_DIRECTORY       = @CMAKE_CURRENT_BINARY_DIR@/doxygen_common
+RECURSIVE              = YES

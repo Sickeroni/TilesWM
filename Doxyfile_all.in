@@ -1,9 +1,8 @@
 @INCLUDE = Doxyfile_defaults
 
-INPUT                  = .
+INPUT                  = @CMAKE_CURRENT_SOURCE_DIR@
+OUTPUT_DIRECTORY       = @CMAKE_CURRENT_BINARY_DIR@/doxygen_all
 RECURSIVE              = YES
-EXCLUDE                = $(BUILD_DIR)
-OUTPUT_DIRECTORY       = $(BUILD_DIR)/doxygen_all
 #BUILTIN_STL_SUPPORT    = YES
 EXTRACT_ALL            = NO
 EXTRACT_PRIVATE        = YES

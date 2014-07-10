@@ -42,3 +42,18 @@ target_link_libraries (ttmwm backend_x11 backend_x11_native ${COMMON_LIBS})
 
 add_executable (ttmwm-cairo ttmwm.cpp)
 target_link_libraries (ttmwm-cairo backend_x11 backend_x11_cairo ${COMMON_LIBS})
+
+# add a target to generate API documentation with Doxygen
+find_package (Doxygen)
+if (DOXYGEN_FOUND)
+    configure_file (${CMAKE_CURRENT_SOURCE_DIR}/Doxyfile_defaults.in ${CMAKE_CURRENT_BINARY_DIR}/Doxyfile_defaults @ONLY)
+    configure_file (${CMAKE_CURRENT_SOURCE_DIR}/Doxyfile_common.in ${CMAKE_CURRENT_BINARY_DIR}/Doxyfile_common @ONLY)
+    configure_file (${CMAKE_CURRENT_SOURCE_DIR}/Doxyfile_all.in ${CMAKE_CURRENT_BINARY_DIR}/Doxyfile_all @ONLY)
+    add_custom_target (doc
+        COMMAND ${DOXYGEN_EXECUTABLE} ${CMAKE_CURRENT_BINARY_DIR}/Doxyfile_common
+        COMMAND ${DOXYGEN_EXECUTABLE} ${CMAKE_CURRENT_BINARY_DIR}/Doxyfile_all
+        WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
+        COMMENT "Generating API documentation with Doxygen" VERBATIM)
+else ()
+    message(WARNING  "Doxygen is needed to build the documentation.")
+endif (DOXYGEN_FOUND)
