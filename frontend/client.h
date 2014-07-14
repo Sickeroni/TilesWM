@@ -13,17 +13,15 @@ class Icon;
 class Client final : public ChildWidget, public ClientFrontend
 {
 public:
-    Client(ClientBackend *client_backend, bool is_floating);
+    Client(ClientBackend *client_backend);
     ~Client();
 
-    virtual bool isFloating() override { return _is_floating; }
-    virtual bool hasDecoration() override {
-        return isFloating();
-    }
-    void setIsFloating(bool is_floating) {
-        _is_floating = is_floating;
-        _client_backend->updateGeometry();
-    }
+    virtual void setRect(const Rect &rect) override;
+
+    bool isFloating() { return _is_floating; }
+    bool hasDecoration() { return _has_decoration; }
+    void setHasDecoration(bool has_decoration);
+    void setIsFloating(bool is_floating);
     const std::string &name() {
         return _client_backend->name();
     }
@@ -48,9 +46,6 @@ public:
     bool hasFocus() {
         return _client_backend->hasFocus();
     }
-    void raise() {
-        _client_backend->raise();
-    }
     int minWidth() {
         return _client_backend->minWidth();
     }
@@ -63,16 +58,63 @@ public:
     int maxHeight() {
         return _client_backend->maxHeight();
     }
+    void updateFrameGeometry();
 
 private:
-    virtual void handleGeometryChanged(const Rect &rect) override;
+    enum Anchor {
+        ANCHOR_LEFT,
+        ANCHOR_RIGHT,
+        ANCHOR_TOP,
+        ANCHOR_BOTTOM,
+        ANCHOR_TOP_LEFT,
+        ANCHOR_TOP_RIGHT,
+        ANCHOR_BOTTOM_LEFT,
+        ANCHOR_BOTTOM_RIGHT
+    };
+
+    enum DragMode {
+        DRAG_NONE,
+        DRAG_MOVE,
+        DRAG_RESIZE
+    };
+
+    enum {
+        MIN_WIDTH = 100,
+        MIN_HEIGHT = 100,
+        //FIXME - use screen size
+        MAX_WIDTH = 2000,
+        MAX_HEIGHT = 2000
+    };
+
+    enum {
+        //FIXME
+        MOVE_BUTTON = 1,
+        RESIZE_BUTTON = 3
+    };
+
+    virtual void handleButtonPress(int x_gloab, int y_global, int button) override;
+    virtual void handleButtonRelease(int button) override;
+    virtual void handleMouseMove(int x, int y) override;
     virtual void handleFocusChanged(bool has_focus) override;
     virtual void handleMap() override;
     virtual void handlePropertyChanged(ClientBackend::Property property) override;
+    virtual void handleConfigureRequest(const Rect &rect) override;
 
     void handleSizeHintsChanged();
+    void startMove(int x, int y);
+    void startResize(Anchor anchor, int x, int y);
+    void finishDrag();
+    void cancelDrag();
+    void applySizeHints(Rect &rect);
 
-    bool _is_floating = false;
+    static void limitRect(Rect &rect);
+
+    DragMode _drag_mode = DRAG_NONE;
+    int _drag_start_x = 0;
+    int _drag_start_y = 0;
+    Rect _rect_before_drag_start;
+    bool _is_floating = true;
+    bool _has_decoration = false;
     ClientBackend *_client_backend = 0;
 };
 

@@ -8,12 +8,7 @@
 #include "x11_global.h"
 #include "icon.h"
 #include "canvas.h"
-// #include "workspace.h"
 #include "colors.h"
-#include "theme.h"
-// #include "client.h"
-// #include "child_widget.h"
-// #include "window_manager.h"
 #include "client_frontend.h"
 #include "widget_frontend.h"
 #include "common.h"
@@ -82,17 +77,9 @@ int X11Client::CriticalSection::errorHandler(Display *display, XErrorEvent *ev)
 
 
 std::map<Window, X11Client*> X11Client::_wid_index;
-std::map<Window, X11Client*> X11Client::_frame_wid_index;
-X11Client *X11Client::_dragged = 0;
-X11Client::DragMode X11Client::_drag_mode = DRAG_NONE;
-Rect X11Client::_dragged_original_rect;
-int X11Client::_drag_start_x = 0;
-int X11Client::_drag_start_y = 0;
-
 
 X11Client::X11Client() :
     _widget(0),
-    _frame(0),
     _icon(0),
     _window_type(NORMAL),
     _is_modal(false)
@@ -108,8 +95,6 @@ X11Client::~X11Client()
     _icon = 0;
     delete _widget;
     _widget= 0;
-    delete _frame;
-    _frame = 0;
 }
 
 void X11Client::setFocus(X11Client *client)
@@ -141,73 +126,42 @@ void X11Client::setFocus(X11Client *client)
                     sizeof(prop) / sizeof(prop[0]));
 }
 
-void X11Client::raise()
-{
-    assert(!isOverrideRedirect());
-
-    XRaiseWindow(dpy(), _frame->wid());
-}
-
 void X11Client::setRect(const Rect &rect)
 {
     assert(!isOverrideRedirect());
 
     assert(rect.w && rect.h);
 
-    _frame->setRect(rect);
-
     CriticalSection sec;
-#if 0
-    Rect r;
-    r.x = r.y = _inner_frame_width;
-    r.w = rect.w - (2 * _inner_frame_width);
-    r.h = rect.h - (2 * _inner_frame_width);
-    if (_max_width && r.w > _max_width)
-        r.w = _max_width;
-    if (_max_height && r.h > _max_height)
-        r.h = _max_height;
-    if (r.w < 10)
-        r.w = 10;
-    if (r.h < 10)
-        r.h = 10;
-#endif
-    Rect client_rect;
-    Theme::calcClientClientRect(hasDecoration(), maxTextHeight(), _frame->rect(), client_rect);
-    limitClientRect(client_rect);
 
-    _widget->setRect(client_rect);
+    _widget->setRect(rect);
 }
 
 void X11Client::reparent(WidgetBackend *new_parent)
 {
-   assert(!isOverrideRedirect());
+    assert(!isOverrideRedirect());
 
-    X11ServerWidget *new_parent_widget = 0;
+    if (_widget) {
+        X11ServerWidget *new_parent_widget = 0;
 
-    if (new_parent)
-        new_parent_widget = dynamic_cast<X11WidgetBackend*>(new_parent)->widget();
+        if (new_parent)
+            new_parent_widget = dynamic_cast<X11WidgetBackend*>(new_parent)->widget();
 
-    printvar(new_parent_widget);
-    _frame->reparent(new_parent_widget);
+        printvar(new_parent_widget);
+        _widget->reparent(new_parent_widget);
+    }
 }
 
-void X11Client::makeActive()
+void X11Client::grabMouseButton(int button)
 {
-    assert(0);
-//     if (_frontend)
-//         Application::makeClientActive(_frontend);
+    ModMask drag_modifier = ControlMask; //FIXME
+    XGrabButton(dpy(), button, drag_modifier, _widget->wid(), true, ButtonPressMask, GrabModeAsync,
+        GrabModeAsync, None, None);
 }
 
 void X11Client::init()
 {
     CriticalSection sec;
-
-//     XGrabButton(dpy(), 1, Mod1Mask, X11Application::root(), true, ButtonPressMask, GrabModeAsync,
-//             GrabModeAsync, None, None);
-//     XGrabButton(dpy(), 3, Mod1Mask, X11Application::root(), true, ButtonPressMask, GrabModeAsync,
-//             GrabModeAsync, None, None);
-
-//     XGrabButton(dpy(), Mod1Mask
 
     //FIXME clear these on shutdown (before closing display connection)
     Atom net_supported_values[] = {
@@ -244,20 +198,20 @@ void X11Client::shutdown()
 {
     CriticalSection sec;
 
-    cancelDrag();
-
-    _frame_wid_index.clear();
-
     for (std::map<Window, X11Client*>::iterator it = _wid_index.begin();
             it != _wid_index.end();
             it++)
     {
         X11Client *client = it->second;
+        bool was_mapped = client->isManaged(); // && _wm_state != WITHDRAWN
         if (client->_client_frontend)
             X11Application::frontend()->destroyClientFrontend(client->_client_frontend);
         client->_client_frontend = 0;
         assert(!client->_widget_frontend);
         client->_widget->reparent(0);
+        // FIXME map widget depending ont the withdrawn state
+        if (was_mapped)
+            client->_widget->map();
         XRemoveFromSaveSet(dpy(), client->_widget->wid());
         delete client;
         client = 0;
@@ -320,13 +274,6 @@ void X11Client::create(Window wid)
 
             XChangeWindowAttributes(dpy(), wid, CWEventMask, &new_attr);
 
-            ModMask drag_modifier = ControlMask; //FIXME
-
-            XGrabButton(dpy(), 1, drag_modifier, wid, true, ButtonPressMask, GrabModeAsync,
-                GrabModeAsync, None, None);
-            XGrabButton(dpy(), 3, drag_modifier, wid, true, ButtonPressMask, GrabModeAsync,
-                GrabModeAsync, None, None);
-
             X11Client *client = new X11Client();
 
             if (is_modal)
@@ -348,16 +295,6 @@ void X11Client::create(Window wid)
 
             client->refreshSizeHints();
 
-            client->_frame = X11ServerWidget::create(0, Colors::CLIENT,
-                                                     client,
-                                                     ExposureMask | ButtonPressMask | SubstructureNotifyMask | SubstructureRedirectMask);
-
-
-            Rect frame_rect;
-            Theme::calcClientFrameRect(true, client->maxTextHeight(), rect, frame_rect);
-            limitFrameRect(frame_rect);
-            if (frame_rect.y < 0) //FIXME make sure it's inside client area of screen (screen area minus panels)
-                frame_rect.y = 0;
 #if 0
             if (!attr.x && !attr.y && transient_for_wid) {
                 // place client above transient_for
@@ -368,18 +305,9 @@ void X11Client::create(Window wid)
                 }
             }
 #endif
-            if (/*!attr.x && !attr.y && */(client->isDialog()|| is_modal)) {
-                frame_rect.setPos(200, 200); //FIXME
-            }
-
-            client->_frame->setRect(frame_rect);
-
             client->refreshIcon();
 
             _wid_index.insert(std::pair<Window, X11Client*>(wid, client));
-            _frame_wid_index.insert(std::pair<Window, X11Client*>(client->_frame->wid(), client));
-
-            //FIXME reparent to unmapped dummy window
 
             if (is_mapped)
                 client->manage();
@@ -444,10 +372,13 @@ bool X11Client::refreshMapState()
 
 void X11Client::setMapped(bool mapped)
 {
-    if (mapped)
-        _frame->map();
-    else
-        _frame->unmap();
+    //FIXME WM_STATE should be set here - compare with manage()
+    if (_widget) {
+        if (mapped)
+            _widget->map();
+        else
+            _widget->unmap();
+    }
 }
 
 void X11Client::manage()
@@ -466,13 +397,7 @@ void X11Client::manage()
         XAddToSaveSet(dpy(), _widget->wid());
 
         printvar((isDialog() || _is_modal));
-        _client_frontend = X11Application::frontend()->createClientFrontend(this, isDialog() || _is_modal);
-
-        Rect client_rect;
-        Theme::calcClientClientRect(hasDecoration(), maxTextHeight(), _frame->rect(), client_rect);
-
-        _widget->reparent(_frame, client_rect.x, client_rect.y);
-        _widget->map();
+        _client_frontend = X11Application::frontend()->createClientFrontend(this);
 
         const uint32_t state[2] = {
             STATE_NORMAL, None
@@ -484,7 +409,8 @@ void X11Client::manage()
         if (_client_frontend)
             _client_frontend->handleMap();
         else
-            _frame->map();
+            _widget->map();
+
 
         X11Application::frontend()->focusActiveClient();
     }
@@ -508,8 +434,6 @@ void X11Client::handleUnmap()
         _client_frontend = 0;
         assert(!_widget_frontend);
 
-        _frame->unmap();
-
         _widget->reparent(0);
 
         XDeleteProperty(dpy(), _widget->wid(), ATOM(WM_STATE));
@@ -518,16 +442,6 @@ void X11Client::handleUnmap()
     }
 
     X11Application::frontend()->focusActiveClient();
-}
-
-bool X11Client::isFloating()
-{
-    return !_client_frontend || _client_frontend->isFloating();
-}
-
-bool X11Client::hasDecoration()
-{
-    return !_client_frontend || _client_frontend->hasDecoration();
 }
 
 void X11Client::handleConfigureRequest(const XConfigureRequestEvent &ev)
@@ -552,9 +466,10 @@ void X11Client::handleConfigureRequest(const XConfigureRequestEvent &ev)
     if (isOverrideRedirect())
         _widget->configure(ev.value_mask, changes);
     else {
-        if (!_widget->isMapped() || isFloating()) {
-            // client is either not mapped or not in tiling mode
+        if (ev.value_mask & CWBorderWidth)
+            _widget->configure(CWBorderWidth, changes);
 
+        if (ev.value_mask & (CWX | CWY | CWWidth | CWHeight)) {
             Rect client_rect = _widget->rect();
 
             if (ev.value_mask & CWX)
@@ -568,57 +483,11 @@ void X11Client::handleConfigureRequest(const XConfigureRequestEvent &ev)
 
             limitClientRect(client_rect);
 
-            // new frame rect based on requested client rect
-            Rect frame_rect;
-            Theme::calcClientFrameRect(hasDecoration(), maxTextHeight(), client_rect, frame_rect);
-            limitFrameRect(frame_rect);
-
-//             frame_rect.setPos(client_rect.x, client_rect.y);
-            frame_rect.setPos(_frame->rect().x, _frame->rect().y);
-
-            //FIXME use a less random placement - see also X11Client::create()
-//             frame_rect.setPos(200, 200);
-
-            unsigned int values = ev.value_mask;
-
-            if (_widget->isMapped()) {
-                // the client rect needs to be positioned in respect to the frame rect
-                Theme::calcClientClientRect(hasDecoration(), maxTextHeight(), frame_rect, client_rect);
-                changes.x = client_rect.x;
-                changes.y = client_rect.y;
-
-                // ignore stacking requests
-                values &= ~(CWSibling | CWStackMode);
-            } 
-
-            _widget->configure(values, changes);
-            _frame->setRect(frame_rect);
-
             if (_client_frontend)
-                _client_frontend->handleGeometryChanged(frame_rect);
-        } else { // client is mapped and in tiling mode
-//             assert(false); //FIXME
-            // ignore geometry/stacking requests, as that should be changed on our behalf only
-            if (ev.value_mask & CWBorderWidth)
-                _widget->configure(CWBorderWidth, changes);
+                _client_frontend->handleConfigureRequest(client_rect);
+            else
+                _widget->setRect(client_rect);
         }
-    }
-}
-
-void X11Client::updateGeometry()
-{
-    CriticalSection sec;
-
-    Rect client_rect;
-    Theme::calcClientClientRect(hasDecoration(), maxTextHeight(), _frame->rect(), client_rect);
-
-    if (isFloating()) {
-        Rect frame_rect;
-        Theme::calcClientFrameRect(hasDecoration(), maxTextHeight(), client_rect, frame_rect);
-        _widget->move(client_rect.x, client_rect.y);
-        _frame->resize(frame_rect.w, frame_rect.h);
-    } else {
-        _widget->setRect(client_rect);
     }
 }
 
@@ -750,43 +619,14 @@ void X11Client::refreshFocusState()
         }
     }
 
-#if 0
-    if (_client_frontend) {
-        assert(0);
-
-        if (_has_focus && (Application::activeClient() != _frontend)) {
-        // disable the following block as it may lead to the client repeatedly grabbing focus
-#if 0
-            // client grabbed focus when it wasn't active - bad boy
-            // give focus back to active client
-            if (X11Application::activeClient())
-                X11Application::activeClient()->setFocus();
-            else
-                XSetInputFocus(dpy(), X11Application::root(), RevertToNone, CurrentTime);
-#else
-            debug<<"client has focus, but is not active - activating.";
-            makeActive();
-#endif
-        }
-    }
-#endif
-
     if (!focus_holder) // we lost focus and no other window is currently focused
         XSetInputFocus(dpy(), X11Application::root(), RevertToNone, CurrentTime);
 
     if (focus_changed) {
         if(_client_frontend)
             _client_frontend->handleFocusChanged(_has_focus);
-//         else if (has_focus)
-//             X11Application::frontend()->handleUnmanagedClientGotFocus();
-//         else
-//             X11Application::frontend()->handleUnmanagedClientLostFocus();
     }
-
-    if (focus_changed)
-        drawFrame();
 }
-
 
 Atom X11Client::getAtomProperty(Window wid, Atom property)
 {
@@ -891,7 +731,7 @@ void X11Client::refreshIcon()
                     _icon = X11Application::graphicsSystem()->createIcon(
                         width,
                         height,
-                        _frame->wid(),
+                        _widget->wid(),
                         reinterpret_cast<unsigned long*>(ret) + 2,
                         0x999999 /*FIXME - taken form X11ServerWidget */);
                 }
@@ -914,37 +754,9 @@ void X11Client::refreshIcon()
         debug<<"no _NET_WM_ICON property.";
 }
 
-void X11Client::handleExpose()
-{
-    drawFrame();
-}
-
-void X11Client::handleButtonPress(const XButtonEvent &ev)
-{
-    assert(!_dragged);
-
-    setFocus(this);
-    raise();
-
-    if (isFloating()) {
-        if (ev.button == 1)
-            startDrag(ev.x_root, ev.y_root);
-        else if (ev.button == 3) {
-            Anchor anchor = ANCHOR_BOTTOM_RIGHT;
-            startResize(anchor, ev.x_root, ev.y_root);
-        }
-    }
-}
-
-void X11Client::drawFrame()
-{
-    if (_widget_frontend)
-        _widget_frontend->draw(_frame->canvas());
-}
-
 int X11Client::maxTextHeight() const
 {
-    return _frame->canvas()->maxTextHeight();
+    return 0;
 }
 
 void X11Client::requestClose()
@@ -967,61 +779,7 @@ void X11Client::requestClose()
     XSendEvent(dpy(), _widget->wid(), false, NoEventMask, &xev);
 }
 
-void X11Client::startResize(Anchor anchor, int x, int y)
-{
-    //FIXME what if the pointer is already grabbed ?
-    assert(!_dragged);
-
-    _dragged = this;
-    _drag_mode = DRAG_RESIZE;
-    _drag_start_x = x;
-    _drag_start_y = y;
-
-    _dragged_original_rect = _widget->rect();
-
-    XGrabPointer(dpy(), _frame->wid(), true,
-                 PointerMotionMask | ButtonReleaseMask,
-                 GrabModeAsync, GrabModeAsync, None, None, CurrentTime);
-}
-
-void X11Client::startDrag(int x, int y)
-{
-    //FIXME what if the pointer is already grabbed ?
-    assert(!_dragged);
-
-    _dragged = this;
-    _drag_mode = DRAG_MOVE;
-    _drag_start_x = x;
-    _drag_start_y = y;
-
-    _dragged_original_rect = _frame->rect();
-
-    XGrabPointer(dpy(), _frame->wid(), true,
-                 PointerMotionMask | ButtonReleaseMask,
-                 GrabModeAsync, GrabModeAsync, None, None, CurrentTime);
-}
-
-void X11Client::cancelDrag()
-{
-    debug;
-    finishDrag();
-}
-
-void X11Client::finishDrag()
-{
-    _dragged = 0;
-    _drag_mode = DRAG_NONE;
-    _dragged_original_rect.set(0, 0, 0, 0);
-    _drag_start_x = _drag_start_y = 0;
-    XUngrabPointer(dpy(), CurrentTime);
-}
-
 void X11Client::limitClientRect(Rect &rect)
-{
-    limitFrameRect(rect);
-}
-
-void X11Client::limitFrameRect(Rect &rect)
 {
     if (rect.w < MIN_WIDTH)
         rect.w = MIN_WIDTH;
@@ -1033,18 +791,6 @@ void X11Client::limitFrameRect(Rect &rect)
         rect.h = MAX_HEIGHT;
 }
 
-void X11Client::applySizeHints(Rect &rect)
-{
-    if (_min_width && rect.w < _min_width)
-        rect.w = _min_width;
-    if (_min_height && rect.h < _min_height)
-        rect.h = _min_height;
-    if (_max_width && rect.w > _max_width)
-        rect.w = _max_width;
-    if (_max_height && rect.h > _max_height)
-        rect.h = _max_height;
-}
-
 bool X11Client::handleEvent(const XEvent &ev)
 {
     //FIXME handle transient_for change
@@ -1054,49 +800,8 @@ bool X11Client::handleEvent(const XEvent &ev)
     Window wid = 0;
 
     switch (ev.type) {
-    case MotionNotify:
-//         debug<<"MotionNotify";
-        if (_dragged) {
-            XEvent motion_event = ev;
-            while(XCheckTypedEvent(dpy(), MotionNotify, &motion_event)) {} //FIXME - what about motion events after botton release ?
-            int xdiff = motion_event.xbutton.x_root - _drag_start_x;
-            int ydiff = motion_event.xbutton.y_root - _drag_start_y;
-
-            if (_drag_mode == DRAG_MOVE) {
-                _dragged->_frame->move(_dragged_original_rect.x + xdiff, _dragged_original_rect.y + ydiff);
-                if (_dragged->_client_frontend)
-                    _dragged->_client_frontend->handleGeometryChanged(_dragged->_frame->rect());
-            }
-            else if (_drag_mode == DRAG_RESIZE) {
-
-                CriticalSection sec;
-
-                Rect client_rect = _dragged->_widget->rect();
-                client_rect.setSize(_dragged_original_rect.w + xdiff, _dragged_original_rect.h + ydiff);
-                _dragged->applySizeHints(client_rect);
-                limitClientRect(client_rect);
-
-                Rect frame_rect;
-                Theme::calcClientFrameRect(_dragged->hasDecoration(), _dragged->maxTextHeight(), client_rect, frame_rect);
-                limitFrameRect(frame_rect);
-
-                _dragged->_frame->resize(frame_rect.w, frame_rect.h);
-                _dragged->_widget->resize(client_rect.w, client_rect.h);
-
-                if (_dragged->_client_frontend)
-                    _dragged->_client_frontend->handleGeometryChanged(_dragged->_frame->rect());
-            }
-        }
-        break;
     case ButtonPress:
-        debug<<"ButtonPress";
         wid = ev.xbutton.window;
-        break;
-    case ButtonRelease:
-        if (_dragged) {
-            finishDrag();
-            return true;
-        }
         break;
     case CreateNotify:
         wid = ev.xcreatewindow.window;
@@ -1128,9 +833,6 @@ bool X11Client::handleEvent(const XEvent &ev)
                 abort(); // BAD - CreateNotify for already existing client
             case DestroyNotify:
                 debug<<"DestroyNotify";
-                if (_dragged == client)
-                    cancelDrag();
-                _frame_wid_index.erase(client->_frame->wid());
                 _wid_index.erase(wid);
                 delete client->_widget;
                 client->_widget = 0;
@@ -1143,8 +845,6 @@ bool X11Client::handleEvent(const XEvent &ev)
                 X11Application::self()->frontend()->focusActiveClient();
                 break;
             case UnmapNotify:
-                if (_dragged == client)
-                    cancelDrag();
                 client->handleUnmap();
                 break;
             case MapRequest:
@@ -1158,8 +858,8 @@ bool X11Client::handleEvent(const XEvent &ev)
                 client->refreshFocusState();
                 break;
             case ButtonPress:
-                //FIXME the coordinates might be in either client or frame space
-                client->handleButtonPress(ev.xbutton);
+                if (client->_widget_frontend)
+                    client->_widget_frontend->handleButtonPress(ev.xbutton.x_root, ev.xbutton.y_root, ev.xbutton.button);
                 break;
 #if 1
             case PropertyNotify:
@@ -1235,15 +935,6 @@ X11Client *X11Client::find(Window wid)
 {
     std::map<Window, X11Client*>::iterator it = _wid_index.find(wid);
     if (it != _wid_index.end()) {
-        return it->second;
-    } else
-        return 0;
-}
-
-X11Client *X11Client::findByFrame(Window wid)
-{
-    std::map<Window, X11Client*>::iterator it = _frame_wid_index.find(wid);
-    if (it != _frame_wid_index.end()) {
         return it->second;
     } else
         return 0;

@@ -85,8 +85,11 @@ void Container::handleSizeHintsChanged(ChildWidget *child)
         getLayout()->layoutContents();
 }
 
-void Container::handleClick(int x, int y)
-
+void Container::handleButtonPress(int x_global, int y_global, int button)
 {
+    int x = x_global;
+    int y = y_global;
+    globalToLocal(x, y);
+
     MouseHandler::handleContainerClick(this, x, y);
 }

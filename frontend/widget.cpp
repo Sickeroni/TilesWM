@@ -4,6 +4,7 @@
 #include "workspace.h"
 #include "client.h"
 #include "frontend_theme.h"
+#include "child_widget.h"
 #include "common.h"
 
 void Widget::setRect(const Rect &rect)
@@ -43,12 +44,17 @@ Workspace *Widget::toWorkspace()
         return 0;
 }
 
-// Container *Widget::toContainer()
-// {
-//     abort();
-// }
-
 void Widget::draw(Canvas *canvas)
 {
     Theme::drawWidget(this, canvas);
+}
+
+void Widget::globalToLocal(int &x, int &y)
+{
+    if (ChildWidget *child_widget = toChildWidget()) {
+        if (child_widget->parent())
+            child_widget->parent()->globalToLocal(x, y);
+    }
+    x -= _rect.x;
+    y -= _rect.y;
 }

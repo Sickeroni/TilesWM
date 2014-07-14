@@ -87,10 +87,9 @@ void Application::focusActiveClient()
 #endif
 }
 
-ClientFrontend *Application::createClientFrontend(ClientBackend *backend, bool is_floating)
+ClientFrontend *Application::createClientFrontend(ClientBackend *backend)
 {
-    printvar(is_floating);
-    return new Client(backend, is_floating);
+    return new Client(backend);
 }
 
 void Application::destroyClientFrontend(ClientFrontend *frontend) 
@@ -140,10 +139,10 @@ Workspace *Application::activeWorkspace()
 void Application::manageClient(Client *client)
 {
     debug;
-    printvar(client->isFloating());
-    if (client->isFloating())
-        activeWorkspace()->addChild(client);
-    else
+//     printvar(client->isFloating());
+//     if (client->isFloating())
+//         activeWorkspace()->addChild(client);
+//     else
         activeWorkspace()->windowManager()->manageClient(client);
 }
 

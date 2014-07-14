@@ -13,14 +13,14 @@ remove comparision with -1
 class StandardClientFrontend: public ClientFrontend
 {
     vector<ClientInstance*> instances:
-    WidgetBackend *backend_widget;
+    //WidgetBackend *backend_widget; ????
     ClientBackend *client_backend; // just the actual client (no frame parent widget)
 };
 
 // one instance per wm - should be created by wm (wm may use more specific subclass)
-// acts as frame
+// MAY act as frame
 // other names: ClientFrame, ...
-class ClientInstance : public ChildWidget
+class ClientInstance
 {
     WindowManager *wm;
     StandardClientFrontend *client_frontend;

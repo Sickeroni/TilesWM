@@ -1,23 +1,34 @@
 #include "x11_widget_backend.h"
 
+#include "x11_global.h"
 #include "theme.h"
 #include "widget_frontend.h"
 #include "canvas.h"
+
+using namespace X11Global;
+
+
+
+X11WidgetBackend *X11WidgetBackend::_mouse_grabber = 0;
+
 
 X11WidgetBackend::X11WidgetBackend() :
     _widget(X11ServerWidget::create(
         0,
         0,
-        this, ButtonPressMask | ExposureMask)),
+        this,
+        ButtonPressMask | ExposureMask | SubstructureNotifyMask | SubstructureRedirectMask)),
     _minimized_widget(X11ServerWidget::create(
         0,
         0,
-        this, ButtonPressMask | ExposureMask))
+        this,
+        ButtonPressMask | ExposureMask))
 {
 }
 
 X11WidgetBackend::~X11WidgetBackend()
 {
+    assert(this != _mouse_grabber);
     delete _minimized_widget;
     _minimized_widget = 0;
     delete _widget;
@@ -66,10 +77,37 @@ int X11WidgetBackend::maxTextHeight() const
     return const_cast<X11WidgetBackend*>(this)->currentWidget()->canvas()->maxTextHeight();
 }
 
-void X11WidgetBackend::handleButtonPress(const XButtonEvent &ev)
+void X11WidgetBackend::grabMouse()
 {
-    if (_frontend)
-        _frontend->handleClick(ev.x, ev.y);
+    assert(!_mouse_grabber);
+    _mouse_grabber = this;
+    XGrabPointer(dpy(),currentWidget()->wid(), true,
+                 PointerMotionMask | ButtonReleaseMask,
+                 GrabModeAsync, GrabModeAsync, None, None, CurrentTime);
+}
+
+void X11WidgetBackend::releaseMouse()
+{
+    assert(_mouse_grabber == this);
+    _mouse_grabber = 0;
+    XUngrabPointer(dpy(), CurrentTime);
+}
+
+void X11WidgetBackend::handleMouseEvent(const XButtonEvent &ev)
+{
+    if (_frontend) {
+        switch (ev.type) {
+            case ButtonPress:
+                _frontend->handleButtonPress(ev.x_root, ev.y_root, ev.button);
+                break;
+            case ButtonRelease:
+                _frontend->handleButtonRelease(ev.button);
+                break;
+            case MotionNotify:
+                _frontend->handleMouseMove(ev.x_root, ev.y_root);
+                break;
+        }
+    }
 }
 
 void X11WidgetBackend::applyMapState()
@@ -86,4 +124,9 @@ void X11WidgetBackend::applyMapState()
         _minimized_widget->unmap();
         _widget->map();
     }
+}
+
+void X11WidgetBackend::raise()
+{
+    XRaiseWindow(dpy(), currentWidget()->wid());
 }

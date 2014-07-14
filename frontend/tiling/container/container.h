@@ -31,7 +31,7 @@ public:
     virtual ContainerLayout *getLayout() = 0;
     virtual bool isMinimized() const = 0;
 
-    virtual void handleClick(int x, int y) override;
+    virtual void handleButtonPress(int x_global, int y_global, int button) override;
 
     virtual void setOrientation(Orientation orientation) {
         _orientation = orientation;

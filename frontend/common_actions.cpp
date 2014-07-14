@@ -28,6 +28,8 @@ CommonActions::CommonActions() :
     _actions.createAction("changeMode", ACTION_CHANGE_MODE);
     _actions.createAction("closeActiveClient", ACTION_CLOSE_ACTIVE_CLIENT);
     _actions.createAction("focusActiveClient", ACTION_FOCUS_ACTIVE_CLIENT);
+    _actions.createAction("toggleDecoration", ACTION_TOGGLE_DECORATION);
+    _actions.createAction("updateClientGeometry", ACTION_UPDATE_CLIENT_GEOMETRY);
     _actions.createAction("quit", ACTION_QUIT);
     _actions.createAction("run", new ActionRun());
 }
@@ -84,6 +86,16 @@ void CommonActions::performAction(int id)
             break;
         case ACTION_FOCUS_ACTIVE_CLIENT:
             Application::self()->focusActiveClient();
+            break;
+        case ACTION_TOGGLE_DECORATION:
+            if (Client *client = Application::self()->activeClient()) {
+                client->setHasDecoration(!client->hasDecoration());
+            }
+            break;
+        case ACTION_UPDATE_CLIENT_GEOMETRY:
+            if (Client *client = Application::self()->activeClient()) {
+                client->updateFrameGeometry();
+            }
             break;
         case ACTION_QUIT:
             Application::self()->backend()->requestQuit();

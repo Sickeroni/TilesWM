@@ -89,6 +89,10 @@ Client *WindowManagerDefault::activeClient()
 void WindowManagerDefault::manageClient(Client *client)
 {
     debug;
+
+    client->setIsFloating(false);
+    client->setHasDecoration(false);
+
     if (!_root_container->activeClientContainer()) {
         ClientContainer *c = new ClientContainer();
         int index = _root_container->addChild(c);
@@ -230,6 +234,7 @@ void WindowManagerDefault::makeContainerActive(Container *container)
 
 void WindowManagerDefault::makeClientActive(Client *client)
 {
+    printvar(client);
     ClientContainer *container = dynamic_cast<ClientContainer*>(client->parent());
     assert(container);
 

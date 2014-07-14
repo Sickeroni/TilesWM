@@ -20,6 +20,9 @@ namespace Theme {
 
 void drawClientFrame(Client *client, Canvas *canvas)
 {
+    if (!client->hasDecoration())
+        return;
+
     Rect frame_rect = client->rect();
     frame_rect.setPos(0, 0);
 
@@ -31,7 +34,7 @@ void drawClientFrame(Client *client, Canvas *canvas)
 
     //FIXME
     canvas->erase(frame_rect);
-//     canvas->fillRectangle(frame_rect, frame_color);
+//     canvas->fillRectangle(frame_rect, 0x00FF00);
 
     Rect border_rect;
     border_rect.set(frame_rect.x+1, frame_rect.y+1, frame_rect.w-2, frame_rect.h-2);

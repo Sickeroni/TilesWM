@@ -2,9 +2,10 @@
 #define __WIDGET_H__
 
 #include "widget_frontend.h"
+#include "widget_backend.h"
 #include "rect.h"
+#include "common.h"
 
-class WidgetBackend;
 class Client;
 class Workspace;
 class ChildWidget;
@@ -19,6 +20,7 @@ public:
     };
 
     virtual void draw(Canvas *canvas) override;
+    virtual void setRect(const Rect &rect);
     virtual ChildWidget *toChildWidget() { return 0; }
 
     const Rect &rect() const { return _rect; }
@@ -29,11 +31,14 @@ public:
     int maxTextHeight() const;
     Client *toClient();
     Workspace *toWorkspace();
+    void raise() {
+        _backend->raise();
+    }
+    void globalToLocal(int &x, int &y);
+
 
     template <class T>
     T* to() { return dynamic_cast<T*>(this); }
-
-    virtual void setRect(const Rect &rect);
 
 protected:
     Widget(Type type) : _type(type) {}

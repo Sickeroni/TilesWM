@@ -20,12 +20,15 @@ public:
     virtual int maxTextHeight() const override;
     virtual void setMinimized(bool minimized) override;
     virtual void setFrontend(WidgetFrontend *frontend) override;
+    virtual void grabMouse() override;
+    virtual void releaseMouse() override;
+    virtual void raise() override;
 
     // X11ServerWidget::EventHandler implementaion
     virtual void handleExpose() override {
         redraw();
     }
-    virtual void handleButtonPress(const XButtonEvent &ev) override;
+    virtual void handleMouseEvent(const XButtonEvent &ev) override;
 
     bool isMinimized() { return _is_minimized; }
 //     void reparent(X11WidgetBackend *new_parent);
@@ -41,6 +44,8 @@ private:
     bool _is_minimized = false;
     bool _is_mapped = false;
     WidgetFrontend *_frontend = 0;
+
+    static X11WidgetBackend *_mouse_grabber;
 };
 
 #endif

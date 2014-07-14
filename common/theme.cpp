@@ -13,11 +13,11 @@ void calcClientFrameMargins(bool has_decoration, int max_text_height, int &side,
     if (has_decoration) {
         frame_margin += Metrics::CLIENT_DECORATION_MARGIN;
         titlebar_height +=
-            (max_text_height + (2 * Metrics::CLIENT_TITLEBAR_INNER_MARGIN));
+            (max_text_height + titlebar_gap + (2 * Metrics::CLIENT_TITLEBAR_INNER_MARGIN));
     }
 
     side = frame_margin;
-    top = frame_margin + titlebar_height + titlebar_gap;
+    top = frame_margin + titlebar_height;
     bottom = frame_margin;
 }
 

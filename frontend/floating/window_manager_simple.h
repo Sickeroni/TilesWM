@@ -20,19 +20,19 @@ public:
 
     virtual Client *activeClient() { return 0; }
     virtual void manageClient(Client *client) override {
+        debug;
         _clients.push_back(client);
         client->setIsFloating(true);
+        client->setHasDecoration(true);
         workspace()->addChild(client);
     }
     virtual void unmanageClient(Client *client) override {
         workspace()->removeChild(client);
-        client->setIsFloating(false);
         _clients.remove(client);
     }
     virtual void unmanageAllClients(std::vector<Client*> &unmanaged_clients) override {
         for (Client *client : _clients) {
             workspace()->removeChild(client);
-            client->setIsFloating(false);
             unmanaged_clients.push_back(client);
         }
         _clients.clear();

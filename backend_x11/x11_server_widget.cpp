@@ -89,29 +89,42 @@ X11ServerWidget *X11ServerWidget::create(X11ServerWidget *parent, uint32_t bg_co
 
 bool X11ServerWidget::handleEvent(const XEvent &ev)
 {
-    if (ev.type == CreateNotify && find(ev.xcreatewindow.window)) // eat create event
-        return true;
-    else if (ev.type == ButtonPress) {
-        X11ServerWidget *widget = 0;
-        if (ev.xbutton.window != X11Application::root())
-            widget = find(ev.xbutton.window);
-        else if (ev.xbutton.subwindow)
-            widget = find(ev.xbutton.subwindow);
-        if (widget) {
-            if (widget->_event_handler)
-                widget->_event_handler->handleButtonPress(ev.xbutton);
-            return true;
-        } else
-            return false;
-    } else if (ev.type == Expose && !ev.xexpose.count) {
-        if (X11ServerWidget *widget = find(ev.xexpose.window)) {
-            if (widget->_event_handler)
-                widget->_event_handler->handleExpose();
-            return true;
-        } else
-            return false;
-    } else
-        return false;
+    switch (ev.type) {
+        case CreateNotify:
+            // eat create event
+            if (find(ev.xcreatewindow.window))
+                return true;
+            break;
+        case ButtonPress:
+            debug<<"ButtonPress";
+        case ButtonRelease:
+        case MotionNotify:
+            {
+                X11ServerWidget *widget = 0;
+                if (ev.xbutton.window != X11Application::root())
+                    widget = find(ev.xbutton.window);
+                else if (ev.xbutton.subwindow)
+                    widget = find(ev.xbutton.subwindow);
+                if (widget) {
+                    if (widget->_event_handler)
+                        widget->_event_handler->handleMouseEvent(ev.xbutton);
+                    return true;
+                }
+            }
+            debug<<"not a server widget";
+            break;
+        case Expose:
+            if (!ev.xexpose.count) {
+                if (X11ServerWidget *widget = find(ev.xexpose.window)) {
+                    if (widget->_event_handler)
+                        widget->_event_handler->handleExpose();
+                    return true;
+                }
+            }
+            break;
+    }
+
+    return false;
 }
 
 void X11ServerWidget::setRect(const Rect &rect)

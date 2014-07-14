@@ -17,6 +17,9 @@ public:
     virtual int maxTextHeight() const = 0;
     //FIXME remove
     virtual void setFrontend(WidgetFrontend *frontend) = 0;
+    virtual void grabMouse() = 0;
+    virtual void releaseMouse() = 0;
+    virtual void raise() = 0;
 
     // if this widget is a client return its backend interface
 //     virtual ClientBackend *clientBackend() { return 0; }
