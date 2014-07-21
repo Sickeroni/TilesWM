@@ -26,6 +26,27 @@ WindowManagerDefault::~WindowManagerDefault()
     _root_container = 0;
 }
 
+void WindowManagerDefault::createActions(ActionSet &actions)
+{
+    actions.createAction("moveClientLeft", ACTION_MOVE_CLIENT_LEFT);
+    actions.createAction("moveClientRight", ACTION_MOVE_CLIENT_RIGHT);
+    actions.createAction("moveClientUp", ACTION_MOVE_CLIENT_UP);
+    actions.createAction("moveClientDown", ACTION_MOVE_CLIENT_DOWN);
+    actions.createAction("deleteEmptyContainers", ACTION_DELETE_EMPTY_CONTAINERS);
+
+    actions.createAction("toggleExpanding", ACTION_TOGGLE_EXPANDING);
+    actions.createAction("toggleParentExpanding", ACTION_TOGGLE_PARENT_EXPANDING);
+
+    actions.createAction("incWidth", ACTION_INC_WIDTH);
+    actions.createAction("decWidth", ACTION_DEC_WIDTH);
+    actions.createAction("incHeight", ACTION_INC_HEIGHT);
+    actions.createAction("decHeight", ACTION_DEC_HEIGHT);
+
+    actions.createAction("setFixedSizeToMinimum", ACTION_SET_FIXED_SIZE_TO_MINIMUM);
+
+    actions.createAction("rotate", ACTION_ROTATE);
+}
+
 void WindowManagerDefault::performAction(int id)
 {
     switch(id) {

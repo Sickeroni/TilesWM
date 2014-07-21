@@ -9,6 +9,19 @@ class ContainerContainer;
 class WindowManagerDefault final : public WindowManager
 {
 public:
+    WindowManagerDefault(Workspace *workspace, Mode *mode);
+    ~WindowManagerDefault();
+
+    virtual void layout() override;
+    virtual void manageClient(Client *client) override;
+    virtual void unmanageClient(Client *client) override;
+    virtual void unmanageAllClients(std::vector<Client*> &unmanaged_clients) override;
+    virtual Client *activeClient() override;
+    virtual void makeClientActive(Client *client) override;
+
+    static void createActions(ActionSet &actions);
+
+protected:
     enum {
         ACTION_MOVE_CLIENT_LEFT,
         ACTION_MOVE_CLIENT_RIGHT,
@@ -25,17 +38,6 @@ public:
         ACTION_ROTATE
     };
 
-    WindowManagerDefault(Workspace *workspace, Mode *mode);
-    ~WindowManagerDefault();
-
-    virtual void layout() override;
-    virtual void manageClient(Client *client) override;
-    virtual void unmanageClient(Client *client) override;
-    virtual void unmanageAllClients(std::vector<Client*> &unmanaged_clients) override;
-    virtual Client *activeClient() override;
-    virtual void makeClientActive(Client *client) override;
-
-protected:
     virtual void performAction(int id) override;
     virtual void performComplexAction(const ComplexAction *action, const ComplexAction::Parameters *parameters) override {}
 
