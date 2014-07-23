@@ -37,7 +37,7 @@ public:
     virtual void reparent(WidgetBackend *parent) override;
     virtual void redraw() override {}
     virtual int maxTextHeight() const override;
-    virtual void setFrontend(WidgetFrontend *frontend) {
+    virtual void setFrontend(WidgetFrontend *frontend) override {
         assert(!_widget_frontend || !frontend);
         _widget_frontend = frontend;
     }
@@ -47,28 +47,26 @@ public:
     virtual void releaseMouse() override {
         assert(0);
     }
-    virtual void raise() override {
-        assert(0);
-    }
+    virtual void raise() override;
 
     // ClientBackend implementation
     virtual WidgetBackend *widget() override { return this; }
-    virtual const Rect &rect() { return _widget->rect(); }
-    virtual bool hasFocus() override { return _has_focus; }
+    virtual const Rect &rect() const override { return _widget->rect(); }
+    virtual bool hasFocus() const override { return _has_focus; }
     virtual void setFocus() override {
         setFocus(this);
     }
-    virtual Icon *icon() override { return _icon; }
+    virtual Icon *icon() const override { return _icon; }
     virtual void requestClose() override;
     virtual void grabMouseButton(int button) override;
-    virtual const std::string &name() override { return _name; }
-    virtual const std::string &className() override { return _class; }
-    virtual const std::string &iconName() override { return _icon_name; }
-    virtual const std::string &title() override { return _title; }
-    virtual int minWidth() override { return _min_width; }
-    virtual int minHeight() override { return _min_height; }
-    virtual int maxWidth() override { return _max_width; }
-    virtual int maxHeight() override { return _max_height; }
+    virtual const std::string &name() const override { return _name; }
+    virtual const std::string &className() const override { return _class; }
+    virtual const std::string &iconName() const override { return _icon_name; }
+    virtual const std::string &title() const override { return _title; }
+    virtual int minWidth() const override { return _min_width; }
+    virtual int minHeight() const override { return _min_height; }
+    virtual int maxWidth() const override { return _max_width; }
+    virtual int maxHeight() const override { return _max_height; }
 
 private:
     class CriticalSection;

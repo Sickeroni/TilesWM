@@ -22,21 +22,21 @@ public:
 
     virtual WidgetBackend *widget() = 0;
 
-    virtual const Rect &rect() = 0;
-    virtual bool hasFocus() = 0;
+    virtual const Rect &rect() const = 0;
+    virtual bool hasFocus() const = 0;
     virtual void setFocus() = 0;
-    virtual Icon *icon() = 0;
+    virtual Icon *icon() const = 0;
     virtual void requestClose() = 0;
     virtual void grabMouseButton(int button) = 0;
 
-    virtual const std::string &name() = 0;
-    virtual const std::string &className() = 0;
-    virtual const std::string &iconName() = 0;
-    virtual const std::string &title() = 0;
-    virtual int minWidth() = 0;
-    virtual int minHeight() = 0;
-    virtual int maxWidth() = 0;
-    virtual int maxHeight() = 0;
+    virtual const std::string &name() const = 0;
+    virtual const std::string &className() const = 0;
+    virtual const std::string &iconName() const = 0;
+    virtual const std::string &title() const = 0;
+    virtual int minWidth() const = 0;
+    virtual int minHeight() const = 0;
+    virtual int maxWidth() const = 0;
+    virtual int maxHeight() const = 0;
 };
 
 #endif

@@ -6,30 +6,26 @@
 #include "theme.h"
 #include "common.h"
 
-Client::Client(ClientBackend *client_backend) : ChildWidget(CLIENT),
+Client::Client(ClientBackend *client_backend) : ChildWidget(OTHER),
     _client_backend(client_backend)
 {
-    _client_backend->widget()->setFrontend(this);
-    _client_backend->grabMouseButton(MOVE_BUTTON);
-    _client_backend->grabMouseButton(RESIZE_BUTTON);
-
-    _rect = _client_backend->rect();
-
-    _backend = Application::self()->backend()->createWidgetBackend();
-    _backend->setRect(_rect);
+    _backend = _client_backend->widget();
     _backend->setFrontend(this);
-
+    _rect = _client_backend->rect();
 }
 
 Client::~Client()
 {
-    cancelDrag();
+    assert(!_workspace);
+    _backend->setFrontend(0);
+    _backend->setMapped(false);
+    _backend->reparent(0);
+}
 
-    _client_backend->widget()->setFrontend(0);
-    _client_backend->widget()->setMapped(false);
-    _client_backend->widget()->reparent(0);
-
-    delete _backend;
+void Client::setWorkspace(Workspace *workspace)
+{
+    assert(!_workspace || !workspace);
+    _workspace = workspace;
 }
 
 void Client::applySizeHints(Rect &rect)
@@ -56,50 +52,11 @@ void Client::limitRect(Rect &rect)
         rect.h = MAX_HEIGHT;
 }
 
-void Client::updateFrameGeometry()
-{
-    if (_is_floating) {
-        Rect client_rect = _client_backend->rect();
-
-        Rect frame_rect;
-        Theme::calcClientFrameRect(hasDecoration(), maxTextHeight(), client_rect, frame_rect);
-        frame_rect.setPos(_rect.x, _rect.y);
-
-        setRect(frame_rect);
-    } else {
-        Rect client_rect;
-        Theme::calcClientClientRect(hasDecoration(), maxTextHeight(), _rect, client_rect);
-        _client_backend->widget()->setRect(client_rect);
-    }
-}
-
-void Client::setIsFloating(bool is_floating)
-{
-    _is_floating = is_floating;
-    updateFrameGeometry();
-}
-
-void Client::setHasDecoration(bool has_decoration)
-{
-    printvar(has_decoration);
-    _has_decoration = has_decoration;
-    updateFrameGeometry();
-}
-
-void Client::setRect(const Rect &rect)
-{
-    if ((rect.w != _rect.w ) || (rect.h != _rect.h)) {
-        Rect client_rect;
-        Theme::calcClientClientRect(hasDecoration(), maxTextHeight(), rect, client_rect);
-        limitRect(client_rect);
-        _client_backend->widget()->setRect(client_rect);
-    }
-
-    ChildWidget::setRect(rect);
-}
-
 void Client::handleFocusChanged(bool has_focus)
 {
+    UNIMPLEMENTED
+#if 0
+
     //FIXME
     // this should be overidden in a subclass like TiledClient
 
@@ -113,8 +70,10 @@ void Client::handleFocusChanged(bool has_focus)
     //HACK
     if (parent())
         parent()->redraw();
+#endif
 }
 
+#if 0
 void Client::handleSizeHintsChanged()
 {
     UNIMPLEMENTED
@@ -127,9 +86,12 @@ void Client::handleSizeHintsChanged()
     }
 #endif
 }
+#endif
 
 void Client::handleMap()
 {
+//     UNIMPLEMENTED
+#if 0
     _client_backend->widget()->reparent(_backend);
 
     updateFrameGeometry();
@@ -137,10 +99,14 @@ void Client::handleMap()
     _client_backend->widget()->setMapped(true);
 
     Application::manageClient(this);
+#endif
+    Application::manageClient(this);
 }
 
 void Client::handlePropertyChanged(ClientBackend::Property property)
 {
+    UNIMPLEMENTED
+#if 0
     switch (property) {
         case ClientBackend::PROP_SIZE_HINTS:
             handleSizeHintsChanged();
@@ -155,6 +121,7 @@ void Client::handlePropertyChanged(ClientBackend::Property property)
         default:
             debug<<"unhandled property:"<<property;
     }
+#endif
 }
 
 void Client::handleConfigureRequest(const Rect &client_rect)
@@ -176,104 +143,10 @@ void Client::handleConfigureRequest(const Rect &client_rect)
 #endif
 }
 
+
 void Client::handleButtonPress(int x_global, int y_global, int button)
 {
-    raise();
-    setFocus();
-
-    if (isFloating()) {
-        if (button == MOVE_BUTTON)
-            startMove(x_global, y_global);
-        else if (button == RESIZE_BUTTON) {
-            Anchor anchor = ANCHOR_BOTTOM_RIGHT;
-            printvar(_client_backend->rect().w);
-            printvar(_rect.w);
-            startResize(anchor, x_global, y_global);
-        }
-    }
-}
-
-void Client::handleButtonRelease(int button)
-{
-    finishDrag();
-}
-
-void Client::handleMouseMove(int x, int y)
-{
-    if (_drag_mode != DRAG_NONE) {
-        int xdiff = x - _drag_start_x;
-        int ydiff = y - _drag_start_y;
-
-        if (_drag_mode == DRAG_MOVE) {
-            Rect new_rect = rect();
-            new_rect.setPos(_rect_before_drag_start.x + xdiff, _rect_before_drag_start.y + ydiff);
-            setRect(new_rect);
-        }
-        else if (_drag_mode == DRAG_RESIZE) {
-
-            Rect client_rect = _client_backend->rect();
-
-            client_rect.setSize(_rect_before_drag_start.w + xdiff, _rect_before_drag_start.h + ydiff);
-
-            applySizeHints(client_rect);
-            limitRect(client_rect);
-
-            Rect frame_rect;
-            Theme::calcClientFrameRect(hasDecoration(), maxTextHeight(), client_rect, frame_rect);
-            limitRect(frame_rect);
-
-            frame_rect.setPos(_rect.x, _rect.y);
-
-            setRect(frame_rect);
-        }
-    }
-}
-
-void Client::startResize(Anchor anchor, int x, int y)
-{
-#if 0
-    //FIXME what if the pointer is already grabbed ?
-    assert(!_dragged);
-
-#endif
-    _backend->grabMouse();
-
-    _drag_mode = DRAG_RESIZE;
-    _drag_start_x = x;
-    _drag_start_y = y;
-    _rect_before_drag_start = _client_backend->rect();
-}
-
-void Client::startMove(int x, int y)
-{
-#if 0
-    //FIXME what if the pointer is already grabbed ?
-    assert(!_dragged);
-
-#endif
-    _backend->grabMouse();
-
-    _drag_mode = DRAG_MOVE;
-    _drag_start_x = x;
-    _drag_start_y = y;
-    _rect_before_drag_start = rect();
-}
-
-void Client::finishDrag()
-{
-    debug;
-
-    assert(_drag_mode != DRAG_NONE);
-
-    _drag_mode = DRAG_NONE;
-    _drag_start_x = _drag_start_y = 0;
-    _rect_before_drag_start.set(0, 0, 0, 0);
-
-    _backend->releaseMouse();
-}
-
-void Client::cancelDrag()
-{
-    if (_drag_mode != DRAG_NONE)
-        finishDrag();
+    assert(0);
+//     if (_mouse_handler)
+//         _mouse_handler->handleButtonPress(this, x_global, y_global, button);
 }

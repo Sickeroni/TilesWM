@@ -6,7 +6,11 @@
 #include "widget.h"
 #include "common.h"
 
+#include <list>
+#include <vector>
+
 class Client;
+class ClientWrapper;
 class Mode;
 class WindowManager;
 class ChildWidget;
@@ -38,17 +42,13 @@ public:
 
     WindowManager *windowManager() { return _window_manager; }
 
-    // active child in the floating layer
-    ChildWidget *activeFlotatingChild() {
-        return _active_floating_child;
-    }
-    // sets the active client in the floating layer
-    void setActiveFloatingChild(ChildWidget *child);
-
-    Client *activeFloatingClient();
-
     void addChild(ChildWidget *child);
     void removeChild(ChildWidget *child);
+
+    void addClient(Client *client);
+    void removeClient(Client *client);
+    ClientWrapper *activeClient();
+    void makeClientActive(Client *client);
 
     Icon *background() { return _background_scaled; }
 
@@ -57,8 +57,9 @@ private:
     //ContainerContainer *_dock
     size_t _mode = 0;
     WindowManager *_window_manager = 0;
-    ChildWidget *_active_floating_child = 0;
     Icon *_background = 0, *_background_scaled = 0;
+    std::list<Client*> _clients;
+    std::vector<WindowManager*> _window_managers;
 };
 
 #endif // __WORKSPACE_H__

@@ -5,7 +5,7 @@
 #include "window_manager.h"
 #include "client_container_theme.h"
 #include "workspace.h"
-#include "client.h"
+#include "client_wrapper.h"
 #include "application.h"
 
 namespace MouseHandler
@@ -20,7 +20,7 @@ void handleClientContainerClick(ClientContainer *container, int x, int y)
     int clicked_tab_index = Theme::getTabAt(x, y, container);
 
     if (clicked_tab_index != INVALID_INDEX) {
-        Client *client = container->child(clicked_tab_index);
+        ClientWrapper *client = container->child(clicked_tab_index);
         container->workspace()->windowManager()->makeClientActive(client);
         client->setFocus();
     }

@@ -5,7 +5,7 @@
 #include "rect.h"
 #include "common.h"
 
-class Client;
+class ClientWrapper;
 class ContainerLayout;
 class ClientContainer;
 
@@ -49,7 +49,7 @@ public:
         return false;
     }
 
-    Client *activeClient();
+    ClientWrapper *activeClient();
 
     bool isHorizontal() {
         return orientation() == HORIZONTAL;

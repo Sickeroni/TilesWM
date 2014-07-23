@@ -32,7 +32,7 @@ namespace ContainerUtil
     // return: the newly created sibling
     ClientContainer *splitContainer(ClientContainer *container, bool prepend);
     // removes all children and puts the de-parented clients into <clients>
-    void emptyContainer(ContainerContainer *container, std::vector<Client*> &clients);
+//     void emptyContainer(ContainerContainer *container, std::vector<Client*> &clients);
 
     void deleteEmptyChildren(ContainerContainer *container);
 }

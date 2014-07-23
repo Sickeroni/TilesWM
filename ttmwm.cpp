@@ -3,6 +3,7 @@
 #include "backend_x11/x11_application.h"
 #ifndef FRONTEND_DUMMY
 #include "application.h"
+#include "mode.h"
 #include "mode_simple.h"
 #include "mode_default.h"
 #endif
@@ -34,9 +35,9 @@ int main()
 #else
     std::vector<Mode*> modes;
 
+    modes.push_back(new ModeSimple());
     modes.push_back(new ModeDefault());
 //     modes.push_back(new Mode3Panel());
-    modes.push_back(new ModeSimple());
 
     Application frontend(&modes);
 #endif

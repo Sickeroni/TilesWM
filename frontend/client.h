@@ -4,11 +4,15 @@
 #include "child_widget.h"
 #include "client_backend.h"
 #include "client_frontend.h"
+#include "widget_backend.h"
+#include "widget_frontend.h"
 #include "common.h"
 
 #include <string>
+#include <list>
 
 class Icon;
+class Workspace;
 
 class Client final : public ChildWidget, public ClientFrontend
 {
@@ -16,68 +20,29 @@ public:
     Client(ClientBackend *client_backend);
     ~Client();
 
-    virtual void setRect(const Rect &rect) override;
+    virtual void setRect(const Rect &rect) override {
+        ChildWidget::setRect(rect);
+        _client_backend->widget()->setRect(rect);
+    }
 
-    bool isFloating() { return _is_floating; }
-    bool hasDecoration() { return _has_decoration; }
-    void setHasDecoration(bool has_decoration);
-    void setIsFloating(bool is_floating);
-    const std::string &name() {
-        return _client_backend->name();
-    }
-    const std::string &className() {
-        return _client_backend->className();
-    }
-    const std::string &iconName() {
-        return _client_backend->iconName();
-    }
-    const std::string &title() {
-        return _client_backend->title();
-    }
-    Icon *icon() {
-        return _client_backend->icon();
-    }
+    const ClientBackend *backend() { return _client_backend; }
+    Workspace *workspace() { return _workspace; }
+    void setWorkspace(Workspace *workspace);
+    void applySizeHints(Rect &rect);
+
     void requestClose() {
         _client_backend->requestClose();
     }
     void setFocus() {
         _client_backend->setFocus();
     }
-    bool hasFocus() {
-        return _client_backend->hasFocus();
+    void grabMouseButton(int button) {
+        _client_backend->grabMouseButton(button);
     }
-    int minWidth() {
-        return _client_backend->minWidth();
-    }
-    int minHeight() {
-        return _client_backend->minHeight();
-    }
-    int maxWidth() {
-        return _client_backend->maxWidth();
-    }
-    int maxHeight() {
-        return _client_backend->maxHeight();
-    }
-    void updateFrameGeometry();
+
+    static void limitRect(Rect &rect);
 
 private:
-    enum Anchor {
-        ANCHOR_LEFT,
-        ANCHOR_RIGHT,
-        ANCHOR_TOP,
-        ANCHOR_BOTTOM,
-        ANCHOR_TOP_LEFT,
-        ANCHOR_TOP_RIGHT,
-        ANCHOR_BOTTOM_LEFT,
-        ANCHOR_BOTTOM_RIGHT
-    };
-
-    enum DragMode {
-        DRAG_NONE,
-        DRAG_MOVE,
-        DRAG_RESIZE
-    };
-
     enum {
         MIN_WIDTH = 100,
         MIN_HEIGHT = 100,
@@ -86,36 +51,14 @@ private:
         MAX_HEIGHT = 2000
     };
 
-    enum {
-        //FIXME
-        MOVE_BUTTON = 1,
-        RESIZE_BUTTON = 3
-    };
-
-    virtual void handleButtonPress(int x_gloab, int y_global, int button) override;
-    virtual void handleButtonRelease(int button) override;
-    virtual void handleMouseMove(int x, int y) override;
+    virtual void draw(Canvas *canvas) override {}
+    virtual void handleButtonPress(int x_global, int y_global, int button) override;
     virtual void handleFocusChanged(bool has_focus) override;
     virtual void handleMap() override;
     virtual void handlePropertyChanged(ClientBackend::Property property) override;
     virtual void handleConfigureRequest(const Rect &rect) override;
-
-    void handleSizeHintsChanged();
-    void startMove(int x, int y);
-    void startResize(Anchor anchor, int x, int y);
-    void finishDrag();
-    void cancelDrag();
-    void applySizeHints(Rect &rect);
-
-    static void limitRect(Rect &rect);
-
-    DragMode _drag_mode = DRAG_NONE;
-    int _drag_start_x = 0;
-    int _drag_start_y = 0;
-    Rect _rect_before_drag_start;
-    bool _is_floating = true;
-    bool _has_decoration = false;
     ClientBackend *_client_backend = 0;
+    Workspace *_workspace = 0;
 };
 
 #endif // __CLIENT_H__

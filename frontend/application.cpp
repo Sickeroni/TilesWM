@@ -3,7 +3,7 @@
 #include "monitor.h"
 #include "workspace.h"
 #include "common_actions.h"
-#include "client.h"
+#include "client_wrapper.h"
 #include "mode.h"
 #include "window_manager.h"
 #include "backend.h"
@@ -139,25 +139,14 @@ Workspace *Application::activeWorkspace()
 void Application::manageClient(Client *client)
 {
     debug;
-//     printvar(client->isFloating());
-//     if (client->isFloating())
-//         activeWorkspace()->addChild(client);
-//     else
-        activeWorkspace()->windowManager()->manageClient(client);
+
+    activeWorkspace()->addClient(client);
 }
 
 void Application::unmanageClient(Client *client)
 {
-    if (client->parent()) {
-        // FIXME
-        // crashes if Workspace::windowManager() is a floating wm
-        if (client->isFloating()) {
-            client->workspace()->removeChild(client);
-            assert(!client->parent());
-        } else  {
-            client->workspace()->windowManager()->unmanageClient(client);
-        }
-    }
+    if (client->workspace())
+        client->workspace()->removeClient(client);
 }
 
 void Application::runProgram(const char *path)
@@ -205,12 +194,9 @@ void Application::runProgram(const std::vector<std::string> &args)
         cerr<<"ERROR: running "<<program<<": Can't fork.";
 }
 
-Client *Application::activeClient()
+ClientWrapper *Application::activeClient()
 {
-    if (self()->activeLayer() == LAYER_TILED)
-        return activeWorkspace()->windowManager()->activeClient();
-    else
-        return activeWorkspace()->activeFloatingClient();
+    return activeWorkspace()->activeClient();
 }
 
 void Application::makeClientActive(Client *client)
@@ -219,13 +205,7 @@ void Application::makeClientActive(Client *client)
     assert(workspace);
 
     if (workspace->makeActive()) {
-        if (client->isFloating()) {
-            workspace->setActiveFloatingChild(client);
-            self()->setActiveLayer(LAYER_FLOATING);
-        } else {
-            workspace->windowManager()->makeClientActive(client);
-            self()->setActiveLayer(LAYER_TILED);
-        }
+        workspace->makeClientActive(client);
     }
 }
 

@@ -11,6 +11,7 @@
 
 class Canvas;
 class ClientContainerLayout;
+class ClientWrapper;
 
 
 class ClientContainer final : public Container
@@ -30,30 +31,30 @@ public:
     virtual ContainerLayout *getLayout() override;
     virtual bool isMinimized() const override { return _is_minimized; }
 
-    Client *child(size_t index) { return _children[index]; }
-    int indexOfChild(const Client *child);
+    ClientWrapper *child(size_t index) { return _children[index]; }
+    int indexOfChild(const ClientWrapper *child);
     int activeChildIndex() { return _active_child_index; }
     // doesn't set focus to the client !
     void setActiveChild(int index);
     // return: index of added client
-    int addChild(Client *client);
-    void removeChild(Client *client);
+    int addChild(ClientWrapper *client);
+    void removeChild(ClientWrapper *client);
     // deparents all children and puts them into <clients>
-    void removeChildren(std::vector<Client*> &clients);
+    void removeChildren(std::vector<ClientWrapper*> &clients);
     void setMinimized(bool minimized);
 //     void clear();
 
-    Client *activeClient() {
+    ClientWrapper *activeClient() {
         return activeChildIndex() != INVALID_INDEX ? child(activeChildIndex()) : 0;
     }
 
-    void handleClientFocusChange(Client *client);
-    void handleClientSizeHintChanged(Client *client);
+//     void handleClientFocusChange(Client *client);
+//     void handleClientSizeHintChanged(Client *client);
 
 private:
     ClientContainerLayout *_layout = 0;
     bool _is_minimized = false;
-    std::vector<Client*> _children;
+    std::vector<ClientWrapper*> _children;
     int _active_child_index = INVALID_INDEX;
 };
 

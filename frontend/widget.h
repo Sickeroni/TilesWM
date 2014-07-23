@@ -14,7 +14,6 @@ class Widget : public WidgetFrontend
 {
 public:
     enum Type {
-        CLIENT,
         WORKSPACE,
         OTHER
     };
@@ -29,13 +28,11 @@ public:
     void setMapped(bool mapped);
     void redraw();
     int maxTextHeight() const;
-    Client *toClient();
     Workspace *toWorkspace();
     void raise() {
         _backend->raise();
     }
     void globalToLocal(int &x, int &y);
-
 
     template <class T>
     T* to() { return dynamic_cast<T*>(this); }

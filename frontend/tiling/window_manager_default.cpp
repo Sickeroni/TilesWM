@@ -3,6 +3,7 @@
 #include "container_layout.h"
 #include "container_container.h"
 #include "client_container.h"
+#include "client_wrapper.h"
 #include "client.h"
 #include "workspace.h"
 #include "application.h"
@@ -97,44 +98,56 @@ void WindowManagerDefault::performAction(int id)
     }
 }
 
+void WindowManagerDefault::setActive(bool active)
+{
+    WindowManager::setActive(active);
+    _root_container->setMapped(active);
+    layout();
+}
+
 ClientContainer *WindowManagerDefault::activeClientContainer()
 {
     return _root_container->activeClientContainer();
 }
 
-Client *WindowManagerDefault::activeClient()
+ClientWrapper *WindowManagerDefault::activeClient()
 {
     return activeClientContainer() ? activeClientContainer()->activeClient() : 0;
 }
 
-void WindowManagerDefault::manageClient(Client *client)
+ClientContainer *WindowManagerDefault::containerOfClient(ClientWrapper *client)
+{
+    return _container_of_client[client];
+}
+
+void WindowManagerDefault::manageClient(ClientWrapper *client)
 {
     debug;
 
-    client->setIsFloating(false);
-    client->setHasDecoration(false);
+    assert(_container_of_client[client] == 0);
 
-    if (!_root_container->activeClientContainer()) {
-        ClientContainer *c = new ClientContainer();
-        int index = _root_container->addChild(c);
+    ClientContainer *container = _root_container->activeClientContainer();
+
+    if (!container) {
+        container = new ClientContainer();
+        int index = _root_container->addChild(container);
         _root_container->setActiveChild(index);
     }
 
-    _root_container->activeClientContainer()->addChild(client);
+    container->addChild(client);
+    _container_of_client[client] = container;
 }
 
-void WindowManagerDefault::unmanageClient(Client *client)
+#if 0
+void WindowManagerDefault::unmanageClient(ClientWrapper *client)
 {
     assert(client->workspace() == workspace());
 
-    ClientContainer *container = client->parentTo<ClientContainer>();
+    ClientContainer *container = containerOfClient(client);
+    assert(container);
     container->removeChild(client);
 }
-
-void WindowManagerDefault::unmanageAllClients(std::vector<Client*> &unmanaged_clients)
-{
-    ContainerUtil::emptyContainer(_root_container, unmanaged_clients);
-}
+#endif
 
 void WindowManagerDefault::layout()
 {
@@ -171,11 +184,11 @@ void WindowManagerDefault::moveClient(Direction direction)
     assert(container->workspace() == Application::activeWorkspace());
     assert(container->parent());
 
-    Client *client = container->activeClient();
+    ClientWrapper *client = container->activeClient();
     if (!client)
         return;
 
-    assert(client->parent() == container);
+    assert(containerOfClient(client) == container);
 
     if (_maximize_active_container) //FIXME
         return;
@@ -212,6 +225,7 @@ void WindowManagerDefault::moveClient(Direction direction)
         container->removeChild(client);
         int index = target->addChild(client);
         target->setActiveChild(index);
+        _container_of_client[client] = target;
         makeContainerActive(target);
         client->setFocus();
     }
@@ -233,7 +247,7 @@ void WindowManagerDefault::changeSize(bool horizontal, int delta)
 void WindowManagerDefault::setFixedSizeToMinimum()
 {
     if (ClientContainer *container = activeClientContainer()) {
-        if (Client *client = container->activeClient()) {
+        if (ClientWrapper *client = container->activeClient()) {
             container->setFixedWidth(client->minWidth());
             container->setFixedHeight(client->minHeight());
             container->enableFixedSize(true);
@@ -250,13 +264,12 @@ void WindowManagerDefault::makeContainerActive(Container *container)
         makeContainerActive(parent);
         parent->setActiveChild(parent->indexOfChild(container));
     }
-    Application::self()->setActiveLayer(Application::LAYER_TILED);
 }
 
-void WindowManagerDefault::makeClientActive(Client *client)
+void WindowManagerDefault::makeClientActive(ClientWrapper *client)
 {
     printvar(client);
-    ClientContainer *container = dynamic_cast<ClientContainer*>(client->parent());
+    ClientContainer *container = containerOfClient(client);
     assert(container);
 
     makeContainerActive(container);
@@ -267,9 +280,7 @@ bool WindowManagerDefault::isContainerActive(Container *container)
 {
     assert(container->workspace()->windowManager() == this);
 
-    if (container->workspace()->isActive() &&
-        (Application::self()->activeLayer() == Application::LAYER_TILED))
-    {
+    if (container->workspace()->isActive()) {
         ContainerContainer *parent = container->parentTo<ContainerContainer>();
         if (parent && isContainerActive(parent) && (parent->activeChild() == container))
             return true;

@@ -3,6 +3,7 @@
 #include "window_manager.h"
 #include "widget_backend.h"
 #include "child_widget.h"
+#include "client.h"
 #include "application.h"
 #include "mode.h"
 #include "backend.h"
@@ -15,16 +16,28 @@ Workspace::Workspace() : Widget(WORKSPACE),
 {
     _backend = Application::self()->backend()->createWidgetBackend();
     _backend->setFrontend(this);
-    _window_manager = mode()->createWindowManager(this);
+
+    for (size_t i = 0; i < Application::self()->numModes(); i++) {
+        WindowManager *wm = Application::self()->mode(i)->createWindowManager(this);
+        _window_managers.push_back(wm);
+    }
+    _window_manager = _window_managers[0];
+    _window_manager->setActive(true);
+
     _background = Application::self()->backend()->loadImage("wallpaper.png");
 }
 
 Workspace::~Workspace()
 {
-    _active_floating_child = 0;
+    assert(_clients.empty());
     assert(!monitor());
-    delete _window_manager;
+
+    _window_manager->setActive(false);
     _window_manager = 0;
+    for (WindowManager *wm : _window_managers)
+        delete wm;
+    _window_managers.clear();
+
     delete _backend;
     _backend = 0;
     delete _background;
@@ -59,27 +72,43 @@ bool Workspace::makeActive()
 void Workspace::addChild(ChildWidget *child)
 {
     child->reparent(this, _backend);
-    child->setMapped(true);
 }
 
 void Workspace::removeChild(ChildWidget *child)
 {
-    if (child == _active_floating_child)
-        _active_floating_child = 0;
     child->reparent(0, 0);
 }
 
-void Workspace::setActiveFloatingChild(ChildWidget *child)
+void Workspace::addClient(Client *client)
 {
-    _active_floating_child = child;
+    _clients.push_back(client);
+
+    client->setWorkspace(this);
+
+    for (WindowManager *wm : _window_managers) {
+        wm->manageClient(client);
+    }
 }
 
-Client *Workspace::activeFloatingClient()
+void Workspace::removeClient(Client *client)
 {
-    if (_active_floating_child)
-        return _active_floating_child->toClient();
-    else
-        return 0;
+    for (WindowManager *wm : _window_managers) {
+        wm->unmanageClient(client);
+    }
+
+    client->setWorkspace(0);
+
+    _clients.remove(client);
+}
+
+ClientWrapper *Workspace::activeClient()
+{
+    return _window_manager->activeClient();
+}
+
+void Workspace::makeClientActive(Client *client)
+{
+    _window_manager->makeClientActive(client);
 }
 
 Mode *Workspace::mode()
@@ -89,22 +118,26 @@ Mode *Workspace::mode()
 
 void Workspace::setMode(size_t index)
 {
-    assert(index < Application::self()->numModes());
+    if (monitor())
+        setMapped(false);
+
+    assert(index < _window_managers.size());
+    assert(index >= 0);
+
+    _window_manager->setActive(false);
 
     _mode = index;
 
-    std::vector<Client*> unmanaged_clients;
-    _window_manager->unmanageAllClients(unmanaged_clients);
+    _window_manager = _window_managers[index];
 
-    delete _window_manager;
-    _window_manager = mode()->createWindowManager(this);
-//     _window_manager->initShortcuts();
+    _window_manager->setActive(true);
 
-    for (Client *c : unmanaged_clients)
-        _window_manager->manageClient(c);
+    if (monitor())
+        setMapped(true);
 
     Application::self()->focusActiveClient();
 }
+
 #if 0
 void Workspace::rotateOrientation()
 {

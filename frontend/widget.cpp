@@ -2,7 +2,6 @@
 
 #include "widget_backend.h"
 #include "workspace.h"
-#include "client.h"
 #include "frontend_theme.h"
 #include "child_widget.h"
 #include "common.h"
@@ -26,14 +25,6 @@ void Widget::redraw()
 int Widget::maxTextHeight() const
 {
     return _backend->maxTextHeight();
-}
-
-Client *Widget::toClient()
-{
-    if (_type == CLIENT)
-        return static_cast<Client*>(this);
-    else
-        return 0;
 }
 
 Workspace *Widget::toWorkspace()

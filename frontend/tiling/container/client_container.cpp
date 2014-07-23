@@ -1,6 +1,6 @@
 #include "client_container.h"
 
-#include "client.h"
+#include "client_wrapper.h"
 #include "client_container_layout.h"
 #include "client_container_theme.h"
 #include "widget_backend.h"
@@ -30,12 +30,13 @@ ContainerLayout *ClientContainer::getLayout()
     return _layout;
 }
 
-void ClientContainer::handleClientFocusChange(Client *client)
+#if 0
+void ClientContainer::handleClientFocusChange(ClientWrapper *client)
 {
     redraw();
 }
 
-void ClientContainer::handleClientSizeHintChanged(Client *client)
+void ClientContainer::handleClientSizeHintChanged(ClientWrapper *client)
 {
     if (activeClient() == client) {
         if (parentContainer())
@@ -44,6 +45,7 @@ void ClientContainer::handleClientSizeHintChanged(Client *client)
             getLayout()->layoutContents();
     }
 }
+#endif
 
 void ClientContainer::setMinimized(bool minimized)
 {
@@ -51,7 +53,7 @@ void ClientContainer::setMinimized(bool minimized)
     _backend->setMinimized(minimized);
 }
 
-int ClientContainer::indexOfChild(const Client *child)
+int ClientContainer::indexOfChild(const ClientWrapper *child)
 {
     for(int i = 0; i < numElements(); i++) {
         if (child == _children[i])
@@ -81,15 +83,11 @@ void ClientContainer::setActiveChild(int index)
         parentContainer()->handleSizeHintsChanged(this);
 }
 
-int ClientContainer::addChild(Client *client)
+int ClientContainer::addChild(ClientWrapper *client)
 {
     assert(!client->parent());
 
     client->reparent(this, _backend);
-
-    // make sure the active client stays on top of the stacking order
-    if (activeClient())
-        activeClient()->raise();
 
     _children.push_back(client);
 
@@ -103,12 +101,16 @@ int ClientContainer::addChild(Client *client)
         setActiveChild(index);
     }
 
+    // make sure the active client stays on top of the stacking order
+    if (activeClient())
+        activeClient()->raise();
+
     getLayout()->layoutContents();
 
     return numElements() - 1;
 }
 
-void ClientContainer::removeChild(Client *client)
+void ClientContainer::removeChild(ClientWrapper *client)
 {
     int index = indexOfChild(client);
     assert(index >= 0);
@@ -126,18 +128,20 @@ void ClientContainer::removeChild(Client *client)
     getLayout()->layoutContents();
 }
 
-void ClientContainer::removeChildren(std::vector<Client*> &clients)
+#if 0
+void ClientContainer::removeChildren(std::vector<ClientWrapper*> &clients)
 {
     _active_child_index = INVALID_INDEX;
 
     clients.reserve(_children.size());
 
-    for(Client *child : _children) {
+    for(ClientWrapper *child : _children) {
         child->reparent(0, 0);
         clients.push_back(child);
     }
     _children.clear();
 }
+#endif
 
 void ClientContainer::draw(Canvas *canvas)
 {

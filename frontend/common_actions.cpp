@@ -6,7 +6,7 @@
 #include "key_grab_set.h"
 #include "workspace.h"
 #include "window_manager.h"
-#include "client.h"
+#include "client_wrapper.h"
 #include "backend.h"
 #include "common.h"
 
@@ -80,13 +80,14 @@ void CommonActions::performAction(int id)
             }
             break;
         case ACTION_CLOSE_ACTIVE_CLIENT:
-            if (Client *c = Application::activeClient()) {
+            if (ClientWrapper *c = Application::activeClient()) {
                 c->requestClose();
             }
             break;
         case ACTION_FOCUS_ACTIVE_CLIENT:
             Application::self()->focusActiveClient();
             break;
+#if 0
         case ACTION_TOGGLE_DECORATION:
             if (Client *client = Application::self()->activeClient()) {
                 client->setHasDecoration(!client->hasDecoration());
@@ -97,6 +98,7 @@ void CommonActions::performAction(int id)
                 client->updateFrameGeometry();
             }
             break;
+#endif
         case ACTION_QUIT:
             Application::self()->backend()->requestQuit();
             break;

@@ -137,6 +137,12 @@ void X11Client::setRect(const Rect &rect)
     _widget->setRect(rect);
 }
 
+void X11Client::raise()
+{
+    if (_widget)
+        XRaiseWindow(dpy(), _widget->wid());
+}
+
 void X11Client::reparent(WidgetBackend *new_parent)
 {
     assert(!isOverrideRedirect());

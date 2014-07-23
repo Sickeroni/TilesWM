@@ -4,6 +4,8 @@
 #include "window_manager.h"
 #include "container_util.h"
 
+#include <unordered_map>
+
 class ContainerContainer;
 
 class WindowManagerDefault final : public WindowManager
@@ -12,12 +14,12 @@ public:
     WindowManagerDefault(Workspace *workspace, Mode *mode);
     ~WindowManagerDefault();
 
+    virtual void setActive(bool active) override;
     virtual void layout() override;
-    virtual void manageClient(Client *client) override;
-    virtual void unmanageClient(Client *client) override;
-    virtual void unmanageAllClients(std::vector<Client*> &unmanaged_clients) override;
-    virtual Client *activeClient() override;
-    virtual void makeClientActive(Client *client) override;
+    virtual void manageClient(ClientWrapper *client) override;
+//     virtual void unmanageClient(ClientWrapper *client) override;
+    virtual ClientWrapper *activeClient() override;
+    virtual void makeClientActive(ClientWrapper *client) override;
 
     static void createActions(ActionSet &actions);
 
@@ -43,16 +45,17 @@ protected:
 
 private:
     ClientContainer *activeClientContainer();
-
     void moveClient(ContainerUtil::Direction direction);
     void changeSize(bool horizontal, int delta);
     void setFixedSizeToMinimum();
     void setMaximizeActiveContainer(bool set);
     void makeContainerActive(Container *container);
     bool isContainerActive(Container *container);
+    ClientContainer *containerOfClient(ClientWrapper *client);
 
     ContainerContainer *_root_container = 0;
     bool _maximize_active_container = false;
+    std::unordered_map<ClientWrapper*, ClientContainer*> _container_of_client;
 };
 
 #endif

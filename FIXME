@@ -4,31 +4,6 @@ use and check against INVALID_INDEX enum value
 
 remove comparision with -1
     use >= 0 instead pf > -1
-    
-    
-
-    
-// all windowmanagers are "active" at the same time - only one is shown/mapped and handles input
-// when the shown wm changes, the clients are reparented to the new shown wm
-class StandardClientFrontend: public ClientFrontend
-{
-    vector<ClientInstance*> instances:
-    //WidgetBackend *backend_widget; ????
-    ClientBackend *client_backend; // just the actual client (no frame parent widget)
-};
-
-// one instance per wm - should be created by wm (wm may use more specific subclass)
-// MAY act as frame
-// other names: ClientFrame, ...
-class ClientInstance
-{
-    WindowManager *wm;
-    StandardClientFrontend *client_frontend;
-
-    void setActive() {
-        client_frontend->reparent(this);
-    }
-}
 
 maybe: desktop function: add/remove window manager
 

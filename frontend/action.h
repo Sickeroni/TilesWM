@@ -32,7 +32,7 @@ struct Action
         name(_name),
         id(_id) {}
 
-    // action becomes owner of <_complex_action>
+    // action becomes owner of _complex_action
     Action(const std::string &_name, ComplexAction *_complex_action) :
         type(TYPE_COMPLEX),
         name(_name),

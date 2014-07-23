@@ -68,7 +68,7 @@ void X11WidgetBackend::reparent(WidgetBackend *new_parent)
 
 void X11WidgetBackend::redraw()
 {
-    if (_is_mapped) //FIXME use isVisible()
+    if (_is_mapped && _frontend) //FIXME use isVisible()
         _frontend->draw(currentWidget()->canvas());
 }
 

@@ -2,7 +2,7 @@
 #include "client_container.h"
 // #include "window_manager.h"
 // #include "workspace.h"
-#include "client.h"
+#include "client_wrapper.h"
 #include "icon.h"
 #include "canvas.h"
 #include "colors.h"
@@ -175,7 +175,7 @@ void getClientContainerClientRect(ClientContainer *container,  Rect &client_rect
     client_rect.h = max(0, client_rect.h);
 }
 
-void drawTab(ClientContainer *container, bool container_is_active, Client *client, const Rect &rect, bool vertical, Canvas *canvas)
+void drawTab(ClientContainer *container, bool container_is_active, ClientWrapper *client, const Rect &rect, bool vertical, Canvas *canvas)
 {
     const ClientContainerSizesInternal &sizes = _clientContainerSizesInternal;
     uint32_t fg = Colors::TAB_TEXT;

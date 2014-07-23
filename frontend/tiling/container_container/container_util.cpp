@@ -84,6 +84,7 @@ ClientContainer *splitContainer(ClientContainer *container, bool prepend)
     return new_sibling;
 }
 
+#if 0
 void emptyContainer(ContainerContainer *container, std::vector<Client*> &clients)
 {
     while(!container->isEmpty()) {
@@ -94,6 +95,7 @@ void emptyContainer(ContainerContainer *container, std::vector<Client*> &clients
         delete container->removeChild(0);
     }
 }
+#endif
 
 void deleteEmptyChildren(ContainerContainer *container)
 {

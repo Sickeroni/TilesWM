@@ -6,6 +6,7 @@
 #include "window_manager.h"
 #include "workspace.h"
 #include "client.h"
+#include "client_frame.h"
 #include "common.h"
 
 class WindowManagerSimple : public WindowManager
@@ -18,34 +19,34 @@ public:
         assert(_clients.empty());
     }
 
-    virtual Client *activeClient() { return 0; }
-    virtual void manageClient(Client *client) override {
-        debug;
-        _clients.push_back(client);
-        client->setIsFloating(true);
-        client->setHasDecoration(true);
-        workspace()->addChild(client);
+    virtual void setActive(bool active) override {
+        WindowManager::setActive(active);
+        for (ClientFrame *client : _clients)
+            client->setMapped(active);
     }
-    virtual void unmanageClient(Client *client) override {
-        workspace()->removeChild(client);
-        _clients.remove(client);
+
+    virtual ClientWrapper *activeClient() { return 0; }
+
+    virtual void manageClient(ClientWrapper *client) override {
+        ClientFrame *frame = new ClientFrame(client);
+        workspace()->addChild(frame);
+        frame->setHasDecoration(true);
+        frame->setMapped(isActive());
+        _clients.push_back(frame);
     }
-    virtual void unmanageAllClients(std::vector<Client*> &unmanaged_clients) override {
-        for (Client *client : _clients) {
-            workspace()->removeChild(client);
-            unmanaged_clients.push_back(client);
-        }
-        _clients.clear();
+
+    virtual void makeClientActive(ClientWrapper *client) override {
+        assert(0);
     }
+
     virtual void layout() override {}
-    virtual void makeClientActive(Client *client) {}
 
 protected:
     virtual void performAction(int id) override {}
     virtual void performComplexAction(const ComplexAction *action, const ComplexAction::Parameters *parameters) override {}
 
 private:
-    std::list<Client*> _clients;
+    std::list<ClientFrame*> _clients;
 };
 
 #endif

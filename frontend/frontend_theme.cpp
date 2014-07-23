@@ -1,7 +1,7 @@
 #include "frontend_theme.h"
 
 #include "workspace.h"
-#include "client.h"
+#include "client_wrapper.h"
 #include "icon.h"
 #include "canvas.h"
 #include "colors.h"
@@ -18,12 +18,10 @@ using std::max;
 
 namespace Theme {
 
-void drawClientFrame(Client *client, Canvas *canvas)
-{
-    if (!client->hasDecoration())
-        return;
 
-    Rect frame_rect = client->rect();
+void drawClientFrame(ClientWrapper *client, Canvas *canvas, const Rect &rect)
+{
+    Rect frame_rect = rect;
     frame_rect.setPos(0, 0);
 
     assert(frame_rect.w && frame_rect.h);
@@ -40,7 +38,7 @@ void drawClientFrame(Client *client, Canvas *canvas)
     border_rect.set(frame_rect.x+1, frame_rect.y+1, frame_rect.w-2, frame_rect.h-2);
     canvas->drawFrame(border_rect, frame_color);
 
-    if (client->hasDecoration()) {
+//     if (client->hasDecoration()) {
         //FIXME duplicated in calcFrameMargins() / drawTab()
         int frame_margin = Metrics::CLIENT_INNER_FRAME_MARGIN;
         int titlebar_height = 0;
@@ -74,7 +72,7 @@ void drawClientFrame(Client *client, Canvas *canvas)
             title_rect.w -= (client->icon()->width() + 5);
         }
         canvas->drawText(client->name(), title_rect, title_fg);
-    }
+//     }
 
     canvas->end();
 }
@@ -103,8 +101,6 @@ void drawWidget(Widget *widget, Canvas *canvas)
 {
     if (Workspace *workspace = widget->toWorkspace())
         drawWorkspace(workspace, canvas);
-    else if (Client *client = widget->toClient())
-        drawClientFrame(client, canvas);
     else
         debug<<"unknown widget type";
 }

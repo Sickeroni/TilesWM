@@ -16,16 +16,11 @@ class Mode;
 class CommonActions;
 class WidgetBackend;
 class Widget;
+class ClientWrapper;
 
 class Application final : public FrontendBase
 {
 public:
-    enum Layer
-    {
-        LAYER_FLOATING,
-        LAYER_TILED
-    };
-
     Application(const std::vector<Mode*> *modes);
     ~Application();
 
@@ -43,10 +38,6 @@ public:
 
     void setFocus(Client *client);
     void reloadConfig();
-    Layer activeLayer() { return _active_layer; }
-    void setActiveLayer(Layer layer) {
-        _active_layer = layer;
-    }
     Mode *mode(size_t index) {
         assert(index < _modes->size());
         return _modes->at(index);
@@ -62,7 +53,7 @@ public:
     static void unmanageClient(Client *client);
     static void runProgram(const char *path);
     static void runProgram(const std::vector<std::string> &args);
-    static Client *activeClient();
+    static ClientWrapper *activeClient();
     static void makeClientActive(Client *client);
     static Backend *backend() { return self()->_backend; }
 
@@ -71,7 +62,6 @@ private:
     const std::vector<Mode*> *_modes = 0;
     CommonActions *_common_actions = 0;
     size_t _default_mode = 0;
-    Layer _active_layer = LAYER_FLOATING;
 
     static Application *_self;
     std::vector<Workspace*>  _workspaces;
