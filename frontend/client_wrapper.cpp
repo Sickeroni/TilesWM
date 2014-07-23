@@ -16,7 +16,6 @@ ClientWrapper::ClientWrapper(Client *client, WindowManager *wm) : ChildWidget(OT
 
 ClientWrapper::~ClientWrapper()
 {
-    assert(!_wm->isActive());
     if (_client->parent() == this)
         _client->reparent(0, 0);
 }

@@ -16,7 +16,18 @@ void WindowManager::manageClient(Client *client)
 
 void WindowManager::unmanageClient(Client *client)
 {
-    assert(0);
+    for (std::list<ClientWrapper*>::iterator it = _clients.begin();
+            it != _clients.end();
+            it++)
+    {
+        ClientWrapper *wrapper = *it;
+        if (wrapper->client() == client) {
+            _clients.erase(it);
+            unmanageClient(wrapper);
+            delete wrapper;
+            return;
+        }
+    }
 }
 
 void WindowManager::makeClientActive(Client *client)

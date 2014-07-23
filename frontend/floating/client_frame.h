@@ -6,7 +6,7 @@
 #include "application.h"
 #include "backend.h"
 
-class ClientFrame : public ChildWidget
+class ClientFrame final : public ChildWidget
 {
 public:
     ClientFrame(ClientWrapper *client);
@@ -16,6 +16,7 @@ public:
 
     bool hasDecoration() { return _has_decoration; }
     void setHasDecoration(bool has_decoration);
+    ClientWrapper *client() { return _client; }
 
 private:
     enum Anchor {

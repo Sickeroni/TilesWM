@@ -5,7 +5,7 @@
 #include "child_widget.h"
 #include "window_manager.h"
 
-class ClientWrapper : public ChildWidget
+class ClientWrapper final : public ChildWidget
 {
 public:
     ClientWrapper(Client *client, WindowManager *wm);
@@ -58,6 +58,8 @@ public:
     void applySizeHints(Rect &rect) {
         _client->applySizeHints(rect);
     }
+
+    const Client *client() { return _client; }
 
 private:
     Client *_client = 0;

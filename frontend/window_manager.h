@@ -27,6 +27,7 @@ public:
 
     virtual void layout() = 0;
     virtual void manageClient(ClientWrapper *client) = 0;
+    virtual void unmanageClient(ClientWrapper *client) = 0;
 //     virtual void unmanageAllClients(std::vector<Client*> &unmanaged_clients) = 0;
     virtual ClientWrapper *activeClient() = 0;
     virtual void makeClientActive(ClientWrapper *client) = 0;

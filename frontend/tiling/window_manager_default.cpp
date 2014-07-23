@@ -138,16 +138,19 @@ void WindowManagerDefault::manageClient(ClientWrapper *client)
     _container_of_client[client] = container;
 }
 
-#if 0
 void WindowManagerDefault::unmanageClient(ClientWrapper *client)
 {
     assert(client->workspace() == workspace());
 
-    ClientContainer *container = containerOfClient(client);
-    assert(container);
+    std::unordered_map<ClientWrapper*, ClientContainer*>::iterator it = _container_of_client.find(client);
+    assert(it != _container_of_client.end());
+
+    ClientContainer *container = it->second;
+
     container->removeChild(client);
+
+    _container_of_client.erase(it);
 }
-#endif
 
 void WindowManagerDefault::layout()
 {

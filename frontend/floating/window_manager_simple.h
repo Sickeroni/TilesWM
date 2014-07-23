@@ -34,6 +34,19 @@ public:
         frame->setMapped(isActive());
         _clients.push_back(frame);
     }
+    virtual void unmanageClient(ClientWrapper *client) override {
+        for (std::list<ClientFrame*>::iterator it = _clients.begin();
+                it != _clients.end();
+                it++)
+        {
+            ClientFrame *frame = *it;
+            if (frame->client() == client) {
+                _clients.erase(it);
+                delete frame;
+                return;
+            }
+        }
+    }
 
     virtual void makeClientActive(ClientWrapper *client) override {
         assert(0);
