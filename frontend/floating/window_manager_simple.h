@@ -49,7 +49,7 @@ public:
     }
 
     virtual void makeClientActive(ClientWrapper *client) override {
-        assert(0);
+        UNIMPLEMENTED
     }
 
     virtual void layout() override {}

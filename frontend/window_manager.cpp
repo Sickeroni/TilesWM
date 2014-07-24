@@ -32,7 +32,16 @@ void WindowManager::unmanageClient(Client *client)
 
 void WindowManager::makeClientActive(Client *client)
 {
-    assert(0);
+    for (std::list<ClientWrapper*>::iterator it = _clients.begin();
+            it != _clients.end();
+            it++)
+    {
+        ClientWrapper *wrapper = *it;
+        if (wrapper->client() == client) {
+            makeClientActive(wrapper);
+            break;
+        }
+    }
 }
 
 void WindowManager::setActive(bool active)
