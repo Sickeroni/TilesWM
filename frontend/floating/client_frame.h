@@ -46,6 +46,7 @@ private:
     void cancelDrag();
     void updateFrameGeometry();
     void adjustMouseCoordinates(int x_global, int y_global, int &x_parent, int &y_parent);
+    bool snapCoordinate(int &coord, int snap_coord);
 
     ClientWrapper *_client = 0;
     Client::DragMode _drag_mode = Client::DRAG_NONE;
@@ -53,6 +54,8 @@ private:
     int _drag_start_y = 0;
     Rect _rect_before_drag_start;
     bool _has_decoration = false;
+    bool _snap_to_border = true;
+    int _border_snapping_zone = 20;
 };
 
 #endif

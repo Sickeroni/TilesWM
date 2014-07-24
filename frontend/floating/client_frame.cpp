@@ -89,6 +89,27 @@ void ClientFrame::handleMouseMove(int x_global, int y_global)
         if (_drag_mode == Client::DRAG_MOVE) {
             Rect new_rect = rect();
             new_rect.setPos(_rect_before_drag_start.x + xdiff, _rect_before_drag_start.y + ydiff);
+
+            if (_snap_to_border) {
+                Rect parent_rect = parent()->rect();
+
+                int snapped_x = new_rect.x;
+                if (!snapCoordinate(snapped_x, 0)) {
+                    int snapped_right = new_rect.x + new_rect.w;
+                    if (snapCoordinate(snapped_right, parent_rect.w))
+                        snapped_x = snapped_right - new_rect.w;
+                }
+
+                int snapped_y = new_rect.y;
+                if (!snapCoordinate(snapped_y, 0)) {
+                    int snapped_bottom = new_rect.y + new_rect.h;
+                    if (snapCoordinate(snapped_bottom, parent_rect.h))
+                        snapped_y = snapped_bottom - new_rect.h;
+                }
+
+                new_rect.setPos(snapped_x, snapped_y);
+            }
+
             setRect(new_rect);
         }
         else if (_drag_mode == Client::DRAG_RESIZE) {
@@ -161,4 +182,16 @@ void ClientFrame::adjustMouseCoordinates(int x_global, int y_global, int &x_pare
         y_parent = 0;
     if (y_parent >= parent()->height())
         y_parent = parent()->height() -1;
+}
+
+bool ClientFrame::snapCoordinate(int &coord, int snap_coord)
+{
+    bool snapped = true;
+    if (coord < snap_coord && coord > (snap_coord - _border_snapping_zone))
+        coord = snap_coord;
+    else if (coord > snap_coord && coord < (snap_coord + _border_snapping_zone))
+        coord = snap_coord;
+    else
+        snapped = false;
+    return snapped;
 }
