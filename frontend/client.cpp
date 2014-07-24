@@ -12,6 +12,9 @@ Client::Client(ClientBackend *client_backend) : ChildWidget(OTHER),
     _backend = _client_backend->widget();
     _backend->setFrontend(this);
     _rect = _client_backend->rect();
+
+    _client_backend->grabMouseButton(MOVE_BUTTON);
+    _client_backend->grabMouseButton(RESIZE_BUTTON);
 }
 
 Client::~Client()
@@ -146,7 +149,10 @@ void Client::handleConfigureRequest(const Rect &client_rect)
 
 void Client::handleButtonPress(int x_global, int y_global, int button)
 {
-    assert(0);
-//     if (_mouse_handler)
-//         _mouse_handler->handleButtonPress(this, x_global, y_global, button);
+    if (_drag_handler) {
+        if (button == MOVE_BUTTON)
+            _drag_handler->startDrag(x_global, y_global, DRAG_MOVE);
+        else if (button == RESIZE_BUTTON)
+            _drag_handler->startDrag(x_global, y_global, DRAG_RESIZE);
+    }
 }

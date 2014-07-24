@@ -10,17 +10,17 @@ ClientFrame::ClientFrame(ClientWrapper *client) : ChildWidget(OTHER),
     _backend->setRect(_rect);
     _backend->setFrontend(this);
 
-    _client->grabMouseButton(MOVE_BUTTON);
-    _client->grabMouseButton(RESIZE_BUTTON);
-
     _client->reparent(this, _backend);
     _client->setRect(Rect(0, 0, _rect.w, _rect.h));
+    _client->setDragHandler(this);
     _client->setMapped(true);
 }
 
 ClientFrame::~ClientFrame()
 {
     cancelDrag();
+    _client->setDragHandler(0);
+    _client->reparent(0, 0);
     delete _backend;
     _backend = 0;
 }
@@ -66,14 +66,10 @@ void ClientFrame::handleButtonPress(int x_global, int y_global, int button)
     raise();
     _client->setFocus();
 
-    if (button == MOVE_BUTTON)
-        startMove(x_global, y_global);
-    else if (button == RESIZE_BUTTON) {
-        Anchor anchor = ANCHOR_BOTTOM_RIGHT;
-        printvar(_client->rect().w);
-        printvar(_rect.w);
-        startResize(anchor, x_global, y_global);
-    }
+    if (button == Client::MOVE_BUTTON)
+        startDrag(x_global, y_global, Client::DRAG_MOVE);
+    else if (button == Client::RESIZE_BUTTON)
+        startDrag(x_global, y_global, Client::DRAG_RESIZE);
 }
 
 void ClientFrame::handleButtonRelease(int button)
@@ -83,16 +79,16 @@ void ClientFrame::handleButtonRelease(int button)
 
 void ClientFrame::handleMouseMove(int x, int y)
 {
-    if (_drag_mode != DRAG_NONE) {
+    if (_drag_mode != Client::DRAG_NONE) {
         int xdiff = x - _drag_start_x;
         int ydiff = y - _drag_start_y;
 
-        if (_drag_mode == DRAG_MOVE) {
+        if (_drag_mode == Client::DRAG_MOVE) {
             Rect new_rect = rect();
             new_rect.setPos(_rect_before_drag_start.x + xdiff, _rect_before_drag_start.y + ydiff);
             setRect(new_rect);
         }
-        else if (_drag_mode == DRAG_RESIZE) {
+        else if (_drag_mode == Client::DRAG_RESIZE) {
 
             Rect client_rect = _client->rect();
 
@@ -112,40 +108,26 @@ void ClientFrame::handleMouseMove(int x, int y)
     }
 }
 
-void ClientFrame::startResize(Anchor anchor, int x, int y)
+void ClientFrame::startDrag(int x_global, int y_global, Client::DragMode mode)
 {
-
     //FIXME what if the pointer is already grabbed ?
-    assert(_drag_mode == DRAG_NONE);
+    assert(_drag_mode == Client::DRAG_NONE);
 
     _backend->grabMouse();
 
-    _drag_mode = DRAG_RESIZE;
-    _drag_start_x = x;
-    _drag_start_y = y;
-    _rect_before_drag_start = _client->rect();
-}
-
-void ClientFrame::startMove(int x, int y)
-{
-    //FIXME what if the pointer is already grabbed ?
-    assert(_drag_mode == DRAG_NONE);
-
-    _backend->grabMouse();
-
-    _drag_mode = DRAG_MOVE;
-    _drag_start_x = x;
-    _drag_start_y = y;
-    _rect_before_drag_start = rect();
+    _drag_mode = mode;
+    _drag_start_x = x_global;
+    _drag_start_y = y_global;
+    _rect_before_drag_start = (mode == Client::DRAG_MOVE) ? rect() : _client->rect();
 }
 
 void ClientFrame::finishDrag()
 {
     debug;
 
-    assert(_drag_mode != DRAG_NONE);
+    assert(_drag_mode != Client::DRAG_NONE);
 
-    _drag_mode = DRAG_NONE;
+    _drag_mode = Client::DRAG_NONE;
     _drag_start_x = _drag_start_y = 0;
     _rect_before_drag_start.set(0, 0, 0, 0);
 
@@ -154,6 +136,6 @@ void ClientFrame::finishDrag()
 
 void ClientFrame::cancelDrag()
 {
-    if (_drag_mode != DRAG_NONE)
+    if (_drag_mode != Client::DRAG_NONE)
         finishDrag();
 }

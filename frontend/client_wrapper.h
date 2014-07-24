@@ -52,18 +52,18 @@ public:
     int maxHeight() {
         return _client_backend->maxHeight();
     }
-    void grabMouseButton(int button) {
-        _client->grabMouseButton(button);
-    }
     void applySizeHints(Rect &rect) {
         _client->applySizeHints(rect);
     }
+
+    void setDragHandler(Client::DragHandler *handler);
 
     const Client *client() { return _client; }
 
 private:
     Client *_client = 0;
     const ClientBackend *_client_backend = 0;
+    Client::DragHandler *_drag_handler = 0;
     WindowManager *_wm = 0;
 };
 

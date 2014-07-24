@@ -6,7 +6,7 @@
 #include "application.h"
 #include "backend.h"
 
-class ClientFrame final : public ChildWidget
+class ClientFrame final : public ChildWidget, public Client::DragHandler
 {
 public:
     ClientFrame(ClientWrapper *client);
@@ -30,33 +30,22 @@ private:
         ANCHOR_BOTTOM_RIGHT
     };
 
-    enum DragMode {
-        DRAG_NONE,
-        DRAG_MOVE,
-        DRAG_RESIZE
-    };
-
-    enum {
-        //FIXME
-        MOVE_BUTTON = 1,
-        RESIZE_BUTTON = 3
-    };
-
     virtual void draw(Canvas *canvas) override;
 
     virtual void handleButtonPress(int x_global, int y_global, int button) override;
     virtual void handleButtonRelease(int button) override;
     virtual void handleMouseMove(int x, int y) override;
 
-    void startMove(int x, int y);
-    void startResize(Anchor anchor, int x, int y);
+    // Client::DragHandler
+    virtual void startDrag(int x_global, int y_global, Client::DragMode mode) override;
+
     void finishDrag();
     void cancelDrag();
 
     void updateFrameGeometry();
 
     ClientWrapper *_client = 0;
-    DragMode _drag_mode = DRAG_NONE;
+    Client::DragMode _drag_mode = Client::DRAG_NONE;
     int _drag_start_x = 0;
     int _drag_start_y = 0;
     Rect _rect_before_drag_start;

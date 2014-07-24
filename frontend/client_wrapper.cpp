@@ -16,24 +16,32 @@ ClientWrapper::ClientWrapper(Client *client, WindowManager *wm) : ChildWidget(OT
 
 ClientWrapper::~ClientWrapper()
 {
-    if (_client->parent() == this)
+    if (_client->parent() == this) {
+        _client->setDragHandler(0);
         _client->reparent(0, 0);
+    }
 }
 
 void ClientWrapper::handleWindowManagerIsActiveChanged()
 {
-    printvar(_wm->isActive());
     if (_wm->isActive()) {
         _client->reparent(this, _backend);
         _client->setRect(Rect(0, 0, rect().w, rect().h));
+        _client->setDragHandler(_drag_handler);
         _client->setMapped(true);
     }
 }
 
 void ClientWrapper::setRect(const Rect &rect)
 {
-    printvar(_wm->isActive());
     ChildWidget::setRect(rect);
     if (_wm->isActive())
         _client->setRect(Rect(0, 0, rect.w, rect.h));
+}
+
+void ClientWrapper::setDragHandler(Client::DragHandler *handler)
+{
+    _drag_handler = handler;
+    if (_wm->isActive())
+        _client->setDragHandler(handler);
 }

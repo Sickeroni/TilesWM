@@ -96,7 +96,6 @@ bool X11ServerWidget::handleEvent(const XEvent &ev)
                 return true;
             break;
         case ButtonPress:
-            debug<<"ButtonPress";
         case ButtonRelease:
         case MotionNotify:
             {
@@ -111,7 +110,6 @@ bool X11ServerWidget::handleEvent(const XEvent &ev)
                     return true;
                 }
             }
-            debug<<"not a server widget";
             break;
         case Expose:
             if (!ev.xexpose.count) {

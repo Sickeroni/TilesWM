@@ -17,6 +17,22 @@ class Workspace;
 class Client final : public ChildWidget, public ClientFrontend
 {
 public:
+    enum DragMode {
+        DRAG_NONE,
+        DRAG_MOVE,
+        DRAG_RESIZE
+    };
+
+    enum {
+        //FIXME
+        MOVE_BUTTON = 1,
+        RESIZE_BUTTON = 3
+    };
+
+    struct DragHandler {
+        virtual void startDrag(int x_global, int y_global, DragMode mode) = 0;
+    };
+
     Client(ClientBackend *client_backend);
     ~Client();
 
@@ -29,15 +45,15 @@ public:
     Workspace *workspace() { return _workspace; }
     void setWorkspace(Workspace *workspace);
     void applySizeHints(Rect &rect);
+    void setDragHandler(DragHandler *handler) {
+        _drag_handler = handler;
+    }
 
     void requestClose() {
         _client_backend->requestClose();
     }
     void setFocus() {
         _client_backend->setFocus();
-    }
-    void grabMouseButton(int button) {
-        _client_backend->grabMouseButton(button);
     }
 
     static void limitRect(Rect &rect);
@@ -59,6 +75,7 @@ private:
     virtual void handleConfigureRequest(const Rect &rect) override;
     ClientBackend *_client_backend = 0;
     Workspace *_workspace = 0;
+    DragHandler *_drag_handler = 0;
 };
 
 #endif // __CLIENT_H__
