@@ -88,12 +88,6 @@ void drawWorkspace(Workspace *workspace, Canvas *canvas)
     else
         canvas->erase(rect);
 
-    const std::string &mode_name = Application::self()->mode(workspace->modeIndex())->name();
-
-    std::stringstream title;
-    title<<"Mode: "<<mode_name<<" ("<<(workspace->modeIndex() + 1)<<"/"<<Application::self()->numModes()<<")";
-
-    canvas->drawText(title.str().c_str(), rect, 0x00FF00);
     canvas->end();
 }
 

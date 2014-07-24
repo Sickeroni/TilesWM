@@ -44,8 +44,8 @@ private:
 
     void finishDrag();
     void cancelDrag();
-
     void updateFrameGeometry();
+    void adjustMouseCoordinates(int x_global, int y_global, int &x_parent, int &y_parent);
 
     ClientWrapper *_client = 0;
     Client::DragMode _drag_mode = Client::DRAG_NONE;

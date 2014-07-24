@@ -10,6 +10,8 @@
 #include "icon.h"
 #include "common.h"
 
+#include <sstream>
+
 Workspace::Workspace() : Widget(WORKSPACE),
     _monitor(0),
     _mode(Application::self()->defaultMode())
@@ -135,12 +137,26 @@ void Workspace::setMode(size_t index)
     if (monitor())
         setMapped(true);
 
+    refreshStatusText();
+
     Application::self()->focusActiveClient();
 }
 
 void Workspace::redrawAll()
 {
     _window_manager->redrawAll();
+}
+
+void Workspace::refreshStatusText()
+{
+    if (_monitor) {
+        const std::string &mode_name = Application::self()->mode(modeIndex())->name();
+
+        std::stringstream text;
+        text<<"Mode: "<<mode_name<<" ("<<(modeIndex() + 1)<<"/"<<Application::self()->numModes()<<")";
+
+        _monitor->setStatusText(text.str());
+    }
 }
 
 #if 0

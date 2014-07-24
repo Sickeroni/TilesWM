@@ -77,11 +77,14 @@ void ClientFrame::handleButtonRelease(int button)
     finishDrag();
 }
 
-void ClientFrame::handleMouseMove(int x, int y)
+void ClientFrame::handleMouseMove(int x_global, int y_global)
 {
     if (_drag_mode != Client::DRAG_NONE) {
-        int xdiff = x - _drag_start_x;
-        int ydiff = y - _drag_start_y;
+        int x_parent, y_parent;
+        adjustMouseCoordinates(x_global, y_global, x_parent, y_parent);
+
+        int xdiff = x_parent - _drag_start_x;
+        int ydiff = y_parent - _drag_start_y;
 
         if (_drag_mode == Client::DRAG_MOVE) {
             Rect new_rect = rect();
@@ -115,9 +118,12 @@ void ClientFrame::startDrag(int x_global, int y_global, Client::DragMode mode)
 
     _backend->grabMouse();
 
+    int x_parent, y_parent;
+    adjustMouseCoordinates(x_global, y_global, x_parent, y_parent);
+
     _drag_mode = mode;
-    _drag_start_x = x_global;
-    _drag_start_y = y_global;
+    _drag_start_x = x_parent;
+    _drag_start_y = y_parent;
     _rect_before_drag_start = (mode == Client::DRAG_MOVE) ? rect() : _client->rect();
 }
 
@@ -138,4 +144,21 @@ void ClientFrame::cancelDrag()
 {
     if (_drag_mode != Client::DRAG_NONE)
         finishDrag();
+}
+
+void ClientFrame::adjustMouseCoordinates(int x_global, int y_global, int &x_parent, int &y_parent)
+{
+    x_parent = x_global;
+    y_parent = y_global;
+    parent()->globalToLocal(x_parent, y_parent);
+
+    //restrict mouse coordinates to parent dimensions
+    if (x_parent < 0)
+        x_parent = 0;
+    if (x_parent >= parent()->width())
+        x_parent = parent()->width() -1;
+    if (y_parent < 0)
+        y_parent = 0;
+    if (y_parent >= parent()->height())
+        y_parent = parent()->height() -1;
 }

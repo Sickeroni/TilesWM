@@ -35,6 +35,7 @@ public:
     void setMonitor(Monitor *monitor) {
         _monitor = monitor;
         setMapped(monitor != 0);
+        refreshStatusText();
     }
     Mode *mode();
     size_t modeIndex() { return _mode; }
@@ -51,6 +52,7 @@ public:
     void makeClientActive(Client *client);
 
     void redrawAll();
+    void refreshStatusText();
 
     Icon *background() { return _background_scaled; }
 

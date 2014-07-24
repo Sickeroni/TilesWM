@@ -155,14 +155,7 @@ void WindowManagerDefault::unmanageClient(ClientWrapper *client)
 void WindowManagerDefault::layout()
 {
     if (workspace()->rect().w && workspace()->rect().h) {
-//     _root_container->setRect(Rect(0, 0, workspace()->rect().w, workspace()->rect().h));
-        //HACK
-        _root_container->setRect(Rect(
-            0,
-            workspace()->maxTextHeight(),
-            workspace()->rect().w,
-            workspace()->rect().h - workspace()->maxTextHeight()));
-
+        _root_container->setRect(Rect(0, 0, workspace()->rect().w, workspace()->rect().h));
         _root_container->getLayout()->layoutContents();
     }
 }
