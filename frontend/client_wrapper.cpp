@@ -20,6 +20,8 @@ ClientWrapper::~ClientWrapper()
         _client->setDragHandler(0);
         _client->reparent(0, 0);
     }
+    delete _backend;
+    _backend = 0;
 }
 
 void ClientWrapper::handleWindowManagerIsActiveChanged()
