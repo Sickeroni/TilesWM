@@ -4,7 +4,7 @@
 
 WindowManager::~WindowManager()
 {
-    assert(0);
+    assert(_clients.empty());
 }
 
 void WindowManager::manageClient(Client *client)
