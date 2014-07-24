@@ -294,3 +294,8 @@ bool WindowManagerDefault::isContainerActive(Container *container)
     } else
         return false;
 }
+
+void WindowManagerDefault::redrawAll()
+{
+    _root_container->redrawAll();
+}

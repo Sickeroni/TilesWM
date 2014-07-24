@@ -31,6 +31,7 @@ public:
 //     virtual void unmanageAllClients(std::vector<Client*> &unmanaged_clients) = 0;
     virtual ClientWrapper *activeClient() = 0;
     virtual void makeClientActive(ClientWrapper *client) = 0;
+    virtual void redrawAll() = 0;
 
 
     // FIXME remove ?

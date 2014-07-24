@@ -50,6 +50,8 @@ public:
     ClientWrapper *activeClient();
     void makeClientActive(Client *client);
 
+    void redrawAll();
+
     Icon *background() { return _background_scaled; }
 
 private:

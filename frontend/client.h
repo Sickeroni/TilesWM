@@ -29,8 +29,10 @@ public:
         RESIZE_BUTTON = 3
     };
 
+    //FIXME rename
     struct DragHandler {
-        virtual void startDrag(int x_global, int y_global, DragMode mode) = 0;
+        virtual void startDrag(int x_global, int y_global, DragMode mode) {}
+        virtual void handleFocusChanged() = 0;
     };
 
     Client(ClientBackend *client_backend);

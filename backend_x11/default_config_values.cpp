@@ -14,8 +14,8 @@ void Config::setDefaults()
     s->addEntry("MOD1+KP_Up", "focusUp");
     s->addEntry("MOD1+KP_Down", "focusDown");
     s->addEntry("MOD1+t", "runTerminal");
-//     s->addEntry("MOD1+d", "redraw");
-    s->addEntry("MOD1+d", "toggleDecoration");
+    s->addEntry("MOD1+d", "redraw");
+//     s->addEntry("MOD1+d", "toggleDecoration");
     s->addEntry("MOD1+g", "updateClientGeometry");
     s->addEntry("MOD1+comma", "focusPrevClient");
     s->addEntry("MOD1+period", "focusNextClient");

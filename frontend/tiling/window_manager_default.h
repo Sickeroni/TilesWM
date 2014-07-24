@@ -20,6 +20,7 @@ public:
     virtual void unmanageClient(ClientWrapper *client) override;
     virtual ClientWrapper *activeClient() override;
     virtual void makeClientActive(ClientWrapper *client) override;
+    virtual void redrawAll() override;
 
     static void createActions(ActionSet &actions);
 

@@ -2,6 +2,7 @@
 #define __CLIENT_CONTAINER_H__
 
 #include "container.h"
+#include "client.h"
 
 #include "metrics.h"
 #include "common.h"
@@ -14,7 +15,7 @@ class ClientContainerLayout;
 class ClientWrapper;
 
 
-class ClientContainer final : public Container
+class ClientContainer final : public Container, public Client::DragHandler
 {
 public:
     ClientContainer();
@@ -30,6 +31,12 @@ public:
     }
     virtual ContainerLayout *getLayout() override;
     virtual bool isMinimized() const override { return _is_minimized; }
+
+    // Client::DragHandler
+    virtual void handleFocusChanged() {
+        debug;
+        redraw();
+    }
 
     ClientWrapper *child(size_t index) { return _children[index]; }
     int indexOfChild(const ClientWrapper *child);

@@ -57,7 +57,8 @@ void Client::limitRect(Rect &rect)
 
 void Client::handleFocusChanged(bool has_focus)
 {
-    UNIMPLEMENTED
+    if (_drag_handler)
+        _drag_handler->handleFocusChanged();
 #if 0
 
     //FIXME

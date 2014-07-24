@@ -54,6 +54,10 @@ public:
 
     virtual void layout() override {}
 
+    virtual void redrawAll() override {
+        UNIMPLEMENTED
+    }
+
 protected:
     virtual void performAction(int id) override {}
     virtual void performComplexAction(const ComplexAction *action, const ComplexAction::Parameters *parameters) override {}

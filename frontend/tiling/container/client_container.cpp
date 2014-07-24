@@ -88,6 +88,7 @@ int ClientContainer::addChild(ClientWrapper *client)
     assert(!client->parent());
 
     client->reparent(this, _backend);
+    client->setDragHandler(this);
 
     _children.push_back(client);
 
@@ -115,6 +116,7 @@ void ClientContainer::removeChild(ClientWrapper *client)
     int index = indexOfChild(client);
     assert(index >= 0);
 
+    client->setDragHandler(0);
     client->reparent(0, 0);
 
     _children.erase(_children.begin() + index);

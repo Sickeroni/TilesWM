@@ -38,6 +38,9 @@ private:
 
     // Client::DragHandler
     virtual void startDrag(int x_global, int y_global, Client::DragMode mode) override;
+    virtual void handleFocusChanged() {
+        redraw();
+    }
 
     void finishDrag();
     void cancelDrag();

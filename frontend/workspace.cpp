@@ -138,6 +138,11 @@ void Workspace::setMode(size_t index)
     Application::self()->focusActiveClient();
 }
 
+void Workspace::redrawAll()
+{
+    _window_manager->redrawAll();
+}
+
 #if 0
 void Workspace::rotateOrientation()
 {

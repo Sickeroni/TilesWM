@@ -60,8 +60,7 @@ void CommonActions::performAction(int id)
             Application::activeWorkspace()->windowManager()->layout();
             break;
         case ACTION_REDRAW:
-            assert(0);
-//             Application::activeWorkspace()->rootContainer()->redrawAll();
+            Application::activeWorkspace()->redrawAll();
             break;
         case ACTION_RUN_PROGRAM:
             Application::runProgram("/usr/bin/gmrun");
