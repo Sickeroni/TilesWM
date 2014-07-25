@@ -193,7 +193,7 @@ bool X11Application::init()
         return false;
     }
 
-    XSynchronize(_dpy, true);
+    XSynchronize(_dpy, false);
 
     grabServer();
  
