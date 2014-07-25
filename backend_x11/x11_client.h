@@ -7,7 +7,6 @@
 #include "x11_server_widget.h"
 #include "x11_client_widget.h"
 #include "rect.h"
-#include "metrics.h"
 
 #include <X11/Xlib.h>
 

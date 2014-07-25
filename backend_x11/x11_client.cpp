@@ -8,7 +8,6 @@
 #include "x11_global.h"
 #include "icon.h"
 #include "canvas.h"
-#include "colors.h"
 #include "client_frontend.h"
 #include "widget_frontend.h"
 #include "common.h"
