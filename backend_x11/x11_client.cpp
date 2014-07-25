@@ -488,8 +488,10 @@ void X11Client::handleConfigureRequest(const XConfigureRequestEvent &ev)
 
             limitClientRect(client_rect);
 
+            _requested_rect = client_rect;
+
             if (_client_frontend)
-                _client_frontend->handleConfigureRequest(client_rect);
+                _client_frontend->handlePropertyChanged(PROP_REQUESTED_RECT);
             else
                 _widget->setRect(client_rect);
         }

@@ -15,6 +15,7 @@ public:
     enum Property {
         PROP_NONE,
         PROP_SIZE_HINTS,
+        PROP_REQUESTED_RECT,
         PROP_NAME,
         PROP_ICON_NAME,
         PROP_CLASS,
@@ -24,6 +25,7 @@ public:
     virtual WidgetBackend *widget() = 0;
 
     virtual const Rect &rect() const = 0;
+    virtual const Rect &requestedRect() const = 0;
     virtual bool hasFocus() const = 0;
     virtual void setFocus() = 0;
     virtual Icon *icon() const = 0;

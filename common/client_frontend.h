@@ -10,7 +10,6 @@ public:
     virtual void handleFocusChanged(bool has_focus) = 0;
     virtual void handleMap() = 0;
     virtual void handlePropertyChanged(ClientBackend::Property property) = 0;
-    virtual void handleConfigureRequest(const Rect &rect) = 0;
 };
 
 #endif

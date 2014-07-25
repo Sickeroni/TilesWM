@@ -14,6 +14,8 @@ ClientFrame::ClientFrame(ClientWrapper *client) : ChildWidget(OTHER),
     _client->setDragHandler(this);
     _client->setPropertyListener(this);
     _client->setMapped(true);
+
+    setRequestedRect();
 }
 
 ClientFrame::~ClientFrame()
@@ -229,6 +231,21 @@ void ClientFrame::propertyChanged(Client *client, ClientBackend::Property proper
         Theme::calcClientFrameRect(hasDecoration(), maxTextHeight(), client_rect, frame_rect);
         frame_rect.setPos(_rect.x, _rect.y);
         setRect(frame_rect);
-    } else
+    } else if (property == ClientBackend::PROP_REQUESTED_RECT)
+        setRequestedRect();
+    else
         redraw();
+}
+
+void ClientFrame::setRequestedRect()
+{
+    Rect req = _client->client()->backend()->requestedRect();
+
+    if (req.w && req.h) {
+        _client->applySizeHints(req);
+        Rect frame_rect;
+        Theme::calcClientFrameRect(hasDecoration(), maxTextHeight(), req, frame_rect);
+        frame_rect.setPos(_rect.x, _rect.y);
+        setRect(frame_rect);
+    }
 }

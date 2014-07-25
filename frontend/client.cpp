@@ -79,21 +79,6 @@ void Client::handleFocusChanged(bool has_focus)
 #endif
 }
 
-#if 0
-void Client::handleSizeHintsChanged()
-{
-    UNIMPLEMENTED
-//FIXME
-    // WARNING frame dimensions must be added !
-#if 0
-    if (parent()) {
-        if (Container *container = parent()->toContainer())
-            container->handleSizeHintsChanged(this);
-    }
-#endif
-}
-#endif
-
 void Client::handleMap()
 {
     Application::manageClient(this);
@@ -104,26 +89,6 @@ void Client::handlePropertyChanged(ClientBackend::Property property)
     for (PropertyListener *listener : _property_listeners)
         listener->propertyChanged(this, property);
 }
-
-void Client::handleConfigureRequest(const Rect &client_rect)
-{
-    UNIMPLEMENTED
-//     assert(false);
-#if 0
-    if (isFloating()) {
-        // new frame rect based on requested client rect
-        Rect frame_rect;
-        Theme::calcClientFrameRect(hasDecoration(), maxTextHeight(), client_rect, frame_rect);
-//         limitFrameRect(frame_rect);
-
-        frame_rect.setPos(client_rect.x, client_rect.y);
-//         frame_rect.setPos(rect().x, rect().y);
-
-        setRect(frame_rect);
-    }
-#endif
-}
-
 
 void Client::handleButtonPress(int x_global, int y_global, int button)
 {

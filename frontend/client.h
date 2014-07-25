@@ -47,7 +47,7 @@ public:
         _client_backend->widget()->setRect(rect);
     }
 
-    const ClientBackend *backend() { return _client_backend; }
+    const ClientBackend *backend() const { return _client_backend; }
     Workspace *workspace() { return _workspace; }
     void setWorkspace(Workspace *workspace);
     void applySizeHints(Rect &rect);
@@ -80,7 +80,6 @@ private:
     virtual void handleFocusChanged(bool has_focus) override;
     virtual void handleMap() override;
     virtual void handlePropertyChanged(ClientBackend::Property property) override;
-    virtual void handleConfigureRequest(const Rect &rect) override;
 
     ClientBackend *_client_backend = 0;
     Workspace *_workspace = 0;

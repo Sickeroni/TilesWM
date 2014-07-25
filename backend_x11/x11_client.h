@@ -51,6 +51,7 @@ public:
     // ClientBackend implementation
     virtual WidgetBackend *widget() override { return this; }
     virtual const Rect &rect() const override { return _widget->rect(); }
+    virtual const Rect &requestedRect() const override { return _requested_rect; }
     virtual bool hasFocus() const override { return _has_focus; }
     virtual void setFocus() override {
         setFocus(this);
@@ -125,6 +126,7 @@ private:
     std::string _icon_name;
     std::string _title;
     SizeHints _size_hints;
+    Rect _requested_rect;
 
     WidgetFrontend *_widget_frontend = 0;
     ClientFrontend *_client_frontend = 0;
