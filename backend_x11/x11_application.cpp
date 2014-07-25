@@ -226,9 +226,8 @@ bool X11Application::init()
 
     XChangeWindowAttributes(_dpy, _root, CWEventMask, &new_root_attr);
 
-    Cursor cursor = XcursorShapeLoadCursor(_dpy, XC_left_ptr);
+    Cursor cursor = getCursor(XC_left_ptr);
     XDefineCursor(_dpy, _root, cursor);
-    XFreeCursor(_dpy, cursor);
 
     XSync(_dpy, false);
 
@@ -273,9 +272,13 @@ void X11Application::shutdown()
     delete _graphics_system;
     _graphics_system = 0;
 
-    XSync(_dpy, false);
+    for (auto it = _cursors.begin(); it != _cursors.end(); it++)
+        XFreeCursor(_dpy, it->second);
+    _cursors.clear();
 
     _atoms.clear();
+
+    XSync(_dpy, false);
 
     _root = None;
 
@@ -489,4 +492,18 @@ void X11Application::getMonitorSize(int &w, int &h)
 {
     w = _root_width;
     h = _root_height;
+}
+
+Cursor X11Application::getCursor(unsigned int shape)
+{
+    Cursor cursor = None;
+    auto it = _cursors.find(shape);
+    if (it != _cursors.end())
+        cursor = it->second;
+    else {
+        cursor = XcursorShapeLoadCursor(_dpy, shape);
+        _cursors.insert(std::pair<unsigned int, Cursor>(shape, cursor));
+    }
+
+    return cursor;
 }

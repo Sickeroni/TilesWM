@@ -9,6 +9,7 @@
 
 #include <string>
 #include <map>
+#include <unordered_map>
 #include <vector>
 #include <list>
 
@@ -47,6 +48,7 @@ public:
     bool addKeyGrab(const X11Global::KeySequence &key_sequence);
     void releaseKeyGrab(const X11Global::KeySequence &key_sequence);
     Atom atom(const char *name);
+    Cursor getCursor(unsigned int shape);
 
     static X11Application *self() { return _self; }
     static Display *dpy()  { return self()->_dpy; }
@@ -81,6 +83,7 @@ private:
 //     std::vector<Workspace*>  _workspaces;
     std::map<std::string, Atom> _atoms; // TODO - use hash
     std::list<KeyGrab> _key_grabs;
+    std::unordered_map<unsigned int, Cursor> _cursors;
     X11Global::ModMask num_lock_mask = Mod2Mask; //FIXME
     X11GraphicsSystem *_graphics_system = 0;
     FrontendBase *_frontend = 0;

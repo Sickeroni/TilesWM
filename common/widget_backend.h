@@ -8,6 +8,12 @@ class WidgetFrontend;
 class WidgetBackend
 {
 public:
+    enum CursorType {
+        CURSOR_DEFAULT,
+        CURSOR_MOVE,
+        CURSOR_RESIZE_BOTTOM_RIGHT
+    };
+
     virtual ~WidgetBackend() {}
 
     virtual void setRect(const Rect &rect) = 0;
@@ -17,7 +23,7 @@ public:
     virtual int maxTextHeight() const = 0;
     //FIXME remove
     virtual void setFrontend(WidgetFrontend *frontend) = 0;
-    virtual void grabMouse() = 0;
+    virtual void grabMouse(CursorType cursor) = 0;
     virtual void releaseMouse() = 0;
     virtual void raise() = 0;
 

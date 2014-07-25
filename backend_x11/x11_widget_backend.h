@@ -20,7 +20,7 @@ public:
     virtual int maxTextHeight() const override;
     virtual void setMinimized(bool minimized) override;
     virtual void setFrontend(WidgetFrontend *frontend) override;
-    virtual void grabMouse() override;
+    virtual void grabMouse(CursorType cursor) override;
     virtual void releaseMouse() override;
     virtual void raise() override;
 

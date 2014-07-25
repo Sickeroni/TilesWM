@@ -156,7 +156,10 @@ void ClientFrame::startDrag(int x_global, int y_global, Client::DragMode mode)
     //FIXME what if the pointer is already grabbed ?
     assert(_drag_mode == Client::DRAG_NONE);
 
-    _backend->grabMouse();
+    WidgetBackend::CursorType cursor = (mode == Client::DRAG_MOVE) ?
+        WidgetBackend::CURSOR_MOVE : WidgetBackend::CURSOR_RESIZE_BOTTOM_RIGHT;
+
+    _backend->grabMouse(cursor);
 
     int x_parent, y_parent;
     adjustMouseCoordinates(x_global, y_global, x_parent, y_parent);

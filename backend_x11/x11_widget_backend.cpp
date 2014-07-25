@@ -1,15 +1,16 @@
 #include "x11_widget_backend.h"
 
 #include "x11_global.h"
+#include "x11_application.h"
 #include "widget_frontend.h"
 #include "canvas.h"
 
+#include <X11/Xcursor/Xcursor.h>
+#include <X11/cursorfont.h>
+
 using namespace X11Global;
 
-
-
 X11WidgetBackend *X11WidgetBackend::_mouse_grabber = 0;
-
 
 X11WidgetBackend::X11WidgetBackend() :
     _widget(X11ServerWidget::create(
@@ -76,13 +77,30 @@ int X11WidgetBackend::maxTextHeight() const
     return const_cast<X11WidgetBackend*>(this)->currentWidget()->canvas()->maxTextHeight();
 }
 
-void X11WidgetBackend::grabMouse()
+void X11WidgetBackend::grabMouse(CursorType cursor_type)
 {
     assert(!_mouse_grabber);
     _mouse_grabber = this;
+
+    unsigned int cursor_shape = XC_left_ptr;
+
+    switch (cursor_type) {
+        case CURSOR_MOVE:
+            cursor_shape = XC_fleur;
+            break;
+        case CURSOR_RESIZE_BOTTOM_RIGHT:
+            cursor_shape = XC_bottom_right_corner;
+            break;
+        case CURSOR_DEFAULT:
+        default:
+            break;
+    }
+
+    Cursor cursor = X11Application::self()->getCursor(cursor_shape);
+
     XGrabPointer(dpy(),currentWidget()->wid(), true,
                  PointerMotionMask | ButtonReleaseMask,
-                 GrabModeAsync, GrabModeAsync, None, None, CurrentTime);
+                 GrabModeAsync, GrabModeAsync, None, cursor, CurrentTime);
 }
 
 void X11WidgetBackend::releaseMouse()
