@@ -150,6 +150,8 @@ void Client::handleConfigureRequest(const Rect &client_rect)
 
 void Client::handleButtonPress(int x_global, int y_global, int button)
 {
+    setFocus();
+
     if (_drag_handler) {
         if (button == MOVE_BUTTON)
             _drag_handler->startDrag(x_global, y_global, DRAG_MOVE);
