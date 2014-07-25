@@ -114,9 +114,29 @@ void ClientFrame::handleMouseMove(int x_global, int y_global)
         }
         else if (_drag_mode == Client::DRAG_RESIZE) {
 
-            Rect client_rect = _client->rect();
+            Rect new_rect = _rect;
 
-            client_rect.setSize(_rect_before_drag_start.w + xdiff, _rect_before_drag_start.h + ydiff);
+            new_rect.setSize(_rect_before_drag_start.w + xdiff, _rect_before_drag_start.h + ydiff);
+
+            if (_snap_to_border) {
+                Rect parent_rect = parent()->rect();
+
+                int snapped_w = new_rect.w;
+                int snapped_h = new_rect.h;
+
+                int snapped_right = _rect.x + new_rect.w;
+                if (snapCoordinate(snapped_right, parent_rect.w))
+                    snapped_w = snapped_right - _rect.x;
+
+                int snapped_bottom = _rect.y + new_rect.h;
+                if (snapCoordinate(snapped_bottom, parent_rect.h))
+                    snapped_h = snapped_bottom - _rect.y;
+
+                new_rect.setSize(snapped_w, snapped_h);
+            }
+
+            Rect client_rect;
+            Theme::calcClientClientRect(hasDecoration(), maxTextHeight(), new_rect, client_rect);
 
             _client->applySizeHints(client_rect);
             Client::limitRect(client_rect);
@@ -145,7 +165,7 @@ void ClientFrame::startDrag(int x_global, int y_global, Client::DragMode mode)
     _drag_mode = mode;
     _drag_start_x = x_parent;
     _drag_start_y = y_parent;
-    _rect_before_drag_start = (mode == Client::DRAG_MOVE) ? rect() : _client->rect();
+    _rect_before_drag_start = rect();
 }
 
 void ClientFrame::finishDrag()
