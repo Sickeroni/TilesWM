@@ -2,7 +2,7 @@
 
 #include "widget_backend.h"
 #include "workspace.h"
-#include "frontend_theme.h"
+#include "theme.h"
 #include "child_widget.h"
 #include "common.h"
 

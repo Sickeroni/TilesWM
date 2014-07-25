@@ -1,7 +1,6 @@
 #include "x11_widget_backend.h"
 
 #include "x11_global.h"
-#include "theme.h"
 #include "widget_frontend.h"
 #include "canvas.h"
 

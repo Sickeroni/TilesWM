@@ -16,7 +16,7 @@ set (SRCS ${SRCS} action_run)
 set (SRCS ${SRCS} application)
 set (SRCS ${SRCS} key_grab_handler)
 set (SRCS ${SRCS} key_binding_set)
-set (SRCS ${SRCS} frontend_theme)
+set (SRCS ${SRCS} theme)
 set (SRCS ${SRCS} common_actions)
 
 add_library (frontend ${SRCS})
