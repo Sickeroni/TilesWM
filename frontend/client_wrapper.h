@@ -40,17 +40,8 @@ public:
     bool hasFocus() {
         return _client_backend->hasFocus();
     }
-    int minWidth() {
-        return _client_backend->minWidth();
-    }
-    int minHeight() {
-        return _client_backend->minHeight();
-    }
-    int maxWidth() {
-        return _client_backend->maxWidth();
-    }
-    int maxHeight() {
-        return _client_backend->maxHeight();
+    const SizeHints &sizeHints() {
+        return _client_backend->sizeHints();
     }
     void applySizeHints(Rect &rect) {
         _client->applySizeHints(rect);

@@ -2,6 +2,7 @@
 #define __CLIENT_BACKEND_H__
 
 #include "rect.h"
+#include "size_hints.h"
 
 #include <string>
 
@@ -33,10 +34,7 @@ public:
     virtual const std::string &className() const = 0;
     virtual const std::string &iconName() const = 0;
     virtual const std::string &title() const = 0;
-    virtual int minWidth() const = 0;
-    virtual int minHeight() const = 0;
-    virtual int maxWidth() const = 0;
-    virtual int maxHeight() const = 0;
+    virtual const SizeHints &sizeHints() const = 0;
 };
 
 #endif

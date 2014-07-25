@@ -62,10 +62,7 @@ public:
     virtual const std::string &className() const override { return _class; }
     virtual const std::string &iconName() const override { return _icon_name; }
     virtual const std::string &title() const override { return _title; }
-    virtual int minWidth() const override { return _min_width; }
-    virtual int minHeight() const override { return _min_height; }
-    virtual int maxWidth() const override { return _max_width; }
-    virtual int maxHeight() const override { return _max_height; }
+    virtual const SizeHints &sizeHints() const { return _size_hints; }
 
 private:
     class CriticalSection;
@@ -127,8 +124,7 @@ private:
     std::string _class;
     std::string _icon_name;
     std::string _title;
-    int _min_width = 0, _min_height = 0;
-    int _max_width = 0, _max_height = 0;
+    SizeHints _size_hints;
 
     WidgetFrontend *_widget_frontend = 0;
     ClientFrontend *_client_frontend = 0;

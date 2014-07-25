@@ -244,8 +244,9 @@ void WindowManagerDefault::setFixedSizeToMinimum()
 {
     if (ClientContainer *container = activeClientContainer()) {
         if (ClientWrapper *client = container->activeClient()) {
-            container->setFixedWidth(client->minWidth());
-            container->setFixedHeight(client->minHeight());
+            SizeHints hints = client->sizeHints();
+            container->setFixedWidth(hints.min_width);
+            container->setFixedHeight(hints.min_height);
             container->enableFixedSize(true);
         }
     }

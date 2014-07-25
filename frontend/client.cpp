@@ -33,14 +33,16 @@ void Client::setWorkspace(Workspace *workspace)
 
 void Client::applySizeHints(Rect &rect)
 {
-    if (_client_backend->minWidth() && rect.w < _client_backend->minWidth())
-        rect.w = _client_backend->minWidth();
-    if (_client_backend->minHeight() && rect.h < _client_backend->minHeight())
-        rect.h = _client_backend->minHeight();
-    if (_client_backend->maxWidth() && rect.w > _client_backend->maxWidth())
-        rect.w = _client_backend->maxWidth();
-    if (_client_backend->maxHeight() && rect.h > _client_backend->maxHeight())
-        rect.h = _client_backend->maxHeight();
+    const SizeHints hints = _client_backend->sizeHints();
+
+    if (hints.min_width && rect.w < hints.min_width)
+        rect.w = hints.min_width;
+    if (hints.min_height && rect.h < hints.min_height)
+        rect.h = hints.min_height;
+    if (hints.max_width && rect.w > hints.max_width)
+        rect.w = hints.max_width;
+    if (hints.max_height && rect.h > hints.max_height)
+        rect.h = hints.max_height;
 }
 
 void Client::limitRect(Rect &rect)

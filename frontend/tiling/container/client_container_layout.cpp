@@ -19,8 +19,12 @@ int ClientContainerLayout::minWidth()
     const Theme::ClientContainerSizes &sizes = Theme::clientContainerSizes();
 
     int min_w = sizes.min_contents_width;
-    if (!_container->isMinimized() && _container->activeClient() && _container->activeClient()->minWidth() > min_w)
-        min_w = _container->activeClient()->minWidth();
+    if (!_container->isMinimized()) {
+        if (ClientWrapper *client = _container->activeClient()) {
+            if (client->sizeHints().min_width > min_w)
+                min_w = client->sizeHints().min_width;
+        }
+    }
     return min_w + (2 * sizes.frame_width);
 }
 
@@ -29,10 +33,10 @@ int ClientContainerLayout::maxWidth()
     const Theme::ClientContainerSizes &sizes = Theme::clientContainerSizes();
     int min_width = minWidth();
 
-    if (_container->activeClient()) {
+    if (ClientWrapper *client = _container->activeClient()) {
 //         if (!isFixedSize()) {
-            if (_container->activeClient()->maxWidth()) {
-                int max_width = (2 * sizes.frame_width) + _container->activeClient()->maxWidth();
+            if (client->sizeHints().max_width) {
+                int max_width = (2 * sizes.frame_width) + client->sizeHints().max_width;
                 if (max_width > min_width)
                     return max_width;
                 else
@@ -60,7 +64,7 @@ int ClientContainerLayout::minHeight()
     
     int min_client_height = 0;
     if (!_container->isMinimized() && _container->activeClient())
-        min_client_height = _container->activeClient()->minHeight();
+        min_client_height = _container->activeClient()->sizeHints().min_height;
 
     return tabbar_height + min_client_height + (2 * sizes.frame_width);
 }
