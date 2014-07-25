@@ -94,16 +94,6 @@ void Client::handleSizeHintsChanged()
 
 void Client::handleMap()
 {
-//     UNIMPLEMENTED
-#if 0
-    _client_backend->widget()->reparent(_backend);
-
-    updateFrameGeometry();
-
-    _client_backend->widget()->setMapped(true);
-
-    Application::manageClient(this);
-#endif
     Application::manageClient(this);
 }
 
