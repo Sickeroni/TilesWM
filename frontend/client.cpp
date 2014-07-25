@@ -101,23 +101,8 @@ void Client::handleMap()
 
 void Client::handlePropertyChanged(ClientBackend::Property property)
 {
-    UNIMPLEMENTED
-#if 0
-    switch (property) {
-        case ClientBackend::PROP_SIZE_HINTS:
-            handleSizeHintsChanged();
-            break;
-        case ClientBackend::PROP_NAME:
-        case ClientBackend::PROP_ICON_NAME:
-        case ClientBackend::PROP_CLASS:
-        case ClientBackend::PROP_ICON:
-            redraw();
-            //FIXME notify parent
-            break;
-        default:
-            debug<<"unhandled property:"<<property;
-    }
-#endif
+    for (PropertyListener *listener : _property_listeners)
+        listener->propertyChanged(this, property);
 }
 
 void Client::handleConfigureRequest(const Rect &client_rect)
@@ -150,4 +135,14 @@ void Client::handleButtonPress(int x_global, int y_global, int button)
         else if (button == RESIZE_BUTTON)
             _drag_handler->startDrag(x_global, y_global, DRAG_RESIZE);
     }
+}
+
+void Client::addPropertyListener(PropertyListener *listener)
+{
+    _property_listeners.push_back(listener);
+}
+
+void Client::removePropertyListener(PropertyListener *listener)
+{
+    _property_listeners.remove(listener);
 }

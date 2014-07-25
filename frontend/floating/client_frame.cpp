@@ -12,12 +12,14 @@ ClientFrame::ClientFrame(ClientWrapper *client) : ChildWidget(OTHER),
     _client->reparent(this, _backend);
     _client->setRect(Rect(0, 0, _rect.w, _rect.h));
     _client->setDragHandler(this);
+    _client->setPropertyListener(this);
     _client->setMapped(true);
 }
 
 ClientFrame::~ClientFrame()
 {
     cancelDrag();
+    _client->setPropertyListener(0);
     _client->setDragHandler(0);
     _client->reparent(0, 0);
     delete _backend;
@@ -216,4 +218,17 @@ bool ClientFrame::snapCoordinate(int &coord, int snap_coord)
     else
         snapped = false;
     return snapped;
+}
+
+void ClientFrame::propertyChanged(Client *client, ClientBackend::Property property)
+{
+    if (property == ClientBackend::PROP_SIZE_HINTS) {
+        Rect client_rect = _client->rect();
+        client->applySizeHints(client_rect);
+        Rect frame_rect;
+        Theme::calcClientFrameRect(hasDecoration(), maxTextHeight(), client_rect, frame_rect);
+        frame_rect.setPos(_rect.x, _rect.y);
+        setRect(frame_rect);
+    } else
+        redraw();
 }

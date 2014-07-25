@@ -48,6 +48,7 @@ public:
     }
 
     void setDragHandler(Client::DragHandler *handler);
+    void setPropertyListener(Client::PropertyListener *listener);
 
     const Client *client() { return _client; }
 
@@ -55,6 +56,7 @@ private:
     Client *_client = 0;
     const ClientBackend *_client_backend = 0;
     Client::DragHandler *_drag_handler = 0;
+    Client::PropertyListener *_property_listener = 0;
     WindowManager *_wm = 0;
 };
 

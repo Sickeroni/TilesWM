@@ -15,7 +15,7 @@ class ClientContainerLayout;
 class ClientWrapper;
 
 
-class ClientContainer final : public Container, public Client::DragHandler
+class ClientContainer final : public Container, public Client::DragHandler, public Client::PropertyListener
 {
 public:
     ClientContainer();
@@ -37,6 +37,9 @@ public:
         debug;
         redraw();
     }
+
+    // Client::PropertyListener
+    virtual void propertyChanged(Client *client, ClientBackend::Property property) override;
 
     ClientWrapper *child(size_t index) { return _children[index]; }
     int indexOfChild(const ClientWrapper *child);

@@ -35,16 +35,6 @@ void ClientContainer::handleClientFocusChange(ClientWrapper *client)
 {
     redraw();
 }
-
-void ClientContainer::handleClientSizeHintChanged(ClientWrapper *client)
-{
-    if (activeClient() == client) {
-        if (parentContainer())
-            parentContainer()->handleSizeHintsChanged(this);
-        else
-            getLayout()->layoutContents();
-    }
-}
 #endif
 
 void ClientContainer::setMinimized(bool minimized)
@@ -81,6 +71,8 @@ void ClientContainer::setActiveChild(int index)
 
     if (parentContainer())
         parentContainer()->handleSizeHintsChanged(this);
+    else
+        getLayout()->layoutContents();
 }
 
 int ClientContainer::addChild(ClientWrapper *client)
@@ -89,6 +81,7 @@ int ClientContainer::addChild(ClientWrapper *client)
 
     client->reparent(this, _backend);
     client->setDragHandler(this);
+    client->setPropertyListener(this);
 
     _children.push_back(client);
 
@@ -116,6 +109,9 @@ void ClientContainer::removeChild(ClientWrapper *client)
     int index = indexOfChild(client);
     assert(index >= 0);
 
+    bool was_active = (index == _active_child_index);
+
+    client->setPropertyListener(0);
     client->setDragHandler(0);
     client->reparent(0, 0);
 
@@ -128,6 +124,9 @@ void ClientContainer::removeChild(ClientWrapper *client)
         activeClient()->raise();
 
     getLayout()->layoutContents();
+
+    if (was_active && parentContainer())
+        parentContainer()->handleSizeHintsChanged(this);
 }
 
 #if 0
@@ -148,4 +147,17 @@ void ClientContainer::removeChildren(std::vector<ClientWrapper*> &clients)
 void ClientContainer::draw(Canvas *canvas)
 {
     Theme::drawClientContainer(this, canvas);
+}
+
+void ClientContainer::propertyChanged(Client *client, ClientBackend::Property property)
+{
+    if (property == ClientBackend::PROP_SIZE_HINTS &&
+        activeClient() && activeClient()->client() == client)
+    {
+        if (parentContainer())
+            parentContainer()->handleSizeHintsChanged(this);
+        else
+            getLayout()->layoutContents();
+    } else
+        redraw();
 }

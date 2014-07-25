@@ -6,7 +6,7 @@
 #include "application.h"
 #include "backend.h"
 
-class ClientFrame final : public ChildWidget, public Client::DragHandler
+class ClientFrame final : public ChildWidget, public Client::DragHandler, public Client::PropertyListener
 {
 public:
     ClientFrame(ClientWrapper *client);
@@ -41,6 +41,9 @@ private:
     virtual void handleFocusChanged() {
         redraw();
     }
+
+    // Client::PropertyListener
+    virtual void propertyChanged(Client *client, ClientBackend::Property property) override;
 
     void finishDrag();
     void cancelDrag();

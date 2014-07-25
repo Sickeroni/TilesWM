@@ -35,6 +35,10 @@ public:
         virtual void handleFocusChanged() = 0;
     };
 
+    struct PropertyListener {
+        virtual void propertyChanged(Client *client, ClientBackend::Property property) = 0;
+    };
+
     Client(ClientBackend *client_backend);
     ~Client();
 
@@ -50,6 +54,8 @@ public:
     void setDragHandler(DragHandler *handler) {
         _drag_handler = handler;
     }
+    void addPropertyListener(PropertyListener *listener);
+    void removePropertyListener(PropertyListener *listener);
 
     void requestClose() {
         _client_backend->requestClose();
@@ -75,9 +81,11 @@ private:
     virtual void handleMap() override;
     virtual void handlePropertyChanged(ClientBackend::Property property) override;
     virtual void handleConfigureRequest(const Rect &rect) override;
+
     ClientBackend *_client_backend = 0;
     Workspace *_workspace = 0;
     DragHandler *_drag_handler = 0;
+    std::list<PropertyListener*> _property_listeners;
 };
 
 #endif // __CLIENT_H__

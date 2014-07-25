@@ -16,6 +16,7 @@ ClientWrapper::ClientWrapper(Client *client, WindowManager *wm) : ChildWidget(OT
 
 ClientWrapper::~ClientWrapper()
 {
+    setPropertyListener(0);
     if (_client->parent() == this) {
         _client->setDragHandler(0);
         _client->reparent(0, 0);
@@ -46,4 +47,13 @@ void ClientWrapper::setDragHandler(Client::DragHandler *handler)
     _drag_handler = handler;
     if (_wm->isActive())
         _client->setDragHandler(handler);
+}
+
+void ClientWrapper::setPropertyListener(Client::PropertyListener *listener)
+{
+    if (_property_listener)
+        _client->removePropertyListener(_property_listener);
+    if (listener)
+        _client->addPropertyListener(listener);
+    _property_listener = listener;
 }
