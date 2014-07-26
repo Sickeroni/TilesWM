@@ -49,7 +49,6 @@ public:
     void addClient(Client *client);
     void removeClient(Client *client);
     ClientWrapper *activeClient();
-    void makeClientActive(Client *client);
 
     void redrawAll();
     void refreshStatusText();

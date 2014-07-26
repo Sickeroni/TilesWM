@@ -108,11 +108,6 @@ ClientWrapper *Workspace::activeClient()
     return _window_manager->activeClient();
 }
 
-void Workspace::makeClientActive(Client *client)
-{
-    _window_manager->makeClientActive(client);
-}
-
 Mode *Workspace::mode()
 {
     return Application::self()->mode(_mode);

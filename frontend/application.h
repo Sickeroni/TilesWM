@@ -54,7 +54,6 @@ public:
     static void runProgram(const char *path);
     static void runProgram(const std::vector<std::string> &args);
     static ClientWrapper *activeClient();
-    static void makeClientActive(Client *client);
     static Backend *backend() { return self()->_backend; }
 
 private:

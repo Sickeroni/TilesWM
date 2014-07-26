@@ -199,16 +199,6 @@ ClientWrapper *Application::activeClient()
     return activeWorkspace()->activeClient();
 }
 
-void Application::makeClientActive(Client *client)
-{
-    Workspace *workspace = client->workspace();
-    assert(workspace);
-
-    if (workspace->makeActive()) {
-        workspace->makeClientActive(client);
-    }
-}
-
 void Application::setActiveMonitor(Monitor *monitor)
 {
     UNIMPLEMENTED
