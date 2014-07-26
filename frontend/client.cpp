@@ -2,6 +2,8 @@
 
 #include "widget_backend.h"
 #include "backend.h"
+#include "workspace.h"
+#include "window_manager.h"
 #include "application.h"
 #include "theme.h"
 #include "common.h"
@@ -59,24 +61,11 @@ void Client::limitRect(Rect &rect)
 
 void Client::handleFocusChanged(bool has_focus)
 {
+    if (has_focus)
+        workspace()->windowManager()->makeClientActive(this);
+
     if (_drag_handler)
         _drag_handler->handleFocusChanged();
-#if 0
-
-    //FIXME
-    // this should be overidden in a subclass like TiledClient
-
-
-    if (has_focus)
-        Application::makeClientActive(this);
-
-    redraw();
-
-    //container()->handleClientFocusChanged(this);
-    //HACK
-    if (parent())
-        parent()->redraw();
-#endif
 }
 
 void Client::handleMap()
