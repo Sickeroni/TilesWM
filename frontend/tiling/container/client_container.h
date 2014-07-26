@@ -15,7 +15,7 @@ class ClientContainerLayout;
 class ClientWrapper;
 
 
-class ClientContainer final : public Container, public Client::DragHandler, public Client::PropertyListener
+class ClientContainer final : public Container, public Client::EventHandler, public Client::PropertyListener
 {
 public:
     ClientContainer();
@@ -32,7 +32,7 @@ public:
     virtual ContainerLayout *getLayout() override;
     virtual bool isMinimized() const override { return _is_minimized; }
 
-    // Client::DragHandler
+    // Client::EventHandler
     virtual void handleFocusChanged() {
         debug;
         redraw();

@@ -6,7 +6,7 @@
 #include "application.h"
 #include "backend.h"
 
-class ClientFrame final : public ChildWidget, public Client::DragHandler, public Client::PropertyListener
+class ClientFrame final : public ChildWidget, public Client::EventHandler, public Client::PropertyListener
 {
 public:
     ClientFrame(ClientWrapper *client);
@@ -36,9 +36,9 @@ private:
     virtual void handleButtonRelease(int button) override;
     virtual void handleMouseMove(int x, int y) override;
 
-    // Client::DragHandler
-    virtual void startDrag(int x_global, int y_global, Client::DragMode mode) override;
-    virtual void handleFocusChanged() {
+    // Client::EventHandler
+    virtual void handleDragStart(int x_global, int y_global, Client::DragMode mode) override;
+    virtual void handleFocusChanged() override {
         redraw();
     }
 

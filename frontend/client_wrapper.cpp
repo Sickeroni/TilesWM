@@ -18,7 +18,7 @@ ClientWrapper::~ClientWrapper()
 {
     setPropertyListener(0);
     if (_client->parent() == this) {
-        _client->setDragHandler(0);
+        _client->setEventHandler(0);
         _client->reparent(0, 0);
     }
     delete _backend;
@@ -30,7 +30,7 @@ void ClientWrapper::handleWindowManagerIsActiveChanged()
     if (_wm->isActive()) {
         _client->reparent(this, _backend);
         _client->setRect(Rect(0, 0, rect().w, rect().h));
-        _client->setDragHandler(_drag_handler);
+        _client->setEventHandler(_event_handler);
         _client->setMapped(true);
     }
 }
@@ -42,11 +42,11 @@ void ClientWrapper::setRect(const Rect &rect)
         _client->setRect(Rect(0, 0, rect.w, rect.h));
 }
 
-void ClientWrapper::setDragHandler(Client::DragHandler *handler)
+void ClientWrapper::setEventHandler(Client::EventHandler *handler)
 {
-    _drag_handler = handler;
+    _event_handler = handler;
     if (_wm->isActive())
-        _client->setDragHandler(handler);
+        _client->setEventHandler(handler);
 }
 
 void ClientWrapper::setPropertyListener(Client::PropertyListener *listener)

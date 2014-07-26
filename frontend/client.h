@@ -29,9 +29,8 @@ public:
         RESIZE_BUTTON = 3
     };
 
-    //FIXME rename
-    struct DragHandler {
-        virtual void startDrag(int x_global, int y_global, DragMode mode) {}
+    struct EventHandler {
+        virtual void handleDragStart(int x_global, int y_global, DragMode mode) {}
         virtual void handleFocusChanged() = 0;
     };
 
@@ -51,8 +50,8 @@ public:
     Workspace *workspace() { return _workspace; }
     void setWorkspace(Workspace *workspace);
     void applySizeHints(Rect &rect);
-    void setDragHandler(DragHandler *handler) {
-        _drag_handler = handler;
+    void setEventHandler(EventHandler *handler) {
+        _event_handler = handler;
     }
     void addPropertyListener(PropertyListener *listener);
     void removePropertyListener(PropertyListener *listener);
@@ -83,7 +82,7 @@ private:
 
     ClientBackend *_client_backend = 0;
     Workspace *_workspace = 0;
-    DragHandler *_drag_handler = 0;
+    EventHandler *_event_handler = 0;
     std::list<PropertyListener*> _property_listeners;
 };
 

@@ -47,7 +47,7 @@ public:
         _client->applySizeHints(rect);
     }
 
-    void setDragHandler(Client::DragHandler *handler);
+    void setEventHandler(Client::EventHandler *handler);
     void setPropertyListener(Client::PropertyListener *listener);
 
     const Client *client() { return _client; }
@@ -55,7 +55,7 @@ public:
 private:
     Client *_client = 0;
     const ClientBackend *_client_backend = 0;
-    Client::DragHandler *_drag_handler = 0;
+    Client::EventHandler *_event_handler = 0;
     Client::PropertyListener *_property_listener = 0;
     WindowManager *_wm = 0;
 };

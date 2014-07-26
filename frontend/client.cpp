@@ -64,8 +64,8 @@ void Client::handleFocusChanged(bool has_focus)
     if (has_focus)
         workspace()->windowManager()->makeClientActive(this);
 
-    if (_drag_handler)
-        _drag_handler->handleFocusChanged();
+    if (_event_handler)
+        _event_handler->handleFocusChanged();
 }
 
 void Client::handleMap()
@@ -83,11 +83,11 @@ void Client::handleButtonPress(int x_global, int y_global, int button)
 {
     setFocus();
 
-    if (_drag_handler) {
+    if (_event_handler) {
         if (button == MOVE_BUTTON)
-            _drag_handler->startDrag(x_global, y_global, DRAG_MOVE);
+            _event_handler->handleDragStart(x_global, y_global, DRAG_MOVE);
         else if (button == RESIZE_BUTTON)
-            _drag_handler->startDrag(x_global, y_global, DRAG_RESIZE);
+            _event_handler->handleDragStart(x_global, y_global, DRAG_RESIZE);
     }
 }
 

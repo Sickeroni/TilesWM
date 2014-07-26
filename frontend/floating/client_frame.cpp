@@ -11,7 +11,7 @@ ClientFrame::ClientFrame(ClientWrapper *client) : ChildWidget(OTHER),
 
     _client->reparent(this, _backend);
     _client->setRect(Rect(0, 0, _rect.w, _rect.h));
-    _client->setDragHandler(this);
+    _client->setEventHandler(this);
     _client->setPropertyListener(this);
     _client->setMapped(true);
 
@@ -22,7 +22,7 @@ ClientFrame::~ClientFrame()
 {
     cancelDrag();
     _client->setPropertyListener(0);
-    _client->setDragHandler(0);
+    _client->setEventHandler(0);
     _client->reparent(0, 0);
     delete _backend;
     _backend = 0;
@@ -70,9 +70,9 @@ void ClientFrame::handleButtonPress(int x_global, int y_global, int button)
     _client->setFocus();
 
     if (button == Client::MOVE_BUTTON)
-        startDrag(x_global, y_global, Client::DRAG_MOVE);
+        handleDragStart(x_global, y_global, Client::DRAG_MOVE);
     else if (button == Client::RESIZE_BUTTON)
-        startDrag(x_global, y_global, Client::DRAG_RESIZE);
+        handleDragStart(x_global, y_global, Client::DRAG_RESIZE);
 }
 
 void ClientFrame::handleButtonRelease(int button)
@@ -155,7 +155,7 @@ void ClientFrame::handleMouseMove(int x_global, int y_global)
     }
 }
 
-void ClientFrame::startDrag(int x_global, int y_global, Client::DragMode mode)
+void ClientFrame::handleDragStart(int x_global, int y_global, Client::DragMode mode)
 {
     //FIXME what if the pointer is already grabbed ?
     assert(_drag_mode == Client::DRAG_NONE);
