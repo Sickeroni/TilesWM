@@ -15,6 +15,7 @@ ClientFrame::ClientFrame(ClientWrapper *client) : ChildWidget(OTHER),
     _client->setPropertyListener(this);
     _client->setMapped(true);
 
+    applySizeHints();
     setRequestedRect();
 }
 
@@ -224,14 +225,9 @@ bool ClientFrame::snapCoordinate(int &coord, int snap_coord)
 
 void ClientFrame::propertyChanged(Client *client, ClientBackend::Property property)
 {
-    if (property == ClientBackend::PROP_SIZE_HINTS) {
-        Rect client_rect = _client->rect();
-        client->applySizeHints(client_rect);
-        Rect frame_rect;
-        Theme::calcClientFrameRect(hasDecoration(), maxTextHeight(), client_rect, frame_rect);
-        frame_rect.setPos(_rect.x, _rect.y);
-        setRect(frame_rect);
-    } else if (property == ClientBackend::PROP_REQUESTED_RECT)
+    if (property == ClientBackend::PROP_SIZE_HINTS)
+        applySizeHints();
+    else if (property == ClientBackend::PROP_REQUESTED_RECT)
         setRequestedRect();
     else
         redraw();
@@ -248,4 +244,14 @@ void ClientFrame::setRequestedRect()
         frame_rect.setPos(_rect.x, _rect.y);
         setRect(frame_rect);
     }
+}
+
+void ClientFrame::applySizeHints()
+{
+    Rect client_rect = _client->rect();
+    _client->applySizeHints(client_rect);
+    Rect frame_rect;
+    Theme::calcClientFrameRect(hasDecoration(), maxTextHeight(), client_rect, frame_rect);
+    frame_rect.setPos(_rect.x, _rect.y);
+    setRect(frame_rect);
 }

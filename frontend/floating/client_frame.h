@@ -51,6 +51,7 @@ private:
     void adjustMouseCoordinates(int x_global, int y_global, int &x_parent, int &y_parent);
     bool snapCoordinate(int &coord, int snap_coord);
     void setRequestedRect();
+    void applySizeHints();
 
     ClientWrapper *_client = 0;
     Client::DragMode _drag_mode = Client::DRAG_NONE;
