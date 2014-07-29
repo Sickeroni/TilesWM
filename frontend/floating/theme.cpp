@@ -1,9 +1,9 @@
 #include "floating_theme.h"
+#include "theme_backend.h"
 #include "client_wrapper.h"
+#include "theme.h"
 #include "icon.h"
 #include "canvas.h"
-#include "colors.h"
-#include "metrics.h"
 #include "common.h"
 
 namespace Theme
@@ -12,14 +12,13 @@ namespace Theme
 
 void calcClientFrameMargins(bool has_decoration, int max_text_height, int &side, int &top, int &bottom)
 {
-    static const int titlebar_gap = 4; //FIXME
-    int frame_margin = Metrics::CLIENT_INNER_FRAME_MARGIN;
+    int frame_margin = 0;
     int titlebar_height = 0;
 
     if (has_decoration) {
-        frame_margin += Metrics::CLIENT_DECORATION_MARGIN;
+        frame_margin += backend()->clientDecorationMargin();
         titlebar_height +=
-            (max_text_height + titlebar_gap + (2 * Metrics::CLIENT_TITLEBAR_INNER_MARGIN));
+            (backend()->titlebarHeight(max_text_height) + backend()->titlebarBottomMargin());
     }
 
     side = frame_margin;
@@ -60,52 +59,19 @@ void drawClientFrame(ClientWrapper *client, Canvas *canvas, const Rect &rect)
 
     assert(frame_rect.w && frame_rect.h);
 
-    uint32_t frame_color = client->hasFocus() ? Colors::CLIENT_FOCUS : Colors::CLIENT_BORDER;
-
     canvas->begin();
 
-    //FIXME
-    canvas->erase(frame_rect);
-//     canvas->fillRectangle(frame_rect, 0x00FF00);
+    backend()->drawClientFrame(client->hasFocus(), frame_rect, canvas);
 
-    Rect border_rect;
-    border_rect.set(frame_rect.x+1, frame_rect.y+1, frame_rect.w-2, frame_rect.h-2);
-    canvas->drawFrame(border_rect, frame_color);
-
+    //FIXME - add parameter has_decoration
 //     if (client->hasDecoration()) {
-        //FIXME duplicated in calcFrameMargins() / drawTab()
-        int frame_margin = Metrics::CLIENT_INNER_FRAME_MARGIN;
-        int titlebar_height = 0;
-
-        frame_margin += Metrics::CLIENT_DECORATION_MARGIN;
-        titlebar_height +=
-            (client->maxTextHeight() + (2 * Metrics::CLIENT_TITLEBAR_INNER_MARGIN));
-
-        uint32_t title_fg = client->hasFocus() ? Colors::TAB_FOCUSED_TEXT : Colors::TAB_TEXT;
-        uint32_t title_bg = client->hasFocus() ? Colors::TAB_FOCUSED : Colors::TAB;
+        int frame_margin = backend()->clientDecorationMargin();
+        int titlebar_height = backend()->titlebarHeight(client->maxTextHeight());
 
         Rect titlebar_rect(frame_margin, frame_margin,
                            frame_rect.w - (2 * frame_margin), titlebar_height);
 
-        canvas->fillRectangle(titlebar_rect, title_bg);
-        canvas->drawFrame(titlebar_rect, title_fg);
-
-        if (client->icon()) {
-            int icon_x = titlebar_rect.x + Metrics::CLIENT_TITLEBAR_INNER_MARGIN;
-            int icon_y = titlebar_rect.y + Metrics::CLIENT_TITLEBAR_INNER_MARGIN;
-            canvas->drawIcon(client->icon(), icon_x, icon_y);
-        }
-
-        Rect title_rect = titlebar_rect;
-        title_rect.x += Metrics::CLIENT_TITLEBAR_INNER_MARGIN;
-        title_rect.y += Metrics::CLIENT_TITLEBAR_INNER_MARGIN;
-        title_rect.w -= (2 * Metrics::CLIENT_TITLEBAR_INNER_MARGIN);
-        title_rect.h -= (2* Metrics::CLIENT_TITLEBAR_INNER_MARGIN);
-        if (client->icon()) {
-            title_rect.x += (client->icon()->width() + 5);
-            title_rect.w -= (client->icon()->width() + 5);
-        }
-        canvas->drawText(client->name(), title_rect, title_fg);
+        backend()->drawTitlebar(client->icon(), client->title(), client->hasFocus(), titlebar_rect, canvas);
 //     }
 
     canvas->end();

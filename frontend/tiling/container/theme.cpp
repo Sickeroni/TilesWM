@@ -1,19 +1,18 @@
 #include "client_container_theme.h"
 #include "client_container.h"
-// #include "window_manager.h"
-// #include "workspace.h"
+#include "theme.h"
+#include "theme_backend.h"
 #include "client_wrapper.h"
 #include "icon.h"
 #include "canvas.h"
 #include "colors.h"
-#include "metrics.h"
 #include "common.h"
 
 #include <sstream>
 #include <cmath>
 
-using std::max;
 
+using std::max;
 
 namespace Theme {
 
@@ -22,16 +21,16 @@ struct ClientContainerSizesInternal
 {
     int frame_width;
     int vertical_tabbar_width;
-    int tab_inner_margin;
+    int statusbar_inner_margin;
     int tab_gap;
     int status_bar_width;
 };
 
 
 const ClientContainerSizesInternal _clientContainerSizesInternal = {
-    .frame_width = Metrics::CLIENT_CONTAINER_FRAME_MARGIN,
+    .frame_width = 0,
     .vertical_tabbar_width = 70,
-    .tab_inner_margin = 5,
+    .statusbar_inner_margin = 5,
     .tab_gap = 2,
     .status_bar_width = 30
 };
@@ -150,11 +149,13 @@ int getTabAt(int x, int y, ClientContainer *container)
 }
 
 int calcTabbarHeight(ClientContainer *container) {
-    return container->maxTextHeight() + (2 * _clientContainerSizesInternal.tab_inner_margin);
+    const int icon_size = 22; //FIXME
+    return backend()->tabHeight(container->maxTextHeight(), false, icon_size);
 }
 
 int calcVerticalTabbarHeight(ClientContainer *container) {
-    return container->numElements() * Theme::calcTabbarHeight(container)
+    const int icon_size = 22; //FIXME
+    return (container->numElements() * backend()->tabHeight(container->maxTextHeight(), true, icon_size))
                 + ((!container->numElements() ? 0 : container->numElements() - 1) * _clientContainerSizesInternal.tab_gap);
 }
 
@@ -164,7 +165,7 @@ void getClientContainerClientRect(ClientContainer *container,  Rect &client_rect
     const ClientContainerSizesInternal &sizes = _clientContainerSizesInternal;
     int tabbar_height = calcTabbarHeight(container);
 
-    static const int gap = 2; //FIXME
+    static const int gap = backend()->titlebarBottomMargin();
 
     client_rect.x = sizes.frame_width;
     client_rect.y = sizes.frame_width + tabbar_height + gap;
@@ -177,51 +178,21 @@ void getClientContainerClientRect(ClientContainer *container,  Rect &client_rect
 
 void drawTab(ClientContainer *container, bool container_has_focus, ClientWrapper *client, const Rect &rect, bool vertical, Canvas *canvas)
 {
-    const ClientContainerSizesInternal &sizes = _clientContainerSizesInternal;
-    uint32_t fg = Colors::TAB_TEXT;
-    uint32_t bg = Colors::TAB;
-
-    if (client->hasFocus()) {
-        bg = Colors::TAB_FOCUSED;
-        fg = Colors::TAB_FOCUSED_TEXT;
-    } else if (container_has_focus && container->activeClient() == client) {
-        bg = Colors::TAB_ACTIVE;
-        fg = Colors::TAB_ACTIVE_TEXT;
-    } else if (container->activeClient() == client) {
-        bg = Colors::TAB_CURRENT;
-        fg = Colors::TAB_CURRENT_TEXT;
-    }
-
-    canvas->fillRectangle(rect, bg);
-
-    canvas->drawFrame(rect, fg);
-
-    if (Icon *icon = client->icon()) {
-        int icon_x = rect.x + sizes.tab_inner_margin;
-        int icon_y = rect.y + sizes.tab_inner_margin;
-        canvas->drawIcon(icon, icon_x, icon_y);
-    }
-
-    Rect text_rect(rect.x + sizes.tab_inner_margin, rect.y + sizes.tab_inner_margin,
-                   rect.w - (2* sizes.tab_inner_margin), rect.h - (2* sizes.tab_inner_margin));
-
-    if (Icon *icon = client->icon()) {
-        if (vertical) {
-            text_rect.y += (icon->width() + 5);
-        } else {
-            text_rect.x += (icon->width() + 5);
-            text_rect.w -= (icon->width() + 5);
-        }
-    }
-
+    std::string title1, title2;
     if (vertical) {
-        const std::string name = client->iconName().empty() ?
-                                    client->name() : client->iconName();
-        canvas->drawText(client->className(), text_rect, fg);
-        text_rect.y += (container->maxTextHeight() + sizes.tab_inner_margin);
-        canvas->drawText(name, text_rect, fg);
+        title1 = client->className();
+        title2 = client->iconName().empty() ? client->name() : client->iconName();
     } else
-        canvas->drawText(client->title(), text_rect, fg);
+        title1 = client->title();
+
+    backend()->drawTab(client->icon(),
+        title1,
+        title2,
+        client->hasFocus(),
+        container->activeClient() == client,
+        client->maxTextHeight(),
+        rect,
+        canvas);
 }
 
 void drawTabbar(ClientContainer *container, Canvas *canvas)
@@ -239,10 +210,10 @@ void drawTabbar(ClientContainer *container, Canvas *canvas)
     Rect status_bar_rect = tabbar_rect;
     status_bar_rect.x = sizes.frame_width;
     status_bar_rect.w = sizes.status_bar_width;
-    status_bar_rect.x += sizes.tab_inner_margin;
-    status_bar_rect.y += sizes.tab_inner_margin;
-    status_bar_rect.w += (2 * sizes.tab_inner_margin);
-    status_bar_rect.h += (2 * sizes.tab_inner_margin);
+    status_bar_rect.x += sizes.statusbar_inner_margin;
+    status_bar_rect.y += sizes.statusbar_inner_margin;
+    status_bar_rect.w += (2 * sizes.statusbar_inner_margin);
+    status_bar_rect.h += (2 * sizes.statusbar_inner_margin);
 
     uint32_t status_bar_fg = Colors::TAB_TEXT;
 

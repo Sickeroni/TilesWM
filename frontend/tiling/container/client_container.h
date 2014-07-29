@@ -3,17 +3,13 @@
 
 #include "container.h"
 #include "client.h"
-
-#include "metrics.h"
 #include "common.h"
 
 #include <vector>
 
-
 class Canvas;
 class ClientContainerLayout;
 class ClientWrapper;
-
 
 class ClientContainer final : public Container, public Client::EventHandler, public Client::PropertyListener
 {

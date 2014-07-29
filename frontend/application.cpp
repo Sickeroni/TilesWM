@@ -17,8 +17,9 @@
 
 Application *Application::_self = 0;
 
-Application::Application(const std::vector<Mode*> *modes) :
-    _modes(modes)
+Application::Application(const std::vector<Mode*> *modes, ThemeBackend *theme_backend) :
+    _modes(modes),
+    _theme_backend(theme_backend)
 {
 }
 

@@ -17,11 +17,12 @@ class CommonActions;
 class WidgetBackend;
 class Widget;
 class ClientWrapper;
+class ThemeBackend;
 
 class Application final : public FrontendBase
 {
 public:
-    Application(const std::vector<Mode*> *modes);
+    Application(const std::vector<Mode*> *modes, ThemeBackend *theme_backend);
     ~Application();
 
     virtual void init(Backend *backend) override;
@@ -55,6 +56,7 @@ public:
     static void runProgram(const std::vector<std::string> &args);
     static ClientWrapper *activeClient();
     static Backend *backend() { return self()->_backend; }
+    static ThemeBackend *themeBackend() { return self()->_theme_backend; }
 
 private:
 //     ActionSet *_main_actions = 0;
@@ -66,6 +68,7 @@ private:
     std::vector<Workspace*>  _workspaces;
     Monitor *_monitor = 0;
     Backend *_backend = 0;
+    ThemeBackend *_theme_backend = 0;
 };
 
 #endif // __APPLICATION_H__

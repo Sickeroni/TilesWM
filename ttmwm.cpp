@@ -6,6 +6,7 @@
 #include "mode.h"
 #include "mode_simple.h"
 #include "mode_default.h"
+#include "themes/default/default_theme.h"
 #endif
 
 #include "common.h"
@@ -39,7 +40,9 @@ int main()
     modes.push_back(new ModeDefault());
 //     modes.push_back(new Mode3Panel());
 
-    Application frontend(&modes);
+    ThemeBackend *theme_backend = new DefaultTheme();
+
+    Application frontend(&modes, theme_backend);
 #endif
 
     X11Application backend(&frontend);
@@ -57,6 +60,9 @@ int main()
     for(size_t i = 0; i < modes.size(); i++)
         delete modes[i];
     modes.clear();
+
+    delete theme_backend;
+    theme_backend = 0;
 #endif
 
     cout << "shutdown finished. goodbye.\n";
