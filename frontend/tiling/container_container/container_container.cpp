@@ -72,6 +72,9 @@ void ContainerContainer::insertChild(Container *child, int insert_pos)
     assert(insert_pos <= numElements());
     _children.insert(_children.begin() + insert_pos, child);
 
+    if (insert_pos <= _active_child_index)
+        _active_child_index++;
+
     applyMinimizeMode(child);
     child->setMapped(true);
 
@@ -110,8 +113,11 @@ Container *ContainerContainer::removeChild(int index)
 
     _children.erase(_children.begin() + index);
 
+    if (index < _active_child_index)
+        _active_child_index--;
+
     if (_active_child_index >= numElements())
-        _active_child_index = numElements() -1;
+        _active_child_index = numElements() - 1;
 
     return child;
 }
