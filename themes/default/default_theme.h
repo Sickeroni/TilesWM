@@ -40,7 +40,7 @@ private:
             const std::string &title1,
             const std::string &title2,
             bool is_vertical,
-            uint32_t fg, uint32_t bg,
+            uint32_t fg, uint32_t bg, uint32_t border_color,
             int max_text_height,
             const Rect &rect, Canvas *canvas);
 };

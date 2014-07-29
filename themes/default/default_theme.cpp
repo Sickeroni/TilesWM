@@ -5,7 +5,7 @@ namespace Metrics
     enum {
         CLIENT_CONTAINER_FRAME_MARGIN = 0,
         CLIENT_INNER_FRAME_MARGIN = 0,
-        CLIENT_DECORATION_MARGIN = 7,
+        CLIENT_DECORATION_MARGIN = 4,
         CLIENT_TITLEBAR_INNER_MARGIN = 5
     };
 }
@@ -26,7 +26,7 @@ int DefaultTheme::tabHeight(int max_text_height, bool is_vertical, int icon_size
 }
 
 int DefaultTheme::titlebarBottomMargin() {
-    return 4;
+    return 2;
 }
 
 int DefaultTheme::clientDecorationMargin() {
@@ -45,22 +45,25 @@ void DefaultTheme::drawTab(
 {
     uint32_t fg = Colors::TAB_TEXT;
     uint32_t bg = Colors::TAB;
+    uint32_t border = Colors::TAB_BORDER;
 
     if (has_focus) {
         bg = Colors::TAB_FOCUSED;
         fg = Colors::TAB_FOCUSED_TEXT;
+        border = Colors::TAB_FOCUSED_BORDER;
     } else if (is_active) {
         bg = Colors::TAB_CURRENT;
         fg = Colors::TAB_CURRENT_TEXT;
     }
 
-    drawTabOrTitlebar(icon, title1, title2, false, fg, bg, max_text_height, rect, canvas);
+    drawTabOrTitlebar(icon, title1, title2, false, fg, bg, border, max_text_height, rect, canvas);
 }
 
 void DefaultTheme::drawTitlebar(Icon *icon, const std::string &title, bool has_focus, const Rect &rect, Canvas *canvas) {
     uint32_t fg = has_focus ? Colors::TAB_FOCUSED_TEXT : Colors::TAB_TEXT;
     uint32_t bg = has_focus ? Colors::TAB_FOCUSED : Colors::TAB;
-    drawTabOrTitlebar(icon, title, std::string(), false, fg, bg, 0, rect, canvas);
+    uint32_t border = has_focus ? Colors::TAB_FOCUSED_BORDER : Colors::TAB_BORDER;
+    drawTabOrTitlebar(icon, title, std::string(), false, fg, bg,border,  0, rect, canvas);
 }
 
 void DefaultTheme::drawClientFrame(bool has_focus, const Rect &rect, Canvas *canvas) {
@@ -80,12 +83,12 @@ void DefaultTheme::drawTabOrTitlebar(
         const std::string &title1,
         const std::string &title2,
         bool is_vertical,
-        uint32_t fg, uint32_t bg,
+        uint32_t fg, uint32_t bg, uint32_t border_color,
         int max_text_height,
         const Rect &rect, Canvas *canvas)
 {
     canvas->fillRectangle(rect, bg);
-    canvas->drawFrame(rect, fg);
+    canvas->drawFrame(rect, border_color);
 
     if (icon) {
         int icon_x = rect.x + Metrics::CLIENT_TITLEBAR_INNER_MARGIN;
