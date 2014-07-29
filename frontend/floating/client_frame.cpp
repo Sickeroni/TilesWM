@@ -1,5 +1,5 @@
 #include "client_frame.h"
-#include "theme.h"
+#include "floating_theme.h"
 
 ClientFrame::ClientFrame(ClientWrapper *client) : ChildWidget(OTHER),
     _client(client)
