@@ -121,6 +121,7 @@ void Workspace::setMode(size_t index)
     assert(index < _window_managers.size());
     assert(index >= 0);
 
+    _window_manager->setHasFocus(false);
     _window_manager->setActive(false);
 
     _mode = index;
@@ -128,6 +129,7 @@ void Workspace::setMode(size_t index)
     _window_manager = _window_managers[index];
 
     _window_manager->setActive(true);
+    _window_manager->setHasFocus(_has_focus);
 
     if (monitor())
         setMapped(true);
@@ -152,6 +154,12 @@ void Workspace::refreshStatusText()
 
         _monitor->setStatusText(text.str());
     }
+}
+
+void Workspace::setHasFocus(bool has_focus)
+{
+    _window_manager->setHasFocus(has_focus);
+    _has_focus = has_focus;
 }
 
 #if 0

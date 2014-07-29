@@ -33,6 +33,7 @@ public:
         return _minimize_mode == MINIMIZE_ALL;
     }
     virtual void setOrientation(Orientation orientation) override;
+    virtual void setHasFocus(bool has_focus) override;
 
     Container *child(int index) { return _children[index]; }
     int activeChildIndex() { return _active_child_index; }

@@ -55,10 +55,13 @@ public:
 
     Icon *background() { return _background_scaled; }
 
+    void setHasFocus(bool has_focus);
+
 private:
     Monitor *_monitor = 0;
     //ContainerContainer *_dock
     size_t _mode = 0;
+    bool _has_focus = false;
     WindowManager *_window_manager = 0;
     Icon *_background = 0, *_background_scaled = 0;
     std::list<Client*> _clients;

@@ -48,6 +48,7 @@ void Application::init(Backend *backend)
 
     _monitor = new Monitor();
     _monitor->setSize(monitor_w, monitor_h);
+    _monitor->setHasFocus(true);
 }
 
 void Application::shutdown()

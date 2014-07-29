@@ -256,11 +256,11 @@ void WindowManagerDefault::makeContainerActive(Container *container)
 {
     assert(container->workspace()->windowManager() == this);
 
-    container->workspace()->makeActive();
     if (ContainerContainer *parent =  container->parentTo<ContainerContainer>()) {
         makeContainerActive(parent);
         parent->setActiveChild(parent->indexOfChild(container));
-    }
+    } else
+        container->parentTo<Workspace>()->makeActive();
 }
 
 void WindowManagerDefault::makeClientActive(ClientWrapper *client)
@@ -292,4 +292,9 @@ bool WindowManagerDefault::isContainerActive(Container *container)
 void WindowManagerDefault::redrawAll()
 {
     _root_container->redrawAll();
+}
+
+void WindowManagerDefault::setHasFocus(bool has_focus)
+{
+    _root_container->setHasFocus(has_focus);
 }

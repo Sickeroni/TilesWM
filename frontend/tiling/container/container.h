@@ -36,6 +36,9 @@ public:
     virtual void setOrientation(Orientation orientation) {
         _orientation = orientation;
     }
+    virtual void setHasFocus(bool has_focus) {
+        _has_focus = has_focus;
+    }
 
     bool isFixedSize() const { return _is_fixed_size; }
     void enableFixedSize(bool enable);
@@ -44,10 +47,7 @@ public:
     int fixedHeight() const { return isMinimized() ? 0 : _fixed_height; }
     void setFixedHeight(int height);
 
-    bool isActive() {
-        UNIMPLEMENTED
-        return false;
-    }
+    bool hasFocus() { return _has_focus; }
 
     ClientWrapper *activeClient();
 
@@ -81,6 +81,7 @@ private:
     int _fixed_width = 0;
     int _fixed_height = 0;
     bool _is_fixed_size = false;
+    bool _has_focus = false;
     Orientation _orientation = HORIZONTAL;
 };
 

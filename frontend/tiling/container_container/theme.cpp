@@ -58,7 +58,7 @@ void drawContainerContainer(ContainerContainer *container, Canvas *canvas)
     if (container->isMinimized())
         title<<" -";
 
-    bool is_active = container->isActive();
+    bool is_active = container->hasFocus();
 
     canvas->drawText(title.str().c_str(),
                      title_rect,
@@ -77,7 +77,7 @@ void drawContainerContainer(ContainerContainer *container, Canvas *canvas)
 
         canvas->drawFrame(frame_rect, frame_color);
 
-        if (c->isActive()) {
+        if (c->hasFocus()) {
             Rect focus_rect = frame_rect;
             focus_rect.x += 1;
             focus_rect.y += 1;

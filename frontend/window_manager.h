@@ -32,6 +32,9 @@ public:
     virtual ClientWrapper *activeClient() = 0;
     virtual void makeClientActive(ClientWrapper *client) = 0;
     virtual void redrawAll() = 0;
+    virtual void setHasFocus(bool has_focus) {
+        UNIMPLEMENTED
+    }
 
 
     // FIXME remove ?

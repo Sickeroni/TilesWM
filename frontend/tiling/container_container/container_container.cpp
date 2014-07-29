@@ -45,6 +45,7 @@ int ContainerContainer::indexOfChild(const Container *child)
 int ContainerContainer::addChild(Container *child)
 {
     assert(!child->parent());
+    Container *active_child = activeChild();
 
     child->setOrientation(rotatedOrientation(orientation()));
 
@@ -56,7 +57,11 @@ int ContainerContainer::addChild(Container *child)
     applyMinimizeMode(child);
     child->setMapped(true);
 
+    child->setHasFocus(false);
+
     getLayout()->layoutContents();
+
+    assert(active_child == activeChild());
 
     return numElements() - 1;
 }
@@ -64,12 +69,12 @@ int ContainerContainer::addChild(Container *child)
 void ContainerContainer::insertChild(Container *child, int insert_pos)
 {
     assert(!child->parent());
+    assert(insert_pos <= numElements());
+    Container *active_child = activeChild();
 
     child->setOrientation(rotatedOrientation(orientation()));
-
     child->reparent(this, _backend);
 
-    assert(insert_pos <= numElements());
     _children.insert(_children.begin() + insert_pos, child);
 
     if (insert_pos <= _active_child_index)
@@ -78,7 +83,11 @@ void ContainerContainer::insertChild(Container *child, int insert_pos)
     applyMinimizeMode(child);
     child->setMapped(true);
 
+    child->setHasFocus(false);
+
     getLayout()->layoutContents();
+
+    assert(active_child == activeChild());
 }
 
 Container *ContainerContainer::replaceChild(int index, Container *new_child)
@@ -97,6 +106,10 @@ Container *ContainerContainer::replaceChild(int index, Container *new_child)
 
     applyMinimizeMode(new_child);
     new_child->setMapped(true);
+
+    old_child->setHasFocus(false);
+    if (activeChild())
+        activeChild()->setHasFocus(hasFocus());
 
     getLayout()->layoutContents();
 
@@ -119,6 +132,10 @@ Container *ContainerContainer::removeChild(int index)
     if (_active_child_index >= numElements())
         _active_child_index = numElements() - 1;
 
+    child->setHasFocus(false);
+    if (activeChild())
+        activeChild()->setHasFocus(hasFocus());
+
     return child;
 }
 
@@ -136,11 +153,16 @@ void ContainerContainer::setActiveChild(int index)
 
         _active_child_index = index;
 
+        if (old_active)
+            old_active->setHasFocus(false);
+        if (activeChild())
+            activeChild()->setHasFocus(hasFocus());
+
         if (_minimize_mode == MINIMIZE_INACTIVE) {
             if (old_active)
                 applyMinimizeMode(old_active);
-            if (_active_child_index != INVALID_INDEX)
-                applyMinimizeMode(_children[_active_child_index]);
+            if (activeChild())
+                applyMinimizeMode(activeChild());
 
             getLayout()->layoutContents();
         }
@@ -234,6 +256,15 @@ void ContainerContainer::setOrientation(Orientation o)
     Container::setOrientation(o);
     for (Container *child : _children)
         child->setOrientation(rotatedOrientation(orientation()));
+}
+
+void ContainerContainer::setHasFocus(bool has_focus)
+{
+    if (has_focus != hasFocus()) {
+        Container::setHasFocus(has_focus);
+        if (activeChild())
+            activeChild()->setHasFocus(has_focus);
+    }
 }
 
 #if 0

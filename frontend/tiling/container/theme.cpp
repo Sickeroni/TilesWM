@@ -175,7 +175,7 @@ void getClientContainerClientRect(ClientContainer *container,  Rect &client_rect
     client_rect.h = max(0, client_rect.h);
 }
 
-void drawTab(ClientContainer *container, bool container_is_active, ClientWrapper *client, const Rect &rect, bool vertical, Canvas *canvas)
+void drawTab(ClientContainer *container, bool container_has_focus, ClientWrapper *client, const Rect &rect, bool vertical, Canvas *canvas)
 {
     const ClientContainerSizesInternal &sizes = _clientContainerSizesInternal;
     uint32_t fg = Colors::TAB_TEXT;
@@ -184,7 +184,7 @@ void drawTab(ClientContainer *container, bool container_is_active, ClientWrapper
     if (client->hasFocus()) {
         bg = Colors::TAB_FOCUSED;
         fg = Colors::TAB_FOCUSED_TEXT;
-    } else if (container_is_active && container->activeClient() == client) {
+    } else if (container_has_focus && container->activeClient() == client) {
         bg = Colors::TAB_ACTIVE;
         fg = Colors::TAB_ACTIVE_TEXT;
     } else if (container->activeClient() == client) {
@@ -254,13 +254,13 @@ void drawTabbar(ClientContainer *container, Canvas *canvas)
     int tab_width, tab_height;
     getTabSize(container, tab_width, tab_height);
 
-    bool is_active = container->isActive();
+    bool has_focus = container->hasFocus();
 
     for(int i = 0; i < container->numElements(); i++) {
         Rect tab_rect;
         getHorizontalTabRect(tab_width, tab_height, tabbar_rect, i, tab_rect);
 
-        drawTab(container, is_active, container->child(i), tab_rect, false, canvas);
+        drawTab(container, has_focus, container->child(i), tab_rect, false, canvas);
     }
 }
 
@@ -273,13 +273,13 @@ void drawVerticalTabs(ClientContainer *container, Canvas *canvas)
     Rect tabbar_rect;
     getTabbbarRect(container, tabbar_rect);
 
-    bool is_active = container->isActive();
+    bool has_focus = container->hasFocus();
 
     for (int i = 0; i < container->numElements(); i++) {
         Rect tab_rect;
         getVerticalTabRect(tabbar_rect, i, tab_rect);
 
-        drawTab(container, is_active, container->child(i), tab_rect, true, canvas);
+        drawTab(container, has_focus, container->child(i), tab_rect, true, canvas);
     }
 }
 

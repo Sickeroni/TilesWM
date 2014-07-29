@@ -17,6 +17,7 @@ Monitor::~Monitor()
 {
     delete _status_bar;
     _status_bar = 0;
+    _workspace->setHasFocus(false);
     _workspace->setMonitor(0);
     _workspace = 0;
 }
@@ -39,4 +40,10 @@ void Monitor::layoutContents()
 void Monitor::setStatusText(const std::string &text)
 {
     _status_bar->setText(text);
+}
+
+void Monitor::setHasFocus(bool has_focus)
+{
+    _workspace->setHasFocus(has_focus);
+    _has_focus = has_focus;
 }
