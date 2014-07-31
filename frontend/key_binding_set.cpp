@@ -32,7 +32,7 @@ void KeyBindingSet::clear()
     _key_grabs = 0;
 }
 
-const KeyBindingSet::Binding *KeyBindingSet::find(int key_grab_id) const
+const KeyBindingSet::Binding *KeyBindingSet::find(size_t key_grab_id) const
 {
     for (const Binding &binding : _bindings) {
         if (binding.key_grab_id == key_grab_id)

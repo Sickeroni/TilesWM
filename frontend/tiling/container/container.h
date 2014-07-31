@@ -5,6 +5,8 @@
 #include "rect.h"
 #include "common.h"
 
+#include <limits>
+
 class ClientWrapper;
 class ContainerLayout;
 class ClientContainer;
@@ -12,11 +14,16 @@ class ClientContainer;
 class Container : public ChildWidget
 {
 public:
+    typedef int Index;
+
+    enum {
+        INVALID_INDEX = -1,
+        MAX_INDEX = std::numeric_limits<Index>::max() - 1
+    };
     enum Type {
         CLIENT,
         OTHER
     };
-
     enum Orientation {
         HORIZONTAL = 0,
         VERTICAL = 1
@@ -24,7 +31,7 @@ public:
 
     virtual ~Container();
 
-    virtual int numElements() const = 0;
+    virtual Index numElements() const = 0;
     virtual ClientContainer *activeClientContainer() = 0;
     virtual bool isEmpty() const = 0;
     virtual void redrawAll() = 0;

@@ -14,7 +14,7 @@ using std::endl;
 using std::uint32_t;
 
 enum {
-    INVALID_INDEX = -1
+    INVALID_INDEX = size_t(0) - 1
 };
 
 // #define UNIMPLEMENTED assert(0);

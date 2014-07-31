@@ -24,7 +24,7 @@ public:
 
     virtual void draw(Canvas *canvas) override;
 
-    virtual int numElements() const override { return _children.size(); }
+    virtual Index numElements() const override { return static_cast<Index>(_children.size()); }
     virtual ClientContainer *activeClientContainer() override;
     virtual bool isEmpty() const override { return _children.empty(); }
     virtual void redrawAll() override;
@@ -35,17 +35,17 @@ public:
     virtual void setOrientation(Orientation orientation) override;
     virtual void setHasFocus(bool has_focus) override;
 
-    Container *child(int index) { return _children[index]; }
-    int activeChildIndex() { return _active_child_index; }
-    void setActiveChild(int index);
-    int indexOfChild(const Container *child);
+    Container *child(Index index) { return _children[index]; }
+    Index activeChildIndex() { return _active_child_index; }
+    void setActiveChild(Index index);
+    Index indexOfChild(const Container *child);
     // ret: index of added child
-    int addChild(Container *child);
+    Index addChild(Container *child);
     // inserts child at insert_pos
-    void insertChild(Container *child, int insert_pos);
+    void insertChild(Container *child, Index insert_pos);
     // de-parents and returns the child at index
-    Container *replaceChild(int index, Container *new_child);
-    Container *removeChild(int index);
+    Container *replaceChild(Index index, Container *new_child);
+    Container *removeChild(Index index);
 
 //     void setDirty(bool set);
 
@@ -68,7 +68,7 @@ private:
     ContainerContainerLayout *_layout = 0;
     MinimizeMode _minimize_mode = MINIMIZE_NONE;
     std::vector<Container*> _children;
-    int _active_child_index = INVALID_INDEX;
+    Index _active_child_index = INVALID_INDEX;
 };
 
 

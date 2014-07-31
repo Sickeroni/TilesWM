@@ -4,7 +4,7 @@
 #include "string_util.h"
 #include "common.h"
 
-int X11KeyGrabSet::addGrab(std::string key_sequence_str)
+size_t X11KeyGrabSet::addGrab(std::string key_sequence_str)
 {
     std::vector<std::string> tokens;
     StringUtil::tokenize(key_sequence_str, '+', tokens);
@@ -49,7 +49,7 @@ void X11KeyGrabSet::clear()
     _grabs.clear();
 }
 
-int X11KeyGrabSet::find(const X11Global::KeySequence &key_sequence) const
+size_t X11KeyGrabSet::find(const X11Global::KeySequence &key_sequence) const
 {
     for (size_t i = 0; i < _grabs.size(); i++) {
         if (_grabs[i].equals(key_sequence))

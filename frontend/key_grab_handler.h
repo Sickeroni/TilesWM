@@ -9,7 +9,7 @@ class KeyBindingSet;
 class KeyGrabHandler : public KeyGrabHandlerBase
 {
 public:
-    virtual void handleKeyGrabPressed(int grab_id) override;
+    virtual void handleKeyGrabPressed(size_t grab_id) override;
 
 protected:
     virtual void performAction(int id) = 0;

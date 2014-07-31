@@ -420,7 +420,7 @@ bool X11Application::handleKeyPress(const XKeyEvent &ev)
         for (int i = 0; i < frontend()->numKeyGrabHandlers(); i++) {
             KeyGrabHandlerBase *handler = frontend()->keyGrabHandler(i);
             const X11KeyGrabSet *key_grabs = dynamic_cast<const X11KeyGrabSet*>(handler->grabs());
-            int index = key_grabs->find(key_sequence);
+            size_t index = key_grabs->find(key_sequence);
             if (index != INVALID_INDEX) {
                 handler->handleKeyGrabPressed(index);
                 return true;

@@ -115,7 +115,7 @@ int CairoCanvas::maxTextHeight()
     Cairo::FontExtents extents;
     _context->get_font_extents(extents);
 
-    return extents.ascent + extents.descent;
+    return static_cast<int>(extents.ascent + extents.descent);
 }
 
 void CairoCanvas::begin()

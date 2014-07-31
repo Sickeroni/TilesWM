@@ -13,7 +13,7 @@ class KeyBindingSet
 public:
     struct Binding
     {
-        int key_grab_id = 0;
+        size_t key_grab_id = 0;
         const Action *action = 0;
         ComplexAction::Parameters *parameters = 0;
     };
@@ -23,7 +23,7 @@ public:
 
     void clear();
     void createBindings();
-    const Binding *find(int key_grab_id) const;
+    const Binding *find(size_t key_grab_id) const;
     const KeyGrabSet *keyGrabs() const { return _key_grabs; }
 
 private:

@@ -15,7 +15,7 @@ CairoIcon::CairoIcon(const unsigned long *argb32_data, int width, int height) : 
         uint32_t *scanline = reinterpret_cast<uint32_t*>(data + (y * stride));
 
         for (int x = 0; x < width; x++)
-            scanline[x] = argb32_data[(y * width) + x];
+            scanline[x] = static_cast<uint32_t>(argb32_data[(y * width) + x]);
     }
 
     surface->mark_dirty();

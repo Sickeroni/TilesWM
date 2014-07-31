@@ -19,7 +19,7 @@ void handleClientContainerClick(ClientContainer *container, int x, int y)
 
     int clicked_tab_index = Theme::getTabAt(x, y, container);
 
-    if (clicked_tab_index != INVALID_INDEX) {
+    if (clicked_tab_index != Container::INVALID_INDEX) {
         ClientWrapper *client = container->child(clicked_tab_index);
         container->workspace()->windowManager()->makeClientActive(client);
         client->setFocus();

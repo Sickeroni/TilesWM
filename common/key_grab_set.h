@@ -10,7 +10,7 @@ public:
 
     // return: the id of the added grab, or INVALID_INDEX if grabbing is not possible
     // key_sequence: an opaque backend-specific representation of the key sequence
-    virtual int addGrab(std::string key_sequence) = 0;
+    virtual size_t addGrab(std::string key_sequence) = 0;
     // clear the set and releases the key grabs
     virtual void clear() = 0;
 };

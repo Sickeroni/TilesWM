@@ -19,7 +19,7 @@ public:
 
     virtual void draw(Canvas *canvas) override;
 
-    virtual int numElements() const override { return _children.size(); }
+    virtual Index numElements() const override { return static_cast<Index>(_children.size()); }
     virtual ClientContainer *activeClientContainer() override { return this; }
     virtual bool isEmpty() const override { return _children.empty(); }
     virtual void redrawAll() override {
@@ -37,13 +37,13 @@ public:
     // Client::PropertyListener
     virtual void propertyChanged(Client *client, ClientBackend::Property property) override;
 
-    ClientWrapper *child(size_t index) { return _children[index]; }
-    int indexOfChild(const ClientWrapper *child);
-    int activeChildIndex() { return _active_child_index; }
+    ClientWrapper *child(Index index) { return _children[index]; }
+    Index indexOfChild(const ClientWrapper *child);
+    Index activeChildIndex() { return _active_child_index; }
     // doesn't set focus to the client !
-    void setActiveChild(int index);
+    void setActiveChild(Index index);
     // return: index of added client
-    int addChild(ClientWrapper *client);
+    Index addChild(ClientWrapper *client);
     void removeChild(ClientWrapper *client);
     // deparents all children and puts them into <clients>
     void removeChildren(std::vector<ClientWrapper*> &clients);
@@ -61,7 +61,7 @@ private:
     ClientContainerLayout *_layout = 0;
     bool _is_minimized = false;
     std::vector<ClientWrapper*> _children;
-    int _active_child_index = INVALID_INDEX;
+    Index _active_child_index = INVALID_INDEX;
 };
 
 #endif // __CLIENT_CONTAINER_H__

@@ -32,7 +32,7 @@ void ContainerContainer::clear()
     _children.clear();
 }
 
-int ContainerContainer::indexOfChild(const Container *child)
+Container::Index ContainerContainer::indexOfChild(const Container *child)
 {
     for (int i = 0; i < numElements(); i++) {
         if (child == _children[i])
@@ -42,8 +42,9 @@ int ContainerContainer::indexOfChild(const Container *child)
     abort();
 }
 
-int ContainerContainer::addChild(Container *child)
+Container::Index ContainerContainer::addChild(Container *child)
 {
+    assert(_children.size() < MAX_INDEX);
     assert(!child->parent());
     Container *active_child = activeChild();
 
@@ -66,8 +67,9 @@ int ContainerContainer::addChild(Container *child)
     return numElements() - 1;
 }
 
-void ContainerContainer::insertChild(Container *child, int insert_pos)
+void ContainerContainer::insertChild(Container *child, Index insert_pos)
 {
+    assert(_children.size() < MAX_INDEX);
     assert(!child->parent());
     assert(insert_pos <= numElements());
     Container *active_child = activeChild();
@@ -90,7 +92,7 @@ void ContainerContainer::insertChild(Container *child, int insert_pos)
     assert(active_child == activeChild());
 }
 
-Container *ContainerContainer::replaceChild(int index, Container *new_child)
+Container *ContainerContainer::replaceChild(Index index, Container *new_child)
 {
     assert(!new_child->parent());
     assert(index < numElements());
@@ -116,7 +118,7 @@ Container *ContainerContainer::replaceChild(int index, Container *new_child)
     return old_child;
 }
 
-Container *ContainerContainer::removeChild(int index)
+Container *ContainerContainer::removeChild(Index index)
 {
     assert(index < numElements());
 
@@ -139,7 +141,7 @@ Container *ContainerContainer::removeChild(int index)
     return child;
 }
 
-void ContainerContainer::setActiveChild(int index)
+void ContainerContainer::setActiveChild(Index index)
 {
     assert(index < numElements());
 

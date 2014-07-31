@@ -468,9 +468,11 @@ void X11Client::handleConfigureRequest(const XConfigureRequestEvent &ev)
     if (!refreshMapState())
         return;
 
-    if (isOverrideRedirect())
-        _widget->configure(ev.value_mask, changes);
-    else {
+    if (isOverrideRedirect()) {
+        unsigned int value_mask = ev.value_mask &
+            CWX & CWY & CWWidth & CWHeight & CWBorderWidth & CWSibling & CWStackMode;
+        _widget->configure(value_mask, changes);
+    } else {
         if (ev.value_mask & CWBorderWidth)
             _widget->configure(CWBorderWidth, changes);
 
@@ -720,11 +722,11 @@ void X11Client::refreshIcon()
             if (nitems < 2)
                 debug<<"bad length for _NET_WM_ICON property.";
             else {
-                unsigned long width = 0;
-                unsigned long height = 0;
+                int width = 0;
+                int height = 0;
 
-                width = reinterpret_cast<unsigned long*>(ret)[0];
-                height = reinterpret_cast<unsigned long*>(ret)[1];
+                width = static_cast<int>(reinterpret_cast<unsigned long*>(ret)[0]);
+                height = static_cast<int>(reinterpret_cast<unsigned long*>(ret)[1]);
 
                 printvar(width);
                 printvar(height);

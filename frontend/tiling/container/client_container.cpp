@@ -43,7 +43,7 @@ void ClientContainer::setMinimized(bool minimized)
     _backend->setMinimized(minimized);
 }
 
-int ClientContainer::indexOfChild(const ClientWrapper *child)
+Container::Index ClientContainer::indexOfChild(const ClientWrapper *child)
 {
     for(int i = 0; i < numElements(); i++) {
         if (child == _children[i])
@@ -53,7 +53,7 @@ int ClientContainer::indexOfChild(const ClientWrapper *child)
     abort();
 }
 
-void ClientContainer::setActiveChild(int index)
+void ClientContainer::setActiveChild(Index index)
 {
     printvar(index);
 //     if (client)
@@ -75,8 +75,9 @@ void ClientContainer::setActiveChild(int index)
         getLayout()->layoutContents();
 }
 
-int ClientContainer::addChild(ClientWrapper *client)
+Container::Index ClientContainer::addChild(ClientWrapper *client)
 {
+    assert(_children.size() < MAX_INDEX);
     assert(!client->parent());
 
     client->reparent(this, _backend);
@@ -90,7 +91,7 @@ int ClientContainer::addChild(ClientWrapper *client)
     printvar(numElements());
 
     if (!activeClient()) {
-        int index = indexOfChild(client);
+        Index index = indexOfChild(client);
         assert(index != INVALID_INDEX);
         setActiveChild(index);
     }
@@ -106,8 +107,8 @@ int ClientContainer::addChild(ClientWrapper *client)
 
 void ClientContainer::removeChild(ClientWrapper *client)
 {
-    int index = indexOfChild(client);
-    assert(index >= 0);
+    Index index = indexOfChild(client);
+    assert(index != INVALID_INDEX);
 
     bool was_active = (index == _active_child_index);
 

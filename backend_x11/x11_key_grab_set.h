@@ -13,10 +13,10 @@ public:
         clear();
     }
 
-    virtual int addGrab(std::string key_sequence) override;
+    virtual size_t addGrab(std::string key_sequence) override;
     virtual void clear() override;
 
-    int find(const X11Global::KeySequence &key_sequence) const;
+    size_t find(const X11Global::KeySequence &key_sequence) const;
 
 private:
     std::vector<X11Global::KeySequence> _grabs;

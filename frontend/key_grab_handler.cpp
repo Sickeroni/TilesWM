@@ -2,7 +2,7 @@
 #include "key_binding_set.h"
 #include "common.h"
 
-void KeyGrabHandler::handleKeyGrabPressed(int grab_id)
+void KeyGrabHandler::handleKeyGrabPressed(size_t grab_id)
 {
     printvar(grab_id);
     const KeyBindingSet::Binding *binding = keyBindings()->find(grab_id);
