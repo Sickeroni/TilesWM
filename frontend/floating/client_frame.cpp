@@ -76,7 +76,7 @@ void ClientFrame::handleButtonPress(int x_global, int y_global, int button)
         handleDragStart(x_global, y_global, Client::DRAG_RESIZE);
 }
 
-void ClientFrame::handleButtonRelease(int button)
+void ClientFrame::handleButtonRelease(int /*button*/)
 {
     finishDrag();
 }
@@ -223,7 +223,7 @@ bool ClientFrame::snapCoordinate(int &coord, int snap_coord)
     return snapped;
 }
 
-void ClientFrame::propertyChanged(Client *client, ClientBackend::Property property)
+void ClientFrame::propertyChanged(Client */*client*/, ClientBackend::Property property)
 {
     if (property == ClientBackend::PROP_SIZE_HINTS)
         applySizeHints();

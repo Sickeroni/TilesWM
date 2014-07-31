@@ -10,7 +10,7 @@ class X11Client;
 class X11ClientWidget : public X11Widget
 {
 public:
-    X11ClientWidget(Window wid, X11Client *client, bool is_mapped, bool is_viewable, const Rect &rect);
+    X11ClientWidget(Window wid, bool is_mapped, bool is_viewable, const Rect &rect);
     ~X11ClientWidget();
 
     void configure(unsigned int value_mask, const XWindowChanges &changes);

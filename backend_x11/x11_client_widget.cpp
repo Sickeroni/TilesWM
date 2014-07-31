@@ -10,7 +10,7 @@ using namespace X11Global;
 
 
 X11ClientWidget::X11ClientWidget(
-            Window wid, X11Client *client,
+            Window wid,
             bool is_mapped,
             bool is_viewable,
             const Rect &rect) :

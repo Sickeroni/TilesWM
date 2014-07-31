@@ -30,7 +30,7 @@ public:
     };
 
     struct EventHandler {
-        virtual void handleDragStart(int x_global, int y_global, DragMode mode) {}
+        virtual void handleDragStart(int /*x_global*/, int /*y_global*/, DragMode /*mode*/) {}
         virtual void handleFocusChanged() = 0;
     };
 
@@ -74,7 +74,7 @@ private:
         MAX_HEIGHT = 2000
     };
 
-    virtual void draw(Canvas *canvas) override {}
+    virtual void draw(Canvas */*canvas*/) override {}
     virtual void handleButtonPress(int x_global, int y_global, int button) override;
     virtual void handleFocusChanged(bool has_focus) override;
     virtual void handleMap() override;

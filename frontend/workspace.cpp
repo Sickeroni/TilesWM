@@ -119,7 +119,6 @@ void Workspace::setMode(size_t index)
         setMapped(false);
 
     assert(index < _window_managers.size());
-    assert(index >= 0);
 
     _window_manager->setHasFocus(false);
     _window_manager->setActive(false);

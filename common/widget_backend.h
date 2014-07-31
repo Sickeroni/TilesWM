@@ -31,10 +31,10 @@ public:
 //     virtual ClientBackend *clientBackend() { return 0; }
 
 
-    virtual void setMinimized(bool minimized) {}
+    virtual void setMinimized(bool) {}
     // intended as a rendering hint -
     // if set, only child needs to be rendered
-    virtual void setMappedChild(WidgetBackend *child) {}
+    virtual void setMappedChild(WidgetBackend*) {}
 
 
 //     Type type() { return _type; }

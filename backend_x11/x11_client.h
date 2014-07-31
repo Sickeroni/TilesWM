@@ -40,7 +40,7 @@ public:
         assert(!_widget_frontend || !frontend);
         _widget_frontend = frontend;
     }
-    virtual void grabMouse(CursorType cursor) override {
+    virtual void grabMouse(CursorType /*cursor*/) override {
         assert(0);
     }
     virtual void releaseMouse() override {

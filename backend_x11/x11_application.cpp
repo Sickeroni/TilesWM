@@ -167,7 +167,7 @@ X11Application::~X11Application()
     _self = 0;
 }
 
-void X11Application::quit(int signum)
+void X11Application::quit(int /*signum*/)
 {
     printf("   Quitting ...\n");
     self()->_quit_requested = true;

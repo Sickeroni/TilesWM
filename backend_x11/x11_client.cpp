@@ -61,7 +61,7 @@ X11Client::CriticalSection::~CriticalSection()
     }
 }
 
-int X11Client::CriticalSection::errorHandler(Display *display, XErrorEvent *ev)
+int X11Client::CriticalSection::errorHandler(Display */*display*/, XErrorEvent *ev)
 {
     if (ev->error_code != BadWindow) {
         cerr << "X11Client::CriticalSection::errorHandler() - code: "
@@ -285,7 +285,7 @@ void X11Client::create(Window wid)
                 client->_is_modal = true;
 
             Rect rect(attr.x, attr.y, attr.width, attr.height);
-            client->_widget = new X11ClientWidget(wid, client, is_mapped, is_viewable, rect);
+            client->_widget = new X11ClientWidget(wid, is_mapped, is_viewable, rect);
 
             client->refreshName();
             client->refreshIconName();

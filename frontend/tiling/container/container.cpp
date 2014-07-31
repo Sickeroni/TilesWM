@@ -77,7 +77,7 @@ ClientContainer *Container::toClientContainer()
         return 0;
 }
 
-void Container::handleSizeHintsChanged(ChildWidget *child)
+void Container::handleSizeHintsChanged(ChildWidget */*child*/)
 {
     if (parentContainer())
         parentContainer()->handleSizeHintsChanged(this);
@@ -85,7 +85,7 @@ void Container::handleSizeHintsChanged(ChildWidget *child)
         getLayout()->layoutContents();
 }
 
-void Container::handleButtonPress(int x_global, int y_global, int button)
+void Container::handleButtonPress(int x_global, int y_global, int /*button*/)
 {
     int x = x_global;
     int y = y_global;

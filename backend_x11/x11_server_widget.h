@@ -23,7 +23,7 @@ public:
     struct EventHandler
     {
         virtual void handleExpose() = 0;
-        virtual void handleMouseEvent(const XButtonEvent &ev) {}
+        virtual void handleMouseEvent(const XButtonEvent&) {}
     };
 
     static X11ServerWidget *create(X11ServerWidget *parent, uint32_t bg_color,

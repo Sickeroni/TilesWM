@@ -101,7 +101,6 @@ void getHorizontalTabRect(
 }
 
 void getVerticalTabRect(
-        const Rect &tabbar_rect,
         const int index,
         Rect &rect)
 {
@@ -126,7 +125,7 @@ int getTabAt(int x, int y, ClientContainer *container)
         if (container->isMinimized() && container->isVertical()) {
             for(int i = 0; i < container->numElements(); i++) {
                 Rect tab_rect;
-                getVerticalTabRect(tabbar_rect, i, tab_rect);
+                getVerticalTabRect(i, tab_rect);
 
                 if (tab_rect.isPointInside(x, y))
                     return i;
@@ -176,7 +175,7 @@ void getClientContainerClientRect(ClientContainer *container,  Rect &client_rect
     client_rect.h = max(0, client_rect.h);
 }
 
-void drawTab(ClientContainer *container, bool container_has_focus, ClientWrapper *client, const Rect &rect, bool vertical, Canvas *canvas)
+void drawTab(ClientContainer *container, ClientWrapper *client, const Rect &rect, bool vertical, Canvas *canvas)
 {
     std::string title1, title2;
     if (vertical) {
@@ -225,13 +224,11 @@ void drawTabbar(ClientContainer *container, Canvas *canvas)
     int tab_width, tab_height;
     getTabSize(container, tab_width, tab_height);
 
-    bool has_focus = container->hasFocus();
-
     for(int i = 0; i < container->numElements(); i++) {
         Rect tab_rect;
         getHorizontalTabRect(tab_width, tab_height, tabbar_rect, i, tab_rect);
 
-        drawTab(container, has_focus, container->child(i), tab_rect, false, canvas);
+        drawTab(container, container->child(i), tab_rect, false, canvas);
     }
 }
 
@@ -244,13 +241,11 @@ void drawVerticalTabs(ClientContainer *container, Canvas *canvas)
     Rect tabbar_rect;
     getTabbbarRect(container, tabbar_rect);
 
-    bool has_focus = container->hasFocus();
-
     for (int i = 0; i < container->numElements(); i++) {
         Rect tab_rect;
-        getVerticalTabRect(tabbar_rect, i, tab_rect);
+        getVerticalTabRect(i, tab_rect);
 
-        drawTab(container, has_focus, container->child(i), tab_rect, true, canvas);
+        drawTab(container, container->child(i), tab_rect, true, canvas);
     }
 }
 

@@ -48,7 +48,7 @@ public:
         }
     }
 
-    virtual void makeClientActive(ClientWrapper *client) override {
+    virtual void makeClientActive(ClientWrapper */*client*/) override {
         UNIMPLEMENTED
     }
 
@@ -59,8 +59,8 @@ public:
     }
 
 protected:
-    virtual void performAction(int id) override {}
-    virtual void performComplexAction(const ComplexAction *action, const ComplexAction::Parameters *parameters) override {}
+    virtual void performAction(int /*id*/) override {}
+    virtual void performComplexAction(const ComplexAction */*action*/, const ComplexAction::Parameters */*parameters*/) override {}
 
 private:
     std::list<ClientFrame*> _clients;

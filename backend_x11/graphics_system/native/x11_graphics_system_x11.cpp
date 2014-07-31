@@ -8,7 +8,7 @@ X11GraphicsSystem *createX11GraphicsSystem(Display *dpy)
     return new X11GraphicsSystemX11(dpy);
 }
 
-Canvas *X11GraphicsSystemX11::createCanvas(Drawable drawable, int width, int height)
+Canvas *X11GraphicsSystemX11::createCanvas(Drawable drawable, int /*width*/, int /*height*/)
 {
     return new X11Canvas(_dpy, drawable);
 }

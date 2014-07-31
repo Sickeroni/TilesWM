@@ -201,7 +201,7 @@ ClientWrapper *Application::activeClient()
     return activeWorkspace()->activeClient();
 }
 
-void Application::setActiveMonitor(Monitor *monitor)
+void Application::setActiveMonitor(Monitor */*monitor*/)
 {
     UNIMPLEMENTED
 }

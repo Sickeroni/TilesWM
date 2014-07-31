@@ -22,7 +22,7 @@ public:
     virtual void end() {}
 
     // this should be called by the backend only
-    virtual void resize(int width, int height) {}
+    virtual void resize(int /*width*/, int /*height*/) {}
 };
 
 

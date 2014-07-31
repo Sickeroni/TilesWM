@@ -15,7 +15,7 @@ public:
 
     virtual Canvas *createCanvas(Drawable drawable, int width, int height) = 0;
     virtual Icon *createIcon(int width, int height, Drawable parent, const unsigned long *argb_data, uint32_t bg_color) = 0;
-    virtual Icon *loadImage(std::string filename) { return 0; }
+    virtual Icon *loadImage(std::string /*filename*/) { return 0; }
 };
 
 #endif
