@@ -47,14 +47,14 @@ int main()
 
     X11Application backend(&frontend);
 
-    if (!backend.init())
-        return 1;
+    int error = 0;
 
-    backend.eventLoop();
-
-    cout << "returned from main loop - shutting down ...\n";
-
-    backend.shutdown();
+    if (backend.init()) {
+        backend.eventLoop();
+        cout << "returned from main loop - shutting down ...\n";
+        backend.shutdown();
+    } else
+        error = 1;
 
 #ifndef FRONTEND_DUMMY
     for(size_t i = 0; i < modes.size(); i++)
@@ -67,5 +67,5 @@ int main()
 
     cout << "shutdown finished. goodbye.\n";
 
-    return 0;
+    return error;
 }
