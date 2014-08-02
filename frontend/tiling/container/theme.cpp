@@ -66,6 +66,7 @@ void getTabbbarRect(ClientContainer *container, Rect &rect)
 
         rect.set(tabbar_x, tabbar_y, tabbar_w, tabbar_h);
     }
+    assert(rect.isValid());
 }
 
 void getTabSize(ClientContainer *container, int &tab_width, int &tab_height)
@@ -82,6 +83,8 @@ void getTabSize(ClientContainer *container, int &tab_width, int &tab_height)
         tab_width = 0;
         tab_height = 0;
     }
+    assert(tab_width >= 0);
+    assert(tab_height >= 0);
 }
 
 void getHorizontalTabRect(

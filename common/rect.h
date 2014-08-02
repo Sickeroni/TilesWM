@@ -15,6 +15,10 @@ struct Rect
         return *this;
     }
 
+    bool isValid() {
+        return (x >= 0 && y >= 0);
+    }
+
     void set(const Rect &other) {
         this->x = other.x; this->y = other.y; this->w = other.w; this->h = other.h;
     }
