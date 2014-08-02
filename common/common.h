@@ -7,6 +7,7 @@
 #include <iostream>
 #include <cassert>
 #include <cstdlib>
+#include <cstddef>
 #include <stdexcept>
 #include <type_traits>
 #include <limits>
@@ -23,7 +24,23 @@ enum {
 #define STATIC_ASSERT(condition) static_assert(condition, #condition)
 
 template <typename To, typename From>
+To make_unsigned(From value) {
+    STATIC_ASSERT(std::is_integral<From>::value);
+    STATIC_ASSERT(std::is_integral<To>::value);
+    STATIC_ASSERT(std::is_signed<From>::value);
+    STATIC_ASSERT(std::is_unsigned<To>::value);
+    STATIC_ASSERT(sizeof(To) == sizeof(From));
+
+    if (value >= 0)
+        return static_cast<To>(value);
+    else
+        throw std::out_of_range(std::string(__PRETTY_FUNCTION__) + ", arg = " + std::to_string(value));
+}
+
+template <typename To, typename From>
 To make_signed(From value) {
+    STATIC_ASSERT(std::is_integral<From>::value);
+    STATIC_ASSERT(std::is_integral<To>::value);
     STATIC_ASSERT(std::is_unsigned<From>::value);
     STATIC_ASSERT(std::is_signed<To>::value);
     STATIC_ASSERT(sizeof(To) == sizeof(From));
@@ -36,9 +53,10 @@ To make_signed(From value) {
 
 template <typename To, typename From>
 To int_cast(From value) {
-    STATIC_ASSERT(std::is_integral<To>::value);
     STATIC_ASSERT(std::is_integral<From>::value);
+    STATIC_ASSERT(std::is_integral<To>::value);
     STATIC_ASSERT(std::is_signed<To>::value == std::is_signed<From>::value);
+    STATIC_ASSERT(sizeof(To) < sizeof(From));
 
     if (value >= std::numeric_limits<To>::min() && value <= std::numeric_limits<To>::max())
         return static_cast<To>(value);
