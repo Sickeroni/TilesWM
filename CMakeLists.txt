@@ -37,6 +37,7 @@ add_subdirectory (common)
 add_subdirectory (frontend)
 add_subdirectory (themes)
 add_subdirectory (backend_x11)
+add_subdirectory (tests)
 
 include_directories (frontend)
 include_directories (frontend/tiling)
@@ -46,9 +47,11 @@ set (COMMON_LIBS floating_modes tiling_modes frontend default_theme common)
 
 add_executable (ttmwm ttmwm.cpp)
 target_link_libraries (ttmwm backend_x11 backend_x11_native ${COMMON_LIBS})
+add_dependencies (ttmwm run-tests)
 
 add_executable (ttmwm-cairo ttmwm.cpp)
 target_link_libraries (ttmwm-cairo backend_x11 backend_x11_cairo ${COMMON_LIBS})
+add_dependencies (ttmwm-cairo run-tests)
 
 # add a target to generate API documentation with Doxygen
 find_package (Doxygen)
