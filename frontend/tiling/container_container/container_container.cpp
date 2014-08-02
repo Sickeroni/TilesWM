@@ -34,7 +34,7 @@ void ContainerContainer::clear()
 
 Container::Index ContainerContainer::indexOfChild(const Container *child)
 {
-    for (int i = 0; i < numElements(); i++) {
+    for (Index i = 0; i < numElements(); i++) {
         if (child == _children[i])
             return i;
     }
@@ -77,7 +77,7 @@ void ContainerContainer::insertChild(Container *child, Index insert_pos)
     child->setOrientation(rotatedOrientation(orientation()));
     child->reparent(this, _backend);
 
-    _children.insert(_children.begin() + insert_pos, child);
+    _children.insert(_children.begin() + make_signed<ptrdiff_t>(insert_pos), child);
 
     if (insert_pos <= _active_child_index)
         _active_child_index++;
@@ -126,7 +126,7 @@ Container *ContainerContainer::removeChild(Index index)
 
     child->reparent(0, 0);
 
-    _children.erase(_children.begin() + index);
+    _children.erase(_children.begin() +  make_signed<ptrdiff_t>(index));
 
     if (index < _active_child_index)
         _active_child_index--;

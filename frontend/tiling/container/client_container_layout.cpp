@@ -91,7 +91,7 @@ void ClientContainerLayout::layoutContents()
         //FIXME only resize active client ?
             //problem with that: on X11 the other clients are visible too
             //maybe the backend should defer setting the size until the client becomes visible (possibly in case of wayland)
-        for(int i = 0; i < _container->numElements(); i++)
+        for(Container::Index i = 0; i < _container->numElements(); i++)
             _container->child(i)->setRect(client_rect);
     }
 

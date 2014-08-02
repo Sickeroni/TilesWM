@@ -24,7 +24,7 @@ public:
 
     virtual void draw(Canvas *canvas) override;
 
-    virtual Index numElements() const override { return static_cast<Index>(_children.size()); }
+    virtual Size numElements() const override { return _children.size(); }
     virtual ClientContainer *activeClientContainer() override;
     virtual bool isEmpty() const override { return _children.empty(); }
     virtual void redrawAll() override;
@@ -52,7 +52,7 @@ public:
     void handleSizeHintsChanged(Container *child);
 
     Container *activeChild() {
-        return activeChildIndex() >= 0 ? child(activeChildIndex()) : 0;
+        return activeChildIndex() != INVALID_INDEX ? child(activeChildIndex()) : 0;
     }
 
     void setMinimizeMode(MinimizeMode mode);

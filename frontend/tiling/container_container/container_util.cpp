@@ -24,7 +24,7 @@ ClientContainer *createSibling(Container *container, bool prepend)
 
     if (parent) {
         new_sibling = new ClientContainer();
-        int insert_pos = parent->indexOfChild(container);
+        Container::Index insert_pos = parent->indexOfChild(container);
         if (!prepend)
             insert_pos++;
         parent->insertChild(new_sibling, insert_pos);
@@ -40,7 +40,7 @@ ClientContainer *getSibling(Container *container, bool get_prev, bool create_new
     if (!parent)
         return 0;
 
-    int index = parent->indexOfChild(container);
+    Container::Index index = parent->indexOfChild(container);
 
     if (get_prev && (index > 0))
         return parent->child(index - 1)->activeClientContainer();
@@ -99,7 +99,7 @@ void emptyContainer(ContainerContainer *container, std::vector<Client*> &clients
 
 void deleteEmptyChildren(ContainerContainer *container)
 {
-    for (int i = 0; i < container->numElements(); ) {
+    for (Container::Index i = 0; i < container->numElements(); ) {
         Container *child = container->child(i);
 
         if (ContainerContainer *child_container_container = child->to<ContainerContainer>()) {

@@ -15,10 +15,10 @@ int ContainerContainerLayout::minWidth()
 
     int width = 0;
     if (_container->isHorizontal()) {
-        for (int i = 0; i < _container->numElements(); i++)
+        for (Container::Index i = 0; i < _container->numElements(); i++)
             width += _container->child(i)->getLayout()->minWidth() + (2 * sizes.child_frame_width);
     } else {
-        for (int i = 0; i < _container->numElements(); i++) {
+        for (Container::Index i = 0; i < _container->numElements(); i++) {
             int w = _container->child(i)->getLayout()->minWidth();
             if (w > width)
                 width = w;
@@ -37,14 +37,14 @@ int ContainerContainerLayout::minHeight()
 
     int height = 0;
     if (_container->isHorizontal()) {
-        for (int i = 0; i < _container->numElements(); i++) {
+        for (Container::Index i = 0; i < _container->numElements(); i++) {
             int h = _container->child(i)->getLayout()->minHeight();
             if (h > height)
                 height = h;
         }
         height += (2 * sizes.child_frame_width);
     } else {
-        for (int i = 0; i < _container->numElements(); i++)
+        for (Container::Index i = 0; i < _container->numElements(); i++)
             height += _container->child(i)->getLayout()->minHeight() + (2 * sizes.child_frame_width);
     }
 
@@ -59,7 +59,7 @@ int ContainerContainerLayout::maxWidth()
     if (_container->isHorizontal()) {
         abort();
     } else {
-        for(int i = 0; i < _container->numElements(); i++) {
+        for(Container::Index i = 0; i < _container->numElements(); i++) {
             if (int w = _container->child(i)->getLayout()->maxWidth()) {
                 if (w > max_width)
                     max_width = w;
@@ -116,7 +116,7 @@ void ContainerContainerLayout::layoutContents()
     };
 
 
-    const int num_children = _container->numElements();
+    const Container::Size num_children = _container->numElements();
     const bool is_horizontal = _container->isHorizontal();
 
     if (!_container->width() || !_container->height() || !num_children)
@@ -133,13 +133,13 @@ void ContainerContainerLayout::layoutContents()
     int available_space = is_horizontal ? client_rect.w : client_rect.h;
 //     printvar(available_space);
 
-    int num_growable_items = num_children;
+    int num_growable_items = int_cast<int>(make_signed<long>(num_children));
 
     // create layout item for each child
     LayoutItem *layout_items = new LayoutItem[num_children];
     // initialize layout items
     {
-        for (int i = 0 ; i < num_children; i++) {
+        for (Container::Index i = 0 ; i < num_children; i++) {
             Container *c = _container->child(i);
 
             int min_size, max_size;
@@ -200,7 +200,7 @@ void ContainerContainerLayout::layoutContents()
 
             // determine minimum current size among growable items
             int min_size = 0;
-            for (int i = 0; i < num_children; i++) {
+            for (Container::Index i = 0; i < num_children; i++) {
                 LayoutItem &item = layout_items[i];
                 if (item.canGrow()) {
                     if (!min_size || min_size > item.size)
@@ -212,7 +212,7 @@ void ContainerContainerLayout::layoutContents()
 //             printvar(new_min_size);
 
             // grow items to new_min_size
-            for (int i = 0; i < num_children; i++) {
+            for (Container::Index i = 0; i < num_children; i++) {
                 LayoutItem &item = layout_items[i];
 
 //                 debug<<"item"<<i<<"size ="<<item.size;
@@ -245,7 +245,7 @@ void ContainerContainerLayout::layoutContents()
     int current_x = client_rect.x;
     int current_y = client_rect.y;
 
-    for(int i = 0; i < num_children; i++) {
+    for(Container::Index i = 0; i < num_children; i++) {
         LayoutItem &item = layout_items[i];
         Container *c = item.container;
 

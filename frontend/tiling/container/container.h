@@ -14,10 +14,11 @@ class ClientContainer;
 class Container : public ChildWidget
 {
 public:
-    typedef int Index;
+    typedef size_t Size;
+    typedef Size Index;
 
     enum {
-        INVALID_INDEX = -1,
+        INVALID_INDEX = Index(0) - 1,
         MAX_INDEX = std::numeric_limits<Index>::max() - 1
     };
     enum Type {
@@ -31,7 +32,7 @@ public:
 
     virtual ~Container();
 
-    virtual Index numElements() const = 0;
+    virtual Size numElements() const = 0;
     virtual ClientContainer *activeClientContainer() = 0;
     virtual bool isEmpty() const = 0;
     virtual void redrawAll() = 0;

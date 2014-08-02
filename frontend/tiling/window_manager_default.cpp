@@ -130,7 +130,7 @@ void WindowManagerDefault::manageClient(ClientWrapper *client)
 
     if (!container) {
         container = new ClientContainer();
-        int index = _root_container->addChild(container);
+        Container::Index index = _root_container->addChild(container);
         _root_container->setActiveChild(index);
     }
 
@@ -219,7 +219,7 @@ void WindowManagerDefault::moveClient(Direction direction)
 
     if (target) {
         container->removeChild(client);
-        int index = target->addChild(client);
+        Container::Index index = target->addChild(client);
         target->setActiveChild(index);
         _container_of_client[client] = target;
         makeContainerActive(target);

@@ -45,7 +45,7 @@ void ClientContainer::setMinimized(bool minimized)
 
 Container::Index ClientContainer::indexOfChild(const ClientWrapper *child)
 {
-    for(int i = 0; i < numElements(); i++) {
+    for(Index i = 0; i < numElements(); i++) {
         if (child == _children[i])
             return i;
     }
@@ -116,7 +116,7 @@ void ClientContainer::removeChild(ClientWrapper *client)
     client->setEventHandler(0);
     client->reparent(0, 0);
 
-    _children.erase(_children.begin() + index);
+    _children.erase(_children.begin() + make_signed<ptrdiff_t>(index));
 
     if (_active_child_index >= numElements())
         _active_child_index = numElements() -1;

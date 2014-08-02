@@ -147,7 +147,7 @@ int getTabAt(int x, int y, ClientContainer *container)
         }
     }
 
-    return Container::INVALID_INDEX;
+    return -1;
 }
 
 int calcTabbarHeight(ClientContainer *container) {
