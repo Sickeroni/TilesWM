@@ -82,7 +82,7 @@ void X11WidgetBackend::grabMouse(CursorType cursor_type)
     assert(!_mouse_grabber);
     _mouse_grabber = this;
 
-    unsigned int cursor_shape = XC_left_ptr;
+    unsigned int cursor_shape = None;
 
     switch (cursor_type) {
         case CURSOR_MOVE:
@@ -115,10 +115,10 @@ void X11WidgetBackend::handleMouseEvent(const XButtonEvent &ev)
     if (_frontend) {
         switch (ev.type) {
             case ButtonPress:
-                _frontend->handleButtonPress(ev.x_root, ev.y_root, ev.button);
+                _frontend->handleButtonPress(ev.x_root, ev.y_root, make_signed<int>(ev.button));
                 break;
             case ButtonRelease:
-                _frontend->handleButtonRelease(ev.button);
+                _frontend->handleButtonRelease(make_signed<int>(ev.button));
                 break;
             case MotionNotify:
                 _frontend->handleMouseMove(ev.x_root, ev.y_root);

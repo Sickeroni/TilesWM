@@ -46,7 +46,10 @@ void X11Canvas::drawFrame(const Rect &rect, uint32_t color)
     // the width and height parameters of XDrawRectangle()
     // are actually offsets, so we have to subtract 1
     XDrawRectangle(dpy(), _drawable, _gc,
-                   rect.x, rect.y, rect.w - 1, rect.h - 1);
+                   rect.x,
+                   rect.y,
+                   make_unsigned<unsigned>(rect.w - 1),
+                   make_unsigned<unsigned>(rect.h - 1));
 }
 
 void X11Canvas::drawText(const std::string &text, const Rect &rect, uint32_t color)
@@ -54,10 +57,10 @@ void X11Canvas::drawText(const std::string &text, const Rect &rect, uint32_t col
     assert(_font_info);
 
     XRectangle x_rect = {
-        static_cast<short>(rect.x),
-        static_cast<short>(rect.y),
-        static_cast<unsigned short>(rect.w),
-        static_cast<unsigned short>(rect.h)
+        int_cast<short>(rect.x),
+        int_cast<short>(rect.y),
+        int_cast<unsigned short>(make_unsigned<unsigned>(rect.w)),
+        int_cast<unsigned short>(make_unsigned<unsigned>(rect.h))
     };
 
     XSetClipRectangles(dpy(), _gc,
@@ -70,7 +73,7 @@ void X11Canvas::drawText(const std::string &text, const Rect &rect, uint32_t col
 
     XTextItem text_item = {
         const_cast<char*>(text.c_str()),
-        static_cast<int>(text.length()),
+        int_cast<int>(make_signed<long>(text.length())),
         0,
         None
     };
@@ -85,7 +88,11 @@ void X11Canvas::drawText(const std::string &text, const Rect &rect, uint32_t col
 void X11Canvas::fillRectangle(const Rect &rect, uint32_t color)
 {
     XSetForeground(dpy(), _gc, color);
-    XFillRectangle(dpy(), _drawable, _gc, rect.x, rect.y, rect.w, rect.h);
+    XFillRectangle(dpy(), _drawable, _gc,
+                   rect.x,
+                   rect.y,
+                   make_unsigned<unsigned>(rect.w),
+                   make_unsigned<unsigned>(rect.h));
 }
 
 void X11Canvas::drawLine(int x1, int y1, int x2, int y2, uint32_t color)
@@ -99,7 +106,11 @@ void X11Canvas::drawIcon(Icon *icon, int x, int y)
     X11Icon *x11_icon = static_cast<X11Icon*>(icon);
     if (x11_icon->pixmap()) {
         XCopyArea(dpy(), x11_icon->pixmap(), _drawable, _gc,
-                  0, 0,
-                  icon->width(), icon->height(), x, y);
+                  0,
+                  0,
+                  make_unsigned<unsigned>(icon->width()),
+                  make_unsigned<unsigned>(icon->height()),
+                  x,
+                  y);
     }
 }

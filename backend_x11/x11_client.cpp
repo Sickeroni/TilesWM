@@ -160,7 +160,7 @@ void X11Client::reparent(WidgetBackend *new_parent)
 void X11Client::grabMouseButton(int button)
 {
     ModMask drag_modifier = ControlMask; //FIXME
-    XGrabButton(dpy(), button, drag_modifier, _widget->wid(), true, ButtonPressMask, GrabModeAsync,
+    XGrabButton(dpy(), make_unsigned<unsigned>(button), drag_modifier, _widget->wid(), true, ButtonPressMask, GrabModeAsync,
         GrabModeAsync, None, None);
 }
 
@@ -722,11 +722,8 @@ void X11Client::refreshIcon()
             if (nitems < 2)
                 debug<<"bad length for _NET_WM_ICON property.";
             else {
-                int width = 0;
-                int height = 0;
-
-                width = static_cast<int>(reinterpret_cast<unsigned long*>(ret)[0]);
-                height = static_cast<int>(reinterpret_cast<unsigned long*>(ret)[1]);
+                unsigned long width = reinterpret_cast<unsigned long*>(ret)[0];
+                unsigned long height = reinterpret_cast<unsigned long*>(ret)[1];
 
                 printvar(width);
                 printvar(height);
@@ -738,8 +735,8 @@ void X11Client::refreshIcon()
                 else {
                     delete _icon;
                     _icon = X11Application::graphicsSystem()->createIcon(
-                        width,
-                        height,
+                        int_cast<int>(make_signed<long>(width)),
+                        int_cast<int>(make_signed<long>(height)),
                         _widget->wid(),
                         reinterpret_cast<unsigned long*>(ret) + 2,
                         0x999999 /*FIXME - taken form X11ServerWidget */);
@@ -783,7 +780,7 @@ void X11Client::requestClose()
     ev.window = _widget->wid();
     ev.message_type = ATOM(WM_PROTOCOLS);
     ev.format = 32;
-    ev.data.l[0] = ATOM(WM_DELETE_WINDOW);
+    ev.data.l[0] = make_signed<long>(ATOM(WM_DELETE_WINDOW));
 
     XSendEvent(dpy(), _widget->wid(), false, NoEventMask, &xev);
 }
@@ -868,7 +865,10 @@ bool X11Client::handleEvent(const XEvent &ev)
                 break;
             case ButtonPress:
                 if (client->_widget_frontend)
-                    client->_widget_frontend->handleButtonPress(ev.xbutton.x_root, ev.xbutton.y_root, ev.xbutton.button);
+                    client->_widget_frontend->handleButtonPress(
+                        ev.xbutton.x_root,
+                        ev.xbutton.y_root,
+                        make_signed<int>(ev.xbutton.button));
                 break;
 #if 1
             case PropertyNotify:

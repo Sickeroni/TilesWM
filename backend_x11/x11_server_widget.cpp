@@ -131,8 +131,8 @@ void X11ServerWidget::setRect(const Rect &rect)
     _canvas->resize(rect.w, rect.h);
 }
 
-void X11ServerWidget::resize(int w, int h)
-{
-    X11Widget::resize(w, h);
-    _canvas->resize(w, h);
-}
+// void X11ServerWidget::resize(int w, int h)
+// {
+//     X11Widget::resize(w, h);
+//     _canvas->resize(w, h);
+// }

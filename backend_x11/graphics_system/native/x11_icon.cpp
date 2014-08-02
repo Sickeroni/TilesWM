@@ -9,7 +9,10 @@
 void X11Icon::init(Drawable parent)
 {
    const unsigned int depth = 24; //FIXME HACK
-    _pixmap = XCreatePixmap(dpy(), parent, _width, _height, depth);
+    _pixmap = XCreatePixmap(dpy(), parent,
+        make_unsigned<unsigned>(_width),
+        make_unsigned<unsigned>(_height),
+        depth);
 #if 0
     if (_pixmap) {
         X11Canvas canvas(dpy(), _pixmap);
@@ -43,7 +46,8 @@ X11Icon::X11Icon(
 
     if (XImage *image = XGetImage(dpy(), _pixmap,
                                   0, 0,
-                                  _width, _height,
+                                  make_unsigned<unsigned>(_width),
+                                  make_unsigned<unsigned>(_height),
                                   0xFFFFFF,
                                   XYPixmap))
     {
@@ -72,7 +76,9 @@ X11Icon::X11Icon(
 
         X11Canvas canvas(dpy(), _pixmap);
         XPutImage(dpy(), _pixmap, canvas.gc(), image,
-                0, 0, 0, 0, _width, _height);
+                0, 0, 0, 0,
+                make_unsigned<unsigned>(_width),
+                make_unsigned<unsigned>(_height));
 
         XDestroyImage(image);
     } else
