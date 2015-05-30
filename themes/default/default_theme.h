@@ -16,6 +16,14 @@ public:
     virtual int titlebarBottomMargin() override;
     virtual int clientDecorationMargin() override;
 
+    virtual void drawTabbar(
+            const std::vector<TabInfo> &tabs,
+            int current_tab_index,
+            bool current_tab_has_focus,
+            bool is_vertical,
+            const Rect &rect,
+            Canvas *canvas) override;
+
     virtual void drawTab(
             Icon *icon,
             const std::string &title1,

@@ -1,4 +1,5 @@
 #include "default_theme.h"
+#include "common.h"
 
 namespace Metrics
 {
@@ -6,7 +7,8 @@ namespace Metrics
         CLIENT_CONTAINER_FRAME_MARGIN = 0,
         CLIENT_INNER_FRAME_MARGIN = 0,
         CLIENT_DECORATION_MARGIN = 4,
-        CLIENT_TITLEBAR_INNER_MARGIN = 5
+        CLIENT_TITLEBAR_INNER_MARGIN = 5,
+        TABBAR_TAB_GAP = 2
     };
 }
 
@@ -31,6 +33,63 @@ int DefaultTheme::titlebarBottomMargin() {
 
 int DefaultTheme::clientDecorationMargin() {
     return Metrics::CLIENT_DECORATION_MARGIN;
+}
+
+
+inline void getTabSize(int num_tabs, const Rect &tabbar_rect, int &tab_width, int &tab_height)
+{
+    if (num_tabs) {
+        int num_gaps = num_tabs - 1;
+
+        tab_width = (tabbar_rect.w - (num_gaps * Metrics::TABBAR_TAB_GAP)) / num_tabs;
+        tab_height = tabbar_rect.h;
+    } else {
+        tab_width = 0;
+        tab_height = 0;
+    }
+}
+
+inline void getHorizontalTabRect(
+        const int tab_width,
+        const int tab_height,
+        const Rect &tabbar_rect,
+        const int index,
+        Rect &rect)
+{
+    rect.set(
+        tabbar_rect.x + (index * (tab_width + Metrics::TABBAR_TAB_GAP)),
+        tabbar_rect.y,
+        tab_width,
+        tab_height);
+}
+
+
+
+void DefaultTheme::drawTabbar(
+        const std::vector<TabInfo> &tabs,
+        int current_tab_index,
+        bool current_tab_has_focus,
+        bool /*is_vertical*/,
+        const Rect &rect,
+        Canvas *canvas)
+{
+    int tab_width, tab_height;
+    getTabSize(tabs.size(), rect, tab_width, tab_height);
+
+    int max_text_height = canvas->maxTextHeight();
+
+    for(size_t i = 0; i < tabs.size(); i++) {
+        Rect tab_rect;
+        getHorizontalTabRect(tab_width, tab_height, rect, i, tab_rect);
+
+        const TabInfo &tab = tabs[i];
+
+        bool is_active = (i == current_tab_index);
+        bool has_focus = (current_tab_has_focus &&  is_active);
+
+        drawTab(tab.icon, tab.title1, tab.title2, has_focus, is_active, max_text_height, rect, canvas);
+    }
+
 }
 
 void DefaultTheme::drawTab(
