@@ -6,26 +6,22 @@
 
 StatusBar::StatusBar() : ChildWidget(OTHER)
 {
-    _backend = Application::self()->backend()->createWidgetBackend();
-    _backend->setFrontend(this);
 }
 
 StatusBar::~StatusBar()
 {
-    delete _backend;
-    _backend = 0;
 }
 
 void StatusBar::draw(Canvas *canvas)
 {
-    Rect rect = _rect;
-    rect.setPos(0, 0);
+    Rect r = rect();
+    r.setPos(0, 0);
 
     canvas->begin();
 
-    canvas->erase(_rect);
+    canvas->erase(r);
     if (!_text.empty())
-        canvas->drawText(_text, rect, 0x00FF00);
+        canvas->drawText(_text, r, 0x00FF00);
 
     canvas->end();
 }

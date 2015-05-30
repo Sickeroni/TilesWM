@@ -29,7 +29,7 @@ public:
     virtual bool isEmpty() const override { return _children.empty(); }
     virtual void redrawAll() override;
     virtual ContainerLayout *getLayout() override;
-    virtual bool isMinimized() const {
+    virtual bool isMinimized() const override {
         return _minimize_mode == MINIMIZE_ALL;
     }
     virtual void setOrientation(Orientation orientation) override;

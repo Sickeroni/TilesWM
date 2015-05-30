@@ -50,7 +50,7 @@ Container::Index ContainerContainer::addChild(Container *child)
 
     child->setOrientation(rotatedOrientation(orientation()));
 
-    child->reparent(this, _backend);
+    child->reparent(this);
 
     _children.push_back(child);
     printvar(numElements());
@@ -75,7 +75,7 @@ void ContainerContainer::insertChild(Container *child, Index insert_pos)
     Container *active_child = activeChild();
 
     child->setOrientation(rotatedOrientation(orientation()));
-    child->reparent(this, _backend);
+    child->reparent(this);
 
     _children.insert(_children.begin() + make_signed<ptrdiff_t>(insert_pos), child);
 
@@ -101,8 +101,8 @@ Container *ContainerContainer::replaceChild(Index index, Container *new_child)
 
     Container *old_child = _children[index];
 
-    old_child->reparent(0, 0);
-    new_child->reparent(this, _backend);
+    old_child->reparent(0);
+    new_child->reparent(this);
 
     _children[index] = new_child;
 
@@ -124,7 +124,7 @@ Container *ContainerContainer::removeChild(Index index)
 
     Container *child = _children[index];
 
-    child->reparent(0, 0);
+    child->reparent(0);
 
     _children.erase(_children.begin() +  make_signed<ptrdiff_t>(index));
 

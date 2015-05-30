@@ -37,7 +37,6 @@ public:
     virtual bool isEmpty() const = 0;
     virtual void redrawAll() = 0;
     virtual ContainerLayout *getLayout() = 0;
-    virtual bool isMinimized() const = 0;
 
     virtual void handleButtonPress(int x_global, int y_global, int button) override;
 

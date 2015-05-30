@@ -8,13 +8,10 @@
 #include "theme.h"
 #include "common.h"
 
-Client::Client(ClientBackend *client_backend) : ChildWidget(OTHER),
+Client::Client(ClientBackend *client_backend) : ChildWidget(OTHER, client_backend->widget()),
     _client_backend(client_backend)
 {
-    _backend = _client_backend->widget();
-    _backend->setFrontend(this);
-    _rect = _client_backend->rect();
-
+    setRect(_client_backend->rect());
     _client_backend->grabMouseButton(MOVE_BUTTON);
     _client_backend->grabMouseButton(RESIZE_BUTTON);
 }
@@ -22,9 +19,6 @@ Client::Client(ClientBackend *client_backend) : ChildWidget(OTHER),
 Client::~Client()
 {
     assert(!_workspace);
-    _backend->setFrontend(0);
-    _backend->setMapped(false);
-    _backend->reparent(0);
 }
 
 void Client::setWorkspace(Workspace *workspace)

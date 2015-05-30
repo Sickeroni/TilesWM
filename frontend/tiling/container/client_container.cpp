@@ -37,12 +37,6 @@ void ClientContainer::handleClientFocusChange(ClientWrapper *client)
 }
 #endif
 
-void ClientContainer::setMinimized(bool minimized)
-{
-    _is_minimized = minimized;
-    _backend->setMinimized(minimized);
-}
-
 Container::Index ClientContainer::indexOfChild(const ClientWrapper *child)
 {
     for(Index i = 0; i < numElements(); i++) {
@@ -80,7 +74,7 @@ Container::Index ClientContainer::addChild(ClientWrapper *client)
     assert(_children.size() < MAX_INDEX);
     assert(!client->parent());
 
-    client->reparent(this, _backend);
+    client->reparent(this);
     client->setEventHandler(this);
     client->setPropertyListener(this);
 
@@ -114,7 +108,7 @@ void ClientContainer::removeChild(ClientWrapper *client)
 
     client->setPropertyListener(0);
     client->setEventHandler(0);
-    client->reparent(0, 0);
+    client->reparent(0);
 
     _children.erase(_children.begin() + make_signed<ptrdiff_t>(index));
 

@@ -16,9 +16,6 @@ Workspace::Workspace() : Widget(WORKSPACE),
     _monitor(0),
     _mode(Application::self()->defaultMode())
 {
-    _backend = Application::self()->backend()->createWidgetBackend();
-    _backend->setFrontend(this);
-
     for (size_t i = 0; i < Application::self()->numModes(); i++) {
         WindowManager *wm = Application::self()->mode(i)->createWindowManager(this);
         _window_managers.push_back(wm);
@@ -40,8 +37,6 @@ Workspace::~Workspace()
         delete wm;
     _window_managers.clear();
 
-    delete _backend;
-    _backend = 0;
     delete _background;
     _background = 0;
     delete _background_scaled;
@@ -53,7 +48,7 @@ void Workspace::setRect(const Rect &rect)
     Widget::setRect(rect);
     if (_background) {
         delete _background_scaled;
-        _background_scaled = _background->scale(_rect.w, _rect.h);
+        _background_scaled = _background->scale(rect.w, rect.h);
     }
 }
 
@@ -73,12 +68,12 @@ bool Workspace::makeActive()
 
 void Workspace::addChild(ChildWidget *child)
 {
-    child->reparent(this, _backend);
+    child->reparent(this);
 }
 
 void Workspace::removeChild(ChildWidget *child)
 {
-    child->reparent(0, 0);
+    child->reparent(0);
 }
 
 void Workspace::addClient(Client *client)

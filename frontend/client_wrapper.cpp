@@ -7,10 +7,7 @@ ClientWrapper::ClientWrapper(Client *client, WindowManager *wm) : ChildWidget(OT
     _client_backend(client->backend()),
     _wm(wm)
 {
-    _rect = _client_backend->rect();
-    _backend = Application::self()->backend()->createWidgetBackend();
-    _backend->setRect(_rect);
-
+    ChildWidget::setRect(_client->rect());
     handleWindowManagerIsActiveChanged();
 }
 
@@ -19,16 +16,14 @@ ClientWrapper::~ClientWrapper()
     setPropertyListener(0);
     if (_client->parent() == this) {
         _client->setEventHandler(0);
-        _client->reparent(0, 0);
+        _client->reparent(0);
     }
-    delete _backend;
-    _backend = 0;
 }
 
 void ClientWrapper::handleWindowManagerIsActiveChanged()
 {
     if (_wm->isActive()) {
-        _client->reparent(this, _backend);
+        _client->reparent(this);
         _client->setRect(Rect(0, 0, rect().w, rect().h));
         _client->setEventHandler(_event_handler);
         _client->setMapped(true);

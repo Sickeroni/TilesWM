@@ -17,12 +17,8 @@ Workspace *ChildWidget::workspace()
     return w;
 }
 
-void ChildWidget::reparent(Widget *parent, WidgetBackend *parent_backend)
+void ChildWidget::reparent(Widget *parent)
 {
-    setMapped(false);
-
-    _rect.setPos(0, 0);
-
-    _backend->reparent(parent_backend);
+    Widget::reparent(parent);
     _parent = parent;
 }

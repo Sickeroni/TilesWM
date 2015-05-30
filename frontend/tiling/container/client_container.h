@@ -26,7 +26,6 @@ public:
         redraw();
     }
     virtual ContainerLayout *getLayout() override;
-    virtual bool isMinimized() const override { return _is_minimized; }
 
     // Client::EventHandler
     virtual void handleFocusChanged() {
@@ -47,7 +46,6 @@ public:
     void removeChild(ClientWrapper *client);
     // deparents all children and puts them into <clients>
     void removeChildren(std::vector<ClientWrapper*> &clients);
-    void setMinimized(bool minimized);
 //     void clear();
 
     ClientWrapper *activeClient() {
@@ -59,7 +57,6 @@ public:
 
 private:
     ClientContainerLayout *_layout = 0;
-    bool _is_minimized = false;
     std::vector<ClientWrapper*> _children;
     Index _active_child_index = INVALID_INDEX;
 };

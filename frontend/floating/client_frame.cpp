@@ -4,13 +4,10 @@
 ClientFrame::ClientFrame(ClientWrapper *client) : ChildWidget(OTHER),
     _client(client)
 {
-    _rect = client->rect();
-    _backend = Application::self()->backend()->createWidgetBackend();
-    _backend->setRect(_rect);
-    _backend->setFrontend(this);
+    ChildWidget::setRect(_client->rect());
 
-    _client->reparent(this, _backend);
-    _client->setRect(Rect(0, 0, _rect.w, _rect.h));
+    _client->reparent(this);
+    _client->setRect(Rect(0, 0, rect().w, rect().h));
     _client->setEventHandler(this);
     _client->setPropertyListener(this);
     _client->setMapped(true);
@@ -24,9 +21,7 @@ ClientFrame::~ClientFrame()
     cancelDrag();
     _client->setPropertyListener(0);
     _client->setEventHandler(0);
-    _client->reparent(0, 0);
-    delete _backend;
-    _backend = 0;
+    _client->reparent(0);
 }
 
 void ClientFrame::draw(Canvas *canvas)
@@ -48,14 +43,14 @@ void ClientFrame::updateFrameGeometry()
 
     Rect frame_rect;
     Theme::calcClientFrameRect(hasDecoration(), maxTextHeight(), client_rect, frame_rect);
-    frame_rect.setPos(_rect.x, _rect.y);
+    frame_rect.setPos(rect().x, rect().y);
 
     setRect(frame_rect);
 }
 
 void ClientFrame::setRect(const Rect &rect)
 {
-    if ((rect.w != _rect.w ) || (rect.h != _rect.h)) {
+    if ((rect.w != this->rect().w ) || (rect.h != this->rect().h)) {
         Rect client_rect;
         Theme::calcClientClientRect(hasDecoration(), maxTextHeight(), rect, client_rect);
         Client::limitRect(client_rect);
@@ -118,7 +113,7 @@ void ClientFrame::handleMouseMove(int x_global, int y_global)
         }
         else if (_drag_mode == Client::DRAG_RESIZE) {
 
-            Rect new_rect = _rect;
+            Rect new_rect = rect();
 
             new_rect.setSize(_rect_before_drag_start.w + xdiff, _rect_before_drag_start.h + ydiff);
 
@@ -128,13 +123,13 @@ void ClientFrame::handleMouseMove(int x_global, int y_global)
                 int snapped_w = new_rect.w;
                 int snapped_h = new_rect.h;
 
-                int snapped_right = _rect.x + new_rect.w;
+                int snapped_right = rect().x + new_rect.w;
                 if (snapCoordinate(snapped_right, parent_rect.w))
-                    snapped_w = snapped_right - _rect.x;
+                    snapped_w = snapped_right - rect().x;
 
-                int snapped_bottom = _rect.y + new_rect.h;
+                int snapped_bottom = rect().y + new_rect.h;
                 if (snapCoordinate(snapped_bottom, parent_rect.h))
-                    snapped_h = snapped_bottom - _rect.y;
+                    snapped_h = snapped_bottom - rect().y;
 
                 new_rect.setSize(snapped_w, snapped_h);
             }
@@ -149,7 +144,7 @@ void ClientFrame::handleMouseMove(int x_global, int y_global)
             Theme::calcClientFrameRect(hasDecoration(), maxTextHeight(), client_rect, frame_rect);
             Client::limitRect(frame_rect);
 
-            frame_rect.setPos(_rect.x, _rect.y);
+            frame_rect.setPos(rect().x, rect().y);
 
             setRect(frame_rect);
         }
@@ -164,7 +159,7 @@ void ClientFrame::handleDragStart(int x_global, int y_global, Client::DragMode m
     WidgetBackend::CursorType cursor = (mode == Client::DRAG_MOVE) ?
         WidgetBackend::CURSOR_MOVE : WidgetBackend::CURSOR_RESIZE_BOTTOM_RIGHT;
 
-    _backend->grabMouse(cursor);
+    grabMouse(cursor);
 
     int x_parent, y_parent;
     adjustMouseCoordinates(x_global, y_global, x_parent, y_parent);
@@ -185,7 +180,7 @@ void ClientFrame::finishDrag()
     _drag_start_x = _drag_start_y = 0;
     _rect_before_drag_start.set(0, 0, 0, 0);
 
-    _backend->releaseMouse();
+    releaseMouse();
 }
 
 void ClientFrame::cancelDrag()
@@ -241,7 +236,7 @@ void ClientFrame::setRequestedRect()
         _client->applySizeHints(req);
         Rect frame_rect;
         Theme::calcClientFrameRect(hasDecoration(), maxTextHeight(), req, frame_rect);
-        frame_rect.setPos(_rect.x, _rect.y);
+        frame_rect.setPos(rect().x, rect().y);
         setRect(frame_rect);
     }
 }
@@ -252,6 +247,6 @@ void ClientFrame::applySizeHints()
     _client->applySizeHints(client_rect);
     Rect frame_rect;
     Theme::calcClientFrameRect(hasDecoration(), maxTextHeight(), client_rect, frame_rect);
-    frame_rect.setPos(_rect.x, _rect.y);
+    frame_rect.setPos(rect().x, rect().y);
     setRect(frame_rect);
 }

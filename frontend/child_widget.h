@@ -41,7 +41,7 @@ public:
 #endif
 
     Widget *parent() { return _parent; }
-    void reparent(Widget *parent, WidgetBackend *parent_backend);
+    void reparent(Widget *parent);
 
     template <class T>
     T* parentTo() { return dynamic_cast<T*>(_parent); }
@@ -52,7 +52,7 @@ public:
 //     bool isFloating() { return _is_floating; }
 
 protected:
-    ChildWidget(Type type) : Widget(type) {}
+    ChildWidget(Type type, WidgetBackend *backend = 0) : Widget(type, backend) {}
     ~ChildWidget() {}
 
 //     bool _is_floating = false;

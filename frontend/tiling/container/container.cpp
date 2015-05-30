@@ -14,14 +14,10 @@
 Container::Container(Type type) : ChildWidget(Widget::OTHER),
     _type(type)
 {
-    _backend = Application::self()->backend()->createWidgetBackend();
-    _backend->setFrontend(this);
 }
 
 Container::~Container()
 {
-    delete _backend;
-    _backend = 0;
 }
 
 bool Container::isAncestorOf(Container *container) const
