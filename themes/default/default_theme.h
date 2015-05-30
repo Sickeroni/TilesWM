@@ -11,26 +11,19 @@ class DefaultTheme : public ThemeBackend
 public:
     virtual ~DefaultTheme() {}
 
+    virtual int tabbarHeight(const TabbarInfo &tabbar) override;
+    virtual int getTabAt(int x, int y, const Rect &tabbar_rect, const TabbarInfo &tabbar) override;
+
     virtual int titlebarHeight(int max_text_height) override;
-    virtual int tabHeight(int max_text_height, bool is_vertical, int icon_size) override;
     virtual int titlebarBottomMargin() override;
-    virtual int clientDecorationMargin() override;
+    virtual int clientFrameMargin() override;
+    virtual int clientIconSize() override;
 
     virtual void drawTabbar(
+            const TabbarInfo &tabbar,
             const std::vector<TabInfo> &tabs,
             int current_tab_index,
             bool current_tab_has_focus,
-            bool is_vertical,
-            const Rect &rect,
-            Canvas *canvas) override;
-
-    virtual void drawTab(
-            Icon *icon,
-            const std::string &title1,
-            const std::string &title2,
-            bool has_focus,
-            bool is_active,
-            int max_text_height,
             const Rect &rect,
             Canvas *canvas) override;
 
@@ -43,6 +36,9 @@ public:
     virtual void drawClientFrame(bool has_focus, const Rect &rect, Canvas *canvas) override;
 
 private:
+    int tabHeight(const TabbarInfo &tabbar);
+    void getTabSize(const TabbarInfo &tabbar, const Rect &tabbar_rect, int &width, int &height);
+
     void drawTabOrTitlebar(
             Icon *icon,
             const std::string &title1,
@@ -51,6 +47,14 @@ private:
             uint32_t fg, uint32_t bg, uint32_t border_color,
             int max_text_height,
             const Rect &rect, Canvas *canvas);
+
+    void drawTab(
+            const TabInfo &tab,
+            bool has_focus,
+            bool is_active,
+            const TabbarInfo &tabbar,
+            const Rect &rect,
+            Canvas *canvas);
 };
 
 #endif

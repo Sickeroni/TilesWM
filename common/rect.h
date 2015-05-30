@@ -16,7 +16,11 @@ struct Rect
     }
 
     bool isValid() {
-        return (x >= 0 && y >= 0);
+        return w >= 0 && h >= 0;
+    }
+
+    bool isEmpty() {
+        return w <= 0 || h <= 0;
     }
 
     void set(const Rect &other) {

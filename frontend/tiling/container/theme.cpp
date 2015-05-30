@@ -22,7 +22,6 @@ struct ClientContainerSizesInternal
     int frame_width;
     int vertical_tabbar_width;
     int statusbar_inner_margin;
-    int tab_gap;
     int status_bar_width;
 };
 
@@ -31,7 +30,6 @@ const ClientContainerSizesInternal _clientContainerSizesInternal = {
     .frame_width = 0,
     .vertical_tabbar_width = 70,
     .statusbar_inner_margin = 5,
-    .tab_gap = 2,
     .status_bar_width = 30
 };
 
@@ -41,10 +39,17 @@ const ClientContainerSizes _clientContainerSizes = {
 };
 
 
-
 const ClientContainerSizes &clientContainerSizes()
 {
     return _clientContainerSizes;
+}
+
+void fillTabbarInfo(ClientContainer *container, ThemeBackend::TabbarInfo &info)
+{
+    info.num_elements = container->numElements();
+    info.is_vertical = container->isMinimized() && container->isVertical();
+    info.max_text_height = container->maxTextHeight();
+    info.icon_size = Application::themeBackend()->clientIconSize();
 }
 
 void getTabbbarRect(ClientContainer *container, Rect &rect)
@@ -66,54 +71,9 @@ void getTabbbarRect(ClientContainer *container, Rect &rect)
 
         rect.set(tabbar_x, tabbar_y, tabbar_w, tabbar_h);
     }
+    rect.w = max(0, rect.w);
+    rect.h = max(0, rect.h);
     assert(rect.isValid());
-}
-
-void getTabSize(ClientContainer *container, int &tab_width, int &tab_height)
-{
-    if (container->numElements()) {
-        Rect tabbar_rect;
-        getTabbbarRect(container, tabbar_rect);
-
-        int num_gaps = container->numElements() - 1;
-
-        tab_width = (tabbar_rect.w - (num_gaps * _clientContainerSizesInternal.tab_gap)) / container->numElements();
-        tab_height = tabbar_rect.h;
-    } else {
-        tab_width = 0;
-        tab_height = 0;
-    }
-    assert(tab_width >= 0);
-    assert(tab_height >= 0);
-}
-
-void getHorizontalTabRect(
-        const int tab_width,
-        const int tab_height,
-        const Rect &tabbar_rect,
-        const int index,
-        Rect &rect)
-{
-    const ClientContainerSizesInternal &sizes = _clientContainerSizesInternal;
-
-    rect.set(
-        tabbar_rect.x + (index * (tab_width + sizes.tab_gap)),
-        tabbar_rect.y,
-        tab_width,
-        tab_height);
-}
-
-void getVerticalTabRect(
-        const int index,
-        Rect &rect)
-{
-    const ClientContainerSizesInternal &sizes = _clientContainerSizesInternal;
-
-    rect.set(
-        sizes.frame_width,
-        sizes.frame_width + (index * (sizes.vertical_tabbar_width + sizes.tab_gap)),
-        sizes.vertical_tabbar_width,
-        sizes.vertical_tabbar_width);
 }
 
 int getTabAt(int x, int y, ClientContainer *container)
@@ -125,42 +85,20 @@ int getTabAt(int x, int y, ClientContainer *container)
     printvar(tabbar_rect.h);
 
     if (tabbar_rect.isPointInside(x, y)) {
-        if (container->isMinimized() && container->isVertical()) {
-            for(int i = 0; i < container->numElements(); i++) {
-                Rect tab_rect;
-                getVerticalTabRect(i, tab_rect);
+        ThemeBackend::TabbarInfo info;
+        fillTabbarInfo(container, info);
 
-                if (tab_rect.isPointInside(x, y))
-                    return i;
-            }
-        } else {
-            int tab_width, tab_height;
-            getTabSize(container, tab_width, tab_height);
-
-            for(int i = 0; i < container->numElements(); i++) {
-                Rect tab_rect;
-                getHorizontalTabRect(tab_width, tab_height, tabbar_rect, i, tab_rect);
-
-                if (tab_rect.isPointInside(x, y))
-                    return i;
-            }
-        }
-    }
-
-    return -1;
+        return backend()->getTabAt(x, y, tabbar_rect, info);
+    } else
+        return -1;
 }
 
 int calcTabbarHeight(ClientContainer *container) {
-    const int icon_size = 22; //FIXME
-    return backend()->tabHeight(container->maxTextHeight(), false, icon_size);
-}
+    ThemeBackend::TabbarInfo info;
+    fillTabbarInfo(container, info);
 
-int calcVerticalTabbarHeight(ClientContainer *container) {
-    const int icon_size = 22; //FIXME
-    return (container->numElements() * backend()->tabHeight(container->maxTextHeight(), true, icon_size))
-                + ((!container->numElements() ? 0 : container->numElements() - 1) * _clientContainerSizesInternal.tab_gap);
+    return backend()->tabbarHeight(info);
 }
-
 
 void getClientContainerClientRect(ClientContainer *container,  Rect &client_rect)
 {
@@ -178,86 +116,65 @@ void getClientContainerClientRect(ClientContainer *container,  Rect &client_rect
     client_rect.h = max(0, client_rect.h);
 }
 
-void drawTab(ClientContainer *container, ClientWrapper *client, const Rect &rect, bool vertical, Canvas *canvas)
-{
-    std::string title1, title2;
-    if (vertical) {
-        title1 = client->className();
-        title2 = client->iconName().empty() ? client->name() : client->iconName();
-    } else
-        title1 = client->title();
-
-    backend()->drawTab(client->icon(),
-        title1,
-        title2,
-        client->hasFocus(),
-        container->activeClient() == client,
-        client->maxTextHeight(),
-        rect,
-        canvas);
-}
-
-void drawTabbar(ClientContainer *container, Canvas *canvas)
+void drawClientContainer(ClientContainer *container, Canvas *canvas)
 {
     const ClientContainerSizesInternal &sizes = _clientContainerSizesInternal;
 
     Rect bg_rect = container->rect();
+    if (bg_rect.isEmpty())
+        return;
+
     bg_rect.setPos(0, 0);
-    canvas->erase(bg_rect);
+    canvas->erase(bg_rect); //FIXME
 
     Rect tabbar_rect;
     getTabbbarRect(container, tabbar_rect);
 
-    //FIXME hackish
-    Rect status_bar_rect = tabbar_rect;
-    status_bar_rect.x = sizes.frame_width;
-    status_bar_rect.w = sizes.status_bar_width;
-    status_bar_rect.x += sizes.statusbar_inner_margin;
-    status_bar_rect.y += sizes.statusbar_inner_margin;
-    status_bar_rect.w += (2 * sizes.statusbar_inner_margin);
-    status_bar_rect.h += (2 * sizes.statusbar_inner_margin);
+    ThemeBackend::TabbarInfo info;
+    fillTabbarInfo(container, info);
 
-    uint32_t status_bar_fg = Colors::TAB_TEXT;
+    if (!info.is_vertical) {
+        //FIXME hackish
+        Rect status_bar_rect = tabbar_rect;
+        status_bar_rect.x = sizes.frame_width;
+        status_bar_rect.w = sizes.status_bar_width;
+        status_bar_rect.x += sizes.statusbar_inner_margin;
+        status_bar_rect.y += sizes.statusbar_inner_margin;
+        status_bar_rect.w += (2 * sizes.statusbar_inner_margin);
+        status_bar_rect.h += (2 * sizes.statusbar_inner_margin);
 
-    canvas->drawText(container->isFixedSize() ? "-" : "<->", status_bar_rect, status_bar_fg);
+        uint32_t status_bar_fg = Colors::TAB_TEXT;
+
+        canvas->drawText(container->isFixedSize() ? "-" : "<->", status_bar_rect, status_bar_fg);
+    }
+
+    printvar(container->numElements());
 
     if (!container->numElements())
         return;
 
-    int tab_width, tab_height;
-    getTabSize(container, tab_width, tab_height);
-
-    for(int i = 0; i < container->numElements(); i++) {
-        Rect tab_rect;
-        getHorizontalTabRect(tab_width, tab_height, tabbar_rect, i, tab_rect);
-
-        drawTab(container, container->child(i), tab_rect, false, canvas);
+    std::vector<ThemeBackend::TabInfo> tabs;
+    tabs.reserve(container->numElements());
+    std::string empty_string;
+    for (Container::Index i = 0; i < container->numElements(); i++) {
+        ClientWrapper *client = container->child(i);
+        tabs.push_back(ThemeBackend::TabInfo(client->title(), empty_string, client->icon()));
     }
-}
 
-void drawVerticalTabs(ClientContainer *container, Canvas *canvas)
-{
-    Rect bg_rect = container->rect();
-    bg_rect.setPos(0, 0);
-    canvas->erase(bg_rect);
+    int current_tab_index = (container->activeChildIndex() != Container::INVALID_INDEX) ?
+        int_cast<int>(make_signed<long>(container->activeChildIndex())) : -1;
 
-    Rect tabbar_rect;
-    getTabbbarRect(container, tabbar_rect);
+    assert(tabbar_rect.isValid());
 
-    for (int i = 0; i < container->numElements(); i++) {
-        Rect tab_rect;
-        getVerticalTabRect(i, tab_rect);
-
-        drawTab(container, container->child(i), tab_rect, true, canvas);
+    if (!tabbar_rect.isEmpty()) {
+        backend()->drawTabbar(
+                info,
+                tabs,
+                current_tab_index,
+                container->activeClient()->hasFocus(),
+                tabbar_rect,
+                canvas);
     }
-}
-
-void drawClientContainer(ClientContainer *container, Canvas *canvas)
-{
-    if (container->isMinimized() && container->isVertical())
-        drawVerticalTabs(container, canvas);
-    else
-        drawTabbar(container, canvas);
 }
 
 

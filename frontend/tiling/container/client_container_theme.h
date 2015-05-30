@@ -18,7 +18,6 @@ namespace Theme
 
     void getClientContainerClientRect(ClientContainer *container, Rect &client_rect);
     int calcTabbarHeight(ClientContainer *container);
-    int calcVerticalTabbarHeight(ClientContainer *container);
     int getTabAt(int x, int y, ClientContainer *container);
 
     void drawClientContainer(ClientContainer *container, Canvas *canvas);

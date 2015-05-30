@@ -16,7 +16,7 @@ void calcClientFrameMargins(bool has_decoration, int max_text_height, int &side,
     int titlebar_height = 0;
 
     if (has_decoration) {
-        frame_margin += backend()->clientDecorationMargin();
+        frame_margin += backend()->clientFrameMargin();
         titlebar_height +=
             (backend()->titlebarHeight(max_text_height) + backend()->titlebarBottomMargin());
     }
@@ -65,7 +65,7 @@ void drawClientFrame(ClientWrapper *client, Canvas *canvas, const Rect &rect)
 
     //FIXME - add parameter has_decoration
 //     if (client->hasDecoration()) {
-        int frame_margin = backend()->clientDecorationMargin();
+        int frame_margin = backend()->clientFrameMargin();
         int titlebar_height = backend()->titlebarHeight(client->maxTextHeight());
 
         Rect titlebar_rect(frame_margin, frame_margin,

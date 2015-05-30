@@ -54,14 +54,8 @@ int ClientContainerLayout::minHeight()
     const Theme::ClientContainerSizes &sizes = Theme::clientContainerSizes();
     int tabbar_height = 0;
 
-    if (_container->isMinimized()) {
-        if (_container->isHorizontal())
-            tabbar_height = Theme::calcTabbarHeight(_container);
-        else // vertical tabbar
-            tabbar_height = Theme::calcVerticalTabbarHeight(_container);
-    } else
-        tabbar_height = Theme::calcTabbarHeight(_container);
-    
+    tabbar_height = Theme::calcTabbarHeight(_container);
+
     int min_client_height = 0;
     if (!_container->isMinimized() && _container->activeClient())
         min_client_height = _container->activeClient()->sizeHints().min_height;

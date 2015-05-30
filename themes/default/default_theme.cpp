@@ -8,6 +8,8 @@ namespace Metrics
         CLIENT_INNER_FRAME_MARGIN = 0,
         CLIENT_DECORATION_MARGIN = 4,
         CLIENT_TITLEBAR_INNER_MARGIN = 5,
+        CLIENT_ICON_SIZE = 22,
+        TITLEBAR_BOTTOM_MARGIN = 2,
         TABBAR_TAB_GAP = 2
     };
 }
@@ -16,89 +18,113 @@ int DefaultTheme::titlebarHeight(int max_text_height) {
     return max_text_height + (2 * Metrics::CLIENT_TITLEBAR_INNER_MARGIN);
 }
 
-int DefaultTheme::tabHeight(int max_text_height, bool is_vertical, int icon_size) {
-    if (is_vertical) {
-        int height = 2 * max_text_height + 3 * Metrics::CLIENT_TITLEBAR_INNER_MARGIN;
-        if (icon_size)
-            height += icon_size + Metrics::CLIENT_TITLEBAR_INNER_MARGIN;
+int DefaultTheme::tabbarHeight(const TabbarInfo &tabbar)
+{
+    int tab_height = tabHeight(tabbar);
+    if (tabbar.is_vertical) {
+        return tab_height * tabbar.num_elements
+                    + Metrics::TABBAR_TAB_GAP * (tabbar.num_elements ? tabbar.num_elements - 1 : 0);
+    } else
+        return tabHeight(tabbar);
+}
+
+int DefaultTheme::tabHeight(const TabbarInfo &tabbar)
+{
+    if (tabbar.is_vertical) {
+        int height = 2 * tabbar.max_text_height + 3 * Metrics::CLIENT_TITLEBAR_INNER_MARGIN;
+        if (tabbar.icon_size)
+            height += tabbar.icon_size + Metrics::CLIENT_TITLEBAR_INNER_MARGIN;
         return height;
     } else
         //FIXME icon_size
-        return titlebarHeight(max_text_height);
+        return titlebarHeight(tabbar.max_text_height);
 }
 
 int DefaultTheme::titlebarBottomMargin() {
-    return 2;
+    return Metrics::TITLEBAR_BOTTOM_MARGIN;
 }
 
-int DefaultTheme::clientDecorationMargin() {
+int DefaultTheme::clientFrameMargin() {
     return Metrics::CLIENT_DECORATION_MARGIN;
 }
 
+int DefaultTheme::clientIconSize() {
+    return Metrics::CLIENT_ICON_SIZE;
+}
 
-inline void getTabSize(int num_tabs, const Rect &tabbar_rect, int &tab_width, int &tab_height)
+inline int horizontalTabWidth(int num_tabs, int tabbar_width)
 {
     if (num_tabs) {
         int num_gaps = num_tabs - 1;
+        return (tabbar_width - (num_gaps * Metrics::TABBAR_TAB_GAP)) / num_tabs;
+    } else
+        return 0;
+}
 
-        tab_width = (tabbar_rect.w - (num_gaps * Metrics::TABBAR_TAB_GAP)) / num_tabs;
-        tab_height = tabbar_rect.h;
+void DefaultTheme::getTabSize(const TabbarInfo &tabbar, const Rect &tabbar_rect, int &width, int &height)
+{
+    width = tabbar.is_vertical ?
+        tabbar_rect.w : horizontalTabWidth(tabbar.num_elements, tabbar_rect.w);
+    height = tabHeight(tabbar);
+}
+
+inline void getTabPos(
+        const int index,
+        bool is_vertical,
+        const Rect &tabbar_rect,
+        Rect &rect)
+{
+    if (is_vertical) {
+        rect.x = tabbar_rect.x;
+        rect.y = tabbar_rect.y + (index * (rect.h + Metrics::TABBAR_TAB_GAP));
     } else {
-        tab_width = 0;
-        tab_height = 0;
+        rect.x = tabbar_rect.x + (index * (rect.w + Metrics::TABBAR_TAB_GAP));
+        rect.y = tabbar_rect.y;
     }
 }
 
-inline void getHorizontalTabRect(
-        const int tab_width,
-        const int tab_height,
-        const Rect &tabbar_rect,
-        const int index,
-        Rect &rect)
+int DefaultTheme::getTabAt(int x, int y, const Rect &tabbar_rect, const TabbarInfo &tabbar)
 {
-    rect.set(
-        tabbar_rect.x + (index * (tab_width + Metrics::TABBAR_TAB_GAP)),
-        tabbar_rect.y,
-        tab_width,
-        tab_height);
+    Rect tab_rect;
+    getTabSize(tabbar, tabbar_rect, tab_rect.w, tab_rect.h);
+
+    for(int i = 0; i < tabbar.num_elements; i++) {
+        getTabPos(i, tabbar.is_vertical, tabbar_rect, tab_rect);
+        if (tab_rect.isPointInside(x, y))
+            return i;
+    }
+
+    return -1;
 }
 
-
-
 void DefaultTheme::drawTabbar(
+        const TabbarInfo &tabbar,
         const std::vector<TabInfo> &tabs,
         int current_tab_index,
         bool current_tab_has_focus,
-        bool /*is_vertical*/,
         const Rect &rect,
         Canvas *canvas)
 {
-    int tab_width, tab_height;
-    getTabSize(tabs.size(), rect, tab_width, tab_height);
-
-    int max_text_height = canvas->maxTextHeight();
+    Rect tab_rect;
+    getTabSize(tabbar, rect, tab_rect.w, tab_rect.h);
 
     for(size_t i = 0; i < tabs.size(); i++) {
-        Rect tab_rect;
-        getHorizontalTabRect(tab_width, tab_height, rect, i, tab_rect);
+        getTabPos(i, tabbar.is_vertical, rect, tab_rect);
 
         const TabInfo &tab = tabs[i];
 
         bool is_active = (i == current_tab_index);
-        bool has_focus = (current_tab_has_focus &&  is_active);
+        bool has_focus = (current_tab_has_focus && is_active);
 
-        drawTab(tab.icon, tab.title1, tab.title2, has_focus, is_active, max_text_height, rect, canvas);
+        drawTab(tab, has_focus, is_active, tabbar, tab_rect, canvas);
     }
-
 }
 
 void DefaultTheme::drawTab(
-        Icon *icon,
-        const std::string &title1,
-        const std::string &title2,
+        const TabInfo &tab,
         bool has_focus,
         bool is_active,
-        int max_text_height,
+        const TabbarInfo &tabbar,
         const Rect &rect,
         Canvas *canvas)
 {
@@ -115,7 +141,7 @@ void DefaultTheme::drawTab(
         fg = Colors::TAB_CURRENT_TEXT;
     }
 
-    drawTabOrTitlebar(icon, title1, title2, false, fg, bg, border, max_text_height, rect, canvas);
+    drawTabOrTitlebar(tab.icon, tab.title1, tab.title2, tabbar.is_vertical, fg, bg, border, tabbar.max_text_height, rect, canvas);
 }
 
 void DefaultTheme::drawTitlebar(Icon *icon, const std::string &title, bool has_focus, const Rect &rect, Canvas *canvas) {
