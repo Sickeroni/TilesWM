@@ -4,10 +4,9 @@
 #include "x11_widget.h"
 #include "x11_graphics_system.h"
 #include "x11_widget_backend.h"
-#include "x11_key_grab_set.h"
 
 #include "frontend_base.h"
-#include "key_grab_handler_base.h"
+#include "string_util.h"
 #include "config.h"
 #include "common.h"
 
@@ -389,11 +388,6 @@ WidgetBackend *X11Application::createWidgetBackend()
     return new X11WidgetBackend();
 }
 
-KeyGrabSet *X11Application::createKeyGrabSet()
-{
-    return new X11KeyGrabSet();
-}
-
 Icon *X11Application::loadImage(std::string filename)
 {
     printvar(filename);
@@ -416,19 +410,50 @@ bool X11Application::handleKeyPress(const XKeyEvent &ev)
         XLookupKeysym(const_cast<XKeyEvent*>(&ev), 0),
         ev.state & ~(LockMask | num_lock_mask));
 
-    if (key_sequence.key_sym != NoSymbol) {
-        for (int i = 0; i < frontend()->numKeyGrabHandlers(); i++) {
-            KeyGrabHandlerBase *handler = frontend()->keyGrabHandler(i);
-            const X11KeyGrabSet *key_grabs = dynamic_cast<const X11KeyGrabSet*>(handler->grabs());
-            size_t index = key_grabs->find(key_sequence);
-            if (index != INVALID_INDEX) {
-                handler->handleKeyGrabPressed(index);
-                return true;
+    return _frontend->handleKeySequence(&key_sequence);
+}
+
+AbstractKeySequence *X11Application::parseKeySequence(std::string key_sequence_str)
+{
+    std::vector<std::string> tokens;
+    StringUtil::tokenize(key_sequence_str, '+', tokens);
+
+    X11Global::KeySequence key_sequence(NoSymbol, 0);
+
+    for (size_t i = 0; i < tokens.size(); i++) {
+        std::string &s = tokens[i];
+
+        if (s.compare("CTRL") == 0)
+            key_sequence.mod_mask |= ControlMask;
+        else if (s.compare("MOD1") == 0)
+            key_sequence.mod_mask |= Mod1Mask;
+        else if (s.compare("SHIFT") == 0)
+            key_sequence.mod_mask |= ShiftMask;
+        else {
+            key_sequence.key_sym = XStringToKeysym(s.c_str());
+            if (key_sequence.key_sym == NoSymbol) {
+                debug<<"invalid key symbol"<<s<<"in key sequence"<<key_sequence_str;
+                return 0;
             }
+            break;
         }
     }
 
-    return false;
+    if (key_sequence.key_sym == NoSymbol) {
+        debug<<"missing key symbol in key sequence"<<key_sequence_str;
+        return 0;
+    } else
+        return new X11Global::KeySequence(key_sequence.key_sym, key_sequence.mod_mask);
+}
+
+bool X11Application::addKeyGrab(const AbstractKeySequence *key_sequence)
+{
+    return addKeyGrab(*dynamic_cast<const X11Global::KeySequence*>(key_sequence));
+}
+
+void X11Application::releaseKeyGrab(const AbstractKeySequence *key_sequence)
+{
+    releaseKeyGrab(*dynamic_cast<const X11Global::KeySequence*>(key_sequence));
 }
 
 bool X11Application::addKeyGrab(const X11Global::KeySequence &key_sequence)

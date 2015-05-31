@@ -3,7 +3,6 @@
 #include "common_complex_action.h"
 #include "action_run.h"
 #include "application.h"
-#include "key_grab_set.h"
 #include "workspace.h"
 #include "window_manager.h"
 #include "client_wrapper.h"

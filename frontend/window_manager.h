@@ -23,8 +23,6 @@ public:
         _mode(mode) {}
     virtual ~WindowManager();
 
-    virtual const KeyGrabSet *grabs() override { return _mode->keyBindings()->keyGrabs(); }
-
     virtual void layout() = 0;
     virtual void manageClient(ClientWrapper *client) = 0;
     virtual void unmanageClient(ClientWrapper *client) = 0;

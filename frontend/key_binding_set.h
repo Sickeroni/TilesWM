@@ -7,13 +7,14 @@
 
 class KeyGrabSet;
 class ActionSet;
+struct AbstractKeySequence;
 
 class KeyBindingSet
 {
 public:
     struct Binding
     {
-        size_t key_grab_id = 0;
+        AbstractKeySequence *key_sequence = 0;
         const Action *action = 0;
         ComplexAction::Parameters *parameters = 0;
     };
@@ -23,14 +24,12 @@ public:
 
     void clear();
     void createBindings();
-    const Binding *find(size_t key_grab_id) const;
-    const KeyGrabSet *keyGrabs() const { return _key_grabs; }
+    const Binding *find(const AbstractKeySequence *sequence) const;
 
 private:
     std::string _config_group;
     const ActionSet *_actions = 0;
     std::vector<Binding> _bindings;
-    KeyGrabSet *_key_grabs = 0;
 };
 
 #endif

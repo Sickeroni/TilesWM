@@ -11,8 +11,6 @@ public:
     CommonActions();
     ~CommonActions();
 
-    virtual const KeyGrabSet *grabs() override { return _key_bindings.keyGrabs(); }
-
     void createKeyBindings();
 
 protected:

@@ -5,6 +5,7 @@ class ClientFrontend;
 class ClientBackend;
 class KeyGrabHandlerBase;
 class Backend;
+struct AbstractKeySequence;
 
 class FrontendBase
 {
@@ -17,8 +18,7 @@ public:
     virtual void destroyClientFrontend(ClientFrontend *frontend) = 0;
 //     virtual ClientFrontend *activeClient() = 0;
 
-    virtual int numKeyGrabHandlers() = 0;
-    virtual KeyGrabHandlerBase *keyGrabHandler(int index) = 0;
+    virtual bool handleKeySequence(const AbstractKeySequence *sequence) = 0;
 
 //     virtual void handleUnmanagedClientGotFocus() = 0;
 //     virtual void handleUnmanagedClientLostFocus() = 0;

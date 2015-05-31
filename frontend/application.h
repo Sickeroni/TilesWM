@@ -30,8 +30,7 @@ public:
     virtual void focusActiveClient() override;
     virtual ClientFrontend *createClientFrontend(ClientBackend *backend) override;
     virtual void destroyClientFrontend(ClientFrontend *frontend) override;
-    virtual int numKeyGrabHandlers() override;
-    virtual KeyGrabHandlerBase *keyGrabHandler(int index) override;
+    virtual bool handleKeySequence(const AbstractKeySequence *sequence) override;
 
     Monitor *activeMonitor() { return _monitor; }
     void setActiveMonitor(Monitor *monitor);

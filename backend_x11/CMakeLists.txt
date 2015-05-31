@@ -11,7 +11,6 @@ set (SRCS ${SRCS} x11_client_widget)
 set (SRCS ${SRCS} x11_client)
 set (SRCS ${SRCS} x11_application)
 set (SRCS ${SRCS} x11_global)
-set (SRCS ${SRCS} x11_key_grab_set)
 set (SRCS ${SRCS} default_config_values)
 
 add_library (backend_x11 ${SRCS})

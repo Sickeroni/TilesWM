@@ -1,15 +1,15 @@
 #ifndef __KEY_GRAB_HANDLER_H__
 #define __KEY_GRAB_HANDLER_H__
 
-#include "key_grab_handler_base.h"
 #include "action.h"
 
 class KeyBindingSet;
+class AbstractKeySequence;
 
-class KeyGrabHandler : public KeyGrabHandlerBase
+class KeyGrabHandler
 {
 public:
-    virtual void handleKeyGrabPressed(size_t grab_id) override;
+    bool handleKeySequence(const AbstractKeySequence *sequence);
 
 protected:
     virtual void performAction(int id) = 0;

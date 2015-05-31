@@ -36,9 +36,12 @@ public:
         _quit_requested = true;
     }
     virtual WidgetBackend *createWidgetBackend() override;
-    virtual KeyGrabSet *createKeyGrabSet() override;
     virtual void getMonitorSize(int &w, int &h) override;
     virtual Icon *loadImage(std::string filename) override;
+    virtual AbstractKeySequence *parseKeySequence(std::string sequence) override;
+    virtual bool addKeyGrab(const AbstractKeySequence *key_sequence) override;
+    virtual void releaseKeyGrab(const AbstractKeySequence *key_sequence) override;
+
 
     bool init();
     void shutdown();

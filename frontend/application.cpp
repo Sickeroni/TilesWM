@@ -101,25 +101,11 @@ void Application::destroyClientFrontend(ClientFrontend *frontend)
     delete client;
 }
 
-int Application::numKeyGrabHandlers()
-{
-    return 2;
-}
-
-KeyGrabHandlerBase *Application::keyGrabHandler(int index)
-{
-    assert(index < numKeyGrabHandlers());
-    switch (index) {
-        case 0:
-            return  _common_actions;
-            break;
-        case 1:
-            return activeWorkspace()->windowManager();
-            break;
-        default:
-            assert(false);
-            return 0;
-    }
+bool Application::handleKeySequence(const AbstractKeySequence *sequence) {
+    bool handled = _common_actions->handleKeySequence(sequence);
+    if (!handled)
+        handled = activeWorkspace()->windowManager()->handleKeySequence(sequence);
+    return handled;
 }
 
 void Application::reloadConfig()
