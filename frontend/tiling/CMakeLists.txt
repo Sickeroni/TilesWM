@@ -6,8 +6,8 @@ add_subdirectory (container_container)
 
 set (SRCS ${SRCS} mode_default)
 set (SRCS ${SRCS} window_manager_default)
-#set (SRCS ${SRCS} mode_3panel)
-#set (SRCS ${SRCS} window_manager_3panel)
+set (SRCS ${SRCS} mode_3panel)
+set (SRCS ${SRCS} window_manager_3panel)
 
 add_library (tiling_modes ${SRCS})
 

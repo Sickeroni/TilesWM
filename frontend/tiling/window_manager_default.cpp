@@ -12,6 +12,7 @@
 
 using namespace ContainerUtil;
 
+
 WindowManagerDefault::WindowManagerDefault(Workspace *workspace, Mode *mode) :
     WindowManager(workspace, mode),
     _root_container(new ContainerContainer())

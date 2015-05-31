@@ -6,6 +6,7 @@
 #include "mode.h"
 #include "mode_simple.h"
 #include "mode_default.h"
+#include "mode_3panel.h"
 #include "themes/default/default_theme.h"
 #endif
 
@@ -38,7 +39,7 @@ int main()
 
     modes.push_back(new ModeSimple());
     modes.push_back(new ModeDefault());
-//     modes.push_back(new Mode3Panel());
+    modes.push_back(new Mode3Panel());
 
     ThemeBackend *theme_backend = new DefaultTheme();
 

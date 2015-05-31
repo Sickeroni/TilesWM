@@ -1,19 +1,16 @@
 #include "mode_3panel.h"
 
-#include "shortcut_set.h"
-#include "container_container.h"
-#include "container_util.h"
-#include "client_container.h"
-#include "client.h"
-#include "workspace.h"
-#include "application.h"
-#include "common.h"
+#include "window_manager_3panel.h"
 
-using namespace ContainerUtil;
-
-Mode3Panel::Mode3Panel() : Mode("3panel")
+Mode3Panel::Mode3Panel() : Mode("tiling.3panel")
 {
+    WindowManager3Panel::createActions(_actions);
 }
+
+WindowManager *Mode3Panel::createWindowManager(Workspace *workspace) {
+    return new WindowManager3Panel(workspace, this);
+}
+
 #if 0
 void Mode3Panel::activate(Workspace *workspace)
 {
