@@ -2,9 +2,6 @@ use and check against INVALID_INDEX enum value
   indexOfChild()
   ...
 
-remove comparision with -1
-    use >= 0 instead pf > -1
-
 maybe: desktop function: add/remove window manager
 
 TODO: mouse drag: ignore caps/numlock modifiers
