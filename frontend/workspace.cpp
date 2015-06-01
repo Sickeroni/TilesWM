@@ -155,26 +155,3 @@ void Workspace::setHasFocus(bool has_focus)
     _window_manager->setHasFocus(has_focus);
     _has_focus = has_focus;
 }
-
-#if 0
-void Workspace::rotateOrientation()
-{
-    if (_orientation == Container::HORIZONTAL)
-        _orientation = Container::VERTICAL;
-    else
-        _orientation = Container::HORIZONTAL;
-
-   layoutContents();
-}
-
-void Workspace::addChild(Container *container)
-{
-    container->reparent(this, widget());
-    container->setMapped(true);
-}
-
-void Workspace::removeChild(Container *container)
-{
-    container->reparent(0, 0);
-}
-#endif

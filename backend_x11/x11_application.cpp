@@ -361,28 +361,6 @@ void X11Application::ungrabServer()
         XUngrabServer(_dpy);
 }
 
-// Monitor *X11Application::activeMonitor()
-// {
-//     return _monitor;
-// }
-
-// Workspace *X11Application::activeWorkspace()
-// {
-//     return self()->activeMonitor()->workspace();
-// }
-
-// void X11Application::setActiveMonitor(Monitor *monitor)
-// {
-//     //FIXME
-// }
-
-// Workspace *X11Application::createWorkspace()
-// {
-//     Workspace *w = new Workspace();
-//     _workspaces.push_back(w);
-//     return w;
-// }
-
 WidgetBackend *X11Application::createWidgetBackend()
 {
     return new X11WidgetBackend();
@@ -423,11 +401,11 @@ AbstractKeySequence *X11Application::parseKeySequence(std::string key_sequence_s
     for (size_t i = 0; i < tokens.size(); i++) {
         std::string &s = tokens[i];
 
-        if (s.compare("CTRL") == 0)
+        if (s == "CTRL")
             key_sequence.mod_mask |= ControlMask;
-        else if (s.compare("MOD1") == 0)
+        else if (s == "MOD1")
             key_sequence.mod_mask |= Mod1Mask;
-        else if (s.compare("SHIFT") == 0)
+        else if (s == "SHIFT")
             key_sequence.mod_mask |= ShiftMask;
         else {
             key_sequence.key_sym = XStringToKeysym(s.c_str());

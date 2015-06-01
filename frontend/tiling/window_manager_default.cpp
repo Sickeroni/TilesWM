@@ -257,7 +257,7 @@ void WindowManagerDefault::makeContainerActive(Container *container)
 {
     assert(container->workspace()->windowManager() == this);
 
-    if (ContainerContainer *parent =  container->parentTo<ContainerContainer>()) {
+    if (ContainerContainer *parent = container->parentTo<ContainerContainer>()) {
         makeContainerActive(parent);
         parent->setActiveChild(parent->indexOfChild(container));
     } else

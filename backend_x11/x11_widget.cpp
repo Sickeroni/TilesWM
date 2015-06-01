@@ -16,7 +16,6 @@ using namespace X11Global;
 
 X11Widget::X11Widget(Window wid, Type type, bool is_mapped, const Rect &rect) :
     _rect(rect),
-//     _is_destroyed(false),
     _is_mapped(is_mapped),
     _wid(wid),
     _type(type)
@@ -27,41 +26,6 @@ X11Widget::X11Widget(Window wid, Type type, bool is_mapped, const Rect &rect) :
 X11Widget::~X11Widget()
 {
 }
-
-#if 0
-bool X11Widget::validate()
-{
-    std::cout<<"X11Widget::validate()\n";
-
-    XEvent ev;
-
-    if (_is_destroyed)
-        return false;
-#if 0
-    if (XCheckTypedWindowEvent(dpy(), _wid, DestroyNotify, &ev)) {
-        std::cout<<"got destroy notify.\n";
-        std::cout<<"ev.xdestroywindow.window: "<<ev.xdestroywindow.window<<'\n';
-        std::cout<<"_wid: "<<_wid<<'\n';
-        if (ev.xdestroywindow.window == _wid)
-            _is_destroyed = true;
-        XPutBackEvent(dpy(), &ev);
-        return !_is_destroyed;
-    }
-#else
-    if (XCheckTypedEvent(dpy(), DestroyNotify, &ev)) {
-        std::cout<<"got destroy notify.\n";
-        std::cout<<"ev.xdestroywindow.window: "<<ev.xdestroywindow.window<<'\n';
-        std::cout<<"_wid: "<<_wid<<'\n';
-        if (ev.xdestroywindow.window == _wid)
-            _is_destroyed = true;
-        XPutBackEvent(dpy(), &ev);
-        return !_is_destroyed;
-    }
-#endif
-
-    return true;
-}
-#endif
 
 void X11Widget::map()
 {
@@ -93,13 +57,6 @@ void X11Widget::move(int x, int y)
     _rect.setPos(x, y);
     XMoveWindow(dpy(), _wid, x, y);
 }
-
-// void X11Widget::resize(unsigned int w, unsigned int h)
-// {
-//     assert(w && h);
-//     _rect.setSize(w, h);
-//     XResizeWindow(dpy(), _wid, w, h);
-// }
 
 void X11Widget::setRect(const Rect &rect)
 {

@@ -1,7 +1,3 @@
-use and check against INVALID_INDEX enum value
-  indexOfChild()
-  ...
-
 maybe: desktop function: add/remove window manager
-
 TODO: mouse drag: ignore caps/numlock modifiers
+check for UNIMPLEMENTED

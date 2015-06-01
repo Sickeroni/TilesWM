@@ -26,12 +26,6 @@ public:
     X11Application(FrontendBase *frontend);
     ~X11Application();
 
-#if 0
-    virtual Monitor *activeMonitor() override;
-    virtual void setActiveMonitor(Monitor *monitor) override;
-    virtual Workspace *createWorkspace() override;
-#endif
-
     virtual void requestQuit() override {
         _quit_requested = true;
     }
@@ -56,7 +50,6 @@ public:
     static X11Application *self() { return _self; }
     static Display *dpy()  { return self()->_dpy; }
     static Window root()  { return self()->_root; }
-//     static Workspace *activeWorkspace();
     static X11GraphicsSystem *graphicsSystem() { return self()->_graphics_system; }
     static FrontendBase *frontend() { return self()->_frontend; }
 
@@ -82,8 +75,6 @@ private:
     Window _root;
     int _num_server_grabs;
     volatile bool _quit_requested;
-//     Monitor *_monitor;
-//     std::vector<Workspace*>  _workspaces;
     std::map<std::string, Atom> _atoms; // TODO - use hash
     std::list<KeyGrab> _key_grabs;
     std::unordered_map<unsigned int, Cursor> _cursors;
