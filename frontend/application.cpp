@@ -77,16 +77,8 @@ void Application::shutdown()
 
 void Application::focusActiveClient()
 {
-    UNIMPLEMENTED
-#if 0
-    //FIXME - floating layer !
-    ClientContainer *container = activeClientContainer();
-    printvar(container);
-    if (container) {
-        printvar(container->activeClient());
-        self()->setFocus(container->activeClient());
-    }
-#endif
+    if (ClientWrapper *client = activeClient())
+        client->setFocus();
 }
 
 ClientFrontend *Application::createClientFrontend(ClientBackend *backend)
@@ -189,7 +181,7 @@ ClientWrapper *Application::activeClient()
 
 void Application::setActiveMonitor(Monitor */*monitor*/)
 {
-    UNIMPLEMENTED
+    // only one monitor supported currently
 }
 
 Workspace *Application::createWorkspace()

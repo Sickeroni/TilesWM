@@ -25,7 +25,9 @@ public:
             client->setMapped(active);
     }
 
-    virtual ClientWrapper *activeClient() { return 0; }
+    virtual ClientWrapper *activeClient() {
+        return _active_client ? _active_client->client() : 0;
+    }
 
     virtual void manageClient(ClientWrapper *client) override {
         ClientFrame *frame = new ClientFrame(client);
@@ -41,6 +43,8 @@ public:
         {
             ClientFrame *frame = *it;
             if (frame->client() == client) {
+                if (_active_client == frame)
+                    _active_client = 0;
                 _clients.erase(it);
                 delete frame;
                 return;
@@ -48,14 +52,24 @@ public:
         }
     }
 
-    virtual void makeClientActive(ClientWrapper */*client*/) override {
-        UNIMPLEMENTED
+    virtual void makeClientActive(ClientWrapper *client) override {
+        for (ClientFrame *frame: _clients) {
+            if (frame->client() == client) {
+                _active_client = frame;
+                break;
+            }
+        }
     }
 
     virtual void layout() override {}
 
     virtual void redrawAll() override {
-        UNIMPLEMENTED
+        for (ClientFrame *client : _clients)
+            client->redraw();
+    }
+
+    virtual void setHasFocus(bool /*has_focus*/) override {
+        //unused
     }
 
 protected:
@@ -64,6 +78,7 @@ protected:
 
 private:
     std::list<ClientFrame*> _clients;
+    ClientFrame *_active_client = 0;
 };
 
 #endif

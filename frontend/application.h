@@ -36,7 +36,6 @@ public:
     void setActiveMonitor(Monitor *monitor);
     Workspace *createWorkspace();
 
-    void setFocus(Client *client);
     void reloadConfig();
     Mode *mode(size_t index) {
         assert(index < _modes->size());

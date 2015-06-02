@@ -74,6 +74,11 @@ void WindowManager3Panel::setActive(bool active)
     layout();
 }
 
+void WindowManager3Panel::setHasFocus(bool has_focus) {
+    if (_active_container)
+        _active_container->setHasFocus(has_focus);
+}
+
 void WindowManager3Panel::layout() {
     if (workspace()->rect().w && workspace()->rect().h) {
         _root->setRect(Rect(0, 0, workspace()->rect().w, workspace()->rect().h));

@@ -21,8 +21,8 @@ public:
     virtual ClientWrapper *activeClient() override;
     virtual void makeClientActive(ClientWrapper *client) override;
     virtual void redrawAll() override;
-
     virtual void setActive(bool active) override;
+    virtual void setHasFocus(bool has_focus) override;
 
     static void createActions(ActionSet &actions);
 
