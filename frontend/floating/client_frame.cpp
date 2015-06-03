@@ -230,7 +230,7 @@ void ClientFrame::propertyChanged(Client */*client*/, ClientBackend::Property pr
 
 void ClientFrame::setRequestedRect()
 {
-    Rect req = _client->client()->backend()->requestedRect();
+    Rect req = _client->wrappedClient()->backend()->requestedRect();
 
     if (req.w && req.h) {
         _client->applySizeHints(req);

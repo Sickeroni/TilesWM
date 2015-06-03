@@ -18,7 +18,7 @@ void WindowManager::unmanageClient(Client *client)
 {
     for (auto it = _clients.begin(); it != _clients.end(); it++) {
         ClientWrapper *wrapper = *it;
-        if (wrapper->client() == client) {
+        if (wrapper->wrappedClient() == client) {
             _clients.erase(it);
             unmanageClient(wrapper);
             delete wrapper;
@@ -31,7 +31,7 @@ void WindowManager::makeClientActive(const Client *client)
 {
     for (auto it = _clients.begin(); it != _clients.end(); it++) {
         ClientWrapper *wrapper = *it;
-        if (wrapper->client() == client) {
+        if (wrapper->wrappedClient() == client) {
             makeClientActive(wrapper);
             break;
         }

@@ -86,6 +86,8 @@ void Workspace::addClient(Client *client)
     for (WindowManager *wm : _window_managers) {
         wm->manageClient(client);
     }
+
+    _window_manager->makeClientActive(client);
 }
 
 void Workspace::removeClient(Client *client)
@@ -119,7 +121,7 @@ void Workspace::setMode(size_t index)
     _window_manager->setHasFocus(false);
     _window_manager->setActive(false);
 
-    const Client *active_client = activeClient()->client();
+    const Client *active_client = activeClient()->wrappedClient();
 
     _mode = index;
 

@@ -147,7 +147,7 @@ void ClientContainer::draw(Canvas *canvas)
 void ClientContainer::propertyChanged(Client *client, ClientBackend::Property property)
 {
     if (property == ClientBackend::PROP_SIZE_HINTS &&
-        activeClient() && activeClient()->client() == client)
+        activeClient() && activeClient()->wrappedClient() == client)
     {
         if (parentContainer())
             parentContainer()->handleSizeHintsChanged(this);

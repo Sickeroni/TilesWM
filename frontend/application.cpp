@@ -121,6 +121,7 @@ void Application::manageClient(Client *client)
     debug;
 
     activeWorkspace()->addClient(client);
+    self()->focusActiveClient();
 }
 
 void Application::unmanageClient(Client *client)

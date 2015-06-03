@@ -50,7 +50,7 @@ public:
     void setEventHandler(Client::EventHandler *handler);
     void setPropertyListener(Client::PropertyListener *listener);
 
-    const Client *client() { return _client; }
+    const Client *wrappedClient() { return _client; }
 
 private:
     Client *_client = 0;
