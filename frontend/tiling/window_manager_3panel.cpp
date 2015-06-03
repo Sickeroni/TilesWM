@@ -8,7 +8,8 @@
 using namespace ContainerUtil;
 
 
-class WindowManager3Panel::RootWidget : public ChildWidget {
+class WindowManager3Panel::RootWidget : public ChildWidget
+{
 public:
     RootWidget() : ChildWidget(OTHER) {}
     virtual ~RootWidget() {}
@@ -23,7 +24,8 @@ public:
 };
 
 
-void WindowManager3Panel::createActions(ActionSet &actions) {
+void WindowManager3Panel::createActions(ActionSet &actions)
+{
     actions.createAction("moveClientLeft", ACTION_MOVE_CLIENT_LEFT);
     actions.createAction("moveClientRight", ACTION_MOVE_CLIENT_RIGHT);
     actions.createAction("moveClientUp", ACTION_MOVE_CLIENT_UP);
@@ -54,7 +56,8 @@ WindowManager3Panel::WindowManager3Panel(Workspace *workspace, Mode *mode) :
     _active_container = _master;
 }
 
-WindowManager3Panel::~WindowManager3Panel() {
+WindowManager3Panel::~WindowManager3Panel()
+{
     _active_container = 0;
     delete _slave2;
     _slave2 = 0;
@@ -74,12 +77,14 @@ void WindowManager3Panel::setActive(bool active)
     layout();
 }
 
-void WindowManager3Panel::setHasFocus(bool has_focus) {
+void WindowManager3Panel::setHasFocus(bool has_focus)
+{
     if (_active_container)
         _active_container->setHasFocus(has_focus);
 }
 
-void WindowManager3Panel::layout() {
+void WindowManager3Panel::layout()
+{
     if (workspace()->rect().w && workspace()->rect().h) {
         _root->setRect(Rect(0, 0, workspace()->rect().w, workspace()->rect().h));
 
@@ -105,7 +110,8 @@ void WindowManager3Panel::layout() {
     }
 }
 
-void WindowManager3Panel::manageClient(ClientWrapper *client) {
+void WindowManager3Panel::manageClient(ClientWrapper *client)
+{
     debug;
 
     assert(_container_of_client[client] == 0);
@@ -119,7 +125,8 @@ void WindowManager3Panel::manageClient(ClientWrapper *client) {
 
 }
 
-void WindowManager3Panel::unmanageClient(ClientWrapper *client) {
+void WindowManager3Panel::unmanageClient(ClientWrapper *client)
+{
     assert(client->workspace() == workspace());
 
     auto it = _container_of_client.find(client);
@@ -132,11 +139,13 @@ void WindowManager3Panel::unmanageClient(ClientWrapper *client) {
     _container_of_client.erase(it);
 }
 
-ClientWrapper *WindowManager3Panel::activeClient() {
+ClientWrapper *WindowManager3Panel::activeClient()
+{
     return activeClientContainer()->activeClient();
 }
 
-void WindowManager3Panel::makeClientActive(ClientWrapper *client) {
+void WindowManager3Panel::makeClientActive(ClientWrapper *client)
+{
     printvar(client);
     ClientContainer *container = _container_of_client[client];
     assert(container);
@@ -145,7 +154,8 @@ void WindowManager3Panel::makeClientActive(ClientWrapper *client) {
     container->setActiveChild(container->indexOfChild(client));
 }
 
-void WindowManager3Panel::redrawAll() {
+void WindowManager3Panel::redrawAll()
+{
     _root->redraw();
     _master->redrawAll();
     if (_slave1)
@@ -155,7 +165,8 @@ void WindowManager3Panel::redrawAll() {
 }
 
 
-void WindowManager3Panel::performAction(int id) {
+void WindowManager3Panel::performAction(int id)
+{
     printvar(id);
     switch(id) {
         case ACTION_MOVE_CLIENT_LEFT:
@@ -197,7 +208,8 @@ void WindowManager3Panel::performAction(int id) {
     }
 }
 
-void WindowManager3Panel::makeContainerActive(ClientContainer *container) {
+void WindowManager3Panel::makeContainerActive(ClientContainer *container)
+{
     assert(container);
     _active_container = container;
 }
