@@ -4,6 +4,7 @@
 #include "widget_backend.h"
 #include "child_widget.h"
 #include "client.h"
+#include "client_wrapper.h"
 #include "application.h"
 #include "mode.h"
 #include "backend.h"
@@ -118,9 +119,13 @@ void Workspace::setMode(size_t index)
     _window_manager->setHasFocus(false);
     _window_manager->setActive(false);
 
+    const Client *active_client = activeClient()->client();
+
     _mode = index;
 
     _window_manager = _window_managers[index];
+
+    _window_manager->makeClientActive(active_client);
 
     _window_manager->setActive(true);
     _window_manager->setHasFocus(_has_focus);

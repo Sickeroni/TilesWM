@@ -24,15 +24,10 @@ public:
     virtual ~WindowManager();
 
     virtual void layout() = 0;
-    virtual void manageClient(ClientWrapper *client) = 0;
-    virtual void unmanageClient(ClientWrapper *client) = 0;
-//     virtual void unmanageAllClients(std::vector<Client*> &unmanaged_clients) = 0;
     virtual ClientWrapper *activeClient() = 0;
-    virtual void makeClientActive(ClientWrapper *client) = 0;
     virtual void redrawAll() = 0;
     // a wm might be interested whether it has focus
     virtual void setHasFocus(bool /*has_focus*/) = 0;
-
 
     // FIXME remove ?
     // and instead have makeClientActive(Client*) ?
@@ -47,13 +42,16 @@ public:
 
     void manageClient(Client *client);
     void unmanageClient(Client *client);
-    void makeClientActive(Client *client);
+    void makeClientActive(const Client *client);
 
     Workspace *workspace() { return _workspace; }
     bool isActive() { return _is_active; }
 
 protected:
     virtual const KeyBindingSet *keyBindings() override { return _mode->keyBindings(); }
+    virtual void manageClient(ClientWrapper *client) = 0;
+    virtual void unmanageClient(ClientWrapper *client) = 0;
+    virtual void makeClientActive(ClientWrapper *client) = 0;
 
 private:
     Workspace *_workspace = 0;

@@ -16,10 +16,7 @@ public:
     ~WindowManager3Panel();
 
     virtual void layout() override;
-    virtual void manageClient(ClientWrapper *client) override;
-    virtual void unmanageClient(ClientWrapper *client) override;
     virtual ClientWrapper *activeClient() override;
-    virtual void makeClientActive(ClientWrapper *client) override;
     virtual void redrawAll() override;
     virtual void setActive(bool active) override;
     virtual void setHasFocus(bool has_focus) override;
@@ -29,8 +26,10 @@ public:
 protected:
     virtual void performAction(int id) override;
     virtual void performComplexAction(const ComplexAction */*action*/, const ComplexAction::Parameters */*parameters*/) override {}
+    virtual void manageClient(ClientWrapper *client) override;
+    virtual void unmanageClient(ClientWrapper *client) override;
+    virtual void makeClientActive(ClientWrapper *client) override;
 
-private:
 private:
     class RootWidget;
 

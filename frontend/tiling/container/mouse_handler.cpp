@@ -21,7 +21,7 @@ void handleClientContainerClick(ClientContainer *container, int x, int y)
 
     if (clicked_tab_index != -1) {
         ClientWrapper *client = container->child(make_unsigned<unsigned int>(clicked_tab_index));
-        container->workspace()->windowManager()->makeClientActive(client);
+        container->workspace()->windowManager()->makeClientActive(client->client());
         client->setFocus();
     }
 }

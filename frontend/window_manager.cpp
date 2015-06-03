@@ -27,7 +27,7 @@ void WindowManager::unmanageClient(Client *client)
     }
 }
 
-void WindowManager::makeClientActive(Client *client)
+void WindowManager::makeClientActive(const Client *client)
 {
     for (auto it = _clients.begin(); it != _clients.end(); it++) {
         ClientWrapper *wrapper = *it;
