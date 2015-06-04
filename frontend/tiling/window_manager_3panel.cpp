@@ -5,6 +5,11 @@
 #include "workspace.h"
 #include "client_wrapper.h"
 
+#include <cmath>
+
+using std::max;
+using std::min;
+
 using namespace ContainerUtil;
 
 
@@ -70,6 +75,26 @@ WindowManager3Panel::~WindowManager3Panel()
     _root= 0;
 }
 
+void WindowManager3Panel::handleWorkspaceSizeChanged()
+{
+    int w = workspace()->rect().w;
+    int h = workspace()->rect().h;
+
+    printvar(w);
+    printvar(h);
+
+    _splitter1_pos = max(0, w - SPLITTER_WIDTH) / 2;
+    _splitter2_pos = max(0, h - SPLITTER_WIDTH) / 2;
+
+    _splitter1_pos = min(_splitter1_pos, w - (MIN_CONTAINER_SIZE + SPLITTER_WIDTH));
+    _splitter1_pos = max(int(MIN_CONTAINER_SIZE), _splitter1_pos);
+    _splitter2_pos = min(_splitter2_pos, h - (MIN_CONTAINER_SIZE + SPLITTER_WIDTH));
+    _splitter2_pos = max(int(MIN_CONTAINER_SIZE), _splitter2_pos);
+
+    printvar(_splitter1_pos);
+    printvar(_splitter2_pos );
+}
+
 void WindowManager3Panel::setActive(bool active)
 {
     WindowManager::setActive(active);
@@ -85,23 +110,36 @@ void WindowManager3Panel::setHasFocus(bool has_focus)
 
 void WindowManager3Panel::layout()
 {
-    if (workspace()->rect().w && workspace()->rect().h) {
-        _root->setRect(Rect(0, 0, workspace()->rect().w, workspace()->rect().h));
+    assert(_splitter1_pos > 0);
+    assert(_splitter2_pos > 0);
+
+    int w = workspace()->rect().w;
+    int h = workspace()->rect().h;
+
+    assert(_splitter1_pos < w);
+    assert(_splitter2_pos < h);
+
+    if (w > 0 && h > 0) {
+        _root->setRect(Rect(0, 0, w, h));
+
+        int slave_x = _splitter1_pos + SPLITTER_WIDTH;
+        int slave_w = w - slave_x;
+        int slave2_y = _splitter2_pos + SPLITTER_WIDTH;
+        int slave2_h = h - slave2_y;
 
         if (_slave1 || _slave2) {
-            _master->setRect(Rect(0, 0, workspace()->rect().w / 2, workspace()->rect().h));
+            _master->setRect(Rect(0, 0, _splitter1_pos, h));
             if (_slave1 && _slave2) {
-                _slave1->setRect(Rect(workspace()->rect().w / 2, 0, workspace()->rect().w / 2, workspace()->rect().h / 2));
-                _slave2->setRect(Rect(workspace()->rect().w / 2, workspace()->rect().h / 2, workspace()->rect().w / 2, workspace()->rect().h / 2));
-            } else if (_slave1) {
-                _slave1->setRect(Rect(workspace()->rect().w / 2, 0, workspace()->rect().w / 2, workspace()->rect().h));
+                _slave1->setRect(Rect(slave_x, 0, slave_w, _splitter2_pos));
+                _slave2->setRect(Rect(slave_x, slave2_y, slave_w, slave2_h));
             } else {
-                _slave2->setRect(Rect(workspace()->rect().w / 2, 0, workspace()->rect().w / 2, workspace()->rect().h));
+                assert(_slave1);
+                _slave1->setRect(Rect(slave_x, 0, slave_w, h));
             }
         } else {
-            _master->setRect(Rect(0, 0, workspace()->rect().w, workspace()->rect().h));
+            _master->setRect(Rect(0, 0, w, h));
         }
-        
+
         _master->getLayout()->layoutContents();
         if (_slave1)
             _slave1->getLayout()->layoutContents();
@@ -182,22 +220,23 @@ void WindowManager3Panel::performAction(int id)
             moveClient(DOWN);
             break;
         case ACTION_MOVE_HSPLIT_RIGHT:
-//             moveSplitter(true, 100);
+            moveSplitter1(100);
             break;
         case ACTION_MOVE_HSPLIT_LEFT:
-//             moveSplitter(true, -100);
+            moveSplitter1(-100);
             break;
         case ACTION_MOVE_HSPLIT_UP:
-//             moveSplitter(false, 100);
+            moveSplitter2(-100);
             break;
         case ACTION_MOVE_HSPLIT_DOWN:
-//             moveSplitter(false, -100);
+            moveSplitter2(100);
             break;
         case ACTION_TOGGLE_PRIMARY_EXPANDING:
 //             togglePrimaryExpanding();
             break;
         case ACTION_TOGGLE_SECONDARY_EXPANDING:
 //             toggleSecondaryExpanding();
+
             break;
         case ACTION_SET_PRIMARY_SLAVE_TO_MINIMUM:
 //             setPrimarySlaveToMinimum();
@@ -275,6 +314,27 @@ void WindowManager3Panel::moveClient(Direction direction)
         client->setFocus();
     }
 }
+
+void WindowManager3Panel::moveSplitter1(int delta)
+{
+    _splitter1_pos += delta;
+
+    _splitter1_pos = min(_splitter1_pos, workspace()->rect().w - (MIN_CONTAINER_SIZE + SPLITTER_WIDTH));
+    _splitter1_pos = max(int(MIN_CONTAINER_SIZE), _splitter1_pos);
+
+    layout();
+}
+
+void WindowManager3Panel::moveSplitter2(int delta)
+{
+    _splitter2_pos += delta;
+
+    _splitter2_pos = min(_splitter2_pos, workspace()->rect().h - (MIN_CONTAINER_SIZE + SPLITTER_WIDTH));
+    _splitter2_pos = max(int(MIN_CONTAINER_SIZE), _splitter2_pos);
+
+    layout();
+}
+
 #if 0
 void WindowManager3Panel::moveSplitter(bool horizontal, int delta)
 {

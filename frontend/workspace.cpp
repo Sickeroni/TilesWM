@@ -21,6 +21,7 @@ Workspace::Workspace() : Widget(WORKSPACE),
         WindowManager *wm = Application::self()->mode(i)->createWindowManager(this);
         _window_managers.push_back(wm);
     }
+    assert(!_window_managers.empty());
     _window_manager = _window_managers[0];
     _window_manager->setActive(true);
 
@@ -44,12 +45,18 @@ Workspace::~Workspace()
     _background_scaled = 0;
 }
 
-void Workspace::setRect(const Rect &rect)
+void Workspace::setRect(const Rect &r)
 {
-    Widget::setRect(rect);
-    if (_background) {
-        delete _background_scaled;
-        _background_scaled = _background->scale(rect.w, rect.h);
+    bool size_changed = (r.w != rect().w || r.h != rect().h);
+    Widget::setRect(r);
+
+    if (size_changed) {
+        if (_background) {
+            delete _background_scaled;
+            _background_scaled = _background->scale(r.w, r.h);
+        }
+        for (WindowManager *wm : _window_managers)
+            wm->handleWorkspaceSizeChanged();
     }
 }
 

@@ -59,7 +59,6 @@ public:
 
 private:
     Monitor *_monitor = 0;
-    //ContainerContainer *_dock
     size_t _mode = 0;
     bool _has_focus = false;
     WindowManager *_window_manager = 0;

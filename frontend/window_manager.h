@@ -23,11 +23,13 @@ public:
         _mode(mode) {}
     virtual ~WindowManager();
 
-    virtual void layout() = 0;
+    virtual void layout() = 0; //FIXME - remove ? it should be up to the window manager when to to this
     virtual ClientWrapper *activeClient() = 0;
     virtual void redrawAll() = 0;
     // a wm might be interested whether it has focus
     virtual void setHasFocus(bool /*has_focus*/) = 0;
+
+    virtual void handleWorkspaceSizeChanged() {}
 
     // FIXME remove ?
     // and instead have makeClientActive(Client*) ?

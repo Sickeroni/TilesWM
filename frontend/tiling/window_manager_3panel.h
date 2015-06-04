@@ -20,6 +20,7 @@ public:
     virtual void redrawAll() override;
     virtual void setActive(bool active) override;
     virtual void setHasFocus(bool has_focus) override;
+    virtual void handleWorkspaceSizeChanged() override;
 
     static void createActions(ActionSet &actions);
 
@@ -48,24 +49,32 @@ private:
         ACTION_SET_SECONDARY_SLAVE_TO_MINIMUM
     };
 
+    enum {
+        SPLITTER_WIDTH = 8,
+        MIN_CONTAINER_SIZE = 100
+    };
+
     ClientContainer *activeClientContainer() {
         return _active_container;
     }
 
     void moveClient(ContainerUtil::Direction direction);
-    void moveSplitter(bool horizontal, int delta);
 
-    void togglePrimaryExpanding();
-    void toggleSecondaryExpanding();
+    void moveSplitter1(int delta);
+    void moveSplitter2(int delta);
 
-    void setPrimarySlaveToMinimum();
-    void setSecondarySlaveToMinimum();
+//     void togglePrimaryExpanding();
+//     void toggleSecondaryExpanding();
+//
+//     void setPrimarySlaveToMinimum();
+//     void setSecondarySlaveToMinimum();
 
     void makeContainerActive(ClientContainer *container);
 
     RootWidget *_root = 0;
     ClientContainer *_master = 0, *_slave1 = 0, *_slave2 = 0, *_active_container = 0;
     std::unordered_map<ClientWrapper*, ClientContainer*> _container_of_client;
+    int _splitter1_pos = 0, _splitter2_pos = 0;
 };
 
 #endif
