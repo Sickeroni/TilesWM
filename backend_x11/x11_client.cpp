@@ -854,7 +854,8 @@ bool X11Client::handleEvent(const XEvent &ev)
                 client->handleUnmap();
                 break;
             case MapRequest:
-                client->manage();
+                if (!client->isManaged())
+                    client->manage();
                 break;
             case ConfigureRequest:
                 client->handleConfigureRequest(ev.xconfigurerequest);
