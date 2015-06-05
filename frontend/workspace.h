@@ -23,6 +23,7 @@ public:
     ~Workspace();
 
     virtual void setRect(const Rect &rect) override;
+    virtual void draw(Canvas *canvas) override;
 
     Monitor *monitor() { return _monitor; }
 

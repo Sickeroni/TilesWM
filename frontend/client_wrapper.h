@@ -12,6 +12,7 @@ public:
     ~ClientWrapper();
 
     virtual void setRect(const Rect &rect) override;
+    virtual void draw(Canvas */*canvas*/) override {}
 
     void handleWindowManagerIsActiveChanged();
 

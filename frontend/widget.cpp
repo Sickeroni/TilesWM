@@ -76,11 +76,6 @@ Workspace *Widget::toWorkspace()
         return 0;
 }
 
-void Widget::draw(Canvas *canvas)
-{
-    Theme::drawWidget(this, canvas);
-}
-
 void Widget::globalToLocal(int &x, int &y)
 {
     if (ChildWidget *child_widget = toChildWidget()) {

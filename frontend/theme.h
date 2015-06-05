@@ -4,12 +4,12 @@
 #include "application.h"
 
 class Canvas;
-class Widget;
+class Workspace;
 class ThemeBackend;
 
 namespace Theme
 {
-    void drawWidget(Widget *widget, Canvas *canvas);
+    void drawWorkspace(Workspace *workspace, Canvas *canvas);
 
     inline ThemeBackend *backend() {
         return Application::themeBackend();

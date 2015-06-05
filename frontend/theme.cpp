@@ -21,13 +21,4 @@ void drawWorkspace(Workspace *workspace, Canvas *canvas)
     canvas->end();
 }
 
-void drawWidget(Widget *widget, Canvas *canvas)
-{
-    if (Workspace *workspace = widget->toWorkspace())
-        drawWorkspace(workspace, canvas);
-    else
-        debug<<"unknown widget type";
-}
-
-
 } // namespace Theme

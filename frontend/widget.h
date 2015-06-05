@@ -18,7 +18,6 @@ public:
         OTHER
     };
 
-    virtual void draw(Canvas *canvas) override;
     virtual void setRect(const Rect &rect);
     virtual ChildWidget *toChildWidget() { return 0; }
     virtual bool isMinimized() const { return _is_minimized; }

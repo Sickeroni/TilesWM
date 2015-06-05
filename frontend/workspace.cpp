@@ -5,6 +5,7 @@
 #include "child_widget.h"
 #include "client.h"
 #include "client_wrapper.h"
+#include "theme.h"
 #include "application.h"
 #include "mode.h"
 #include "backend.h"
@@ -58,6 +59,11 @@ void Workspace::setRect(const Rect &r)
         for (WindowManager *wm : _window_managers)
             wm->handleWorkspaceSizeChanged();
     }
+}
+
+void Workspace::draw(Canvas *canvas)
+{
+    Theme::drawWorkspace(this, canvas);
 }
 
 void Workspace::layoutContents()
