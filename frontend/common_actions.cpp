@@ -35,6 +35,7 @@ CommonActions::CommonActions() :
 
 CommonActions::~CommonActions()
 {
+    _key_bindings.clear();
 }
 
 void CommonActions::createKeyBindings()
