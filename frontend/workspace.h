@@ -35,6 +35,8 @@ public:
     }
     void setMonitor(Monitor *monitor) {
         _monitor = monitor;
+        if (!_monitor)
+            setHasFocus(false);
         setMapped(monitor != 0);
         refreshStatusText();
     }

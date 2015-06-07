@@ -14,6 +14,10 @@ class ClientWrapper;
 class ClientContainer final : public Container, public Client::EventHandler, public Client::PropertyListener
 {
 public:
+    struct ClientDragHandler {
+        virtual void handleClientDragStart(ClientWrapper *client,  int x_global, int y_global, Client::DragMode mode) = 0;
+    };
+
     ClientContainer();
     virtual ~ClientContainer();
 
@@ -28,6 +32,7 @@ public:
     virtual ContainerLayout *getLayout() override;
 
     // Client::EventHandler
+    virtual void handleDragStart(int x_global, int y_global, Client::DragMode mode) override;
     virtual void handleFocusChanged() {
         debug;
         redraw();
@@ -47,6 +52,9 @@ public:
     // deparents all children and puts them into <clients>
     void removeChildren(std::vector<ClientWrapper*> &clients);
 //     void clear();
+    void setClientDragHandler(ClientDragHandler *handler) {
+        _client_drag_handler = handler;
+    }
 
     ClientWrapper *activeClient() {
         return activeChildIndex() != INVALID_INDEX ? child(activeChildIndex()) : 0;
@@ -59,6 +67,7 @@ private:
     ClientContainerLayout *_layout = 0;
     std::vector<ClientWrapper*> _children;
     Index _active_child_index = INVALID_INDEX;
+    ClientDragHandler *_client_drag_handler = 0;
 };
 
 #endif // __CLIENT_CONTAINER_H__

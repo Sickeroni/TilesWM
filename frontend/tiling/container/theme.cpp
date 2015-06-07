@@ -148,7 +148,7 @@ void drawClientContainer(ClientContainer *container, Canvas *canvas)
         canvas->drawText(container->isFixedSize() ? "-" : "<->", status_bar_rect, status_bar_fg);
     }
 
-    printvar(container->numElements());
+//     printvar(container->numElements());
 
     if (!container->numElements())
         return;

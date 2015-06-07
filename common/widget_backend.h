@@ -11,7 +11,14 @@ public:
     enum CursorType {
         CURSOR_DEFAULT,
         CURSOR_MOVE,
-        CURSOR_RESIZE_BOTTOM_RIGHT
+        CURSOR_RESIZE_LEFT,
+        CURSOR_RESIZE_RIGHT,
+        CURSOR_RESIZE_TOP,
+        CURSOR_RESIZE_BOTTOM,
+        CURSOR_RESIZE_TOP_RIGHT,
+        CURSOR_RESIZE_TOP_LEFT,
+        CURSOR_RESIZE_BOTTOM_RIGHT,
+        CURSOR_RESIZE_BOTTOM_LEFT
     };
 
     virtual ~WidgetBackend() {}
@@ -34,7 +41,7 @@ public:
     virtual void setMinimized(bool) {}
     // intended as a rendering hint -
     // if set, only child needs to be rendered
-    virtual void setMappedChild(WidgetBackend*) {}
+    virtual void setVisibleChild(WidgetBackend*) {}
 
 
 //     Type type() { return _type; }

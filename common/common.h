@@ -21,6 +21,16 @@ enum {
     INVALID_INDEX = size_t(0) - 1
 };
 
+namespace IntegerUtil
+{
+    inline int max(int a, int b) {
+        return std::max(a, b);
+    }
+    inline int min(int a, int b) {
+        return std::min(a, b);
+    }
+}
+
 #define STATIC_ASSERT(condition) static_assert(condition, #condition)
 
 template <typename To, typename From>

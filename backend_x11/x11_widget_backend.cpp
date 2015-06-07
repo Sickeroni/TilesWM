@@ -88,6 +88,27 @@ void X11WidgetBackend::grabMouse(CursorType cursor_type)
         case CURSOR_MOVE:
             cursor_shape = XC_fleur;
             break;
+        case CURSOR_RESIZE_LEFT:
+            cursor_shape = XC_left_side;
+            break;
+        case CURSOR_RESIZE_RIGHT:
+            cursor_shape = XC_right_side;
+            break;
+        case CURSOR_RESIZE_TOP:
+            cursor_shape = XC_top_side;
+            break;
+        case CURSOR_RESIZE_BOTTOM:
+            cursor_shape = XC_bottom_side;
+            break;
+        case CURSOR_RESIZE_TOP_LEFT:
+            cursor_shape = XC_top_left_corner;
+            break;
+        case CURSOR_RESIZE_TOP_RIGHT:
+            cursor_shape = XC_top_right_corner;
+            break;
+        case CURSOR_RESIZE_BOTTOM_LEFT:
+            cursor_shape = XC_bottom_left_corner;
+            break;
         case CURSOR_RESIZE_BOTTOM_RIGHT:
             cursor_shape = XC_bottom_right_corner;
             break;

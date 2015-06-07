@@ -134,7 +134,7 @@ void Workspace::setMode(size_t index)
     _window_manager->setHasFocus(false);
     _window_manager->setActive(false);
 
-    const Client *active_client = activeClient()->wrappedClient();
+    const Client *active_client = activeClient() ? activeClient()->wrappedClient() : 0;
 
     _mode = index;
 

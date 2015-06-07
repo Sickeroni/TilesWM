@@ -156,3 +156,9 @@ void ClientContainer::propertyChanged(Client *client, ClientBackend::Property pr
     } else
         redraw();
 }
+
+void ClientContainer::handleDragStart(int x_global, int y_global, Client::DragMode mode)
+{
+    if (_client_drag_handler)
+        _client_drag_handler->handleClientDragStart(activeClient(), x_global, y_global, mode);
+}

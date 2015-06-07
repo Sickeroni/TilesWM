@@ -30,6 +30,7 @@ public:
     };
 
     struct EventHandler {
+        //FIXME - pass client object
         virtual void handleDragStart(int /*x_global*/, int /*y_global*/, DragMode /*mode*/) {}
         virtual void handleFocusChanged() = 0;
     };
@@ -40,11 +41,6 @@ public:
 
     Client(ClientBackend *client_backend);
     ~Client();
-
-    virtual void setRect(const Rect &rect) override {
-        ChildWidget::setRect(rect);
-        _client_backend->widget()->setRect(rect);
-    }
 
     const ClientBackend *backend() const { return _client_backend; }
     Workspace *workspace() { return _workspace; }
