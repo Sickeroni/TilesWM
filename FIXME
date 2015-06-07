@@ -1,3 +1,7 @@
 maybe: desktop function: add/remove window manager
-TODO: mouse drag: ignore caps/numlock modifiers
-
+TODO:
+mouse drag: ignore caps/numlock modifiers
+implement missing actions in:
+    WindowManager3Panel
+    ...
+WindowManager3Panel doesn't honor size hints
