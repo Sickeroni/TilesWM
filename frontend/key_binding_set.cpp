@@ -49,12 +49,14 @@ void KeyBindingSet::createBindings()
         for (const Config::Entry &entry : section->entries()) {
 
             Binding binding;
+            bool was_key_grabbed = false;
+            bool was_added = false;
 
             binding.key_sequence = Application::backend()->parseKeySequence(entry.key);
 
             if (binding.key_sequence) {
-                if (Application::backend()->addKeyGrab(binding.key_sequence)) {
-
+                was_key_grabbed = Application::backend()->addKeyGrab(binding.key_sequence);
+                if (was_key_grabbed) {
                     vector<string> tokens;
                     StringUtil::tokenize(entry.value, ' ', tokens, false);
 
@@ -75,14 +77,21 @@ void KeyBindingSet::createBindings()
                             }
 
                             _bindings.push_back(binding);
+                            was_added = true;
                         } else
                             debug<<"no action"<<action_name<<"in set"<<_config_group;
                     } else
                         debug<<"missing action for key sequence "<<entry.key;
-                } else {
-                    delete binding.key_sequence;
-                    binding.key_sequence = 0;
                 }
+            }
+
+            if (!was_added) {
+                if (was_key_grabbed)
+                    Application::backend()->releaseKeyGrab(binding.key_sequence);
+                delete binding.key_sequence;
+                binding.key_sequence = 0;
+                delete binding.parameters;
+                binding.parameters = 0;
             }
         }
     } else
