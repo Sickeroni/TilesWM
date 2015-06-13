@@ -28,6 +28,9 @@ public:
     virtual void redrawAll() = 0;
     // a wm might be interested whether it has focus
     virtual void setHasFocus(bool /*has_focus*/) = 0;
+    virtual void manageClient(ClientWrapper *client) = 0;
+    virtual void unmanageClient(ClientWrapper *client) = 0;
+    virtual void makeClientActive(ClientWrapper *client) = 0;
 
     virtual void handleWorkspaceSizeChanged() {}
 
@@ -51,9 +54,6 @@ public:
 
 protected:
     virtual const KeyBindingSet *keyBindings() override { return _mode->keyBindings(); }
-    virtual void manageClient(ClientWrapper *client) = 0;
-    virtual void unmanageClient(ClientWrapper *client) = 0;
-    virtual void makeClientActive(ClientWrapper *client) = 0;
 
 private:
     Workspace *_workspace = 0;

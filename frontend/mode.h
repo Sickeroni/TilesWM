@@ -17,15 +17,16 @@ public:
 
     virtual WindowManager *createWindowManager(Workspace *workspace) = 0;
 
+    virtual void createKeyBindings() {
+        _key_bindings.createBindings();
+    }
+    virtual void clearKeyBindings() {
+        _key_bindings.clear();
+    }
+
     const std::string &name() const { return _name; }
 
     const KeyBindingSet *keyBindings() const { return &_key_bindings; }
-    void createKeyBindings() {
-        _key_bindings.createBindings();
-    }
-    void clearKeyBindings() {
-        _key_bindings.clear();
-    }
 
 protected:
     ActionSet _actions;

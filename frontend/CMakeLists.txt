@@ -19,5 +19,7 @@ set (SRCS ${SRCS} key_binding_set)
 set (SRCS ${SRCS} theme)
 set (SRCS ${SRCS} common_actions)
 set (SRCS ${SRCS} widget_util)
+set (SRCS ${SRCS} mode_mixed)
+set (SRCS ${SRCS} window_manager_mixed)
 
 add_library (frontend ${SRCS})

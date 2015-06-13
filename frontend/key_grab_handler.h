@@ -9,7 +9,7 @@ class AbstractKeySequence;
 class KeyGrabHandler
 {
 public:
-    bool handleKeySequence(const AbstractKeySequence *sequence);
+    virtual bool handleKeySequence(const AbstractKeySequence *sequence);
 
 protected:
     virtual void performAction(int id) = 0;
