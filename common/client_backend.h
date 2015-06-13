@@ -31,6 +31,8 @@ public:
     virtual Icon *icon() const = 0;
     virtual void requestClose() = 0;
     virtual void grabMouseButton(int button) = 0;
+    virtual bool isDialog() = 0;
+    virtual bool isModal() = 0;
 
     virtual const std::string &name() const = 0;
     virtual const std::string &className() const = 0;

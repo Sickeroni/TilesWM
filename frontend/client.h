@@ -58,6 +58,12 @@ public:
     void setFocus() {
         _client_backend->setFocus();
     }
+    bool isDialog() const {
+        return _client_backend->isDialog();
+    }
+    bool isModal() const {
+        return _client_backend->isModal();
+    }
 
     static void limitRect(Rect &rect);
 

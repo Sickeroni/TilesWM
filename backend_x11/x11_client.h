@@ -63,7 +63,9 @@ public:
     virtual const std::string &className() const override { return _class; }
     virtual const std::string &iconName() const override { return _icon_name; }
     virtual const std::string &title() const override { return _title; }
-    virtual const SizeHints &sizeHints() const { return _size_hints; }
+    virtual const SizeHints &sizeHints() const override { return _size_hints; }
+    virtual bool isDialog() override { return _window_type == DIALOG; }
+    virtual bool isModal() override { return _is_modal; }
 
 private:
     class CriticalSection;
@@ -107,9 +109,6 @@ private:
     void handleUnmap();
     bool isOverrideRedirect() {
         return _window_type == OVERRIDE_REDIRECT;
-    }
-    bool isDialog() {
-        return _window_type == DIALOG;
     }
 
     // TODO - use hash
