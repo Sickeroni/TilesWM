@@ -122,14 +122,13 @@ void WindowManager3Panel::setHasFocus(bool has_focus)
 
 void WindowManager3Panel::layout()
 {
-    assert(_splitter1_pos > 0);
-    assert(_splitter2_pos > 0);
-
     int w = workspace()->rect().w;
     int h = workspace()->rect().h;
 
-    assert(_splitter1_pos < w);
-    assert(_splitter2_pos < h);
+    _splitter1_pos = min(_splitter1_pos, w - (MIN_CONTAINER_SIZE + SPLITTER_WIDTH));
+    _splitter1_pos = max(MIN_CONTAINER_SIZE, _splitter1_pos);
+    _splitter2_pos = min(_splitter2_pos, h - (MIN_CONTAINER_SIZE + SPLITTER_WIDTH));
+    _splitter2_pos = max(MIN_CONTAINER_SIZE, _splitter2_pos);
 
     if (w > 0 && h > 0) {
         _root->setRect(Rect(0, 0, w, h));
