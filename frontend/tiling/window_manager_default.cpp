@@ -255,8 +255,6 @@ void WindowManagerDefault::setFixedSizeToMinimum()
 
 void WindowManagerDefault::makeContainerActive(Container *container)
 {
-    assert(container->workspace()->windowManager() == this);
-
     if (ContainerContainer *parent = container->parentTo<ContainerContainer>()) {
         makeContainerActive(parent);
         parent->setActiveChild(parent->indexOfChild(container));
@@ -276,8 +274,6 @@ void WindowManagerDefault::makeClientActive(ClientWrapper *client)
 
 bool WindowManagerDefault::isContainerActive(Container *container)
 {
-    assert(container->workspace()->windowManager() == this);
-
     if (container->workspace()->isActive()) {
         ContainerContainer *parent = container->parentTo<ContainerContainer>();
         if (parent && isContainerActive(parent) && (parent->activeChild() == container))
