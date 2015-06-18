@@ -4,4 +4,18 @@ mouse drag: ignore caps/numlock modifiers
 implement missing actions in:
     WindowManager3Panel
     ...
-WindowManager3Panel doesn't honor size hints
+WindowManager3Panel
+    doesn't honor size hints
+    maximazation
+
+class Workspace::Layout : public ChildWidget {
+    list<ClientWrapper*> _clients;
+    WindowManager *_wm;
+};
+-> remove WindowManager::_clients
+-> remove WindowManager::_workspace ?
+add WindowManager::_parent_widget
+
+class ClientBase|AbstractClient|ClientInteface
+    <- ClientWrapper
+    <- Client
