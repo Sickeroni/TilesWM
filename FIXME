@@ -7,6 +7,10 @@ implement missing actions in:
 WindowManager3Panel
     doesn't honor size hints
     maximazation
+    action: adjust splitter positions based on size hints
+    ClientWrapper:
+        add bool _respect_size_hints
+
 
 class Workspace::Layout : public ChildWidget {
     list<ClientWrapper*> _clients;
