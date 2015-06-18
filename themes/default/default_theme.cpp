@@ -14,6 +14,8 @@ namespace Metrics
     };
 }
 
+using namespace IntegerUtil;
+
 int DefaultTheme::titlebarHeight(int max_text_height) {
     return max_text_height + (2 * Metrics::CLIENT_TITLEBAR_INNER_MARGIN);
 }
@@ -186,6 +188,8 @@ void DefaultTheme::drawTabOrTitlebar(
     title_rect.y += Metrics::CLIENT_TITLEBAR_INNER_MARGIN;
     title_rect.w -= (2 * Metrics::CLIENT_TITLEBAR_INNER_MARGIN);
     title_rect.h -= (2 * Metrics::CLIENT_TITLEBAR_INNER_MARGIN);
+    limitMin(title_rect.w, 0);
+    limitMin(title_rect.h, 0);
     if (icon) {
         if (is_vertical) {
             title_rect.y += (icon->width() + Metrics::CLIENT_TITLEBAR_INNER_MARGIN);
@@ -194,10 +198,15 @@ void DefaultTheme::drawTabOrTitlebar(
             title_rect.w -= (icon->width() + Metrics::CLIENT_TITLEBAR_INNER_MARGIN);
         }
     }
-    if (is_vertical) {
-        canvas->drawText(title1, title_rect, fg);
-        title_rect.y += (max_text_height + Metrics::CLIENT_TITLEBAR_INNER_MARGIN);
-        canvas->drawText(title2, title_rect, fg);
-    } else
-        canvas->drawText(title1, title_rect, fg);
+    limitMin(title_rect.w, 0);
+    limitMin(title_rect.h, 0);
+
+    if (title_rect.w > 0 && title_rect.h > 0) {
+        if (is_vertical) {
+            canvas->drawText(title1, title_rect, fg);
+            title_rect.y += (max_text_height + Metrics::CLIENT_TITLEBAR_INNER_MARGIN);
+            canvas->drawText(title2, title_rect, fg);
+        } else
+            canvas->drawText(title1, title_rect, fg);
+    }
 }
