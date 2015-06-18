@@ -29,6 +29,16 @@ namespace IntegerUtil
     inline int min(int a, int b) {
         return std::min(a, b);
     }
+    inline void limit(int minval, int &value, int maxval) {
+        value = max(minval, value);
+        value = min(value, maxval);
+    }
+    inline void limitMin(int &value, int minval) {
+        value = max(minval, value);
+    }
+    inline void limitMax(int &value, int maxval) {
+        value = min(maxval, value);
+    }
 }
 
 #define STATIC_ASSERT(condition) static_assert(condition, #condition)
