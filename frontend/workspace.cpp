@@ -161,7 +161,7 @@ void Workspace::redrawAll()
 void Workspace::refreshStatusText()
 {
     if (_monitor) {
-        const std::string &mode_name = Application::self()->mode(modeIndex())->name();
+        const std::string &mode_name = Application::self()->mode(modeIndex())->displayName();
 
         std::stringstream text;
         text<<"Mode: "<<mode_name<<" ("<<(modeIndex() + 1)<<"/"<<Application::self()->numModes()<<")";

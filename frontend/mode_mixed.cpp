@@ -1,10 +1,15 @@
 #include "mode_mixed.h"
 #include "window_manager_mixed.h"
 
+#include <sstream>
+
 ModeMixed::ModeMixed(Mode *floating_mode, Mode *tiling_mode) : Mode("mixed"),
     _floating_mode(floating_mode),
     _tiling_mode(tiling_mode)
 {
+    std::stringstream display_name;
+    display_name<<"mixed ("<<_tiling_mode->displayName()<<" + "<<_floating_mode->displayName()<<")";
+    setDisplayName(display_name.str());
 }
 
 ModeMixed::~ModeMixed()

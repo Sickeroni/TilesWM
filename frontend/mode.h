@@ -12,7 +12,7 @@ class Workspace;
 class Mode
 {
 public:
-    Mode(std::string name) : _name(name), _key_bindings(name, &_actions) {}
+    Mode(std::string name) : _name(name), _display_name(name), _key_bindings(name, &_actions) {}
     virtual ~Mode() {}
 
     virtual WindowManager *createWindowManager(Workspace *workspace) = 0;
@@ -25,14 +25,19 @@ public:
     }
 
     const std::string &name() const { return _name; }
+    const std::string &displayName() const  { return _display_name; }
 
     const KeyBindingSet *keyBindings() const { return &_key_bindings; }
 
 protected:
+    void setDisplayName(std::string name) {
+        _display_name = name;
+    }
+
     ActionSet _actions;
 
 private:
-    std::string _name;
+    std::string _name, _display_name;
     KeyBindingSet _key_bindings;
 };
 
