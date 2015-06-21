@@ -9,7 +9,7 @@ WindowManager3Panel
     maximazation
     action: adjust splitter positions based on size hints
     ClientWrapper:
-        add bool _respect_size_hints
+        add bool _respect_size_hints - or NOT - in case AbstractClient is used this function needs to be somewhere elese
 
 
 class Workspace::Layout : public ChildWidget {
