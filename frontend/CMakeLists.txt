@@ -1,6 +1,6 @@
 include_directories (${CMAKE_CURRENT_SOURCE_DIR})
 
-add_subdirectory (tiling)
+# add_subdirectory (tiling)
 add_subdirectory (floating)
 
 set (SRCS ${SRCS} monitor)
@@ -19,7 +19,7 @@ set (SRCS ${SRCS} key_binding_set)
 set (SRCS ${SRCS} theme)
 set (SRCS ${SRCS} common_actions)
 set (SRCS ${SRCS} widget_util)
-set (SRCS ${SRCS} mode_mixed)
-set (SRCS ${SRCS} window_manager_mixed)
+# set (SRCS ${SRCS} mode_mixed)
+# set (SRCS ${SRCS} window_manager_mixed)
 
 add_library (frontend ${SRCS})
