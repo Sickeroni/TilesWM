@@ -18,48 +18,37 @@ class ClientWrapper;
 class WindowManager : public KeyGrabHandler
 {
 public:
-    WindowManager(Workspace *workspace, Mode *mode) :
-        _workspace(workspace),
+    WindowManager(Widget *parent_widget, Mode *mode) :
+        _parent_widget(parent_widget),
         _mode(mode) {}
-    virtual ~WindowManager();
+    virtual ~WindowManager() {}
 
     virtual void layout() = 0; //FIXME - remove ? it should be up to the window manager when to to this
     virtual ClientWrapper *activeClient() = 0;
     virtual void redrawAll() = 0;
     // a wm might be interested whether it has focus
-    virtual void setHasFocus(bool /*has_focus*/) = 0;
+    virtual void setHasFocus(bool has_focus) = 0;
     virtual void manageClient(ClientWrapper *client) = 0;
     virtual void unmanageClient(ClientWrapper *client) = 0;
     virtual void makeClientActive(ClientWrapper *client) = 0;
 
-    virtual void handleWorkspaceSizeChanged() {}
+    virtual void handleParentWidgetSizeChanged() {}
 
-    // FIXME remove ?
-    // and instead have makeClientActive(Client*) ?
-    // or have both ?
-//     virtual void makeContainerActive(Container *container) = 0;
-    // this also returns true if container is a parent of the active container
-    //FIXME better name or remove
-    // alternative: container->isParentOf(activeContainer()) / activeContainer()->isChildIf(container)
-//     virtual bool isContainerActive(Container *container) = 0;
+    virtual void setActive(bool active) {
+        _is_active = active;
+    }
 
-    virtual void setActive(bool active);
-
-    void manageClient(Client *client);
-    void unmanageClient(Client *client);
-    void makeClientActive(const Client *client);
-
-    Workspace *workspace() { return _workspace; }
     bool isActive() { return _is_active; }
 
 protected:
     virtual const KeyBindingSet *keyBindings() override { return _mode->keyBindings(); }
 
+    Widget *parentWidget() { return _parent_widget; }
+
 private:
-    Workspace *_workspace = 0;
+    Widget *_parent_widget = 0;
     Mode *_mode = 0;
     bool _is_active = false;
-    std::list<ClientWrapper*> _clients;
 };
 
 #endif

@@ -8,7 +8,7 @@ class ModeSimple final : public Mode
 public:
     ModeSimple();
 
-    virtual WindowManager *createWindowManager(Workspace *workspace) override;
+    virtual WindowManager *createWindowManager(Widget *parent_widget) override;
 };
 
 

@@ -2,13 +2,11 @@
 #include "application.h"
 #include "backend.h"
 
-ClientWrapper::ClientWrapper(Client *client, WindowManager *wm) : ChildWidget(OTHER),
+ClientWrapper::ClientWrapper(Client *client) : ChildWidget(OTHER),
     _client(client),
-    _client_backend(client->backend()),
-    _wm(wm)
+    _client_backend(client->backend())
 {
     ChildWidget::setRect(_client->rect());
-    handleWindowManagerIsActiveChanged();
 }
 
 ClientWrapper::~ClientWrapper()
@@ -20,9 +18,10 @@ ClientWrapper::~ClientWrapper()
     }
 }
 
-void ClientWrapper::handleWindowManagerIsActiveChanged()
+void ClientWrapper::setActive(bool active)
 {
-    if (_wm->isActive()) {
+    _is_active = active;
+    if (_is_active) {
         _client->reparent(this);
         _client->setRect(Rect(0, 0, rect().w, rect().h));
         _client->setEventHandler(_event_handler);
@@ -33,14 +32,14 @@ void ClientWrapper::handleWindowManagerIsActiveChanged()
 void ClientWrapper::setRect(const Rect &rect)
 {
     ChildWidget::setRect(rect);
-    if (_wm->isActive())
+    if (_is_active)
         _client->setRect(Rect(0, 0, rect.w, rect.h));
 }
 
 void ClientWrapper::setEventHandler(Client::EventHandler *handler)
 {
     _event_handler = handler;
-    if (_wm->isActive())
+    if (_is_active)
         _client->setEventHandler(handler);
 }
 

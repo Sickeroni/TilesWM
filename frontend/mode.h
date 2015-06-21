@@ -7,7 +7,7 @@
 #include <string>
 
 class WindowManager;
-class Workspace;
+class Widget;
 
 class Mode
 {
@@ -15,7 +15,7 @@ public:
     Mode(std::string name) : _name(name), _display_name(name), _key_bindings(name, &_actions) {}
     virtual ~Mode() {}
 
-    virtual WindowManager *createWindowManager(Workspace *workspace) = 0;
+    virtual WindowManager *createWindowManager(Widget *parent_widget) = 0;
 
     virtual void createKeyBindings() {
         _key_bindings.createBindings();

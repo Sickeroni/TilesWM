@@ -14,17 +14,87 @@
 
 #include <sstream>
 
+class Workspace::Layout : public ChildWidget {
+    std::list<ClientWrapper*> _clients;
+    WindowManager *_wm = 0;
+    bool _is_active = false;
+
+public:
+    Layout(size_t mode) : ChildWidget(OTHER) {
+        _wm = Application::self()->mode(mode)->createWindowManager(this);
+    }
+    virtual ~Layout() {
+        assert(_clients.empty());
+        delete _wm;
+        _wm = 0;
+    }
+
+    virtual void draw(Canvas *canvas) override {
+        Theme::drawWorkspace(this, 0, canvas);
+    }
+    virtual void setRect(const Rect &r) override {
+        ChildWidget::setRect(r);
+        _wm->handleParentWidgetSizeChanged();
+    }
+
+    ClientWrapper *activeClient() {
+        return _wm->activeClient();
+    }
+
+    void makeClientActive(const Client *client) {
+        for (auto it = _clients.begin(); it != _clients.end(); it++) {
+            ClientWrapper *wrapper = *it;
+            if (wrapper->wrappedClient() == client) {
+                _wm->makeClientActive(wrapper);
+                break;
+            }
+        }
+    }
+
+    WindowManager *wm() { return _wm; }
+
+    void setActive(bool active) {
+        _is_active = active;
+        if (!active)
+            setMapped(false);
+        _wm->setActive(active);
+        for (ClientWrapper *client : _clients)
+            client->setActive(active);
+        if (active)
+            setMapped(true);
+    }
+
+    void addClient(Client *client) {
+        ClientWrapper *wrapper = new ClientWrapper(client);
+        _clients.push_back(wrapper);
+        wrapper->setActive(_is_active);
+        _wm->manageClient(wrapper);
+    }
+
+    void removeClient(Client *client) {
+        for (auto it = _clients.begin(); it != _clients.end(); it++) {
+            ClientWrapper *wrapper = *it;
+            if (wrapper->wrappedClient() == client) {
+                _clients.erase(it);
+                _wm->unmanageClient(wrapper);
+                delete wrapper;
+                return;
+            }
+        }
+    }
+};
+
+
 Workspace::Workspace() : Widget(WORKSPACE),
     _monitor(0),
     _mode(Application::self()->defaultMode())
 {
-    for (size_t i = 0; i < Application::self()->numModes(); i++) {
-        WindowManager *wm = Application::self()->mode(i)->createWindowManager(this);
-        _window_managers.push_back(wm);
-    }
-    assert(!_window_managers.empty());
-    _window_manager = _window_managers[0];
-    _window_manager->setActive(true);
+    for (size_t i = 0; i < Application::self()->numModes(); i++)
+        _layouts.push_back(new Layout(i));
+    assert(!_layouts.empty());
+
+    _active_layout = _layouts[0];
+    _active_layout->setActive(true);
 
     _background = Application::self()->backend()->loadImage("wallpaper.png");
 }
@@ -34,11 +104,11 @@ Workspace::~Workspace()
     assert(_clients.empty());
     assert(!monitor());
 
-    _window_manager->setActive(false);
-    _window_manager = 0;
-    for (WindowManager *wm : _window_managers)
-        delete wm;
-    _window_managers.clear();
+    _active_layout->setActive(false);
+    _active_layout = 0;
+    for (Layout *l : _layouts)
+        delete l;
+    _layouts.clear();
 
     delete _background;
     _background = 0;
@@ -56,19 +126,18 @@ void Workspace::setRect(const Rect &r)
             delete _background_scaled;
             _background_scaled = _background->scale(r.w, r.h);
         }
-        for (WindowManager *wm : _window_managers)
-            wm->handleWorkspaceSizeChanged();
+        for (Layout *l : _layouts)
+            l->setRect(r);
     }
 }
 
-void Workspace::draw(Canvas *canvas)
+void Workspace::draw(Canvas */*canvas*/)
 {
-    Theme::drawWorkspace(this, canvas);
 }
 
 void Workspace::layoutContents()
 {
-    _window_manager->layout();
+    _active_layout->wm()->layout();
 }
 
 bool Workspace::makeActive()
@@ -80,34 +149,22 @@ bool Workspace::makeActive()
         return false;
 }
 
-void Workspace::addChild(ChildWidget *child)
-{
-    child->reparent(this);
-}
-
-void Workspace::removeChild(ChildWidget *child)
-{
-    child->reparent(0);
-}
-
 void Workspace::addClient(Client *client)
 {
     _clients.push_back(client);
 
     client->setWorkspace(this);
 
-    for (WindowManager *wm : _window_managers) {
-        wm->manageClient(client);
-    }
+    for (Layout *l : _layouts)
+        l->addClient(client);
 
-    _window_manager->makeClientActive(client);
+    _active_layout->makeClientActive(client);
 }
 
 void Workspace::removeClient(Client *client)
 {
-    for (WindowManager *wm : _window_managers) {
-        wm->unmanageClient(client);
-    }
+    for (Layout *l : _layouts)
+        l->removeClient(client);
 
     client->setWorkspace(0);
 
@@ -116,7 +173,7 @@ void Workspace::removeClient(Client *client)
 
 ClientWrapper *Workspace::activeClient()
 {
-    return _window_manager->activeClient();
+    return _active_layout->activeClient();
 }
 
 Mode *Workspace::mode()
@@ -129,21 +186,21 @@ void Workspace::setMode(size_t index)
     if (monitor())
         setMapped(false);
 
-    assert(index < _window_managers.size());
-
-    _window_manager->setHasFocus(false);
-    _window_manager->setActive(false);
+    assert(index < _layouts.size());
 
     const Client *active_client = activeClient() ? activeClient()->wrappedClient() : 0;
 
+    _active_layout->wm()->setHasFocus(false);
+    _active_layout->setActive(false);
+
     _mode = index;
 
-    _window_manager = _window_managers[index];
+    _active_layout = _layouts[index];
 
-    _window_manager->makeClientActive(active_client);
+    _active_layout->makeClientActive(active_client);
 
-    _window_manager->setActive(true);
-    _window_manager->setHasFocus(_has_focus);
+    _active_layout->setActive(true);
+    _active_layout->wm()->setHasFocus(_has_focus);
 
     if (monitor())
         setMapped(true);
@@ -155,7 +212,7 @@ void Workspace::setMode(size_t index)
 
 void Workspace::redrawAll()
 {
-    _window_manager->redrawAll();
+    _active_layout->wm()->redrawAll();
 }
 
 void Workspace::refreshStatusText()
@@ -172,6 +229,16 @@ void Workspace::refreshStatusText()
 
 void Workspace::setHasFocus(bool has_focus)
 {
-    _window_manager->setHasFocus(has_focus);
+    _active_layout->wm()->setHasFocus(has_focus);
     _has_focus = has_focus;
+}
+
+void Workspace::makeClientActive(const Client *client)
+{
+    _active_layout->makeClientActive(client);
+}
+
+bool Workspace::handleKeySequence(const AbstractKeySequence *sequence)
+{
+    return _active_layout->wm()->handleKeySequence(sequence);
 }

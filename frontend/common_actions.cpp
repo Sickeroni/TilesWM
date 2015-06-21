@@ -4,7 +4,6 @@
 #include "action_run.h"
 #include "application.h"
 #include "workspace.h"
-#include "window_manager.h"
 #include "client_wrapper.h"
 #include "backend.h"
 #include "common.h"
@@ -57,7 +56,7 @@ void CommonActions::performAction(int id)
             }
             break;
         case ACTION_LAYOUT:
-            Application::activeWorkspace()->windowManager()->layout();
+            Application::activeWorkspace()->layoutContents();
             break;
         case ACTION_REDRAW:
             Application::activeWorkspace()->redrawAll();

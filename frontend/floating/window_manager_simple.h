@@ -4,7 +4,6 @@
 #include <list>
 
 #include "window_manager.h"
-#include "workspace.h"
 #include "client.h"
 #include "client_frame.h"
 #include "common.h"
@@ -12,8 +11,8 @@
 class WindowManagerSimple : public WindowManager
 {
 public:
-    WindowManagerSimple(Workspace *workspace, Mode *mode) :
-        WindowManager(workspace, mode) {}
+    WindowManagerSimple(Widget *parent_widget, Mode *mode) :
+        WindowManager(parent_widget, mode) {}
 
     ~WindowManagerSimple() {
         assert(_clients.empty());
@@ -31,7 +30,7 @@ public:
 
     virtual void manageClient(ClientWrapper *client) override {
         ClientFrame *frame = new ClientFrame(client);
-        workspace()->addChild(frame);
+        frame->reparent(parentWidget());
         frame->setHasDecoration(true);
         frame->setMapped(isActive());
         _clients.push_back(frame);

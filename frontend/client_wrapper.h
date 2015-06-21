@@ -3,18 +3,17 @@
 
 #include "client.h"
 #include "child_widget.h"
-#include "window_manager.h"
 
 class ClientWrapper final : public ChildWidget
 {
 public:
-    ClientWrapper(Client *client, WindowManager *wm);
+    ClientWrapper(Client *client);
     ~ClientWrapper();
 
     virtual void setRect(const Rect &rect) override;
     virtual void draw(Canvas */*canvas*/) override {}
 
-    void handleWindowManagerIsActiveChanged();
+    void setActive(bool active);
 
     const std::string &name() {
         return _client_backend->name();
@@ -35,7 +34,7 @@ public:
         _client->requestClose();
     }
     void setFocus() {
-        assert(_wm->isActive());
+        assert(_is_active);
         _client->setFocus();
     }
     bool hasFocus() {
@@ -58,7 +57,7 @@ private:
     const ClientBackend *_client_backend = 0;
     Client::EventHandler *_event_handler = 0;
     Client::PropertyListener *_property_listener = 0;
-    WindowManager *_wm = 0;
+    bool _is_active = false;
 };
 
 #endif

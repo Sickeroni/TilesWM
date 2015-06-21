@@ -56,7 +56,7 @@ void Client::limitRect(Rect &rect)
 void Client::handleFocusChanged(bool has_focus)
 {
     if (has_focus)
-        workspace()->windowManager()->makeClientActive(this);
+        workspace()->makeClientActive(this);
 
     if (_event_handler)
         _event_handler->handleFocusChanged();

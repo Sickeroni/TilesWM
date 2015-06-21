@@ -15,6 +15,7 @@ class Mode;
 class WindowManager;
 class ChildWidget;
 class Icon;
+class AbstractKeySequence;
 
 class Workspace final : public Widget
 {
@@ -44,11 +45,6 @@ public:
     size_t modeIndex() { return _mode; }
     void setMode(size_t index);
 
-    WindowManager *windowManager() { return _window_manager; }
-
-    void addChild(ChildWidget *child);
-    void removeChild(ChildWidget *child);
-
     void addClient(Client *client);
     void removeClient(Client *client);
     ClientWrapper *activeClient();
@@ -60,14 +56,19 @@ public:
 
     void setHasFocus(bool has_focus);
 
+    void makeClientActive(const Client *client);
+    bool handleKeySequence(const AbstractKeySequence *sequence);
+
 private:
+    class Layout;
+
     Monitor *_monitor = 0;
     size_t _mode = 0;
     bool _has_focus = false;
-    WindowManager *_window_manager = 0;
     Icon *_background = 0, *_background_scaled = 0;
     std::list<Client*> _clients;
-    std::vector<WindowManager*> _window_managers;
+    std::vector<Layout*> _layouts;
+    Layout *_active_layout = 0;
 };
 
 #endif // __WORKSPACE_H__

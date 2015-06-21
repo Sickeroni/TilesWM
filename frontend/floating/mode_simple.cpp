@@ -6,7 +6,7 @@ ModeSimple::ModeSimple() : Mode("floating.simple")
 {
 }
 
-WindowManager *ModeSimple::createWindowManager(Workspace *workspace)
+WindowManager *ModeSimple::createWindowManager(Widget *parent_widget)
 {
-    return new WindowManagerSimple(workspace, this);
+    return new WindowManagerSimple(parent_widget, this);
 }

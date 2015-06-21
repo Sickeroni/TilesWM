@@ -96,7 +96,7 @@ void Application::destroyClientFrontend(ClientFrontend *frontend)
 bool Application::handleKeySequence(const AbstractKeySequence *sequence) {
     bool handled = _common_actions->handleKeySequence(sequence);
     if (!handled)
-        handled = activeWorkspace()->windowManager()->handleKeySequence(sequence);
+        handled = activeWorkspace()->handleKeySequence(sequence);
     return handled;
 }
 

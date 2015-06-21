@@ -7,14 +7,14 @@ namespace Theme
 {
 
 
-void drawWorkspace(Workspace *workspace, Canvas *canvas)
+void drawWorkspace(Widget *workspace, Icon *background, Canvas *canvas)
 {
     Rect rect = workspace->rect();
     rect.setPos(0, 0);
     canvas->begin();
 
-    if (workspace->background())
-        canvas->drawIcon(workspace->background(), 0, 0);
+    if (background)
+        canvas->drawIcon(background, 0, 0);
     else
         canvas->erase(rect);
 
