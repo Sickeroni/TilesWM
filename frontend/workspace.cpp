@@ -46,9 +46,10 @@ public:
             ClientWrapper *wrapper = *it;
             if (wrapper->wrappedClient() == client) {
                 _wm->makeClientActive(wrapper);
-                break;
+                return;
             }
         }
+        assert(0);
     }
 
     WindowManager *wm() { return _wm; }
@@ -81,6 +82,7 @@ public:
                 return;
             }
         }
+        assert(0);
     }
 };
 
@@ -89,8 +91,11 @@ Workspace::Workspace() : Widget(WORKSPACE),
     _monitor(0),
     _mode(Application::self()->defaultMode())
 {
-    for (size_t i = 0; i < Application::self()->numModes(); i++)
-        _layouts.push_back(new Layout(i));
+    for (size_t i = 0; i < Application::self()->numModes(); i++) {
+        Layout *l = new Layout(i);
+        l->reparent(this);
+        _layouts.push_back(l);
+    }
     assert(!_layouts.empty());
 
     _active_layout = _layouts[0];
@@ -127,7 +132,7 @@ void Workspace::setRect(const Rect &r)
             _background_scaled = _background->scale(r.w, r.h);
         }
         for (Layout *l : _layouts)
-            l->setRect(r);
+            l->setRect(Rect(0, 0, r.w, r.h));
     }
 }
 
@@ -151,6 +156,8 @@ bool Workspace::makeActive()
 
 void Workspace::addClient(Client *client)
 {
+    assert(!client->workspace());
+
     _clients.push_back(client);
 
     client->setWorkspace(this);
@@ -163,6 +170,8 @@ void Workspace::addClient(Client *client)
 
 void Workspace::removeClient(Client *client)
 {
+    assert(client->workspace() == this);
+
     for (Layout *l : _layouts)
         l->removeClient(client);
 
@@ -197,7 +206,8 @@ void Workspace::setMode(size_t index)
 
     _active_layout = _layouts[index];
 
-    _active_layout->makeClientActive(active_client);
+    if (active_client)
+        _active_layout->makeClientActive(active_client);
 
     _active_layout->setActive(true);
     _active_layout->wm()->setHasFocus(_has_focus);
