@@ -2,7 +2,6 @@
 #include "client_container.h"
 #include "container_layout.h"
 #include "canvas.h"
-#include "workspace.h"
 #include "widget_util.h"
 #include "client_wrapper.h"
 
@@ -56,11 +55,11 @@ void WindowManager3Panel::createActions(ActionSet &actions)
     actions.createAction("setSecondarySlaveToMinimum", ACTION_SET_SECONDARY_SLAVE_TO_MINIMUM);
 }
 
-WindowManager3Panel::WindowManager3Panel(Workspace *workspace, Mode *mode) :
-    WindowManager(workspace, mode),
+WindowManager3Panel::WindowManager3Panel(Widget *parent_widget, Mode *mode) :
+    WindowManager(parent_widget, mode),
     _root(new RootWidget(this))
 {
-    workspace->addChild(_root);
+    _root->reparent(parentWidget());
 
     _master = createClientContainer();
     _master->reparent(_root);
@@ -78,15 +77,14 @@ WindowManager3Panel::~WindowManager3Panel()
     _slave1 = 0;
     delete _master;
     _master = 0;
-    workspace()->removeChild(_root);
     delete _root;
     _root= 0;
 }
 
-void WindowManager3Panel::handleWorkspaceSizeChanged()
+void WindowManager3Panel::handleParentWidgetSizeChanged()
 {
-    int w = workspace()->rect().w;
-    int h = workspace()->rect().h;
+    int w = parentWidget()->rect().w;
+    int h = parentWidget()->rect().h;
 
     printvar(w);
     printvar(h);
@@ -122,8 +120,8 @@ void WindowManager3Panel::setHasFocus(bool has_focus)
 
 void WindowManager3Panel::layout()
 {
-    int w = workspace()->rect().w;
-    int h = workspace()->rect().h;
+    int w = parentWidget()->rect().w;
+    int h = parentWidget()->rect().h;
 
     _splitter1_pos = min(_splitter1_pos, w - (MIN_CONTAINER_SIZE + SPLITTER_WIDTH));
     _splitter1_pos = max(MIN_CONTAINER_SIZE, _splitter1_pos);
@@ -175,8 +173,6 @@ void WindowManager3Panel::manageClient(ClientWrapper *client)
 
 void WindowManager3Panel::unmanageClient(ClientWrapper *client)
 {
-    assert(client->workspace() == workspace());
-
     auto it = _container_of_client.find(client);
     assert(it != _container_of_client.end());
 
@@ -328,7 +324,7 @@ void WindowManager3Panel::moveSplitter1(int delta)
 {
     _splitter1_pos += delta;
 
-    _splitter1_pos = min(_splitter1_pos, workspace()->rect().w - (MIN_CONTAINER_SIZE + SPLITTER_WIDTH));
+    _splitter1_pos = min(_splitter1_pos, parentWidget()->rect().w - (MIN_CONTAINER_SIZE + SPLITTER_WIDTH));
     _splitter1_pos = max(MIN_CONTAINER_SIZE, _splitter1_pos);
 
     layout();
@@ -338,7 +334,7 @@ void WindowManager3Panel::moveSplitter2(int delta)
 {
     _splitter2_pos += delta;
 
-    _splitter2_pos = min(_splitter2_pos, workspace()->rect().h - (MIN_CONTAINER_SIZE + SPLITTER_WIDTH));
+    _splitter2_pos = min(_splitter2_pos, parentWidget()->rect().h - (MIN_CONTAINER_SIZE + SPLITTER_WIDTH));
     _splitter2_pos = max(MIN_CONTAINER_SIZE, _splitter2_pos);
 
     layout();
@@ -380,7 +376,7 @@ void WindowManager3Panel::handleClientDragStart(ClientWrapper *client, int x_glo
 
     if (_slave1 || _slave2) {
         int master_drag_area = max(MIN_DRAG_AREA, _splitter1_pos / 2);
-        int slave_drag_area = max(MIN_DRAG_AREA, (workspace()->rect().w - _splitter1_pos) / 2);
+        int slave_drag_area = max(MIN_DRAG_AREA, (parentWidget()->rect().w - _splitter1_pos) / 2);
         if (x_local < _splitter1_pos && x_local > (_splitter1_pos - master_drag_area))
             drag_vsplit = true;
         else if(x_local >= _splitter1_pos && x_local < (_splitter1_pos + slave_drag_area))
@@ -388,7 +384,7 @@ void WindowManager3Panel::handleClientDragStart(ClientWrapper *client, int x_glo
     }
     if (_slave2 && x_local > _splitter1_pos) {
         int slave1_drag_area = max(MIN_DRAG_AREA, _splitter2_pos / 2);
-        int slave2_drag_area = max(MIN_DRAG_AREA, (workspace()->rect().h - _splitter2_pos) / 2);
+        int slave2_drag_area = max(MIN_DRAG_AREA, (parentWidget()->rect().h - _splitter2_pos) / 2);
         if (y_local < _splitter2_pos && y_local > (_splitter2_pos - slave1_drag_area))
             drag_hsplit = true;
         else if(y_local >= _splitter2_pos && y_local < (_splitter2_pos + slave2_drag_area))
@@ -448,9 +444,9 @@ void WindowManager3Panel::handleMouseMove(int x_global, int y_global)
         if (_dragged_splitter & SPLITTER_HORIZONTAL)
             _splitter2_pos += (y - _drag_start_y);
 
-        _splitter1_pos = min(_splitter1_pos, workspace()->rect().w - (MIN_CONTAINER_SIZE + SPLITTER_WIDTH));
+        _splitter1_pos = min(_splitter1_pos, parentWidget()->rect().w - (MIN_CONTAINER_SIZE + SPLITTER_WIDTH));
         _splitter1_pos = max(MIN_CONTAINER_SIZE, _splitter1_pos);
-        _splitter2_pos = min(_splitter2_pos, workspace()->rect().h - (MIN_CONTAINER_SIZE + SPLITTER_WIDTH));
+        _splitter2_pos = min(_splitter2_pos, parentWidget()->rect().h - (MIN_CONTAINER_SIZE + SPLITTER_WIDTH));
         _splitter2_pos = max(MIN_CONTAINER_SIZE, _splitter2_pos);
 
         layout();

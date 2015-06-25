@@ -13,7 +13,7 @@ class ChildWidget;
 class WindowManager3Panel final : public WindowManager, public ClientContainer::ClientDragHandler
 {
 public:
-    WindowManager3Panel(Workspace *workspace, Mode *mode);
+    WindowManager3Panel(Widget *parent_widget, Mode *mode);
     ~WindowManager3Panel();
 
     virtual void layout() override;
@@ -21,7 +21,11 @@ public:
     virtual void redrawAll() override;
     virtual void setActive(bool active) override;
     virtual void setHasFocus(bool has_focus) override;
-    virtual void handleWorkspaceSizeChanged() override;
+    virtual void manageClient(ClientWrapper *client) override;
+    virtual void unmanageClient(ClientWrapper *client) override;
+    virtual void makeClientActive(ClientWrapper *client) override;
+    virtual void handleParentWidgetSizeChanged() override;
+
     virtual void handleClientDragStart(ClientWrapper *client, int x_global, int y_global, Client::DragMode mode) override;
 
     void handleMouseMove(int x_global, int y_global);
@@ -35,9 +39,6 @@ public:
 protected:
     virtual void performAction(int id) override;
     virtual void performComplexAction(const ComplexAction */*action*/, const ComplexAction::Parameters */*parameters*/) override {}
-    virtual void manageClient(ClientWrapper *client) override;
-    virtual void unmanageClient(ClientWrapper *client) override;
-    virtual void makeClientActive(ClientWrapper *client) override;
 
 private:
     class RootWidget;

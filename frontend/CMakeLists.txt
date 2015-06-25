@@ -1,6 +1,6 @@
 include_directories (${CMAKE_CURRENT_SOURCE_DIR})
 
-# add_subdirectory (tiling)
+add_subdirectory (tiling)
 add_subdirectory (floating)
 
 set (SRCS ${SRCS} monitor)

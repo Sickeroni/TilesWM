@@ -10,7 +10,7 @@ class Mode3Panel final : public Mode
 public:
     Mode3Panel();
 
-    virtual WindowManager *createWindowManager(Workspace *workspace) override;
+    virtual WindowManager *createWindowManager(Widget *parent_widget) override;
 };
 
 #endif

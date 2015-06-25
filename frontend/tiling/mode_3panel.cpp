@@ -7,6 +7,6 @@ Mode3Panel::Mode3Panel() : Mode("tiling.3panel")
     WindowManager3Panel::createActions(_actions);
 }
 
-WindowManager *Mode3Panel::createWindowManager(Workspace *workspace) {
-    return new WindowManager3Panel(workspace, this);
+WindowManager *Mode3Panel::createWindowManager(Widget *parent_widget) {
+    return new WindowManager3Panel(parent_widget, this);
 }

@@ -49,7 +49,7 @@ include_directories (frontend/tiling)
 include_directories (frontend/floating)
 
 # set (COMMON_LIBS floating_modes tiling_modes frontend default_theme common)
-set (COMMON_LIBS frontend floating_modes default_theme common)
+set (COMMON_LIBS frontend floating_modes tiling_modes default_theme common)
 
 add_executable (ttmwm ttmwm.cpp)
 target_link_libraries (ttmwm backend_x11 backend_x11_native ${COMMON_LIBS})
