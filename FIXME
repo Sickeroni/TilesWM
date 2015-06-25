@@ -5,6 +5,7 @@ implement missing actions in:
     WindowManager3Panel
     ...
 WindowManager3Panel
+    mouse-resize lag
     doesn't honor size hints
     maximazation
     action: adjust splitter positions based on size hints
@@ -23,3 +24,5 @@ add WindowManager::_parent_widget
 class ClientBase|AbstractClient|ClientInteface
     <- ClientWrapper
     <- Client
+
+Icon -> Image|Pixmap|...
