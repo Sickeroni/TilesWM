@@ -3,13 +3,13 @@
 #include "widget_backend.h"
 #include "common.h"
 
-Workspace *ChildWidget::workspace()
+Workspace *ChildWidget::getWorkspace()
 {
     Workspace *w = 0;
 
     if (_parent) {
         if (ChildWidget *parent_child_widget = _parent->toChildWidget())
-            w = parent_child_widget->workspace();
+            w = parent_child_widget->getWorkspace();
         else
             w = _parent->toWorkspace();
     }

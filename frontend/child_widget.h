@@ -17,7 +17,7 @@ public:
     template <class T>
     T* parentTo() { return dynamic_cast<T*>(_parent); }
 
-    Workspace *workspace();
+    Workspace *getWorkspace();
 
 protected:
     ChildWidget(Type type, WidgetBackend *backend = 0) : Widget(type, backend) {}
