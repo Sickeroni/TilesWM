@@ -8,3 +8,5 @@ cmake_build
 _build
 work
 valgrind.xml
+
+*.unused
