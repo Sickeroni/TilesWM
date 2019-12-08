@@ -1,3 +1,3 @@
 # TilesWM
 
-A experimental Windowmanager for X11.
+A experimental window manager for X11.
